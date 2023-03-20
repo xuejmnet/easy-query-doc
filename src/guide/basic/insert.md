@@ -59,7 +59,6 @@ long rows = easyQuery.insertable(topics).executeRows();
 //返回结果rows为10
 ````
 ```log
-插入sql：INSERT INTO t_topic (`id`,`stars`,`title`,`create_time`) VALUES (?,?,?,?) 
 ==> Preparing: INSERT INTO t_topic (`id`,`stars`,`title`,`create_time`) VALUES (?,?,?,?) 
 ==> Parameters: 47ad3bfa24c54c99b529cc91e974eb0b(String),100(Integer),标题0(String),2023-03-16T21:38:22.114(LocalDateTime)
 ==> Parameters: dd0ca150be2448369abf5226688dd505(String),101(Integer),标题1(String),2023-03-17T21:38:22.114(LocalDateTime)
@@ -80,7 +79,6 @@ long rows = easyQuery.insertable(topics.get(0)).insert(topics.get(1)).executeRow
 //返回结果rows为2
 ````
 ```log
-插入sql：INSERT INTO t_topic (`id`,`stars`,`title`,`create_time`) VALUES (?,?,?,?) 
 ==> Preparing: INSERT INTO t_topic (`id`,`stars`,`title`,`create_time`) VALUES (?,?,?,?) 
 ==> Parameters: a3cf809587e7490e99c1a5ed01192b9a(String),100(Integer),标题0(String),2023-03-16T21:42:12.542(LocalDateTime)
 ==> Parameters: a799abb1b4ea4134b065a7c52e3172ef(String),101(Integer),标题1(String),2023-03-17T21:42:12.542(LocalDateTime)
