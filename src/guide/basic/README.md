@@ -1,14 +1,15 @@
 ---
-title: 基础操作
+title: 安装配置
 ---
 
 ## 安装软件
 
+### spring-boot工程
 ```xml
 <dependency>
     <groupId>com.easy-query</groupId>
     <artifactId>sql-springboot-starter</artifactId>
-    <version>0.0.15</version>
+    <version>0.0.20</version>
 </dependency>
 ```
 
@@ -17,4 +18,7 @@ title: 基础操作
 [https://central.sonatype.com/](https://central.sonatype.com/) 搜索`easy-query`获取最新安装包
 
 
-## 初始化
+
+## spring-boot初始化
+
+## 非spring-boot初始化

@@ -12,7 +12,7 @@ export const zhNavbar = navbar([
         text: "基础操作",
         icon: "creative",
         prefix: "basic/",
-        children: ["insert","update", { text: "...", icon: "more", link: "" }],
+        children: ["insert","update","delete", { text: "...", icon: "more", link: "" }],
       },
       {
         text: "Bar",
