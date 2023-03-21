@@ -2,9 +2,9 @@
 title: 安装配置
 ---
 
-## 安装软件
+# 安装软件
 
-### spring-boot工程
+## spring-boot工程
 ```xml
 <dependency>
     <groupId>com.easy-query</groupId>
