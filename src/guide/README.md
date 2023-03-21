@@ -39,3 +39,4 @@ icon: creative
 #### 基础
 - [《EasyQuery:数据新增》](/guide/basic/insert)
 - [《EasyQuery:数据修改》](/guide/basic/update)
+- [《EasyQuery:数据删除》](/guide/basic/delete)
