@@ -3,7 +3,7 @@ title: 删除
 order: 20
 ---
 
-## 删除
+# 删除
 `EasyQuery`提供了内置物理删除和逻辑删除,默认`EasyQuery`不支持`delete`命令 需要开启允许或者使用delete语句的时候允许。
 ```java
     public EasyQueryConfiguration() {
