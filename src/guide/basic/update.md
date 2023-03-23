@@ -190,6 +190,7 @@ try{
 @EasyQueryTrack
 public Object sayHello() {
 TestUserMysql0 testUserMysql = easyQuery.queryable(TestUserMysql0.class)
+        .asTracking()//如果不添加那么不会追踪数据
         .firstOrNull();
 return testUserMysql;
 }
