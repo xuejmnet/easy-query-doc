@@ -1,6 +1,6 @@
 ---
 title: 分页
-order: 50
+order: 10
 ---
 
 # 分页

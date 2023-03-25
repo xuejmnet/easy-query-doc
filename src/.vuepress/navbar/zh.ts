@@ -12,20 +12,14 @@ export const zhNavbar = navbar([
         text: "基础操作",
         icon: "creative",
         prefix: "basic/",
-        children: ["insert","update","delete","query","paging", { text: "...", icon: "more", link: "" }],
+        children: ["insert","update","delete", { text: "...", icon: "more", link: "" }],
       },
       {
-        text: "Bar",
+        text: "查询",
         icon: "creative",
-        prefix: "bar/",
-        children: ["baz", { text: "...", icon: "more", link: "" }],
-      },
-      {
-        text: "Foo",
-        icon: "config",
-        prefix: "foo/",
-        children: ["ray", { text: "...", icon: "more", link: "" }],
-      },
+        prefix: "query/",
+        children: ["query","paging", { text: "...", icon: "more", link: "" }],
+      }
     ],
   },
   {
