@@ -10,11 +10,11 @@ icon: creative
 [![Stargazers over time](https://starchart.cc/xuejmnet/easy-query.svg)](https://starchart.cc/xuejmnet/easy-query)
 
 ### EasyQuery
-`EasyQuery`是一款`JAVA ORM`,提供强类型对象查询功能,支持单表多表查询,并且支持多种自定义特性,支持分库分表,读写分离,目前仅支持`MySQL`。
+`easy-query`🚀 一款高性能、轻量级、强类型的Java对象查询ORM框架支持分库分表读写分离
 
 
 
-- QQ群: 326308290
+- QQ群: 170029046
 - 问题反馈请前往:
 
 [https://github.com/xuejmnet/easy-query/issues](https://github.com/xuejmnet/easy-query/issues) 

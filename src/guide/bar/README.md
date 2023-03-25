@@ -1,6 +1,7 @@
 ---
 title: Bar feature
 icon: creative
+order: 999999
 ---
 
 ## Introduction

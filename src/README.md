@@ -3,7 +3,7 @@ home: true
 icon: home
 title: 项目主页
 heroImage: /logo.svg
-heroText: EASY-QUERY
+heroText: easy-query
 tagline: 🚀 一款高性能、轻量级、强类型的Java对象查询ORM框架支持分库分表读写分离
 actions:
   - text: 开始使用 →
