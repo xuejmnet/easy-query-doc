@@ -25,7 +25,13 @@ export const zhSidebar = sidebar({
           text: "查询",
           icon: "creative",
           prefix: "query/",
-          children: ["readme.md","paging"],
+          children: ["readme.md","paging","multi-query","group","select","native-sql"],
+        },
+        {
+          text: "高级",
+          icon: "creative",
+          prefix: "adv/",
+          children: ["readme.md","logic-delete","interceptor","column-encryption","data-tracking"],
         }
       ],
     },

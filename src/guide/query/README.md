@@ -89,7 +89,7 @@ List<BlogEntity> topics = easyQuery
 <== Total: 1
 ```
 
-# API
+## API
 
 
 方法  | 参数 | 返回  | 描述
@@ -102,12 +102,12 @@ toList | | List\<TEntity\> | 返回当前表达式在数据库中命中的所有
 where | lambda | this | 对当前表达式进行条件追加
 limit | 1.offset,2.rows | this | 对当前表达式进行查询结果返回和偏移进行限制，offset表示跳过多少条，limit表示获取多少条
 orderBy | lambda | this | 对当前表达式进行查询结果进行排序
-sumBigDecimalOrDefault | lambda,返回结果为null时返回的默认值 | BigDecimal |  用于对lambda列进行求和,返回结果BigDecimal防止结果溢出
-sumOrDefault | lambda,返回结果为null时返回的默认值 | 列类型 |   用于对lambda列进行求和
-maxOrDefault | lambda,返回结果为null时返回的默认值  | 列类型 |  用于对lambda列进行最大值查询
-minOrDefault | lambda,返回结果为null时返回的默认值  | 列类型 |  用于对lambda列进行最小值查询
-avgOrDefault | lambda,返回结果为null时返回的默认值 | 列类型 |  用于对lambda列进行平均值值查询
-lenOrDefault | lambda,返回结果为null时返回的默认值 | 列类型 |  用于对lambda列进行长度查询
+sumBigDecimalOrDefault | lambda,默认值 | BigDecimal |  用于对lambda列进行求和,返回结果BigDecimal防止结果溢出
+sumOrDefault | lambda,默认值 | 列类型 |   用于对lambda列进行求和
+maxOrDefault | lambda,默认值  | 列类型 |  用于对lambda列进行最大值查询
+minOrDefault | lambda,默认值  | 列类型 |  用于对lambda列进行最小值查询
+avgOrDefault | lambda,默认值 | 列类型 |  用于对lambda列进行平均值值查询
+lenOrDefault | lambda,默认值 | 列类型 |  用于对lambda列进行长度查询
 whereId | object 主键 | this |  添加单主键条件
 whereObject | object 查询对象 | this |  添加对象查询条件
 groupBy | lambda | this |  查询分组
@@ -115,11 +115,12 @@ having | lambda | this |  查询对分组结果进行筛选
 orderByDynamic | `EasyDynamicOrderByConfiguration` | this | 添加查询动态排序
 distinct |  | this |  对查询结果进行去重
 toPageResult | long,long | `PageResult` | 对结果进行先count，然后limit+toList查询结果并且封装成`PageResult`返回
-countDistinct | lambda | long |  返回当前表达式在数据库中命中的条数去重后有多少,没有匹配数返回0
-countDistinct | lambda | long |  返回当前表达式在数据库中命中的条数去重后有多少,没有匹配数返回0
-countDistinct | lambda | long |  返回当前表达式在数据库中命中的条数去重后有多少,没有匹配数返回0
-countDistinct | lambda | long |  返回当前表达式在数据库中命中的条数去重后有多少,没有匹配数返回0
-countDistinct | lambda | long |  返回当前表达式在数据库中命中的条数去重后有多少,没有匹配数返回0
-countDistinct | lambda | long |  返回当前表达式在数据库中命中的条数去重后有多少,没有匹配数返回0
-countDistinct | lambda | long |  返回当前表达式在数据库中命中的条数去重后有多少,没有匹配数返回0
-countDistinct | lambda | long |  返回当前表达式在数据库中命中的条数去重后有多少,没有匹配数返回0
+leftJoin | lambda | this |  左链接
+rightJoin | lambda | this |  右链接
+innerJoin | lambda | this |  内链接
+disableLogicDelete |  | this |  本次查询不启用逻辑删除
+enableLogicDelete |  | this |  本次查询启用逻辑删除
+noInterceptor |  | this |   本次查询不使用拦截器
+useInterceptor |  | this |  本次查询使用拦截器
+asTracking |  | this |   本次查询使用追踪，需要开启追踪后才有效
+asNoTracking |  | this |   本次查询不使用追踪,默认就是不使用追踪
