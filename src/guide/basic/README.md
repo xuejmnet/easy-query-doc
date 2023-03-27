@@ -10,7 +10,7 @@ order: 10
 <dependency>
     <groupId>com.easy-query</groupId>
     <artifactId>sql-springboot-starter</artifactId>
-    <version>0.0.20</version>
+    <version>0.0.24</version>
 </dependency>
 ```
 
