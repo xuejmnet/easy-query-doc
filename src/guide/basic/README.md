@@ -7,10 +7,13 @@ order: 10
 
 ## spring-boot工程
 ```xml
+<properties>
+    <easy-query.version>last-version</easy-query.version>
+</properties>
 <dependency>
     <groupId>com.easy-query</groupId>
     <artifactId>sql-springboot-starter</artifactId>
-    <version>0.0.24</version>
+    <version>${asy-query.version}</version>
 </dependency>
 ```
 

@@ -27,7 +27,7 @@ export const zhSidebar = sidebar({
           icon: "creative",
           prefix: "query/",
           collapsible:true,
-          children: ["readme.md","paging","multi-query","group","select","native-sql"],
+          children: ["readme.md","paging","multi-query","group","select","native-sql","dynamic-table","to-map"],
         },
         {
           text: "高级",
