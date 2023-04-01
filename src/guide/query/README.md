@@ -121,6 +121,9 @@ innerJoin | lambda | this |  内链接
 disableLogicDelete |  | this |  本次查询不启用逻辑删除
 enableLogicDelete |  | this |  本次查询启用逻辑删除
 noInterceptor |  | this |   本次查询不使用拦截器
+interceptor | name | this |   如果当前表达式默认使用拦截器那么这个方法调用意味着需要移除指定name的拦截器，如果是在`noInterceptor`后调用意味着只使用name的拦截器，多次调用即追加同策略
 useInterceptor |  | this |  本次查询使用拦截器
 asTracking |  | this |   本次查询使用追踪，需要开启追踪后才有效
 asNoTracking |  | this |   本次查询不使用追踪,默认就是不使用追踪
+asTable | tableName | this |  指定本次查询最近的表的表名,如果最近的表是匿名表则设置表别名alias
+asTable | lambda | this |    指定本次查询最近的表的表名,如果最近的表是匿名表则设置表别名alias,表达式入参为现有表名返回设置的表名
