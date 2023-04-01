@@ -41,3 +41,4 @@ icon: creative
 - [《EasyQuery:数据新增》](/easy-query-doc/guide/basic/insert)
 - [《EasyQuery:数据修改》](/easy-query-doc/guide/basic/update)
 - [《EasyQuery:数据删除》](/easy-query-doc/guide/basic/delete)
+- [《EasyQuery:数据查询》](/easy-query-doc/guide/query/)
