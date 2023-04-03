@@ -25,7 +25,7 @@ notLike | not like %word%  | 列不包含值
 isNull | is null  | 列 为null
 isNotNull | is not null  | 列 不为null
 in | in  | 列 在集合内部,集合为空返回False
-notIngt | not in  | 列 不在集合内部,集合为空返回True
+notIn | not in  | 列 不在集合内部,集合为空返回True
 rangeOpenClosed | < x <=  | 区间 (left..right] = {x \| left < x <= right} 一般用于范围比如时间,小的时间在前大的时间在后
 rangeOpen | < x <  | 区间 (left..right) = {x \| left < x < right} 一般用于范围比如时间,小的时间在前大的时间在后
 rangeClosedOpen | <= x <  | [left..right) = {x \| left <= x < right} 一般用于范围比如时间,小的时间在前大的时间在后
