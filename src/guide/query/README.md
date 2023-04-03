@@ -108,7 +108,7 @@ maxOrDefault | lambda,默认值  | 列类型 |  用于对lambda列进行最大�
 minOrDefault | lambda,默认值  | 列类型 |  用于对lambda列进行最小值查询
 avgOrDefault | lambda,默认值 | 列类型 |  用于对lambda列进行平均值值查询
 lenOrDefault | lambda,默认值 | 列类型 |  用于对lambda列进行长度查询
-whereId | object 主键 | this |  添加单主键条件
+whereById | object 主键 | this |  添加单主键条件
 whereObject | object 查询对象 | this |  添加对象查询条件
 groupBy | lambda | this |  查询分组
 having | lambda | this |  查询对分组结果进行筛选
@@ -121,8 +121,9 @@ innerJoin | lambda | this |  内链接
 disableLogicDelete |  | this |  本次查询不启用逻辑删除
 enableLogicDelete |  | this |  本次查询启用逻辑删除
 noInterceptor |  | this |   本次查询不使用拦截器
-interceptor | name | this |   如果当前表达式默认使用拦截器那么这个方法调用意味着需要移除指定name的拦截器，如果是在`noInterceptor`后调用意味着只使用name的拦截器，多次调用即追加同策略
+noInterceptor | name | this |   不使用指定name的拦截器
 useInterceptor |  | this |  本次查询使用拦截器
+useInterceptor | name | this |  使用指定name的拦截器
 asTracking |  | this |   本次查询使用追踪，需要开启追踪后才有效
 asNoTracking |  | this |   本次查询不使用追踪,默认就是不使用追踪
 asTable | tableName | this |  指定本次查询最近的表的表名,如果最近的表是匿名表则设置表别名alias
