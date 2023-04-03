@@ -7,7 +7,7 @@ order: 10
 `easy-query`提供了非常简易的分页查询功能,方便用户进行数据结果的分页查询
 ## 简单分页
 ```java
-   PageResult<Topic> topicPageResult = easyQuery
+   EasyPageResult<Topic> topicPageResult = easyQuery
                 .queryable(Topic.class)
                 .where(o -> o.isNotNull(Topic::getId))
                 .toPageResult(1, 20);
@@ -19,7 +19,7 @@ order: 10
 ```
 ## join分页
 ```java
-PageResult<BlogEntity> page = easyQuery
+EasyPageResult<BlogEntity> page = easyQuery
                 .queryable(Topic.class)
                 .innerJoin(BlogEntity.class, (t, t1) -> t.eq(t1, Topic::getId, BlogEntity::getId))
                 .where((t, t1) -> t1.isNotNull(BlogEntity::getTitle).then(t).eq(Topic::getId, "3"))
@@ -36,7 +36,7 @@ PageResult<BlogEntity> page = easyQuery
 
 ## group分页
 ```java
-PageResult<BlogEntity> page = easyQuery
+EasyPageResult<BlogEntity> page = easyQuery
                 .queryable(Topic.class)
                 .innerJoin(BlogEntity.class, (t, t1) -> t.eq(t1, Topic::getId, BlogEntity::getId))
                 .where((t, t1) -> t1.isNotNull(BlogEntity::getTitle))
