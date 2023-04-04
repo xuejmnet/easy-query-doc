@@ -13,10 +13,20 @@ EasyEntityInterceptor | 对象拦截器  | 用于对象插入前和修改前进�
 EasyPredicateFilterInterceptor | 条件拦截器  | 用户在查询,修改,删除的时候可以通过条件拦截来动态构建添加条件如:`租户id`
 EasyUpdateSetInterceptor | 更新列拦截器  | 用户在更新update表达式的时候可以通过当前拦截器自动追加`set`列操作
 
+## EasyInterceptor Api
+
+方法  | 默认值/实现 | 描述  
+--- | --- | --- 
+order | 100  | 用于对拦截器进行顺序排序执行
+defaultEnable | true  | 是否默认添加到表达式中,true:默认添加,false:需要调用`useInteceptor(name)`使用
+name | 无  | 拦截器名称需要自己实现,默认可以使用类名
+apply | 哪些对象允许采用当前拦截器  | 默认可以才用是否为某个接口的实现`Interface.class.isAssignableFrom(entityClass);`
+
+
 ## demo数据
 
 ::: code-tabs
-@tab LogicDelTopic
+@tab TopicInterceptor
 ```java
 @Data
 @Table("t_topic_interceptor")
@@ -53,6 +63,14 @@ create table t_topic_interceptor
 :::
 
 ## EasyEntityInterceptor
+
+### Api
+
+方法  | 默认实现 | 描述  
+--- | --- | --- 
+configureInsert | 无  | 配置自动插入时的值:创建时间,创建人
+configureUpdate | 无  | 配置更新是需要修改的值:修改时间,修改人
+
 模拟当前用户租户对象
 ```java
 public class CurrentUserHelper {
@@ -166,6 +184,13 @@ long l1 = easyQuery.updatable(topicInterceptor1).executeRows();
 
 我们在原先的拦截器上再次实现`EasyUpdateSetInterceptor`让原先的拦截器支持表达式`set`,当然你也可以单独创建一个拦截器,如果单独创建那么可以单独对其进行选择性启用或者禁用
 
+
+### Api
+
+方法  | 默认实现 | 描述  
+--- | --- | --- 
+configure | 无  | 配置表达式更新set列自动填充
+
 ```java
 
 /**
@@ -248,6 +273,14 @@ long l2 = easyQuery.updatable(TopicInterceptor.class)
 到目前为止基本上大部分的业务需求已经可以实现了，但是如果你是有租户的或者你是需要对当前请求查询条件进行额外条件过滤添加的,那么`EasyPredicateFilterInterceptor`可以帮你满足这个条件
 
 ## EasyPredicateFilterInterceptor
+
+
+
+### Api
+
+方法  | 默认实现 | 描述  
+--- | --- | --- 
+configure | 无  | 配置表达式where条件,查询,修改(对象/表达式),删除(对象/表达式)
 
 ### 租户模式实现
 - [x] 添加租户id
@@ -341,3 +374,7 @@ long l4 = easyQuery.deletable(topicInterceptor2).executeRows();
 ```
 
 所有的增删改都会添加对应的条件表达式值,可以做到表结构完美隔离租户之间的数据,并且用户使用全程无感
+
+## 按需拦截
+比如我们现在有这么一个需求因为部分接口需要针对测试数据进行移除,不希望统计到程序里面所以可以针对部分情况进行按需拦截
+可以新建一个表达式拦截器`EasyPredicateFilterInterceptor`,然后默认将deaultEnable改成`false`需要时自行添加条件通过`useInteceptor(name)`
