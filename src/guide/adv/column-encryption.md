@@ -316,4 +316,23 @@ Assert.assertNull(sysUserEncryption8);
 <== Total: 0
 ```
 
+```java
+sysUserEncryption7.setPhoneSupportLike("13232323321");
+long l2 = easyQuery.updatable(sysUserEncryption7).executeRows();
+Assert.assertEquals(1,l2);
+
+==> Preparing: UPDATE t_sys_user_encryption SET `name` = ?,`phone_not_support_like` = ?,`address_not_support_like` = ?,`phone_support_like` = ?,`address_support_like` = ? WHERE `id` = ?
+==> Parameters: name2(String),null(null),null(null),7OH9gTLq8hK4vflSizrRKg==rsW+JktKi+3iIq0Xm3vSSw==/RYbVYX8k/qGMprCZslddg==rsW+JktKi+3iIq0Xm3vSSw==/RYbVYX8k/qGMprCZslddg==TncRPIKuqNopeX/GJCgjGw==UH8PuTSDSuiTj+rLVsnjOA==2EppLfMm+O7BMtPJ7xH7CA==(String),5JxqmAe3vLE3As62ds8z/Q==RfK4efiC8TpWrlW8EYOE7Q==xYgFo1HQhvsZb3aqqJEr0w==taspTHZ7faxKgLu8WiR4xg==3K4XEON1qksj0l068srXLg==kGziT8zvaq0Mr4mgC0o8ew==o/KgX28zI/vzwYP6H+yBPQ==bIV0eBlAxjvAu53mCRCJKQ==3T589p9NTva5G7yy6Tw1zA==CbmPqpgcbPXq9ZnKJ6eFOg==7TBMWW5dxwjhmnuxffO2BQ==87EZCkWnYFik+lABuLm/0g==SiaBG+vnzNx/p2/7VNtYmw==R+BfXClbpMfdtvtgNpb2Kg==2bm0wNpPthXLTTf3ePF8Ow==/RAvJwP3bdCH88opBIxHNA==YtwmFV6JyKHYTLkcp3Xxvw==(String),2(String)
+<== Total: 1
+```
+
+```java
+long l3 = easyQuery.updatable(SysUserEncryption.class).set(SysUserEncryption::getPhoneSupportLike, "19876543210")
+        .where(o -> o.eq(SysUserEncryption::getId, "2")).executeRows();
+Assert.assertEquals(1,l2);
+
+==> Preparing: UPDATE t_sys_user_encryption SET `phone_support_like` = ? WHERE `id` = ?
+==> Parameters: 5mvI8ru5KU2gEoqUhUCR7A==MXfvDfZA1YdM7qws03g1ew==82zyfpam7R2nhH8QGEV2PA==IRTc1Xc89aXhLz6g2EMWtw==U+T8I0LMIZE62zLYLQPcHw==z21auLlv0TzO5sWM8E15Sg==o601InWNlOLFRSPiuivKLA==WlISXTG+AJUzRY1SF31+Eg==(String),2(String)
+<== Total: 1
+```
 当然目前算法不一定是最优的空间也不一定是最有效的,但是这边也是提供了默认的希望大家可以pr相关思路算法等,`easy-query`目前可以做到高性能无感的列加密存储处理
