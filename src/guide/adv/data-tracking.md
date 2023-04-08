@@ -143,6 +143,67 @@ try {
 <== Total: 1
 ```
 
+## 开启追踪后对象属性不修改更新
+如果开启了追踪并且对象属性没有进行修改那么本次更新将不会生成sql执行数据库，因为程序认为本次没有任何需要变更的数据也就不需要更新
+```java
+
+TrackManager trackManager = easyQuery.getRuntimeContext().getTrackManager();
+try {
+    trackManager.begin();
+    SysUserTrack sysUserTrack1 = easyQuery.queryable(SysUserTrack.class).asTracking()
+            .whereById(id).firstOrNull();
+    boolean b = easyQuery.addTracking(sysUserTrack1);
+    Assert.assertFalse(b);
+
+    //因为开启了追踪但是对象数据没有发生变化,所以不生成sql不使用更新;
+    long l2 = easyQuery.updatable(sysUserTrack1).executeRows();
+    Assert.assertEquals(0, l2);
+
+} finally {
+    trackManager.release();
+}
+
+
+==> Preparing: SELECT t.`id`,t.`username`,t.`phone`,t.`id_card`,t.`address`,t.`create_time` FROM t_sys_user_track t WHERE t.`id` = ? LIMIT 1
+==> Parameters: 5(String)
+<== Total: 1, Query Use: 6(ms)
+```
+
+
+## 不追踪更新
+```java
+
+TrackManager trackManager = easyQuery.getRuntimeContext().getTrackManager();
+try {
+    trackManager.begin();
+    SysUserTrack sysUserTrack1 = easyQuery.queryable(SysUserTrack.class)
+            .whereById(id).firstOrNull();
+    sysUserTrack1.setPhone("9876543210");
+    long l2 = easyQuery.updatable(sysUserTrack1).executeRows();
+    Assert.assertEquals(1, l2);
+    SysUserTrack sysUserTrack2 = easyQuery.queryable(SysUserTrack.class)
+            .whereById(id).firstOrNull();
+    Assert.assertNotNull(sysUserTrack2);
+    Assert.assertEquals("9876543210", sysUserTrack2.getPhone());
+
+} finally {
+    trackManager.release();
+}
+
+
+
+==> Preparing: SELECT t.`id`,t.`username`,t.`phone`,t.`id_card`,t.`address`,t.`create_time` FROM t_sys_user_track t WHERE t.`id` = ? LIMIT 1
+==> Parameters: 6(String)
+<== Total: 1, Query Use: 2(ms)
+
+//全字段更新
+==> Preparing: UPDATE t_sys_user_track SET `username` = ?,`phone` = ?,`id_card` = ?,`address` = ?,`create_time` = ? WHERE `id` = ?
+==> Parameters: Username1(String),seCzI8LaMkjGIkSftziv9A==1eLkqpKHc0+z7SJdQatSPQ==3v3uw7ZFJo0Tpx49WSMSMQ==LtHsv2KAcRLroXaP4dZfUA==8ea6UUe6hNYz5k+VZDQzVA==Si5J530HvuEvZzZfAqnznA==VlCQ13+oM8wbOny682WILQ==(String),OdaUl359SnxsbyZqMa05XA==496uK1pkxUbdvpq0A7q0uQ==PvHC30OSR7k27xKN36fp4g==+ta/N+1ivZAjSILsqeNjfA==hs33W1UJDlk1EFb0Nyhorw==biDnRYo+Cm5gy0r913fTOA==2Rp6hA8XQx2oIhTRo4ni2g==I6gg2QDr60Qx1Eq186LAGQ==9g+7mmP9u30kPOFB+Xcz+A==(String),eKgY/tc5Kw0qzXu0+uUSLg==hbIDJTImQweEbbz5EMyrHg==JI18Lhiq/kcrrVsD1fA++A==6S2NNhbFy4VM0KNPmMEXHw==A000VaxSBiODisuUDxv7Ow==d8z7fptVPIYMvhiXTVuJBA==xCHjVvd0uVW7a435+66hCQ==YQcXESYWhm+0Knr39sU2OA==SkFE84TtzzfqHWZFbfaDKw==IeaiLfgcyjbsMsCN7HvNVw==V7c/MZCC2DqXidxGrYe2RQ==n1Pxqra9C9LFh5xCY6xj6w==(String),2023-04-08T09:57:08(LocalDateTime),6(String)
+<== Total: 1
+==> Preparing: SELECT t.`id`,t.`username`,t.`phone`,t.`id_card`,t.`address`,t.`create_time` FROM t_sys_user_track t WHERE t.`id` = ? LIMIT 1
+==> Parameters: 6(String)
+<== Total: 1, Query Use: 2(ms)
+```
 
 ::: danger
 ！！！如果数据未被差异更新,请确认是否已经开启`TrackManager.begin`,spring-boot环境下直接使用`@EasyQueryTrack`注解,且是否使用`asTracking`查询或者查询后是否已经添加到当前追踪上下,如果数据量过多建议采用非tracking查询，需要更新前手动调用`easyQuery.addTracking()`来实现,否则每个查询对象都会添加到当前追踪上下文中
