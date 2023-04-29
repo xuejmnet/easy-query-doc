@@ -1,6 +1,6 @@
 ---
 title: 删除
-order: 20
+order: 40
 ---
 
 # 删除

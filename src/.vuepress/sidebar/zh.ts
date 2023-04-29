@@ -10,24 +10,23 @@ export const zhSidebar = sidebar({
       children: [
         {
           text: "基础操作",
-          icon: "creative",
           prefix: "basic/",
-          collapsible:true,
-          children: ["readme.md","insert","update","delete"],
+          children: ["readme.md","logging","insert","update","delete","performance"],
         },
         {
           text: "查询",
-          icon: "creative",
           prefix: "query/",
-          collapsible:true,
           children: ["readme.md","paging","multi-query","group","select","native-sql","dynamic-table","to-map","select-column","where"],
         },
         {
           text: "高级",
-          icon: "creative",
           prefix: "adv/",
-          collapsible:true,
           children: ["readme.md","logic-delete","interceptor","column-encryption","data-tracking","version"],
+        },
+        {
+          text: "超级",
+          prefix: "super/",
+          children: ["readme.md"],
         }
       ],
     },
@@ -38,7 +37,6 @@ export const zhSidebar = sidebar({
       children: [
         {
           text: "对象",
-          icon: "creative",
           prefix: "entity/",
           collapsible:true,
           children: ["readme.md"],

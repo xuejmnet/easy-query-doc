@@ -105,6 +105,7 @@ Assert.assertEquals(1,l2);
 
 ### 表达式更新
 
+表达式删除必须要添加`withVersion`否则将不会使用行版本更新
 ```java
 //whereById主键更新
 long l2 = easyQuery.updatable(SysUserVersionLong.class)
@@ -145,7 +146,7 @@ Assert.assertEquals(1,l4);
 
 
 ## 逻辑删除加版本号
-
+逻辑删除情况下删除数据将会对数据列进行行版本追加,并且where条件也会追加版本号，如果禁用逻辑删,那么行版本的追加只会纯在与where条件的追加
 ::: code-tabs
 @tab SysUserVersionLongLogicDel
 ```java
@@ -217,6 +218,7 @@ Assert.assertEquals(1,l2);
 ```
 
 ### 表达式删除
+表达式删除必须要添加`withVersion`否则将不会使用行版本删除
 ```java
 SysUserVersionLongLogicDel sysUserVersionLongLogicDel = new SysUserVersionLongLogicDel();
 sysUserVersionLongLogicDel.setId(id);
