@@ -13,7 +13,7 @@ order: 10
 <dependency>
     <groupId>com.easy-query</groupId>
     <artifactId>sql-springboot-starter</artifactId>
-    <version>${asy-query.version}</version>
+    <version>${easy-query.version}</version>
 </dependency>
 ```
 
@@ -24,8 +24,34 @@ order: 10
 
 
 ## spring-boot初始化
+```java
+<properties>
+    <easy-query.version>last-version</easy-query.version>
+</properties>
+<dependency>
+    <groupId>com.easy-query</groupId>
+    <artifactId>sql-springboot-starter</artifactId>
+    <version>${easy-query.version}</version>
+</dependency>
+//依赖注入
+@Autowired
+private EasyQuery easyQuery;
+```
 
 ## 非spring-boot初始化
+```java
+
+<properties>
+    <easy-query.version>last-version</easy-query.version>
+</properties>
+<dependency>
+    <groupId>com.easy-query</groupId>
+    <artifactId>sql-core</artifactId>
+    <version>${easy-query.version}</version>
+</dependency>
+ EasyQuery easyQuery = EasyQueryBootstrapper.defaultBuilderConfiguration().setDataSource(dataSource)
+                .build();
+```
 
 ## 演示数据
 
