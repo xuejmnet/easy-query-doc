@@ -96,6 +96,7 @@ List<BlogEntity> topics = easyQuery
 --- | --- | --- | --- 
 toSql |   | string | 返回当前表达式即将执行的sql语句
 any |   | boolean | 返回当前表达式是在数据库中是否存在匹配项,存在至少一条返回true,无法匹配任意一条在返回false
+all | lambda  | boolean | 返回当前表达式是在数据库中是否所有的都匹配,参数为符合条件的表达式
 count | | long | 返回当前表达式在数据库中命中的条数有多少,没有匹配数返回0
 firstOrNull |  | TEntity | 返回当前表达式在数据库中命中的第一条,如果没命中就返回null
 toList | | List\<TEntity\> | 返回当前表达式在数据库中命中的所有结果,如果没有结果则返回空集合
