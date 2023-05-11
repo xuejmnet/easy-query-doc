@@ -187,7 +187,7 @@ public class MyLogicDelStrategy extends AbstractEasyLogicDeleteStrategy {
 //        LocalDateTime now = LocalDateTime.now();
 //        return o->o.set(lambdaProperty,now);
         //上面的是错误用法,将now值获取后那么这个now就是个固定值而不是动态值
-        Property<Object, ?> deletedUserProperty = EasyUtil.getFastBean(builder.getEntityMetadata().getEntityClass()).getBeanGetter("deletedUser", String.class);
+        Property<Object, ?> deletedUserProperty = BeanUtil.getFastBean(builder.getEntityMetadata().getEntityClass()).getBeanGetter("deletedUser", String.class);
         return o->o.set(lambdaProperty,LocalDateTime.now())
                 .set(deletedUserProperty,CurrentUserHelper.getUserId());
     }
