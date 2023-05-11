@@ -246,12 +246,12 @@ public class MyEntityInterceptor implements EasyEntityInterceptor, EasyUpdateSet
         if(!entityUpdateExpression.getSetColumns().containsOnce(entityClass,updateBy)){
             String userId = CurrentUserHelper.getUserId();
             //获取updateBy属性的lambda表达式
-            Property<Object, ?> propertyLambda = EasyUtil.getPropertyGetterLambda(entityClass, updateBy, String.class);
+            Property<Object, ?> propertyLambda = BeanUtil.getPropertyGetterLambda(entityClass, updateBy, String.class);
             columnSetter.set(propertyLambda,userId);
         }
         if(!entityUpdateExpression.getSetColumns().containsOnce(entityClass,updateTime)){
             //获取updateTime属性的lambda表达式
-            Property<Object, ?> propertyLambda = EasyUtil.getPropertyGetterLambda(entityClass, updateTime, LocalDateTime.class);
+            Property<Object, ?> propertyLambda = BeanUtil.getPropertyGetterLambda(entityClass, updateTime, LocalDateTime.class);
             columnSetter.set(propertyLambda,LocalDateTime.now());
         }
     }
@@ -306,7 +306,7 @@ public class MyTenantInterceptor implements EasyEntityInterceptor,EasyPredicateF
     public void configure(Class<?> entityClass, LambdaEntityExpression lambdaEntityExpression, SqlPredicate<Object> sqlPredicate) {
         if(CurrentUserHelper.getUserId()!=null){
             //获取租户id的lambda表达式
-            Property<Object, ?> tenantId = EasyUtil.getPropertyGetterLambda(entityClass, "tenantId", String.class);
+            Property<Object, ?> tenantId = BeanUtil.getPropertyGetterLambda(entityClass, "tenantId", String.class);
             sqlPredicate.eq(tenantId, CurrentUserHelper.getTenantId());
         }
     }
