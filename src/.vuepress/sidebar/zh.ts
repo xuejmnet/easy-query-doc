@@ -43,6 +43,6 @@ export const zhSidebar = sidebar({
         }
       ],
     },
-    "slides",
+    "support"
   ],
 });

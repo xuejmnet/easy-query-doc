@@ -102,7 +102,7 @@ public class CurrentUserHelper {
  */
 public class MyEntityInterceptor implements EasyEntityInterceptor {
     @Override
-    public void configureInsert(Class<?> entityClass, EntityInsertExpression entityInsertExpression, Object entity) {
+    public void configureInsert(Class<?> entityClass, EntityInsertExpressionBuilder entityInsertExpressionBuilder, Object entity) {
         TopicInterceptor topicInterceptor = (TopicInterceptor) entity;
         if (topicInterceptor.getCreateTime() == null) {
             topicInterceptor.setCreateTime(LocalDateTime.now());
@@ -116,13 +116,10 @@ public class MyEntityInterceptor implements EasyEntityInterceptor {
         if (topicInterceptor.getUpdateBy() == null) {
             topicInterceptor.setUpdateBy(CurrentUserHelper.getUserId());
         }
-        if (topicInterceptor.getTenantId() == null) {
-            topicInterceptor.setTenantId(CurrentUserHelper.getTenantId());
-        }
     }
 
     @Override
-    public void configureUpdate(Class<?> entityClass, EntityUpdateExpression entityUpdateExpression, Object entity) {
+    public void configureUpdate(Class<?> entityClass, EntityUpdateExpressionBuilder entityUpdateExpressionBuilder, Object entity) {
 
         TopicInterceptor topicInterceptor = (TopicInterceptor) entity;
         topicInterceptor.setUpdateTime(LocalDateTime.now());
@@ -137,6 +134,41 @@ public class MyEntityInterceptor implements EasyEntityInterceptor {
     @Override
     public boolean apply(Class<?> entityClass) {
         return TopicInterceptor.class.isAssignableFrom(entityClass);
+    }
+}
+//租户拦截器
+public class MyTenantInterceptor implements EasyEntityInterceptor,EasyPredicateFilterInterceptor {
+    @Override
+    public String name() {
+        return "MyTenantInterceptor";
+    }
+
+    @Override
+    public boolean apply(Class<?> entityClass) {
+        return TopicInterceptor.class.isAssignableFrom(entityClass);
+    }
+
+    @Override
+    public void configure(Class<?> entityClass, LambdaEntityExpressionBuilder lambdaEntityExpressionBuilder, SQLWherePredicate<Object> sqlWherePredicate) {
+        if(CurrentUserHelper.getUserId()!=null){
+            //获取租户id的lambda表达式
+            Property<Object, ?> tenantId = EasyBeanUtil.getPropertyGetterLambda(entityClass, "tenantId", String.class);
+            sqlWherePredicate.eq(tenantId, CurrentUserHelper.getTenantId());
+        }
+    }
+
+    @Override
+    public void configureInsert(Class<?> entityClass, EntityInsertExpressionBuilder entityInsertExpressionBuilder, Object entity) {
+
+        TopicInterceptor topicInterceptor = (TopicInterceptor) entity;
+        if (topicInterceptor.getTenantId() == null) {
+            topicInterceptor.setTenantId(CurrentUserHelper.getTenantId());
+        }
+    }
+
+    @Override
+    public void configureUpdate(Class<?> entityClass, EntityUpdateExpressionBuilder entityUpdateExpressionBuilder, Object entity) {
+
     }
 }
 ```
@@ -201,7 +233,7 @@ configure | 无  | 配置表达式更新set列自动填充
  */
 public class MyEntityInterceptor implements EasyEntityInterceptor, EasyUpdateSetInterceptor {
     @Override
-    public void configureInsert(Class<?> entityClass, EntityInsertExpression entityInsertExpression, Object entity) {
+    public void configureInsert(Class<?> entityClass, EntityInsertExpressionBuilder entityInsertExpressionBuilder, Object entity) {
         TopicInterceptor topicInterceptor = (TopicInterceptor) entity;
         if (topicInterceptor.getCreateTime() == null) {
             topicInterceptor.setCreateTime(LocalDateTime.now());
@@ -215,13 +247,10 @@ public class MyEntityInterceptor implements EasyEntityInterceptor, EasyUpdateSet
         if (topicInterceptor.getUpdateBy() == null) {
             topicInterceptor.setUpdateBy(CurrentUserHelper.getUserId());
         }
-        if (topicInterceptor.getTenantId() == null) {
-            topicInterceptor.setTenantId(CurrentUserHelper.getTenantId());
-        }
     }
 
     @Override
-    public void configureUpdate(Class<?> entityClass, EntityUpdateExpression entityUpdateExpression, Object entity) {
+    public void configureUpdate(Class<?> entityClass, EntityUpdateExpressionBuilder entityUpdateExpressionBuilder, Object entity) {
 
         TopicInterceptor topicInterceptor = (TopicInterceptor) entity;
         topicInterceptor.setUpdateTime(LocalDateTime.now());
@@ -239,23 +268,24 @@ public class MyEntityInterceptor implements EasyEntityInterceptor, EasyUpdateSet
     }
 
     @Override
-    public void configure(Class<?> entityClass, EntityUpdateExpression entityUpdateExpression, SqlColumnSetter<Object> columnSetter) {
+    public void configure(Class<?> entityClass, EntityUpdateExpressionBuilder entityUpdateExpressionBuilder, SQLColumnSetter<Object> sqlColumnSetter) {
         String updateBy = "updateBy";//属性名用来动态创建lambda
         String updateTime = "updateTime";//属性名用来动态创建lambda
         //是否已经set了
-        if(!entityUpdateExpression.getSetColumns().containsOnce(entityClass,updateBy)){
+        if(!entityUpdateExpressionBuilder.getSetColumns().containsOnce(entityClass,updateBy)){
             String userId = CurrentUserHelper.getUserId();
             //获取updateBy属性的lambda表达式
-            Property<Object, ?> propertyLambda = BeanUtil.getPropertyGetterLambda(entityClass, updateBy, String.class);
-            columnSetter.set(propertyLambda,userId);
+            Property<Object, ?> propertyLambda = EasyBeanUtil.getPropertyGetterLambda(entityClass, updateBy, String.class);
+            sqlColumnSetter.set(propertyLambda,userId);
         }
-        if(!entityUpdateExpression.getSetColumns().containsOnce(entityClass,updateTime)){
+        if(!entityUpdateExpressionBuilder.getSetColumns().containsOnce(entityClass,updateTime)){
             //获取updateTime属性的lambda表达式
-            Property<Object, ?> propertyLambda = BeanUtil.getPropertyGetterLambda(entityClass, updateTime, LocalDateTime.class);
-            columnSetter.set(propertyLambda,LocalDateTime.now());
+            Property<Object, ?> propertyLambda = EasyBeanUtil.getPropertyGetterLambda(entityClass, updateTime, LocalDateTime.class);
+            sqlColumnSetter.set(propertyLambda,LocalDateTime.now());
         }
     }
 }
+
 ```
 
 测试
@@ -303,16 +333,16 @@ public class MyTenantInterceptor implements EasyEntityInterceptor,EasyPredicateF
     }
 
     @Override
-    public void configure(Class<?> entityClass, LambdaEntityExpression lambdaEntityExpression, SqlPredicate<Object> sqlPredicate) {
+    public void configure(Class<?> entityClass, LambdaEntityExpressionBuilder lambdaEntityExpressionBuilder, SQLWherePredicate<Object> sqlWherePredicate) {
         if(CurrentUserHelper.getUserId()!=null){
             //获取租户id的lambda表达式
-            Property<Object, ?> tenantId = BeanUtil.getPropertyGetterLambda(entityClass, "tenantId", String.class);
-            sqlPredicate.eq(tenantId, CurrentUserHelper.getTenantId());
+            Property<Object, ?> tenantId = EasyBeanUtil.getPropertyGetterLambda(entityClass, "tenantId", String.class);
+            sqlWherePredicate.eq(tenantId, CurrentUserHelper.getTenantId());
         }
     }
 
     @Override
-    public void configureInsert(Class<?> entityClass, EntityInsertExpression entityInsertExpression, Object entity) {
+    public void configureInsert(Class<?> entityClass, EntityInsertExpressionBuilder entityInsertExpressionBuilder, Object entity) {
 
         TopicInterceptor topicInterceptor = (TopicInterceptor) entity;
         if (topicInterceptor.getTenantId() == null) {
@@ -321,7 +351,7 @@ public class MyTenantInterceptor implements EasyEntityInterceptor,EasyPredicateF
     }
 
     @Override
-    public void configureUpdate(Class<?> entityClass, EntityUpdateExpression entityUpdateExpression, Object entity) {
+    public void configureUpdate(Class<?> entityClass, EntityUpdateExpressionBuilder entityUpdateExpressionBuilder, Object entity) {
 
     }
 }

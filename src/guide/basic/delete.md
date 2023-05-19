@@ -71,7 +71,7 @@ long l = easyQuery.deletable(Topic.class)
 Topic topic = easyQuery.queryable(Topic.class).whereId("997").firstNotNull("未找到当前主题数据");
 //Topic topic=new Topic();
 //topic.setId("997");
-long l = easyQuery.insertable(topic).executeRows();
+long l = easyQuery.deletable(topic).executeRows();
 ```
 ```log
 ==> Preparing: DELETE FROM t_topic WHERE `id` = ?

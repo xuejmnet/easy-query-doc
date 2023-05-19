@@ -116,6 +116,7 @@ having | lambda | this |  查询对分组结果进行筛选
 orderByDynamic | `EasyDynamicOrderByConfiguration` | this | 添加查询动态排序
 distinct |  | this |  对查询结果进行去重
 toPageResult | long,long | `PageResult` | 对结果进行先count，然后limit+toList查询结果并且封装成`PageResult`返回
+toShardingPageResult | long,long,sequenceCountLine | `PageResult` | 支持高性能分片下的分页查询,如果第三个参数为null那么和toPageResult行为一致
 leftJoin | lambda | this |  左链接
 rightJoin | lambda | this |  右链接
 innerJoin | lambda | this |  内链接
@@ -129,3 +130,5 @@ asTracking |  | this |   本次查询使用追踪，需要开启追踪后才有�
 asNoTracking |  | this |   本次查询不使用追踪,默认就是不使用追踪
 asTable | tableName | this |  指定本次查询最近的表的表名,如果最近的表是匿名表则设置表别名alias
 asTable | lambda | this |    指定本次查询最近的表的表名,如果最近的表是匿名表则设置表别名alias,表达式入参为现有表名返回设置的表名
+union | queryable | this |    union 查询
+unionAll | queryable | this |    union all查询
