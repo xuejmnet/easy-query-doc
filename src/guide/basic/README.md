@@ -49,7 +49,9 @@ private EasyQuery easyQuery;
     <artifactId>sql-core</artifactId>
     <version>${easy-query.version}</version>
 </dependency>
- EasyQuery easyQuery = EasyQueryBootstrapper.defaultBuilderConfiguration().setDataSource(dataSource)
+ EasyQuery easyQuery = EasyQueryBootstrapper.defaultBuilderConfiguration()
+ .setDataSource(dataSource)
+ .useDatabaseConfigure(new MySQLDatabaseConfiguration())
                 .build();
 ```
 

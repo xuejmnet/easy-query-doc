@@ -4,7 +4,7 @@ order: 30
 ---
 
 # 数据库列加密
-`easy-query`提供了建议的数据列加密功能,可以实现功能复杂的数据库列加密,并且可以支持模糊查询
+`easy-query`提供了建议的数据列加密功能,可以实现功能复杂的数据库列加密,并且可以支持模糊查询.实现方式具体请看[阿里巴巴密文字段检索方案](https://jaq-doc.alibaba.com/docs/doc.htm?treeId=1&articleId=106213&docType=1) ，这边`easy-query`给出了一个默认的实现,并且支持所有数据库
 
 ## EasyEncryptionStrategy
 

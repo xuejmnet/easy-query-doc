@@ -1,11 +1,12 @@
 ---
-title: 性能
+title: 性能比较
 order: 40
 ---
 # easy-query「性能」对比
+当前性能比较代码来自`Mybatis-Flex`,原本是`Mybatis-Flex`和`Mybaits-Plus`的「性能」对比，再他们的基础上删除了json的typehandler,增加了自己的测试代码，
+并且增加了获取1w条记录的性能测试。
 
-本文主要是展示了easy-query和 Mybatis-Flex 和 Mybaits-Plus 的「性能」对比。Mybaits-Plus 是一个非常优秀 Mybaits 增强框架，
-其开源于 2016 年，有很多的成功案例。Mybatis-Flex是一款最新开源的高性能orm数据库
+直接放结论:目前各项指标`easy-query`和`Mybatis-Flex`相近甚至更快,再获取1W条记录的情况下更是遥遥领先与另外两个框架。
 
 本文只阐述了「性能」方面的对比。
 
@@ -108,7 +109,7 @@ mapper.selectOne(queryWrapper);
 ```
 
 ::: tip 测试结论
-> Easy-Query和Mybatis-Flex 的查询单条数据的速度相当，大概是 Mybatis-Plus 的 5 ~ 10+ 倍。因为是查询单条数据所以可以近似理解为表达式生成sql的能力差距大概是5-10倍
+> easy-query和Mybatis-Flex 的查询单条数据的速度相当，大概是 Mybatis-Plus 的 5 ~ 10+ 倍。因为是查询单条数据所以可以近似理解为表达式生成sql的能力差距大概是5-10倍
 :::
 
 ## 测试列表(List)数据查询
@@ -124,7 +125,7 @@ queryWrapper.where(FLEX_ACCOUNT.ID.ge(100).or(FLEX_ACCOUNT.USER_NAME
 .limit(10);
 mapper.selectListByQuery(queryWrapper);
 ```
-Easy-Query 的代码如下：
+easy-query 的代码如下：
 
 ```java
 
@@ -203,7 +204,7 @@ mapper.selectList(queryWrapper);
 ```
 
 ::: tip 测试结论
-> 本次查询10条的情况下可以看到Easy-Query已经略微快于Mybatis-Flex,依然是 Mybatis-Plus 的 5 ~ 10+ 倍
+> 本次查询10条的情况下可以看到easy-query已经略微快于Mybatis-Flex,依然是 Mybatis-Plus 的 5 ~ 10+ 倍
 :::
 
 
@@ -220,7 +221,7 @@ queryWrapper.where(FLEX_ACCOUNT.ID.ge(100).or(FLEX_ACCOUNT.USER_NAME
 .limit(10000);
 mapper.selectListByQuery(queryWrapper);
 ```
-Easy-Query 的代码如下：
+easy-query 的代码如下：
 
 ```java
 
@@ -299,7 +300,7 @@ mapper.selectList(queryWrapper);
 ```
 
 ::: tip 测试结论
-> 本次查询10000条的情况下可以看到Easy-Query已经完全快于Mybatis-Flex大概是其3倍,是 Mybatis-Plus 的2 倍,本次结果可以得出Mybatis-Flex的优点是快速生成sql,但是在jdbc到bean对象的转换是相对低效的
+> 本次查询10000条的情况下可以看到easy-query已经完全快于Mybatis-Flex大概是其3倍,是 Mybatis-Plus 的2 倍,本次结果可以得出Mybatis-Flex的优点是快速生成sql,但是在jdbc到bean对象的转换是相对低效的
 :::
 
 ## 分页查询
@@ -313,7 +314,7 @@ QueryWrapper queryWrapper = new QueryWrapper()
 mapper.paginate(page, pageSize, 20000, queryWrapper);
 ```
 
-Easy-Query 的代码如下：
+easy-query 的代码如下：
 
 ```java
 
@@ -377,7 +378,7 @@ mapper.selectPage(p, queryWrapper);
 ```
 
 ::: tip 测试结论
-> 分页查询速度 Easy-Query快于Mybatis-Flex 远快于 Mybatis-Plus ，大概是 Mybatis-Plus 的 5~10 倍左右。
+> 分页查询速度 easy-query快于Mybatis-Flex 远快于 Mybatis-Plus ，大概是 Mybatis-Plus 的 5~10 倍左右。
 :::
 
 
@@ -402,7 +403,7 @@ mapper.updateByQuery(flexAccount, queryWrapper);
 ```
 
 
-Easy-Query 的代码如下：
+easy-query 的代码如下：
 
 ```java
 easyQuery.updatable(EasyQueryAccount.class)
@@ -476,7 +477,7 @@ mapper.update(plusAccount, lambdaUpdateWrapper);
 ```
 
 ::: tip 测试结论
-> 数据更新速度Easy-Query快于Mybatis-Flex 远快于 Mybatis-Plus，大概是 Mybatis-Plus 的 5~10+ 倍。
+> 数据更新速度easy-query快于Mybatis-Flex 远快于 Mybatis-Plus，大概是 Mybatis-Plus 的 5~10+ 倍。
 :::
 
 ## 更多的测试
