@@ -26,7 +26,8 @@ export const zhSidebar = sidebar({
         {
           text: "超级",
           prefix: "super/",
-          children: ["readme.md"],
+          children: ["readme.md","sharding-table.md","sharding-datasource.md","sharding-all.md","default-route-rule","default-route-initializer","sharding-mod.md","sharding-time.md",
+          "sharding-all-time.md","sharding-multi.md","sharding-sequence.md"],
         }
       ],
     },
