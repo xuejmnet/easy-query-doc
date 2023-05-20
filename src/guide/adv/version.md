@@ -24,7 +24,7 @@ public class SysUserVersionLong {
      * 创建时间;创建时间
      */
     private LocalDateTime createTime;
-    @Version(strategy = EasyVersionLongStrategy.class)
+    @Version(strategy = VersionLongStrategy.class)
     private Long version;
 }
 ```
@@ -53,10 +53,10 @@ create table t_sys_user_version
 nextVersion | 当前版本信息和对应的属性和对象信息  | 返回更新后的版本信息
 
 默认实现系统提供
-- `EasyVersionIntStrategy`列对象为`int`,next version为当前version+1
-- `EasyVersionLongStrategy`列对象为`long`,next version为当前version+1
-- `EasyVersionUUIDStrategy`列对象为`string`,next version为当`UUID.randomUUID().toString().replaceAll("-","")`
-- `EasyVersionTimestampStrategy`列对象为`long`,next version为当`System.currentTimeMillis()`
+- `VersionIntStrategy`列对象为`int`,next version为当前version+1
+- `VersionLongStrategy`列对象为`long`,next version为当前version+1
+- `VersionUUIDStrategy`列对象为`string`,next version为当`UUID.randomUUID().toString().replaceAll("-","")`
+- `VersionTimestampStrategy`列对象为`long`,next version为当`System.currentTimeMillis()`
 
 ## 测试数据
 
@@ -163,7 +163,7 @@ public class SysUserVersionLongLogicDel {
      * 创建时间;创建时间
      */
     private LocalDateTime createTime;
-    @Version(strategy = EasyVersionLongStrategy.class)
+    @Version(strategy = VersionLongStrategy.class)
     private Long version;
 
     @LogicDelete(strategy = LogicDeleteStrategyEnum.BOOLEAN)

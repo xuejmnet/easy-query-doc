@@ -6,7 +6,7 @@ order: 30
 # 数据库列加密
 `easy-query`提供了建议的数据列加密功能,可以实现功能复杂的数据库列加密,并且可以支持模糊查询.实现方式具体请看[阿里巴巴密文字段检索方案](https://jaq-doc.alibaba.com/docs/doc.htm?treeId=1&articleId=106213&docType=1) ，这边`easy-query`给出了一个默认的实现,并且支持所有数据库
 
-## EasyEncryptionStrategy
+## EncryptionStrategy
 
 方法  | 参数 | 描述  
 --- | --- | --- 
@@ -44,11 +44,11 @@ public class SysUserEncryption {
 
 /**
  * create time 2023/4/4 11:38
- * 如果是spring项目可以通过@Component 否则就自行添加到EasyQueryConfiguration.applyEasyEncryptionStrategy
+ * 如果是spring项目可以通过@Component 否则就自行添加到EasyQueryConfiguration.applyEncryptionStrategy
  *
  * @author xuejiaming
  */
-public class Base64EncryptionStrategy implements EasyEncryptionStrategy {
+public class Base64EncryptionStrategy implements EncryptionStrategy {
     @Override
     public Object encrypt(Class<?> entityClass, String propertyName, Object plaintext) {
         if(plaintext==null){
@@ -149,12 +149,12 @@ AES/PCBC/PKCS5Padding     | 32 |  16     | ❌
 AES/PCBC/ISO10126Padding  | 32 |  16    | ❌
 
 ### 实现加密策略
-`easy-query`很贴心的给各位提供了默认的加密策略抽象,您只需要将秘钥和偏移量进行填入即可`AbstractAesBase64EasyEncryptionStrategy`。
+`easy-query`很贴心的给各位提供了默认的加密策略抽象,您只需要将秘钥和偏移量进行填入即可`AbstractAesBase64EncryptionStrategy`。
 <font color='red'>这边提供的抽象秘钥和偏移量必须全是16位长度的字符串</font>】
 
 
 
-### AbstractAesBase64EasyEncryptionStrategy
+### AbstractAesBase64EncryptionStrategy
 
 方法  |  默认值   |  描述  
 --- | ---  | --- 
@@ -165,7 +165,7 @@ chineseCharOccupancyLength| 2| 一个中文占用长度
 throwIfDecryptFail| true | 遇到错误是否抛出
 
 ```java
-public class MyEncryptionStrategy extends AbstractAesBase64EasyEncryptionStrategy {
+public class MyEncryptionStrategy extends AbstractAesBase64EncryptionStrategy {
     @Override
     public String getIv() {
         return "A-16-Byte-String";

@@ -9,11 +9,11 @@ order: 20
 
 类  | 名称 | 描述  
 --- | --- | --- 
-EasyEntityInterceptor | 对象拦截器  | 用于对象插入前和修改前进行对象拦截
-EasyPredicateFilterInterceptor | 条件拦截器  | 用户在查询,修改,删除的时候可以通过条件拦截来动态构建添加条件如:`租户id`
-EasyUpdateSetInterceptor | 更新列拦截器  | 用户在更新update表达式的时候可以通过当前拦截器自动追加`set`列操作
+EntityInterceptor | 对象拦截器  | 用于对象插入前和修改前进行对象拦截
+PredicateFilterInterceptor | 条件拦截器  | 用户在查询,修改,删除的时候可以通过条件拦截来动态构建添加条件如:`租户id`
+UpdateSetInterceptor | 更新列拦截器  | 用户在更新update表达式的时候可以通过当前拦截器自动追加`set`列操作
 
-## EasyInterceptor Api
+## Interceptor Api
 
 方法  | 默认值/实现 | 描述  
 --- | --- | --- 
@@ -62,7 +62,7 @@ create table t_topic_interceptor
 ```
 :::
 
-## EasyEntityInterceptor
+## EntityInterceptor
 
 ### Api
 
@@ -96,11 +96,11 @@ public class CurrentUserHelper {
 
 /**
  * create time 2023/4/3 21:13
- * 如果是spring项目添加@Component，如果是非spring项目直接添加到EasyQueryConfiguration.applyEasyInterceptor
+ * 如果是spring项目添加@Component，如果是非spring项目直接添加到QueryConfiguration.applyInterceptor
  *
  * @author xuejiaming
  */
-public class MyEntityInterceptor implements EasyEntityInterceptor {
+public class MyEntityInterceptor implements EntityInterceptor {
     @Override
     public void configureInsert(Class<?> entityClass, EntityInsertExpressionBuilder entityInsertExpressionBuilder, Object entity) {
         TopicInterceptor topicInterceptor = (TopicInterceptor) entity;
@@ -137,7 +137,7 @@ public class MyEntityInterceptor implements EasyEntityInterceptor {
     }
 }
 //租户拦截器
-public class MyTenantInterceptor implements EasyEntityInterceptor,EasyPredicateFilterInterceptor {
+public class MyTenantInterceptor implements EntityInterceptor,PredicateFilterInterceptor {
     @Override
     public String name() {
         return "MyTenantInterceptor";
@@ -210,11 +210,11 @@ long l1 = easyQuery.updatable(topicInterceptor1).executeRows();
 ==> Parameters: 123(String),123(String)
 <== Total: 1
 ```
-这种情况下`updateBy`和`updateTime`并不会自动添加到生成的sql里面,这个时候我们的`EasyUpdateSetInterceptor`拦截就起作用了
+这种情况下`updateBy`和`updateTime`并不会自动添加到生成的sql里面,这个时候我们的`UpdateSetInterceptor`拦截就起作用了
 
-## EasyUpdateSetInterceptor
+## UpdateSetInterceptor
 
-我们在原先的拦截器上再次实现`EasyUpdateSetInterceptor`让原先的拦截器支持表达式`set`,当然你也可以单独创建一个拦截器,如果单独创建那么可以单独对其进行选择性启用或者禁用
+我们在原先的拦截器上再次实现`UpdateSetInterceptor`让原先的拦截器支持表达式`set`,当然你也可以单独创建一个拦截器,如果单独创建那么可以单独对其进行选择性启用或者禁用
 
 
 ### Api
@@ -227,11 +227,11 @@ configure | 无  | 配置表达式更新set列自动填充
 
 /**
  * create time 2023/4/3 21:13
- * 如果是spring项目添加@Component，如果是非spring项目直接添加到EasyQueryConfiguration.applyEasyInterceptor
+ * 如果是spring项目添加@Component，如果是非spring项目直接添加到EasQueryConfiguration.applyInterceptor
  *
  * @author xuejiaming
  */
-public class MyEntityInterceptor implements EasyEntityInterceptor, EasyUpdateSetInterceptor {
+public class MyEntityInterceptor implements EntityInterceptor, UpdateSetInterceptor {
     @Override
     public void configureInsert(Class<?> entityClass, EntityInsertExpressionBuilder entityInsertExpressionBuilder, Object entity) {
         TopicInterceptor topicInterceptor = (TopicInterceptor) entity;
@@ -300,9 +300,9 @@ long l2 = easyQuery.updatable(TopicInterceptor.class)
 <== Total: 1
 ```
 
-到目前为止基本上大部分的业务需求已经可以实现了，但是如果你是有租户的或者你是需要对当前请求查询条件进行额外条件过滤添加的,那么`EasyPredicateFilterInterceptor`可以帮你满足这个条件
+到目前为止基本上大部分的业务需求已经可以实现了，但是如果你是有租户的或者你是需要对当前请求查询条件进行额外条件过滤添加的,那么`PredicateFilterInterceptor`可以帮你满足这个条件
 
-## EasyPredicateFilterInterceptor
+## PredicateFilterInterceptor
 
 
 
@@ -321,7 +321,7 @@ configure | 无  | 配置表达式where条件,查询,修改(对象/表达式),�
 这边我们新建一个租户拦截器,把原先拦截器里面的自动填充租户id移动到租户拦截器里面
 ```java
 
-public class MyTenantInterceptor implements EasyEntityInterceptor,EasyPredicateFilterInterceptor {
+public class MyTenantInterceptor implements EntityInterceptor,PredicateFilterInterceptor {
     @Override
     public String name() {
         return "MyTenantInterceptor";
@@ -407,4 +407,4 @@ long l4 = easyQuery.deletable(topicInterceptor2).executeRows();
 
 ## 按需拦截
 比如我们现在有这么一个需求因为部分接口需要针对测试数据进行移除,不希望统计到程序里面所以可以针对部分情况进行按需拦截
-可以新建一个表达式拦截器`EasyPredicateFilterInterceptor`,然后默认将deaultEnable改成`false`需要时自行添加条件通过`useInteceptor(name)`
+可以新建一个表达式拦截器`PredicateFilterInterceptor`,然后默认将deaultEnable改成`false`需要时自行添加条件通过`useInteceptor(name)`
