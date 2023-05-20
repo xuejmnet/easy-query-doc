@@ -79,7 +79,7 @@ long l = easyQuery.deletable(logicDelTopic)
 
 枚举  | 默认 | 描述  
 --- | --- | --- 
-CUSTOM | ❌  | 用户自定义实现`EasyLogicDeleteStrategy`或者 `AbstractEasyLogicDeleteStrategy`
+CUSTOM | ❌  | 用户自定义实现`LogicDeleteStrategy`或者 `AbstractLogicDeleteStrategy`
 BOOLEAN | ✅ | Boolean,boolean类型的属性true表示删除,false表示未被删除 
 DELETE_LONG_TIMESTAMP | ❌ | Long,long类型的属性,0表示未被删除,大于0表示被删除 
 LOCAL_DATE_TIME | ❌ | LocalDateTime.class null表示未被删除, not null表示被删除 
@@ -152,7 +152,7 @@ create table t_logic_del_topic_custom
 :::
 
 ### 实现自定义逻辑删除策略
-`easy-query`默认提供了一个接口和一个抽象来实现逻辑删除,默认用户可以选择抽象(简单)`AbstractEasyLogicDeleteStrategy`,或者接口`EasyLogicDeleteStrategy`
+`easy-query`默认提供了一个接口和一个抽象来实现逻辑删除,默认用户可以选择抽象(简单)`AbstractLogicDeleteStrategy`,或者接口`LogicDeleteStrategy`
 这次我们采用抽象来实现
 
 新建一个静态帮助类来模拟当前用户因为我们这次自定义需要实现两个甚至多个字段逻辑删除处理
@@ -172,7 +172,7 @@ public class CurrentUserHelper {
 ```java
 
 //@Component //如果是spring
-public class MyLogicDelStrategy extends AbstractEasyLogicDeleteStrategy {
+public class MyLogicDelStrategy extends AbstractLogicDeleteStrategy {
     /**
      * 允许datetime类型的属性
      */
