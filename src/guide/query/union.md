@@ -6,7 +6,14 @@ order: 80
 # 联合查询
 `easy-query`支持union，union all，并且支持对应的union下的分片查询
 
-
+实现sql
+```sql
+select * from (
+select a,b from t
+union
+select c,d from t1
+) t where t.id='1'
+```
 
 ::: danger
 ！！！union或者union all需要表达式Queryable\<T\>都是相同的，您也可以自定义对象来返回对应的结果集
@@ -119,8 +126,7 @@ List<TopicUnion> list = q1.union(q2, q3).where(o -> o.eq(TopicUnion::getId, "123
 ```
 
 ```sql
-==> Preparing: SELECT t2.* FROM (
-    
+==> Preparing: SELECT t2.`id`,t2.`stars`,t2.`title` FROM (
     SELECT t.`id`,t.`stars`,t.`title` FROM `t_topic` t WHERE t.`id` = ? 
     UNION 
     SELECT t.`id`,t.`stars`,t.`title` FROM `t_topic` t WHERE t.`create_time` >= ? 
@@ -129,6 +135,33 @@ List<TopicUnion> list = q1.union(q2, q3).where(o -> o.eq(TopicUnion::getId, "123
     ) t2 WHERE t2.`id` = ?
 ==> Parameters: 123(String),2020-01-01T01:01(LocalDateTime),false(Boolean),123321(String)
 <== Time Elapsed: 6(ms)
+<== Total: 0
+
+```
+
+## 不同表union
+
+```java
+Queryable<TopicUnion> q1 = easyQuery
+            .queryable(Topic.class).where(o->o.eq(Topic::getId,"123")).select(TopicUnion.class);
+Queryable<TopicUnion> q2 = easyQuery
+        .queryable(BlogEntity.class)
+        .where(o->o.ge(BlogEntity::getCreateTime,LocalDateTime.of(2020,1,1,1,1)))
+        .select(TopicUnion.class,o->o.columnAs(BlogEntity::getId,TopicUnion::getId)
+                .columnAs(BlogEntity::getStar,TopicUnion::getStars)
+                .columnAs(BlogEntity::getContent,TopicUnion::getAbc)
+        );
+List<TopicUnion> list = q1.unionAll(q2).where(o -> o.eq(TopicUnion::getId, "123321")).toList();
+```
+```sql
+==> Preparing: SELECT t2.`id`,t2.`stars`,t2.`title` FROM (
+    
+    SELECT t.`id`,t.`stars`,t.`title` FROM `t_topic` t WHERE t.`id` = ? 
+    UNION ALL 
+    SELECT t.`id` AS `id`,t.`star` AS `stars`,t.`content` AS `title` FROM `t_blog` t WHERE t.`deleted` = ? AND t.`create_time` >= ?
+    ) t2 WHERE t2.`id` = ?
+==> Parameters: 123(String),false(Boolean),2020-01-01T01:01(LocalDateTime),123321(String)
+<== Time Elapsed: 5(ms)
 <== Total: 0
 
 ```
