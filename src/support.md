@@ -14,6 +14,6 @@ icon: creative
 ## 爱心
 如果您觉得这个框架有用可以请作者喝杯咖啡
 
-<img src="/easy-query-doc/wx.jpg" class="no-zoom" style="width:200px;">
+<img src="/wx.jpg" class="no-zoom" style="width:200px;">
 
-<img src="/easy-query-doc/zfb.jpg" class="no-zoom" style="width:200px;">
+<img src="/zfb.jpg" class="no-zoom" style="width:200px;">

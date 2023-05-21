@@ -49,7 +49,7 @@ footer: 使用 <a href="https://theme-hope.vuejs.press/" target="_blank">VuePres
 
 ## 🔔交流QQ群
 ::: center
-<img src="/easy-query-doc/qrcode.jpg" alt="群号: 170029046" class="no-zoom" style="width:200px;">
+<img src="/qrcode.jpg" alt="群号: 170029046" class="no-zoom" style="width:200px;">
 
 #### EasyQuery官方QQ群: 170029046
 :::
