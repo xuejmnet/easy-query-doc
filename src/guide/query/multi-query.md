@@ -33,7 +33,7 @@ Topic topic = easyQuery
 <== Total: 1
 ```
 
-## 匿名表Join
+## 嵌套Join
 ```java
 //创建一个匿名表的表达式
  Queryable<Topic> sql = easyQuery
