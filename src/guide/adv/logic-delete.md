@@ -234,7 +234,9 @@ List<LogicDelTopicCustom> logicDelTopics = easyQuery.queryable(LogicDelTopicCust
 LogicDelTopicCustom logicDelTopic = easyQuery.queryable(LogicDelTopicCustom.class)
                 .where(o->o.eq(LogicDelTopicCustom::getId,"1")).firstOrNull();
 
+==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`deleted_at`,t.`deleted_user`,t.`create_time` FROM `t_logic_del_topic_custom` t WHERE t.`deleted_at` IS NULL AND t.`id` = ? LIMIT 1
 ==> Parameters: 1(String)
+<== Time Elapsed: 2(ms)
 <== Total: 1
 
 
