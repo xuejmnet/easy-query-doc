@@ -11,12 +11,12 @@ export const zhSidebar = sidebar({
         {
           text: "基础操作",
           prefix: "basic/",
-          children: ["readme.md","behavior","sharding-behavior","logging","performance","insert","update","delete","value-converter"],
+          children: ["readme.md","behavior","sharding-behavior","logging","performance","insert","update","delete","transaction","value-converter"],
         },
         {
           text: "查询",
           prefix: "query/",
-          children: ["readme.md","paging","multi-query","group","select","native-sql","dynamic-table","to-map","select-column","union","select-sub","where"],
+          children: ["readme.md","paging","multi-query","group","select","native-sql","dynamic-table","to-map","select-column","union","select-sub","where","reuse"],
         },
         {
           text: "高级",
