@@ -1,0 +1,1 @@
+import{_ as a,W as r,X as t,Y as e,Z as s}from"./framework-7a1bedf3.js";const o={},c=e("h1",{id:"分片默认行为配置",tabindex:"-1"},[e("a",{class:"header-anchor",href:"#分片默认行为配置","aria-hidden":"true"},"#"),s(" 分片默认行为配置")],-1),n=[c];function _(d,i){return r(),t("div",null,n)}const l=a(o,[["render",_],["__file","sharding-behavior.html.vue"]]);export{l as default};
