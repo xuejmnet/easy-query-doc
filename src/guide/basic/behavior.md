@@ -2,7 +2,17 @@
 title: 默认行为配置
 ---
 
-# 普通表默认行为
+# 默认行为配置
+
+
+## 默认行为
+方法  | sql | 描述  
+--- | --- | --- 
+select | `queryLargeColumn`:`true`  | 默认查询返回`@Column(large=true)`
+insert | `SQLExecuteStrategyEnum.ONLY_NOT_NULL_COLUMNS`  | 默认生成语句不包含null列
+update | `SQLExecuteStrategyEnum.ALL_COLUMNS`  | 默认更新所有列包括null和非null
+delete | `allowDeleteStatement`:`false`  | 默认执行物理删除会报错
+
 ## select
 `queryLargeColumn`表示是否查询出对应的表示为`@Column(large=true)`的字段,默认`true`表示查询,如果设置为false则需要手动指定对应列,可以通过调用api接口`queryLargeColumn(boolean)`传入对应的值来表示是否查询
 
@@ -52,7 +62,7 @@ QueryLargeColumnTestEntity queryLargeColumnTestEntity = new QueryLargeColumnTest
 queryLargeColumnTestEntity.setId("123");
 long l = easyQuery.insertable(queryLargeColumnTestEntity).setSQLStrategy(SQLExecuteStrategyEnum.ONLY_NULL_COLUMNS).executeRows();
 
-//直插入null列
+//只插入null列
 ==> Preparing: INSERT INTO `query_large_column_test` (`name`,`content`) VALUES (?,?) 
 ==> Parameters: null(null),null(null)
 ```
@@ -122,7 +132,7 @@ long l = easyQuery.deletable(queryLargeColumnTestEntity).executeRows();
 
 QueryLargeColumnTestEntity queryLargeColumnTestEntity = new QueryLargeColumnTestEntity();
 queryLargeColumnTestEntity.setId("123");
-long l = easyQuery.deletable(queryLargeColumnTestEntity).allowDeleteCommand(true).executeRows();
+long l = easyQuery.deletable(queryLargeColumnTestEntity).allowDeleteStatement(true).executeRows();
 
 //允许删除命令
 ==> Preparing: DELETE FROM `query_large_column_test` WHERE `id` = ?
