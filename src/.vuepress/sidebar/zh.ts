@@ -11,7 +11,7 @@ export const zhSidebar = sidebar({
         {
           text: "基础操作",
           prefix: "basic/",
-          children: ["readme.md","behavior","sharding-behavior","logging","insert","update","delete","performance"],
+          children: ["readme.md","behavior","sharding-behavior","logging","performance","insert","update","delete","value-converter"],
         },
         {
           text: "查询",
