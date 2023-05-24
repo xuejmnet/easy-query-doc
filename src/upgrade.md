@@ -8,7 +8,10 @@ title: 更新日志
 - ❌移除
 - ⬆️升级
 # 更新日志
-## 0.9.1(当前版本)
+
+## 0.9.2(当前版本)
+- 🔃调整EasyQueryNotFoundException调整为EasyQueryFirstOrNotNullException
+## 0.9.1
 - 🔃调整将原先聚合函数设置别名api改成xxxAs
 - 🔃调整检查spring事务是否已经开启兼容防止嵌套事务,检查spring事务在链接完成后关闭检测是否重复开启事务
 - 🔃调整框架默认maxShardingRouteCount:128,springboot下executorQueueSize：1024
