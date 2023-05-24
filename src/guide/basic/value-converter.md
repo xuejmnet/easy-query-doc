@@ -14,6 +14,14 @@ title: 对象数据库值转换
 接口  | 功能  
 ---  | --- 
 ValueConverter  | 将数据库和对象值进行互相转换的接口
+\<TProperty>  | 对象属性类型
+\<TProvider>  | 数据库对应的java类型
+
+
+方法  | 功能  
+---  | --- 
+serialize  | 将实体对象转成数据库值
+deserialize  | 将数据库的值转成对象值
 ## springboot
 `@Component`将对应的`ValueConverter`注入即可
 ## 控制台
@@ -210,7 +218,7 @@ topicType1.setStars(123);
 TopicTypeJsonValue topicTypeJsonValue = new TopicTypeJsonValue();
 topicTypeJsonValue.setName("123");
 topicTypeJsonValue.setAge(456);
-topicType1.setTitle(topicTypeJsonValue);
+topicType1.setTitle(topicTypeJsonValue);//直接插入对象实体
 topicType1.setTopicType(TopicTypeEnum.CLASSER.getCode());
 topicType1.setCreateTime(LocalDateTime.now());
 long l = easyQuery.insertable(topicType1).executeRows();
