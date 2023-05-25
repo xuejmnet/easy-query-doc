@@ -74,7 +74,7 @@ long rows = easyQuery.insertable(topics).executeRows();
 <== Total: 10
 ```
 
-## 3,链式添加
+## 3.链式添加
 ```java
 long rows = easyQuery.insertable(topics.get(0)).insert(topics.get(1)).executeRows();
 //返回结果rows为2
@@ -84,4 +84,64 @@ long rows = easyQuery.insertable(topics.get(0)).insert(topics.get(1)).executeRow
 ==> Parameters: 0(String),100(Integer),标题0(String),2023-03-16T21:42:12.542(LocalDateTime)
 ==> Parameters: 1(String),101(Integer),标题1(String),2023-03-17T21:42:12.542(LocalDateTime)
 <== Total: 2
+```
+
+## 4.自增主键回填
+很多时候我们设置id自增那么需要在插入的时候回填对应的主键自增信息所以`easy-query`也提供了该功能,并且很方便的使用
+```java
+@Data
+@Table("t_topic_auto")
+public class TopicAuto {
+
+    @Column(primaryKey = true,increment = true)//设置主键为自增
+    private Integer id;
+    private Integer stars;
+    private String title;
+    private LocalDateTime createTime;
+}
+
+
+TopicAuto topicAuto = new TopicAuto();
+topicAuto.setStars(999);
+topicAuto.setTitle("title" + 999);
+topicAuto.setCreateTime(LocalDateTime.now().plusDays(99));
+Assert.assertNull(topicAuto.getId());
+long l = easyQuery.insertable(topicAuto).executeRows(true);
+Assert.assertEquals(1,l);
+Assert.assertNotNull(topicAuto.getId());
+```
+```sql
+==> Preparing: INSERT INTO `t_topic_auto` (`stars`,`title`,`create_time`) VALUES (?,?,?)
+==> Parameters: 999(Integer),title999(String),2023-08-31T16:36:06.552(LocalDateTime)
+<== Total: 1
+```
+
+## 5.策略新增
+
+`insertStrategy`表示sql的执行策略,`insert`命令默认采用`SQLExecuteStrategyEnum.ONLY_NOT_NULL_COLUMNS`就是说默认生成的sql如果对象属性为null就不生成insert列。
+```java
+QueryLargeColumnTestEntity queryLargeColumnTestEntity = new QueryLargeColumnTestEntity();
+queryLargeColumnTestEntity.setId("123");
+long l = easyQuery.insertable(queryLargeColumnTestEntity).executeRows();
+//默认not null列插入所以只会生成一列
+==> Preparing: INSERT INTO `query_large_column_test` (`id`) VALUES (?) 
+==> Parameters: 123(String)
+
+
+QueryLargeColumnTestEntity queryLargeColumnTestEntity = new QueryLargeColumnTestEntity();
+queryLargeColumnTestEntity.setId("123");
+long l = easyQuery.insertable(queryLargeColumnTestEntity).setSQLStrategy(SQLExecuteStrategyEnum.ALL_COLUMNS).executeRows();
+//所有列都插入
+==> Preparing: INSERT INTO `query_large_column_test` (`id`,`name`,`content`) VALUES (?,?,?) 
+==> Parameters: 123(String),null(null),null(null)
+
+
+
+QueryLargeColumnTestEntity queryLargeColumnTestEntity = new QueryLargeColumnTestEntity();
+queryLargeColumnTestEntity.setId("123");
+long l = easyQuery.insertable(queryLargeColumnTestEntity).setSQLStrategy(SQLExecuteStrategyEnum.ONLY_NULL_COLUMNS).executeRows();
+
+//只插入null列
+==> Preparing: INSERT INTO `query_large_column_test` (`name`,`content`) VALUES (?,?) 
+==> Parameters: null(null),null(null)
 ```
