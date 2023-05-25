@@ -195,8 +195,31 @@ TestUserMysql0 testUserMysql = easyQuery.queryable(TestUserMysql0.class)
 return testUserMysql;
 }
 ```
+## 4.指定列更新或条件
+在对象更新的情况下可以选择对应的列进行set或者进行where
+```java
 
-## 4.策略更新
+Topic topic = easyQuery.queryable(Topic.class).whereById("15").firstOrNull();
+Assert.assertNotNull(topic);
+long rows4 = easyQuery.updatable(topic)
+        .setColumns(o->o.column(Topic::getCreateTime))
+        .whereColumns(o->o.column(Topic::getStars)).executeRows();
+Assert.assertEquals(1, rows4);
+
+```
+
+```sql
+
+==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM `t_topic` t WHERE t.`id` = ? LIMIT 1
+==> Parameters: 15(String)
+<== Time Elapsed: 3(ms)
+<== Total: 1
+==> Preparing: UPDATE `t_topic` SET `create_time` = ? WHERE `stars` = ?
+==> Parameters: 2023-06-08T10:48:05(LocalDateTime),115(Integer)
+<== Total: 1
+```
+
+## 5.策略更新
 只更新null列到数据库
 ```java
  Topic topic = easyQuery.queryable(Topic.class)
@@ -225,7 +248,7 @@ long l1 = easyQuery.updatable(topic)
 <== Total: 1
 ```
 
-## 5.注意
+## 6.注意
 更新优先级顺序
 
 手动指定 > 策略 > 追踪 > 全量更新

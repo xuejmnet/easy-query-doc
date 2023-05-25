@@ -6,12 +6,45 @@ title: 默认行为配置
 
 
 ## 默认行为
-方法  | sql | 描述  
+方法  | 默认值 | 描述  
 --- | --- | --- 
 select | `queryLargeColumn`:`true`  | 默认查询返回`@Column(large=true)`
-insert | `SQLExecuteStrategyEnum.ONLY_NOT_NULL_COLUMNS`  | 默认生成语句不包含null列
+insert | `SQLExecuteStrategyEnum.ONLY_NOT_NULL_COLUMNS`  | 默认生成语句不包含null列 0.8.14+有效
 update | `SQLExecuteStrategyEnum.ALL_COLUMNS`  | 默认更新所有列包括null和非null
 delete | `allowDeleteStatement`:`false`  | 默认执行物理删除会报错
+
+
+## 配置
+
+
+
+::: code-tabs
+@tab SpringBoot
+```yml
+easy-query:
+  enable: true
+  insert-strategy: only_not_null_columns
+  update-strategy: all_columns
+  delete-throw: true
+  query-large-column: true
+```
+@tab 控制台
+```java
+
+easyQuery = EasyQueryBootstrapper.defaultBuilderConfiguration()
+        .setDefaultDataSource(dataSource)
+        .optionConfigure(op->{
+            op.setDeleteThrowError(true);
+            op.setInsertStrategy(SQLExecuteStrategyEnum.ONLY_NOT_NULL_COLUMNS);
+            op.setUpdateStrategy(SQLExecuteStrategyEnum.ALL_COLUMNS);
+            op.setQueryLargeColumn(true);
+        })
+        .useDatabaseConfigure(new MySQLDatabaseConfiguration())
+        .build();
+```
+:::
+
+
 
 ## select
 `queryLargeColumn`表示是否查询出对应的表示为`@Column(large=true)`的字段,默认`true`表示查询,如果设置为false则需要手动指定对应列,可以通过调用api接口`queryLargeColumn(boolean)`传入对应的值来表示是否查询

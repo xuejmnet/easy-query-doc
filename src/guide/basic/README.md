@@ -49,6 +49,13 @@ private EasyQuery easyQuery;
     <artifactId>sql-core</artifactId>
     <version>${easy-query.version}</version>
 </dependency>
+<!--  这边以mysql为例 其实不需要添加下面的包也可以运行,指示默认的个别数据库行为语句没办法生成 -->
+<dependency>
+    <groupId>com.easy-query</groupId>
+    <artifactId>sql-mysql</artifactId>
+    <version>${easy-query.version}</version>
+    <scope>compile</scope>
+</dependency>
  EasyQuery easyQuery = EasyQueryBootstrapper.defaultBuilderConfiguration()
  .setDataSource(dataSource)
  .useDatabaseConfigure(new MySQLDatabaseConfiguration())

@@ -5,14 +5,28 @@ order: 40
 
 # 删除
 `EasyQuery`提供了内置物理删除和逻辑删除,默认`EasyQuery`不支持`delete`命令 需要开启允许或者使用delete语句的时候允许。
-```java
-    public EasQueryConfiguration() {
-       this(true);
-    }
-    public EasQueryConfiguration(boolean deleteThrowError) {
-        this.deleteThrowError=deleteThrowError;
-    }
+
+
+::: code-tabs
+@tab SpringBoot
+```yml
+easy-query:
+  enable: true
+  delete-throw: true
 ```
+@tab 控制台
+```java
+
+easyQuery = EasyQueryBootstrapper.defaultBuilderConfiguration()
+        .setDefaultDataSource(dataSource)
+        .optionConfigure(op->{
+            op.setDeleteThrowError(true);
+        })
+        .useDatabaseConfigure(new MySQLDatabaseConfiguration())
+        .build();
+```
+:::
+
 创建`EasyQuery`配置项的时候可以通过构造函数开启允许删除，默认不允许调用删除功能
 
 
