@@ -28,7 +28,7 @@ public class TopicSubQueryBlog {
 
 ```java
 
-Queryable<BlogEntity> queryable = easyQuery.queryable(BlogEntity.class,"x");
+Queryable<BlogEntity> queryable = easyQuery.queryable(BlogEntity.class);
 List<TopicSubQueryBlog> list = easyQuery
         .queryable(Topic.class)
         .where(t -> t.isNotNull(Topic::getTitle))
@@ -39,19 +39,17 @@ List<TopicSubQueryBlog> list = easyQuery
 
 ```sql
 
-==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time`,(SELECT COUNT(x.`id`) AS `id` FROM `t_blog` x WHERE x.`deleted` = ? AND x.`id` = t.`id`) AS `blog_count` FROM `t_topic` t WHERE t.`title` IS NOT NULL
+==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time`,(SELECT COUNT(t1.`id`) AS `id` FROM `t_blog` t1 WHERE t1.`deleted` = ? AND t1.`id` = t.`id`) AS `blog_count` FROM `t_topic` t WHERE t.`title` IS NOT NULL
 ==> Parameters: false(Boolean)
 <== Time Elapsed: 4(ms)
 <== Total: 99
 ```
 
-需要注意的是子查询匿名表需要自定义请不要和默认主表一致以免条件出现相同的情况`easyQuery.queryable(BlogEntity.class,"x");`指定为x
-
 
 ## sum连表统计
 ```java
 
-Queryable<BlogEntity> queryable = easyQuery.queryable(BlogEntity.class,"x");
+Queryable<BlogEntity> queryable = easyQuery.queryable(BlogEntity.class);
 List<TopicSubQueryBlog> list = easyQuery
         .queryable(Topic.class)
         .where(t -> t.isNotNull(Topic::getTitle))
@@ -60,7 +58,7 @@ List<TopicSubQueryBlog> list = easyQuery
         }, TopicSubQueryBlog::getBlogCount)).toList();
 ```
 ```sql
-==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time`,(SELECT SUM(x.`star`) AS `star` FROM `t_blog` x WHERE x.`deleted` = ? AND x.`id` = t.`id`) AS `blog_count` FROM `t_topic` t WHERE t.`title` IS NOT NULL
+==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time`,(SELECT SUM(t1.`star`) AS `star` FROM `t_blog` t1 WHERE t1.`deleted` = ? AND t1.`id` = t.`id`) AS `blog_count` FROM `t_topic` t WHERE t.`title` IS NOT NULL
 ==> Parameters: false(Boolean)
 <== Time Elapsed: 14(ms)
 <== Total: 99
