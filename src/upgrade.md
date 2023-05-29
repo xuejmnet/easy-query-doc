@@ -8,7 +8,9 @@ title: 更新日志
 - ❌移除
 - ⬆️升级
 # 更新日志
-## 0.9.9(当前版本)
+## 0.9.10(当前版本)
+- ⬆️优化多线程死锁限制,优化读写分离获取链接限制，添加getconnection的超时时间单独限制mergepoolsize
+## 0.9.9
 - ⬆️优化多线程死锁限制,优化读写分离获取链接限制，添加getconnection的超时时间
 - ⬆️优化单个connection的获取,添加getconnection busy的提示,针对track支持复杂类型
 
