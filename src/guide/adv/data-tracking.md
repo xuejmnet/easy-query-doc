@@ -5,6 +5,7 @@ order: 40
 
 # 数据追踪
 `easy-query`提供了数据追踪功能,对于对象更新方法提供了数据追踪,保证对象更新时的差异更新而不是全量更新。**默认需要自行开启**
+如果存在复杂对象通过`ValueConverter`转换的需要实现重写`hashcode`和`equals`
 
 ## spring-boot
 如何开启数据追踪
