@@ -18,7 +18,7 @@ UpdateSetInterceptor | 更新列拦截器  | 用户在更新update表达式的�
 方法  | 默认值/实现 | 描述  
 --- | --- | --- 
 order | 100  | 用于对拦截器进行顺序排序执行
-defaultEnable | true  | 是否默认添加到表达式中,true:默认添加,false:需要调用`useInteceptor(name)`使用
+enable | true  | 是否默认添加到表达式中,true:默认添加,false:不添加可以通过`ThreadLocal`动态设置
 name | 无  | 拦截器名称需要自己实现,默认可以使用类名
 apply | 哪些对象允许采用当前拦截器  | 默认可以才用是否为某个接口的实现`Interface.class.isAssignableFrom(entityClass);`
 
@@ -407,4 +407,4 @@ long l4 = easyQuery.deletable(topicInterceptor2).executeRows();
 
 ## 按需拦截
 比如我们现在有这么一个需求因为部分接口需要针对测试数据进行移除,不希望统计到程序里面所以可以针对部分情况进行按需拦截
-可以新建一个表达式拦截器`PredicateFilterInterceptor`,然后默认将defaultEnable改成`false`需要时自行添加条件通过`useInteceptor(name)`
+可以新建一个表达式拦截器`PredicateFilterInterceptor`,然后默认将enable改成`false`需要时自行添加条件通过`useInteceptor(name)`
