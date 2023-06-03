@@ -208,6 +208,7 @@ public class TopicTypeJson {
     private LocalDateTime createTime;
 }
 @Data
+@EqualsAndHashCode
 public class TopicTypeJsonValue {
     private String name;
     private Integer age;
