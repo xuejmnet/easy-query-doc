@@ -8,7 +8,7 @@ title: 默认行为配置
 ## 默认行为
 方法  | 默认值 | 描述  
 --- | --- | --- 
-select | `queryLargeColumn`:`true`  | 默认查询返回`@Column(large=true)`
+select | `queryLargeColumn`:`true`  | 默认查询返回`@Column(large=true)` 不建议在实体对象上使用因为会导致update的时候有可能null会被更新掉,当然可以设置忽略更新`@UpdateIgnore`除非手动指定更新也是可以的
 insert | `SQLExecuteStrategyEnum.ONLY_NOT_NULL_COLUMNS`  | 默认生成语句不包含null列 0.8.14+有效
 update | `SQLExecuteStrategyEnum.ALL_COLUMNS`  | 默认更新所有列包括null和非null
 delete | `allowDeleteStatement`:`false`  | 默认执行物理删除会报错
@@ -47,7 +47,7 @@ easyQuery = EasyQueryBootstrapper.defaultBuilderConfiguration()
 
 
 ## select
-`queryLargeColumn`表示是否查询出对应的表示为`@Column(large=true)`的字段,默认`true`表示查询,如果设置为false则需要手动指定对应列,可以通过调用api接口`queryLargeColumn(boolean)`传入对应的值来表示是否查询
+`queryLargeColumn`表示是否查询出对应的表示为`@Column(large=true)`的字段,默认`true`表示查询,如果设置为false则需要手动指定对应列,可以通过调用api接口`queryLargeColumn(boolean)`传入对应的值来表示是否查询,建议和`@UpdateIgnore`如果你需要不返回的话,不然有可能导致更新策略为`AllColumn`的时候把这个字段更新为null,当然因为`easy-query`支持VO查询所以只需要查询结果中没有这个字段或者`@ColumnIgnore`
 
 ```java
 @Data
@@ -62,12 +62,12 @@ public class QueryLargeColumnTestEntity {
 
 //默认会被查询
 String sql = easyQuery.queryable(QueryLargeColumnTestEntity.class).toSQL();
-//SELECT t.`id`,t.`name`,t.`content` FROM `query_large_column_test` t
+//SELECT `id`,`name`,`content` FROM `query_large_column_test`
 
 
 //设置不查询
 String sql = easyQuery.queryable(QueryLargeColumnTestEntity.class).queryLargeColumn(false).toSQL();
-//SELECT t.`id`,t.`name` FROM `query_large_column_test` t
+//SELECT `id`,`name` FROM `query_large_column_test`
 ```
 
 
