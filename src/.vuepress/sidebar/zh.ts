@@ -11,7 +11,7 @@ export const zhSidebar = sidebar({
         {
           text: "基础操作",
           prefix: "basic/",
-          children: ["readme.md","behavior","sharding-behavior","logging","performance","insert","update","delete","transaction","value-converter"],
+          children: ["readme.md","config-kotlin.md","behavior","sharding-behavior","logging","performance","insert","update","delete","transaction","value-converter"],
         },
         {
           text: "查询",
@@ -21,7 +21,7 @@ export const zhSidebar = sidebar({
         {
           text: "高级",
           prefix: "adv/",
-          children: ["readme.md","logic-delete","interceptor","column-encryption","data-tracking","version"],
+          children: ["readme.md","logic-delete","interceptor","column-encryption","data-tracking","version","column-func","atomic-update"],
         },
         {
           text: "超级",

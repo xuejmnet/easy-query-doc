@@ -35,37 +35,37 @@ features:
     # link: https://theme-hope.vuejs.press/zh/guide/layout/
 
   - title: 多语言
-    icon: async
+    icon: language
     details: 支持java、kotlin两种语言,并且提供了两种语言相似的api，维护同一套内部接口保证两边api仅仅是针对核心功能的扩展
 
 
   - title: 强类型
-    icon: async
+    icon: structure
     details: 对象属性lambda查询,在java和kotlin下发挥强类型语言该有的优势,针对后续的维护非常方便,用户可以完全感知开发时的错误
 
   - title: 分库分表
-    icon: async
+    icon: condition
     details: 一款自带分库分表读写分离的orm,拥有和市面上大部分分库分表框架抗衡的能力,并且抽象了业务逻辑可以让用户完全自定义自己的业务逻辑来实现
 
   - title: 列加密
-    icon: async
+    icon: lock
     details: 自带数据库列加密,并且支持模糊查询实现高性能而不是单纯的数据库函数调用,并且用户可以自定义自己的加密函数
 
   - title: VO查询
-    icon: async
+    icon: search
     details: 框架让VO的能得到了进一步的提升,而不是单纯的数据交换对象,用户可以针对VO的字段进行自动化列选择查询,并且支持自定义VO对象让其更加丰富
 
   - title: 差异更新
-    icon: async
+    icon: change
     details: 市面上基本上大部分java orm仅支持全量更新或者null列非null列更新,而不支持差异更新,框架提供差异更新追踪数据变化情况,提高更新sql的强壮性
 
 
   - title: 原子列更新
-    icon: async
+    icon: react
     details: 实体对象更新如updateById是一个用户方便但是无差别更新的方法,但是框架提供了差异更新让其上升到了一个纬度并且在没有乐观锁的情况下支持库存数量级别的原子更新
 
   - title: 值转换
-    icon: async
+    icon: style
     details: 框架提供对象值转换不仅仅是数据库值到枚举还支持数据库值到json对象等一系列自定义处理,并且可以配合加密列进行完美处理
     
 copyright: false
