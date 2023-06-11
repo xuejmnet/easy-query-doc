@@ -1,8 +1,8 @@
 {
   "name": "easy-query-doc",
   "version": "1.0.0",
-  "description": "A project of vuepress-theme-hope",
-  "license": "MIT",
+  "description": "easy-query-doc",
+  "license": "Apache-2.0",
   "type": "module",
   "scripts": {
     "docs:build": "vuepress build src",
