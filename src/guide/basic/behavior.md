@@ -12,6 +12,9 @@ select | `queryLargeColumn`:`true`  | 默认查询返回`@Column(large=true)` �
 insert | `SQLExecuteStrategyEnum.ONLY_NOT_NULL_COLUMNS`  | 默认生成语句不包含null列 0.8.14+有效
 update | `SQLExecuteStrategyEnum.ALL_COLUMNS`  | 默认更新所有列包括null和非null
 delete | `allowDeleteStatement`:`false`  | 默认执行物理删除会报错
+insertBatchThreshold | 512  | 如果insertable一次性添加对象集合大于等于512个那么会对其进行相同sql进行合并提高执行效率
+updateBatchThreshold | 512  | 如果updatable一次性添加对象集合大于等于512个那么会对其进行相同sql进行合并提高执行效率
+
 
 
 ## 配置

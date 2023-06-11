@@ -16,6 +16,24 @@ order: 10
     <version>${easy-query.version}</version>
 </dependency>
 ```
+```yml
+#配置文件
+easy-query:
+  enable: true
+  database: mysql
+  name-conversion: underlined
+  delete-throw: true
+  print-sql: true
+```
+```java
+//依赖注入
+@Autowired
+private EasyQueryClient easyQueryClient;//通过字符串属性方式来实现查询
+
+//推荐
+@Autowired
+private EasyQuery easyQuery;//对EasyQueryClient的增强通过lambda方式实现查询(推荐)
+```
 
 ## 获取最新
 
@@ -23,7 +41,7 @@ order: 10
 
 
 
-## spring-boot初始化
+## 非spring-boot初始化
 ```xml
 
 <properties>
@@ -40,7 +58,6 @@ order: 10
     <groupId>com.easy-query</groupId>
     <artifactId>sql-mysql</artifactId>
     <version>${easy-query.version}</version>
-    <scope>compile</scope>
 </dependency>
 ```
 ```java
