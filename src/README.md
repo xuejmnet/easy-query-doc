@@ -19,9 +19,9 @@ features:
     details: 核心包无任何依赖,没有历史包袱,全部自行实现
     # link: https://theme-hope.vuejs.press/zh/guide/markdown/
 
-  - title: 零拷贝
+  - title: 零调用
     icon: copy
-    details: 使用lambda表达式缓存实现bean对象的”零“拷贝赋值和获取值,而不是低效的反射
+    details: 使用lambda表达式缓存实现bean对象的”零“调用耗时赋值和获取值,而不是普通的高频反射
     # link: https://theme-hope.vuejs.press/zh/guide/layout/
 
   - title: 零SQL
