@@ -17,7 +17,6 @@ updateBatchThreshold | 512  | 如果updatable一次性添加对象集合大于�
 logClass | -  | `spring-boot`下默认是`com.easy.query.sql.starter.logging.Slf4jImpl`实现如果你是非`spring-boot`可以自行实现或者使用控制台日志`LogFactory.useStdOutLogging()`
 queryLargeColumn | `true`  | 默认依然查询被标记为`@Column`下`large`的列，如果需要不查询建议在设置为`large`的前提下将对应列设置为`@UpdateIgnore`防止在全列更新后导致未查询结果也被更新为null
 printSql | `true`  | 是否打印执行sql,这个和log不一样,因为考虑到有时候可能需要查看sql而不是将log输出,所以如歌设置为true,那么执行的sql和执行的结果将会以`log.info()`被记录到日志里面,如果您没有设置log那么一样看不到对应的执行sql
-beanCallerType | `lambda`  | 默认采用lambda表达式来实现get和set方法,当然用户也可以自定义选择`reflect`反射方式来实现,`lambda`在性能上基本上可以匹敌原生硬编码相较于反射有更好的性能
 
 ## 分表分库特有配置
 
