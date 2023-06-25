@@ -52,6 +52,10 @@ private EasyQueryClient easyQueryClient;//通过字符串属性方式来实现�
 //推荐
 @Autowired
 private EasyKtQuery easyKtQuery;//对EasyQueryClient的增强通过lambda方式实现查询(推荐)
+
+//推荐
+@Autowired
+private EasyProxyQuery easyProxyQuery;//对EasyQueryClient的增强通过apt代理模式实现强类型(推荐)
 ```
 
 ## 非spring-boot初始化
@@ -60,6 +64,12 @@ private EasyKtQuery easyKtQuery;//对EasyQueryClient的增强通过lambda方式�
 <properties>
     <easy-query.version>last-version</easy-query.version>
 </properties>
+<!--  提供了代理模式支持apt模式以非lambda形式的强类型sql语法 -->
+<dependency>
+    <groupId>com.easy-query</groupId>
+    <artifactId>sql-api-proxy</artifactId>
+    <version>${easy-query.version}</version>
+</dependency>
 <!--  提供了以kotlin语法强类型,如果不引用也可以使用只是无法使用lambda表达式来表示属性只能用字符串 -->
 <dependency>
     <groupId>com.easy-query</groupId>
@@ -81,4 +91,6 @@ private EasyKtQuery easyKtQuery;//对EasyQueryClient的增强通过lambda方式�
                 .build();
 //强类型api
  EasyKtQuery easyKtQuery = new DefaultEasyKtQuery(easyQueryClient);
+//强类型api
+ EasyProxyuery easyProxyQuery = new DefaultEasyProxyQuery(easyQueryClient);
 ```

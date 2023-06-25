@@ -4,7 +4,7 @@ order: 5
 ---
 
 # 打印sql日志
-`easy-query`默认适配slf4j日志接口,如果需要打印执行sql可以进行如下配置
+`easy-query`默认适配slf4j日志接口,如果您有自定义日志接口可以通过自行实现
 
 
 
@@ -96,7 +96,8 @@ easy-query:
   name-conversion: underlined
   database: mysql
   #主要是这边需要配置日志
-  log-class: com.easyquery.springbootdemo.logging.MySysOutLogImpl
+  log-class: com.easyquery.springbootdemo.logging.
+  print-sql: true
 ```
 @tab 控制台配置
 ```java
