@@ -34,7 +34,7 @@ List<TopicSubQueryBlog> list = easyQuery
         .where(t -> t.isNotNull(Topic::getTitle))
         .select(TopicSubQueryBlog.class, o -> o.columnAll().columnSubQueryAs(t->{
             return queryable.where(x -> x.eq(t, BlogEntity::getId, Topic::getId)).select(Long.class, x->x.columnCount(BlogEntity::getId));
-        }, TopicSubQueryBlog::getBlogCount))select.toList();
+        }, TopicSubQueryBlog::getBlogCount))toList();
 ```
 
 ```sql
