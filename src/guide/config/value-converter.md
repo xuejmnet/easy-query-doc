@@ -183,6 +183,9 @@ TopicTypeVO topicTypeVO = easyQuery.queryable(TopicType.class)
 TopicTypeVO(id=123, stars=123, title=title123, topicType1=TEACHER, createTime=2023-05-23T22:16:45)
 ```
 ## json对象
+::: warning 注意
+> 因为update会使用track追踪模式更新所以这边json对象必须要重写`equals`和`hashcode`
+:::
 
 首先我们引入fastjson2
 ```xml
@@ -192,6 +195,7 @@ TopicTypeVO(id=123, stars=123, title=title123, topicType1=TEACHER, createTime=20
     <version>2.0.26</version>
 </dependency>
 ```
+
 ```java
 
 @Data
@@ -248,5 +252,4 @@ TopicTypeJson(id=1231, stars=123, title=TopicTypeJsonValue(name=123, age=456), t
 ```
 
 这样我们就实现了对应的值类型转换和枚举的转换
-
 
