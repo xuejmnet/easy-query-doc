@@ -11,7 +11,7 @@ export const zhSidebar = sidebar({
         {
           text: "基础操作",
           prefix: "basic/",
-          children: ["readme.md","config-kotlin.md","config-option","logging","performance","insert","update","delete","transaction","value-converter"],
+          children: ["readme.md","config-kotlin.md","config-option","logging","performance","proxy-starter","insert","update","delete","transaction","value-converter"],
         },
         {
           text: "查询",
