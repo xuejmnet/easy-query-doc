@@ -65,11 +65,15 @@ public class Topic {
     private LocalDateTime createTime;
 }
 ```
-idea 工具栏点击build => build project进行生成
 
-会在target包下的xgenerated-sources下生成`TopicProxy.java`类
-如果idea无法智能提示那么就刷新一下maven
 
+::: tip 说明!!!
+> idea 工具栏点击build => build project进行生成
+
+> 会在target包下的xgenerated-sources下生成`TopicProxy.java`类
+
+> 如果idea无法智能提示那么就刷新一下maven
+:::
 ### 初始化代码
 ```java
 

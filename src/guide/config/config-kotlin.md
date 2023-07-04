@@ -59,6 +59,10 @@ private EasyProxyQuery easyProxyQuery;//对EasyQueryClient的增强通过apt代�
 ```
 
 ## 非spring-boot初始化
+
+::: tip 说明!!!
+> 使用代理模式的话非springboot环境必须要安装`sql-api-proxy`和`sql-processor`,springboot环境`starter`已经包含了
+:::
 ```xml
 
 <properties>
@@ -68,6 +72,12 @@ private EasyProxyQuery easyProxyQuery;//对EasyQueryClient的增强通过apt代�
 <dependency>
     <groupId>com.easy-query</groupId>
     <artifactId>sql-api-proxy</artifactId>
+    <version>${easy-query.version}</version>
+</dependency>
+<!--  提供了apt自动生成代理对象 -->
+<dependency>
+    <groupId>com.easy-query</groupId>
+    <artifactId>sql-processor</artifactId>
     <version>${easy-query.version}</version>
 </dependency>
 <!--  提供了以kotlin语法强类型,如果不引用也可以使用只是无法使用lambda表达式来表示属性只能用字符串 -->
