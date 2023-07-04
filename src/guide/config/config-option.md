@@ -34,8 +34,31 @@ throwIfRouteNotMatch | `true`  | 当查询没有匹配到路由是否选择报�
 executorMaximumPoolSize | `0`  | 分片聚合最大线程数,默认为0将使用`Executors.newCachedThreadPool`线程池,如果需要设置或者自定义请设置为最小maxShardingQueryLimit*分片数目,设置值后将使用有界队列线程池
 executorCorePoolSize | `Math.min(Runtime.getRuntime().availableProcessors(), 4)`  | 仅`executorMaximumPoolSize`>0时生效
 executorQueueSize | `1024`  | 仅`executorMaximumPoolSize`>0时生效，线程池有界队列大小
+startTimeJob| `false` | 当使用系统默认的按时间分片时设置这个配置为`true`那么框架会在内存中添加对应的系统表,原理就是开启一个定时任务线程去执行
 
 ## spring-boot
+通过配置文件可以直接配置上述选项
+```yml
 
+easy-query:
+  enable: true
+  name-conversion: underlined
+  database: mysql
+  default-data-source-merge-pool-size: 60
+  default-data-source-name: ds0
+  ......
+```
 
 ## 非spring-boot
+```java
+ EasyQueryClient easyQueryClient = EasyQueryBootstrapper.defaultBuilderConfiguration()
+                .setDefaultDataSource(dataSource)
+                .optionConfigure(op -> {
+                    op.setDeleteThrowError(true);//设置不允许物理删除
+                    op.setPrintSql(true);//设置以log.info模式打印执行sql信息
+                    ......//此处用于配置系统默认配置选项
+                })
+                .replaceService(NameConversion.class, UnderlinedNameConversion.class)//替换框架内部的属性和列转换模式改为大写转下划线
+                .useDatabaseConfigure(new MySQLDatabaseConfiguration())//设置方言语法等为mysql的
+                .build();
+```

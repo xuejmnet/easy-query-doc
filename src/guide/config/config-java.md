@@ -20,6 +20,12 @@ order: 10
     <artifactId>sql-api-proxy</artifactId>
     <version>${easy-query.version}</version>
 </dependency>
+<!--  提供了apt自动生成代理对象 -->
+<dependency>
+    <groupId>com.easy-query</groupId>
+    <artifactId>sql-processor</artifactId>
+    <version>${easy-query.version}</version>
+</dependency>
 <!--  这边以mysql为例 其实不需要添加下面的包也可以运行,指示默认的个别数据库行为语句没办法生成 -->
 <dependency>
     <groupId>com.easy-query</groupId>
@@ -174,6 +180,10 @@ private EasyProxyQuery easyProxyQuery;//对EasyQueryClient的增强通过apt代�
 
 
 ## 非spring-boot初始化
+
+::: tip 说明!!!
+> 使用代理模式的话非springboot环境必须要安装`sql-api-proxy`和`sql-processor`,springboot环境`starter`已经包含了
+:::
 ```xml
 
 <properties>
@@ -183,6 +193,12 @@ private EasyProxyQuery easyProxyQuery;//对EasyQueryClient的增强通过apt代�
 <dependency>
     <groupId>com.easy-query</groupId>
     <artifactId>sql-api-proxy</artifactId>
+    <version>${easy-query.version}</version>
+</dependency>
+<!--  提供了apt自动生成代理对象 -->
+<dependency>
+    <groupId>com.easy-query</groupId>
+    <artifactId>sql-processor</artifactId>
     <version>${easy-query.version}</version>
 </dependency>
 <!--  提供了以java语法强类型,如果不引用也可以使用只是无法使用lambda表达式来表示属性只能用字符串 -->
@@ -210,7 +226,7 @@ private EasyProxyQuery easyProxyQuery;//对EasyQueryClient的增强通过apt代�
  EasyProxyuery easyProxyQuery = new DefaultEasyProxyQuery(easyQueryClient);
 ```
 
-## 演示数据
+<!-- ## 演示数据
 
 ```java
 @Data
@@ -355,4 +371,4 @@ public class BlogEntityTest2 {
      */
     private Boolean top;
 }
-```
+``` -->
