@@ -102,11 +102,14 @@ long rows4 = easyQuery.updatable(Topic.class)
 
 
 ## 3.差异更新
+::: tip 说明!!!
+> 差异更新可以自动监听被追踪的对象,并且生成差异更新语句,而不是无脑的对对象进行全字段更新,使用时需要开启当前追踪环境并且对查询出来的结果进行追踪后续即可监听到变更列实现差异化update语句
+:::
 正常情况下如果用户想使用差异更新,那么需要对查询采用`asTracking`来让返回结果被追踪,或者调用`easyQuery.addTracking`来让需要更新的对象被追踪
 
-- <font color='red'>错误的用法!!!</font>
-- <font color='red'>错误的用法!!!</font>
-- <font color='red'>错误的用法!!!</font>
+::: danger 错误的用法!!!
+> 开启上下文追踪当时没有讲查询结果对象附加到当前上下文,所以框架无法追踪对象变更无法有效生成差异更新
+:::
 ```java
 TrackManager trackManager = easyQuery.getRuntimeContext().getTrackManager();
 try{
@@ -119,7 +122,6 @@ try{
         long rows=easyQuery.updatable(topic).executeRows();
 
 }finally {
-
         trackManager.release();
 }
 ```
@@ -129,7 +131,10 @@ try{
 <== Total: 1
 ```
 
-- 正确的写法!!!
+::: tip 正确的用法!!!
+> - 要注意是否开启了追踪`spring-boot`下用`@EasyQueryTrack`注解即可开启
+> - 是否将当前对象添加到了追踪上下文 查询添加`asTracking`或者 手动将查询出来的对象进行`easyQuery.addTracking(Object entity)`
+:::
 ```java
 TrackManager trackManager = easyQuery.getRuntimeContext().getTrackManager();
 try{
@@ -152,11 +157,9 @@ try{
 
 清晰的看到差异更新只会更新需要更新的列
 
-原因是正确的写法在开启追踪后查询使用了`.asTracking()`那么会让所有的结果集全部被追踪(如果查询数据量有几万或者几十万那么性能肯定会有影响)，
-被追踪的返回结果对象必须要满足是数据库实体才可以，如果附加实体的时候发现当前上下文已经有被追踪的实体，那么直接放弃当前查询出来的结果，直接使用被追踪的数据作为当前对象
-
-
-如果需要更新的列一个都没有，那么easy-query将不会生成update的sql语句并且返回0行，因为没有数据需要被修改
+::: warning 追踪注意点及说明!!!
+> 原因是正确的写法在开启追踪后查询使用了`.asTracking()`那么会让所有的结果集全部被追踪(如果查询数据量有几万或者几十万那么性能肯定会有影响)，被追踪的返回结果对象必须要满足是数据库实体才可以，如果附加实体的时候发现当前上下文已经有被追踪的实体，那么直接放弃当前查询出来的结果，直接使用被追踪的数据作为当前对象，如果需要更新的列一个都没有，那么easy-query将不会生成update的sql语句并且返回0行，因为没有数据需要被修改
+:::
 
 - 选择性追踪
 我们可能会有这样的需求这边需要查询出几百上万条数据，但是追踪更新只会涉及到1-2条，如果整个查询采用`.asTracking()`那么性能会相对低下，所以提供了额外的追踪方法

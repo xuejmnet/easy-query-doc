@@ -9,9 +9,14 @@ export const zhSidebar = sidebar({
       prefix: "guide/",
       children: [
         {
+          text: "配置",
+          prefix: "config/",
+          children: ["readme.md","dependency-injection","config-java","config-kotlin","config-option","logging","value-converter"],
+        },
+        {
           text: "基础操作",
           prefix: "basic/",
-          children: ["readme.md","config-kotlin.md","config-option","logging","performance","proxy-starter","insert","update","delete","transaction","value-converter"],
+          children: ["readme.md","performance","proxy-starter","insert","update","delete","transaction"],
         },
         {
           text: "查询",
