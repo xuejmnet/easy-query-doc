@@ -32,8 +32,8 @@ Queryable<BlogEntity> queryable = easyQuery.queryable(BlogEntity.class);
 List<TopicSubQueryBlog> list = easyQuery
         .queryable(Topic.class)
         .where(t -> t.isNotNull(Topic::getTitle))
-        .select(TopicSubQueryBlog.class, o -> o.columnAll().columnSubQueryAs(t->{
-            return queryable.where(x -> x.eq(t, BlogEntity::getId, Topic::getId)).select(Long.class, x->x.columnCount(BlogEntity::getId));
+        .select(TopicSubQueryBlog.class, o -> o.columnAll().columnSubQueryAs(()->{
+            return queryable.where(x -> x.eq(o, BlogEntity::getId, Topic::getId)).select(Long.class, x->x.columnCount(BlogEntity::getId));
         }, TopicSubQueryBlog::getBlogCount))toList();
 ```
 
@@ -53,8 +53,8 @@ Queryable<BlogEntity> queryable = easyQuery.queryable(BlogEntity.class);
 List<TopicSubQueryBlog> list = easyQuery
         .queryable(Topic.class)
         .where(t -> t.isNotNull(Topic::getTitle))
-        .select(TopicSubQueryBlog.class, o -> o.columnAll().columnSubQueryAs(t->{
-            return queryable.where(x -> x.eq(t, BlogEntity::getId, Topic::getId)).select(Long.class, x->x.columnSum(BlogEntity::getStar));
+        .select(TopicSubQueryBlog.class, o -> o.columnAll().columnSubQueryAs(()->{
+            return queryable.where(x -> x.eq(o, BlogEntity::getId, Topic::getId)).select(Long.class, x->x.columnSum(BlogEntity::getStar));
         }, TopicSubQueryBlog::getBlogCount)).toList();
 ```
 ```sql

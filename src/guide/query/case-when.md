@@ -3,7 +3,7 @@ title: CaseWhen
 ---
 
 
-# 连表统计
+# CaseWhen
 `easy-query`可以自定义实现`case when`,其中框架默认提供多种实现
 
 方法  | 描述 | 用法  
