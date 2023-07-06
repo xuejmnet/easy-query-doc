@@ -6,6 +6,57 @@ order: 70
 # 自定义列输出
 `easy-query`的`select`目前支持两种方式返回自定义列，一个是自己手动进行`select`的`column`一个是加入返回对象，返回对象被解析的`columnName`和sql的返回列名一致才会
 
+## java对象
+```java
+
+@Data
+public class BlogEntityTest2 {
+
+    /**
+     * 标题
+     */
+    private String title;
+    /**
+     * 内容
+     */
+    private String content;
+    /**
+     * 博客链接
+     */
+    @Column("my_url")
+    private String url;
+    /**
+     * 点赞数
+     */
+    private Integer star;
+    /**
+     * 发布时间
+     */
+    private LocalDateTime publishTime;
+    /**
+     * 评分
+     */
+    private BigDecimal score;
+    /**
+     * 状态
+     */
+    private Integer status;
+    /**
+     * 排序
+     */
+    private BigDecimal order;
+    /**
+     * 是否置顶
+     */
+    private Boolean isTop;
+    /**
+     * 是否置顶
+     */
+    private Boolean top;
+}
+```
+
+
 ## 输出指定列
 ```java
 List<BlogEntityTest2> blogEntityTest2s = easyQuery.queryable(BlogEntity.class)
