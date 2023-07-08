@@ -97,8 +97,34 @@ long l = easyQuery.deletable(topic).executeRows();
 
 ```java
 
-long l = easyQuery.deletable(Topic.class).whereById("999").allowDeleteCommand(false).executeRows();
+long l = easyQuery.deletable(Topic.class).whereById("999").allowDeleteStatement(false).executeRows();
 
 ```
 
 当前对象如果支持软删除那么在生成对应命令的时候会生成UPDATE语句来实现软删除，对于是否允许删除命令将不会生效，因为允许删除命令仅对当前sql生成为`DELETE`语句才会生效判断
+
+## 3.强制物理删除
+逻辑删除
+```java
+long l = easyQuery.deletable(BlogEntity.class)
+                    .where(o->o.eq(BlogEntity::getId,"id123456"))
+                    .executeRows();
+
+==> Preparing: UPDATE `t_blog` SET `deleted` = ? WHERE `deleted` = ? AND `id` = ?
+==> Parameters: true(Boolean),false(Boolean),id123456(String)
+<== Total: 0
+```
+
+
+物理删除
+```java
+long l = easyQuery.deletable(BlogEntity.class)
+                    .where(o->o.eq(BlogEntity::getId,"id123456"))
+                    .disableLogicDelete()//禁用物理删除 生成delete语句
+                    .allowDeleteStatement(true)//如果不允许物理删除那么设置允许
+                    .executeRows();
+
+==> Preparing: DELETE FROM `t_blog` WHERE `id` = ?
+==> Parameters: id123456(String)
+<== Total: 0
+```
