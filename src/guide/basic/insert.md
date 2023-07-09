@@ -146,6 +146,7 @@ long l = easyQuery.insertable(queryLargeColumnTestEntity).setSQLStrategy(SQLExec
 ==> Parameters: null(null),null(null)
 ```
 
+
 ## 6.MySQL方言
 ## onDuplicateKeyIgnore
 插入时如果主键或者唯一索引存在就忽略插入
