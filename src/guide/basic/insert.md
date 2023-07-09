@@ -145,3 +145,115 @@ long l = easyQuery.insertable(queryLargeColumnTestEntity).setSQLStrategy(SQLExec
 ==> Preparing: INSERT INTO `query_large_column_test` (`name`,`content`) VALUES (?,?) 
 ==> Parameters: null(null),null(null)
 ```
+
+## 6.MySQL方言
+## onDuplicateKeyIgnore
+插入时如果主键或者唯一索引存在就忽略插入
+```java
+String indexStr = "200";
+BlogEntity blog = new BlogEntity();
+blog.setId(indexStr);
+blog.setCreateBy(indexStr);
+blog.setCreateTime(begin.plusDays(1));
+blog.setUpdateBy(indexStr);
+blog.setUpdateTime(begin.plusDays(1));
+blog.setTitle("title" + indexStr);
+blog.setContent("content" + indexStr);
+blog.setUrl("http://blog.easy-query.com/" + indexStr);
+blog.setStar(1);
+blog.setScore(new BigDecimal("1.2"));
+blog.setStatus(1);
+blog.setOrder(new BigDecimal("1.2").multiply(BigDecimal.valueOf(1)));
+blog.setIsTop(false);
+blog.setTop(false);
+blog.setDeleted(false);
+easyQuery.insertable(blog)
+                .onDuplicateKeyIgnore()
+                .executeRows();
+
+==> Preparing: INSERT IGNORE INTO `t_blog` (`id`,`create_time`,`update_time`,`create_by`,`update_by`,`deleted`,`title`,`content`,`url`,`star`,`score`,`status`,`order`,`is_top`,`top`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+==> Parameters: 200(String),2000-01-02T01:01:01(LocalDateTime),2000-01-02T01:01:01(LocalDateTime),200(String),200(String),false(Boolean),title200(String),content200(String),http://blog.easy-query.com/200(String),1(Integer),1.2(BigDecimal),1(Integer),1.2(BigDecimal),false(Boolean),false(Boolean)
+<== Total: 0
+```
+
+## onDuplicateKeyUpdate
+支持指定set列
+```java
+String indexStr = "200";
+BlogEntity blog = new BlogEntity();
+blog.setId(indexStr);
+blog.setCreateBy(indexStr);
+blog.setCreateTime(begin.plusDays(1));
+blog.setUpdateBy(indexStr);
+blog.setUpdateTime(begin.plusDays(1));
+blog.setTitle("title" + indexStr);
+blog.setContent("content" + indexStr);
+blog.setUrl("http://blog.easy-query.com/" + indexStr);
+blog.setStar(1);
+blog.setScore(new BigDecimal("1.2"));
+blog.setStatus(1);
+blog.setOrder(new BigDecimal("1.2").multiply(BigDecimal.valueOf(1)));
+blog.setIsTop(false);
+blog.setTop(false);
+blog.setDeleted(false);
+
+easyQuery.insertable(blog)
+                .onDuplicateKeyUpdate()
+                .executeRows();//插入成功返回1
+
+
+==> Preparing: INSERT INTO `t_blog` (`id`,`create_time`,`update_time`,`create_by`,`update_by`,`deleted`,`title`,`content`,`url`,`star`,`score`,`status`,`order`,`is_top`,`top`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE `create_time` = VALUES(`create_time`), `update_time` = VALUES(`update_time`), `create_by` = VALUES(`create_by`), `update_by` = VALUES(`update_by`), `deleted` = VALUES(`deleted`), `title` = VALUES(`title`), `content` = VALUES(`content`), `url` = VALUES(`url`), `star` = VALUES(`star`), `score` = VALUES(`score`), `status` = VALUES(`status`), `order` = VALUES(`order`), `is_top` = VALUES(`is_top`), `top` = VALUES(`top`)
+==> Parameters: 200(String),2000-01-02T01:01:01(LocalDateTime),2000-01-02T01:01:01(LocalDateTime),200(String),200(String),false(Boolean),title200(String),content200(String),http://blog.easy-query.com/200(String),1(Integer),1.2(BigDecimal),1(Integer),1.2(BigDecimal),false(Boolean),false(Boolean)
+<== Total: 1
+
+
+//如果存在一样的key或者唯一约束那么insert就变成update,并且update只更新star和content两个字段
+easyQuery.insertable(blog)
+                .onDuplicateKeyUpdate(t->t.column(BlogEntity::getStar).column(BlogEntity::getContent))
+                .executeRows();//没有需要修改的所以返回1
+
+
+==> Preparing: INSERT INTO `t_blog` (`id`,`create_time`,`update_time`,`create_by`,`update_by`,`deleted`,`title`,`content`,`url`,`star`,`score`,`status`,`order`,`is_top`,`top`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE `star` = VALUES(`star`), `content` = VALUES(`content`)
+==> Parameters: 200(String),2000-01-02T01:01:01(LocalDateTime),2000-01-02T01:01:01(LocalDateTime),200(String),200(String),false(Boolean),title200(String),content200(String),http://blog.easy-query.com/200(String),1(Integer),1.2(BigDecimal),1(Integer),1.2(BigDecimal),false(Boolean),false(Boolean)
+<== Total: 1
+
+
+
+blog.setContent("xxx");
+easyQuery.insertable(blog)
+            .onDuplicateKeyUpdate(t->t.column(BlogEntity::getStar).column(BlogEntity::getContent))
+            .executeRows();//因为content不一样所以返回行数2
+
+==> Preparing: INSERT INTO `t_blog` (`id`,`create_time`,`update_time`,`create_by`,`update_by`,`deleted`,`title`,`content`,`url`,`star`,`score`,`status`,`order`,`is_top`,`top`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE `star` = VALUES(`star`), `content` = VALUES(`content`)
+==> Parameters: 200(String),2000-01-02T01:01:01(LocalDateTime),2000-01-02T01:01:01(LocalDateTime),200(String),200(String),false(Boolean),title200(String),xxx(String),http://blog.easy-query.com/200(String),1(Integer),1.2(BigDecimal),1(Integer),1.2(BigDecimal),false(Boolean),false(Boolean)
+<== Total: 2
+```
+
+## 7.PgSQL方言
+
+## onConflictDoNothing
+
+```java
+TopicAuto topicAuto = new TopicAuto();
+topicAuto.setStars(999);
+topicAuto.setTitle("title" + 999);
+topicAuto.setCreateTime(LocalDateTime.now().plusDays(99));
+
+easyQuery.insertable(topicAuto).onConflictDoNothing().executeRows();
+//INSERT INTO "t_topic_auto" ("stars","title","create_time") VALUES (?,?,?) ON CONFLICT DO NOTHING
+```
+
+## onConflictDoUpdate
+支持指定约束列,和set列
+```java
+TopicAuto topicAuto = new TopicAuto();
+topicAuto.setStars(999);
+topicAuto.setTitle("title" + 999);
+topicAuto.setCreateTime(LocalDateTime.now().plusDays(99));
+Assert.assertNull(topicAuto.getId());
+easyQuery.insertable(topicAuto)
+    .onConflictDoUpdate(TopicAuto::getTitle,t->t.column(TopicAuto::getStars).column(TopicAuto::getCreateTime))
+    .executeRows();
+
+//INSERT INTO "t_topic_auto" ("stars","title","create_time") VALUES (?,?,?) ON CONFLICT ("title") DO UPDATE SET "stars" = EXCLUDED."stars", "create_time" = EXCLUDED."create_time"
+```
