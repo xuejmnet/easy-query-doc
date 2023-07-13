@@ -6,6 +6,7 @@ title: 基本类型查询
 `easy-query`提供了针对基本类型的查询功能,如果您只需要返回基本类型那么不需要额外定义复杂的对象,并且支持map等数据结构
 
 
+
 ## String
 
 
@@ -184,3 +185,27 @@ List<Map<String,Object>> list1 = easyQueryClient.queryable(Topic.class)
 <== Total: 1
 ```
 :::
+
+
+## 支持的类型
+
+类型  | 是否支持
+--- | --- 
+String | ✅
+BigDecimal | ✅
+Boolean | ✅
+Byte[] | ✅
+Byte | ✅
+Double | ✅
+Float | ✅
+Integer | ✅
+LocalDate | ✅
+LocalDateTime | ✅
+LocalTime | ✅
+Long | ✅
+Map | ✅
+Short | ✅
+java.sql.Date | ✅
+Time | ✅
+Timestamp | ✅
+java.util.Date | ✅
