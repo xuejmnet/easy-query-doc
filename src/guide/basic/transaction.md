@@ -12,6 +12,7 @@ title: 事务
 beginTransaction | null  | 参数表示数据库隔离级别,默认采用`datasource`的可以自定义 Connection.TRANSACTION_READ_UNCOMMITTED,Connection.TRANSACTION_READ_COMMITTED,Connection.TRANSACTION_REPEATABLE_READ,* Connection.TRANSACTION_SERIALIZABLE.
 Transaction.commit |   | 提交事务
 Transaction.rollback |   | 回滚事务
+registerListener(TransactionListener transactionBehavior)| | 设置当前事务的执行行为,包括提交前提交后等处理
 close |   | 关闭事务,如果事务为提交则自动调用回滚
 
 ## 如何开启

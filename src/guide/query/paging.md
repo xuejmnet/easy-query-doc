@@ -49,3 +49,83 @@ EasyPageResult<BlogEntity> page = easyQuery
 ==> Preparing: SELECT t1.`id`,SUM(t1.`score`) AS `score` FROM t_topic t INNER JOIN t_blog t1 ON t.`id` = t1.`id` WHERE t1.`title` IS NOT NULL GROUP BY t1.`id` LIMIT 20
 <== Total: 20, Query Use: 2(ms)
 ```
+
+## 自定义分页返回结果
+`easy-query`提供了自定义分页返回结果,用户可以自行定义分页结果,[《替换框架行为❗️❗️❗️》](/easy-query-doc/guide/config/replace-configure) 
+
+### 替换接口
+`EasyPageResultProvider`
+
+
+方法  | 参数 | 描述  
+--- | --- | --- 
+createPageResult | long pageIndex, long pageSize,long total, List\<T\> data  | 返回`toPageResult`的分页对象
+createShardingPageResult | long pageIndex, long pageSize,long total, List\<T\> data,SequenceCountLine sequenceCountLine  | 返回`toShardingPageResult`的分页对象
+
+### 默认实现
+```java
+
+public class DefaultEasyPageResultProvider implements EasyPageResultProvider{
+    @Override
+    public <T> EasyPageResult<T> createPageResult(long pageIndex, long pageSize,long total, List<T> data) {
+        return new DefaultPageResult<>(total,data);
+    }
+
+    @Override
+    public <T> EasyPageResult<T> createShardingPageResult(long pageIndex, long pageSize,long total, List<T> data,SequenceCountLine sequenceCountLine) {
+        return new DefaultShardingPageResult<>(total,data,sequenceCountLine);
+    }
+}
+
+
+public class DefaultPageResult<T> implements EasyPageResult<T> {
+    private final long total;
+    private final List<T> data;
+
+    public DefaultPageResult(long total, List<T> data) {
+        this.total = total;
+
+        this.data = data;
+    }
+
+    public long getTotal() {
+        return total;
+    }
+
+    public List<T> getData() {
+        return data;
+    }
+}
+
+public interface EasyShardingPageResult<T> extends EasyPageResult<T>{
+    List<Long> getTotalLines();
+}
+
+
+public class DefaultShardingPageResult<T> implements EasyShardingPageResult<T> {
+    private final long total;
+    private final List<T> data;
+    private final SequenceCountLine sequenceCountLine;
+
+    public DefaultShardingPageResult(long total, List<T> data,SequenceCountLine sequenceCountLine) {
+        this.total = total;
+
+        this.data = data;
+        this.sequenceCountLine = sequenceCountLine;
+    }
+
+    public long getTotal() {
+        return total;
+    }
+
+    public List<T> getData() {
+        return data;
+    }
+
+    @Override
+    public List<Long> getTotalLines() {
+        return sequenceCountLine.getTotalLines();
+    }
+}
+
+```
