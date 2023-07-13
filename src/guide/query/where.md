@@ -8,12 +8,17 @@ order: 200
 
 ## API
 
+::: tip 说明!!!
+> 代理模式下`where`的第一个参数是`filter`过滤器,第二个参数开始才是真正的表
+:::
+
+
 方法  | sql | 描述  
 --- | --- | --- 
 gt | >  | 列 大于 值
 ge | >=  | 列 大于等于 值
 eq | =  | 列 等于 值
-ne | !=  | 列 不等于 值
+ne | <>  | 列 不等于 值
 le | <=  | 列 小于等于 值
 lt | < | 列 小于 值
 likeMatchLeft | like word%  | 列左匹配
@@ -31,3 +36,5 @@ rangeOpen | < x <  | 区间 (left..right) = {x \| left < x < right} 一般用于
 rangeClosedOpen | <= x <  | [left..right) = {x \| left <= x < right} 一般用于范围比如时间,小的时间在前大的时间在后
 rangeClosed | <= x <=  | \[left..right\] = {x \| left <= x <= right} 一般用于范围比如时间,小的时间在前大的时间在后
 columnFunc | 自定义  | 自定义函数包裹column
+exists | 存在  | 使用子查询queryable
+notExists | 不存在  | 使用子查询queryable

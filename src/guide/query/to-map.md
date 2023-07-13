@@ -45,3 +45,90 @@ List<Map<String, Object>> blogs = easyQuery.sqlQueryMap("SELECT * FROM t_blog t 
 ==> Parameters: 1(String)
 <== Total: 1
 ```
+
+
+## Map
+返回结果为`Map<String,Object>` ,默认Key忽略大小写(`Locale.ENGLISH`)
+
+
+::: code-tabs
+@tab 代理属性
+```java
+Class<Map<String,Object>> mapClass= EasyObjectUtil.typeCastNullable(Map.class);
+List<Map<String,Object>> list2 = easyProxyQuery.queryable(TopicProxy.DEFAULT)
+                    .where((f, t) -> f.eq(t.id(), "1"))
+                    .select(MapProxy.DEFAULT, (s, t) -> s.columnAll(t))
+                    .toList();
+
+==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM `t_topic` t WHERE t.`id` = ?
+==> Parameters: 1(String)
+<== Time Elapsed: 2(ms)
+<== Total: 1
+
+
+List<Map<String,Object>> list2 = easyProxyQuery.queryable(TopicProxy.DEFAULT)
+                    .where((f, t) -> f.eq(t.id(), "1"))
+                    .select(MapProxy.DEFAULT)
+                    .toList();
+
+
+==> Preparing: SELECT * FROM `t_topic` t WHERE t.`id` = ?
+==> Parameters: 1(String)
+<== Time Elapsed: 9(ms)
+<== Total: 1
+```
+@tab lambda属性
+
+```java
+
+Class<Map<String,Object>> mapClass= EasyObjectUtil.typeCastNullable(Map.class);
+List<Map<String,Object>> list = easyQuery.queryable(Topic.class)
+        .where(o -> o.eq(Topic::getId, "1"))
+        .select(mapClass, o -> o.columnAll())
+        .toList();
+
+==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM `t_topic` t WHERE t.`id` = ?
+==> Parameters: 1(String)
+<== Time Elapsed: 9(ms)
+<== Total: 1
+
+
+List<Map<String,Object>> list = easyQuery.queryable(Topic.class)
+                .where(o -> o.eq(Topic::getId, "1"))
+                .select(mapClass)
+                .toList();
+
+
+==> Preparing: SELECT * FROM `t_topic` t WHERE t.`id` = ?
+==> Parameters: 1(String)
+<== Time Elapsed: 9(ms)
+<== Total: 1
+```
+@tab 字符串属性
+
+```java
+Class<Map<String,Object>> mapClass= EasyObjectUtil.typeCastNullable(Map.class);
+List<Map<String,Object>> list1 = easyQueryClient.queryable(Topic.class)
+                    .where(o -> o.eq("id", "1"))
+                    .select(mapClass, o -> o.columnAll())
+                    .toList();
+
+
+==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM `t_topic` t WHERE t.`id` = ?
+==> Parameters: 1(String)
+<== Time Elapsed: 2(ms)
+<== Total: 1
+
+
+List<Map<String,Object>> list1 = easyQueryClient.queryable(Topic.class)
+                    .where(o -> o.eq("id", "1"))
+                    .select(mapClass)
+                    .toList();
+
+
+==> Preparing: SELECT * FROM `t_topic` t WHERE t.`id` = ?
+==> Parameters: 1(String)
+<== Time Elapsed: 2(ms)
+<== Total: 1
+```
+:::

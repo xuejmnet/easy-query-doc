@@ -129,7 +129,7 @@ List<Topic> topics = easyQuery
 ```java
  Topic topic = easyQuery
                 .queryable(TopicProxy.DEFAULT)
-                //join 后面是双参数委托，参数顺序表示join表顺序，可以通过then函数切换
+                //join 后面是多参数委托,第一个为filter固定,后面两个分别数join的表，参数顺序表示join表顺序
                 .leftJoin(BlogEntityProxy.DEFAULT, (filter,t, t1) -> filter.eq(t.id(), t1.id()))
                 .where((filter,t) -> filter.eq(t.id(), "3"))
                 .firstOrNull();
@@ -140,10 +140,11 @@ List<Topic> topics = easyQuery
 
 List<BlogEntity> blogEntities = easyQuery
                 .queryable(TopicProxy.DEFAULT)
-                //join 后面是双参数委托，参数顺序表示join表顺序，可以通过then函数切换
+                //join 后面是多参数委托,第一个为filter固定,后面两个分别数join的表，参数顺序表示join表顺序
                 .innerJoin(BlogEntityProxy.DEFAULT, (filter,t, t1) -> filter.eq(t.id(), t1.id()))
                 .where((filter,t, t1) -> filter.isNotNull(t1.title()).eq(t.id(), "3"))
                 //join查询select必须要带对应的返回结果,可以是自定义dto也可以是实体对象,如果不带对象则返回t表主表数据
+                //参数依然是第一个是selector固定后面两个是join对象的表顺序
                 .select(BlogEntityProxy.DEFAULT, (selector,t, t1) -> selector.columnAll(t1))
                 .toList();
 
