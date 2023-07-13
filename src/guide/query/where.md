@@ -38,3 +38,44 @@ rangeClosed | <= x <=  | \[left..right\] = {x \| left <= x <= right} 一般用�
 columnFunc | 自定义  | 自定义函数包裹column
 exists | 存在  | 使用子查询queryable
 notExists | 不存在  | 使用子查询queryable
+
+## 动态条件
+`eq`、`ge`、`isNull`、`isNotNull`...... 一些列方法都有对应的重载,其中第一个参数`boolean condition`表示是否追加对应的条件,并且`where`一样存在重载
+```java
+SysUser sysUser =  easyQuery.queryable(SysUser.class)
+                .where(o -> o.eq(SysUser::getId, "123xxx")
+                        .like(false,SysUser::getPhone,"133"))//表达式like第一个参数为false所以不会添加phone的like条件到sql中
+                        .firstOrNull()
+
+==> Preparing: SELECT `id`,`create_time`,`username`,`phone`,`id_card`,`address` FROM `easy-query-test`.`t_sys_user` WHERE `id` = ? LIMIT 1
+==> Parameters: 123xxx(String)
+<== Time Elapsed: 3(ms)
+<== Total: 0
+```
+
+## null pointer
+```java
+
+Map<String,String> phone=null;
+SysUser sysUser = easyQuery.queryable(SysUser.class)
+        .where(o -> o.eq(SysUser::getId, "123xxx")
+                .like(phone!=null&&phone.containsKey("phone"),SysUser::getPhone,phone.get("phone")))
+                .firstOrNull();
+
+//虽然我们对phone进行了判断非null并且包含对应的phone的key,但是因为第二个参数是直接获取值会导致phone.get("phone")的phone还是null所以会报错空指针异常
+```
+
+## 动态条件2
+```java
+Map<String,String> phone=null;
+SysUser sysUser = easyQuery.queryable(SysUser.class)
+                    .where(o -> o.eq(SysUser::getId, "123xxx"))
+                    .where(phone!=null&&phone.containsKey("phone"),o -> o.like(SysUser::getPhone,phone.get("phone")))//where与where之间采用and链接
+                    .firstOrNull();
+
+==> Preparing: SELECT `id`,`create_time`,`username`,`phone`,`id_card`,`address` FROM `easy-query-test`.`t_sys_user` WHERE `id` = ? LIMIT 1
+==> Parameters: 123xxx(String)
+<== Time Elapsed: 2(ms)
+<== Total: 0
+
+```

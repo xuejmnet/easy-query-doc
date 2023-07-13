@@ -6,6 +6,10 @@ order: 20
 # 多表查询
 `easy-query`提供了丰富的多表链接查询,并且支持匿名表链接查询
 
+## api变化
+当使用join操作后
+- `where`存在两种重载,第一种就是单个参数,第二种是两个参数,单个参数为主表操作,两个参数为表顺序,可以通过链式调用`then()`来进行切换,`select`、`groupBy`.....同理
+
 ## leftJoin
 ```java
 Topic topic = easyQuery

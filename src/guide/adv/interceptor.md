@@ -407,4 +407,4 @@ long l4 = easyQuery.deletable(topicInterceptor2).executeRows();
 
 ## 按需拦截
 比如我们现在有这么一个需求因为部分接口需要针对测试数据进行移除,不希望统计到程序里面所以可以针对部分情况进行按需拦截
-可以新建一个表达式拦截器`PredicateFilterInterceptor`,然后默认将enable改成`false`需要时自行添加条件通过`useInteceptor(name)`
+可以新建一个表达式拦截器`PredicateFilterInterceptor`,然后默认将enable改成`false`需要时自行添加条件通过`useInteceptor(name)`,或者可以通过判断当前是否是某个api接口比如`startWith("/api/test")`,可以通过`ThreadLocal`来表示当前启用值
