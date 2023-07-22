@@ -107,6 +107,8 @@ long rows4 = easyQuery.updatable(Topic.class)
 :::
 正常情况下如果用户想使用差异更新,那么需要对查询采用`asTracking`来让返回结果被追踪,或者调用`easyQuery.addTracking`来让需要更新的对象被追踪
 
+如果希望默认是追踪的可以设置启动配置`defaultTrack`为true那么只需要开始上下文环境即可
+
 ::: danger 错误的用法!!!
 > 开启上下文追踪当时没有讲查询结果对象附加到当前上下文,所以框架无法追踪对象变更无法有效生成差异更新
 :::
