@@ -1,1 +1,0 @@
-import{_ as t,W as s,X as a,Y as e,Z as c}from"./framework-7a1bedf3.js";const n={},r=e("h1",{id:"自定义sql片段",tabindex:"-1"},[e("a",{class:"header-anchor",href:"#自定义sql片段","aria-hidden":"true"},"#"),c(" 自定义SQL片段")],-1),o=[r];function _(l,d){return s(),a("div",null,o)}const h=t(n,[["render",_],["__file","sql-segment.html.vue"]]);export{h as default};
