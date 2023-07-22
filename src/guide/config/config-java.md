@@ -68,6 +68,27 @@ order: 10
 ## 使用示例
 
 ::: code-tabs
+@tab lambda属性
+```java
+@Data
+@Table("t_topic")
+public class Topic {
+
+    @Column(primaryKey = true)
+    private String id;
+    private Integer stars;
+    private String title;
+    private LocalDateTime createTime;
+}
+Topic topic = easyQuery.queryable(Topic.class)
+        .where(t -> t.eq(Topic::getId,"3").or().like(Topic::getTitle,"你好"))
+        .firstOrNull();
+
+==> Preparing: SELECT `id`,`stars`,`title`,`create_time` FROM `t_topic` WHERE (`id` = ? OR `title` LIKE ?) LIMIT 1
+==> Parameters: 3(String),%你好%(String)
+<== Time Elapsed: 2(ms)
+<== Total: 1
+```
 @tab 代理属性
 ```java
 
@@ -89,27 +110,6 @@ Topic topic = easyProxyQuery.queryable(TopicProxy.DEFAULT)
 ==> Preparing: SELECT `id`,`stars`,`title`,`create_time` FROM `t_topic` WHERE (`id` = ? OR `title` LIKE ?) LIMIT 1
 ==> Parameters: 3(String),%你好%(String)
 <== Time Elapsed: 3(ms)
-<== Total: 1
-```
-@tab lambda属性
-```java
-@Data
-@Table("t_topic")
-public class Topic {
-
-    @Column(primaryKey = true)
-    private String id;
-    private Integer stars;
-    private String title;
-    private LocalDateTime createTime;
-}
-Topic topic = easyQuery.queryable(Topic.class)
-        .where(t -> t.eq(Topic::getId,"3").or().like(Topic::getTitle,"你好"))
-        .firstOrNull();
-
-==> Preparing: SELECT `id`,`stars`,`title`,`create_time` FROM `t_topic` WHERE (`id` = ? OR `title` LIKE ?) LIMIT 1
-==> Parameters: 3(String),%你好%(String)
-<== Time Elapsed: 2(ms)
 <== Total: 1
 ```
 @tab 字符串属性
