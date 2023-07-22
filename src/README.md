@@ -41,7 +41,7 @@ features:
 
   - title: 强类型
     icon: structure
-    details: 对象属性lambda查询,在java和kotlin下发挥强类型语言该有的优势,针对后续的维护非常方便,用户可以完全感知开发时的错误
+    details: 如果一款orm不包含泛型约束,那么这个orm就没有必要存在,因为他和手写sql没有任何区别,无法在编译时为您提供错误信息,帮您做到强类型语言该有的提示
 
   - title: 分库分表
     icon: condition
