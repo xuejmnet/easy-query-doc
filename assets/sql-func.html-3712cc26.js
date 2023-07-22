@@ -1,0 +1,1 @@
+import{_ as t,W as a,X as c,Y as e,Z as s}from"./framework-7a1bedf3.js";const n={},r=e("h1",{id:"自定义数据库函数",tabindex:"-1"},[e("a",{class:"header-anchor",href:"#自定义数据库函数","aria-hidden":"true"},"#"),s(" 自定义数据库函数")],-1),o=[r];function _(d,l){return a(),c("div",null,o)}const h=t(n,[["render",_],["__file","sql-func.html.vue"]]);export{h as default};
