@@ -9,6 +9,24 @@ order: 10
 目前`easy-query`支持三种api接口方式：字符串属性,lambda属性,代理属性三种api接口调用,且可以互相调用
 
 ::: code-tabs
+@tab lambda属性
+```xml
+<properties>
+    <easy-query.version>last-version</easy-query.version>
+</properties>
+<!--  提供了以java语法强类型,如果不引用也可以使用只是无法使用lambda表达式来表示属性只能用字符串 -->
+<dependency>
+    <groupId>com.easy-query</groupId>
+    <artifactId>sql-api4j</artifactId>
+    <version>${easy-query.version}</version>
+</dependency>
+<!--  这边以mysql为例 其实不需要添加下面的包也可以运行,指示默认的个别数据库行为语句没办法生成 -->
+<dependency>
+    <groupId>com.easy-query</groupId>
+    <artifactId>sql-mysql</artifactId>
+    <version>${easy-query.version}</version>
+</dependency>
+```
 @tab 代理属性
 ```xml
 <properties>
@@ -24,24 +42,6 @@ order: 10
 <dependency>
     <groupId>com.easy-query</groupId>
     <artifactId>sql-processor</artifactId>
-    <version>${easy-query.version}</version>
-</dependency>
-<!--  这边以mysql为例 其实不需要添加下面的包也可以运行,指示默认的个别数据库行为语句没办法生成 -->
-<dependency>
-    <groupId>com.easy-query</groupId>
-    <artifactId>sql-mysql</artifactId>
-    <version>${easy-query.version}</version>
-</dependency>
-```
-@tab lambda属性
-```xml
-<properties>
-    <easy-query.version>last-version</easy-query.version>
-</properties>
-<!--  提供了以java语法强类型,如果不引用也可以使用只是无法使用lambda表达式来表示属性只能用字符串 -->
-<dependency>
-    <groupId>com.easy-query</groupId>
-    <artifactId>sql-api4j</artifactId>
     <version>${easy-query.version}</version>
 </dependency>
 <!--  这边以mysql为例 其实不需要添加下面的包也可以运行,指示默认的个别数据库行为语句没办法生成 -->

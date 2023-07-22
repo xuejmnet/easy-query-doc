@@ -6,6 +6,9 @@ order: 40
 # select
 `easy-query`的`select`是用来终结当前表达式生成新的表达式的方式
 
+## select后置风格
+和原生SQL不同，在`easy-query`提供的DSL中，`select`语句出现在`where`，`orderBy`，`groupBy`，`having`等之后,如果表达式调用了`select`那么这个sql就是确定了的如果再次调用`where`那么前面的表达式将被视为别名表
+
 ## API
 方法  | 参数 | 返回  | 描述
 --- | --- | --- | --- 

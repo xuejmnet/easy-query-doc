@@ -178,18 +178,17 @@ public class MyLogicDelStrategy extends AbstractLogicDeleteStrategy {
      */
     private final Set<Class<?>> allowTypes=new HashSet<>(Arrays.asList(LocalDateTime.class));
     @Override
-    protected SQLExpression1<SQLWherePredicate<Object>> getPredicateFilterExpression(LogicDeleteBuilder builder, Property<Object, ?> lambdaProperty) {
-        return o->o.isNull(lambdaProperty);
+    protected SQLExpression1<WherePredicate<Object>> getPredicateFilterExpression(LogicDeleteBuilder builder,String propertyName) {
+        return o->o.isNull(propertyName);
     }
 
     @Override
-    protected SQLExpression1<SQLColumnSetter<Object>> getDeletedSQLExpression(LogicDeleteBuilder builder, Property<Object, ?> lambdaProperty) {
+    protected SQLExpression1<ColumnSetter<Object>> getDeletedSQLExpression(LogicDeleteBuilder builder, String propertyName) {
 //        LocalDateTime now = LocalDateTime.now();
-//        return o->o.set(lambdaProperty,now);
+//        return o->o.set(propertyName,now);
         //上面的是错误用法,将now值获取后那么这个now就是个固定值而不是动态值
-        Property<Object, ?> deletedUserProperty = EasyBeanUtil.getFastBean(builder.getEntityMetadata().getEntityClass()).getBeanGetter("deletedUser", String.class);
-        return o->o.set(lambdaProperty,LocalDateTime.now())
-                .set(deletedUserProperty,CurrentUserHelper.getUserId());
+        return o->o.set(propertyName,LocalDateTime.now())
+                .set("deletedUser",CurrentUserHelper.getUserId());
     }
 
     @Override

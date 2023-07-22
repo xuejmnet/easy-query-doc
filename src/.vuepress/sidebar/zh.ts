@@ -21,12 +21,12 @@ export const zhSidebar = sidebar({
         {
           text: "查询",
           prefix: "query/",
-          children: ["readme.md","or-condition","paging","multi-query","group","select","native-sql","dynamic-table","basic-type","to-map","select-column","union","select-sub","sub-query","relation","where","reuse","case-when","client-dynaimic-where","client-dynamic-sort","sql-func","sql-segment"],
+          children: ["readme.md","or-condition","paging","multi-query","group","select","native-sql","dynamic-table","basic-type","to-map","select-column","union","select-sub","sub-query","relation","where","reuse","case-when","client-dynaimic-where","client-dynamic-sort"],
         },
         {
           text: "高级",
           prefix: "adv/",
-          children: ["readme.md","logic-delete","interceptor","batch","column-encryption","data-tracking","version","column-func","atomic-update"],
+          children: ["readme.md","logic-delete","interceptor","batch","column-encryption","data-tracking","version","column-func","sql-segment","atomic-update"],
         },
         {
           text: "超级",
