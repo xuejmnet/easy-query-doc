@@ -119,7 +119,7 @@ List<BlogEntity> result = easyQuery.queryable(BlogEntity.class)
 --- | --- | --- 
 strict | true  | 严格模式,如果属性没有映射到对象上报错,如果表`tableIndex`不在当前上下文中也报错
 tableIndex | 0  | 当前条件用于查询哪张表
-allowEmptyStrings | false  | 是否允许空字符串,如果允许表示kong也会加入到表达式内而不是忽略
+allowEmptyStrings | false  | 是否允许空字符串,如果允许表示空也会加入到表达式内而不是忽略
 propName | ""  | 当前属性映射到数据库对象的属性名称,为空表示使用当前属性名
 type | LIKE | 当前属性和数据库对象属性以哪种表达式构建条件
 

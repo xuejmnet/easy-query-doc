@@ -70,3 +70,26 @@ List<Topic> list = easyQueryClient.queryable(Topic.class)
 <== Time Elapsed: 2(ms)
 <== Total: 0
 ```
+
+## 多条件CaseWhen
+有时候我们的case when需要实现多个条件而不是单一条件
+```java
+List<Topic> list = easyQuery.queryable(Topic.class)
+                    .innerJoin(BlogEntity.class,(t,t1)->t.eq(t1,Topic::getId,BlogEntity::getId))
+                    .where(t -> t.like(Topic::getTitle, "someTitle"))
+                    .select(Topic.class, (t,t1) -> t
+                            .sqlColumnAs(
+                                    SQL4JFunc.caseWhenBuilder(t,t1)
+                                            .caseWhen((f,f1) -> f.eq(Topic::getTitle, "123").then(f1).le(BlogEntity::getStar,100), "111")
+                                            .caseWhen((f,f1) -> f.eq(Topic::getTitle, "456").then(f1).ge(BlogEntity::getStar,200), "222")
+                                            .elseEnd("222")
+                                    , Topic::getTitle)
+                            .column(Topic::getId)
+                    ).toList();
+
+
+==> Preparing: SELECT CASE WHEN t.`title` = ? AND t1.`star` <= ? THEN ? WHEN t.`title` = ? AND t1.`star` >= ? THEN ? ELSE ? END AS `title`,t.`id` FROM `t_topic` t INNER JOIN `t_blog` t1 ON t1.`deleted` = ? AND t.`id` = t1.`id` WHERE t.`title` LIKE ?
+==> Parameters: 123(String),100(Integer),111(String),456(String),200(Integer),222(String),222(String),false(Boolean),%someTitle%(String)
+<== Time Elapsed: 10(ms)
+<== Total: 0
+```

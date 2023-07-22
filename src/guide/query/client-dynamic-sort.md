@@ -33,7 +33,9 @@ orderBy | 排序属性、是否正序、哪张表默认(0)  | 排序属性表示
 ```java
 @Data
 public class BlogSortRequest implements ObjectSort {
+    //需要排序的属性
     private String sort;
+    //是否正序
     private Boolean asc;
     @Override
     public void configure(ObjectSortBuilder builder) {
@@ -62,6 +64,7 @@ String sql = easyQuery.queryable(BlogEntity.class)
 
 @Data
 public class BlogSortMultiRequest implements ObjectSort {
+    //需要排序的属性集合
     private List<SortConfig> orders=new ArrayList<>();
     @Override
     public void configure(ObjectSortBuilder builder) {
@@ -72,7 +75,9 @@ public class BlogSortMultiRequest implements ObjectSort {
 
     @Data
     public static class SortConfig{
+        //需要排序的字段
         private String property;
+        //是否正序
         private Boolean asc;
     }
 }
