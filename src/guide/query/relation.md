@@ -298,8 +298,7 @@ List<Province> list = easyQuery.queryable(Province.class)
 ```java
 
 List<Province> provinces = easyQuery.queryable(Province.class)
-            .include(o -> o.many(Province::getCities).where(x->x.eq(City::getCode,"3306"))
-                    .include(x -> x.many(City::getAreas).where(y->y.eq(Area::getCode,"330602"))))
+            .include(o -> o.many(Province::getCities).where(x->x.eq(City::getCode,"3306")).include(x -> x.many(City::getAreas).where(y->y.eq(Area::getCode,"330602"))))
             .toList();
 
 ==> Preparing: SELECT `code`,`name` FROM `t_province`
