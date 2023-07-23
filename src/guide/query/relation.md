@@ -3,7 +3,7 @@ title: 关联查询
 ---
 
 # 关联查询
-`easy-query` 1.2.1+ 支持关联查询,支持多级关联查询
+`easy-query` 1.2.1+ 支持关联查询,支持多级关联查询,并且只支持first和tolist两个返回方法,支持vo对象返回支持`include`追加追踪、禁止、逻辑删除、where过滤、order、limit等一系列处理，但是返回结果必须是数据库对象实例(include方法内部),如果需要额外字段返回可以使用`columnInclude`/`columnIncludeMany`自定义返回
 
 类型  | 描述 | 场景 
 --- | --- | --- 
@@ -37,7 +37,7 @@ targetMappingProperty | `false`多对多必填  | - | 目标对象的`targetProp
 
 
 
-## 案例
+## 普通链接查询
 ```java
 //班级表
 @Table("school_class")
@@ -234,7 +234,7 @@ List<SchoolClass> classes = easyQuery.queryable(SchoolClass.class)
 ```
 
 
-## 案例二
+## 多关联查询
 ### 省市区
 ```java
 @Table("t_province")
@@ -315,3 +315,174 @@ List<Province> provinces = easyQuery.queryable(Province.class)
 
 [Province(code=32, name=江苏省, cities=[]), Province(code=33, name=浙江省, cities=[City(code=3306, provinceCode=33, name=绍兴市, areas=[Area(code=330602, provinceCode=33, cityCode=3306, name=越城区)])])]
 ```
+
+
+## 关联查询VO返回自定义列
+
+针对关联查询的返回结果如果需要支持vo对象返回,譬如学生和班级是一对多的关系,但是我查询学生的时候只希望联级查询班级的id、名称不希望查询出额外信息,那么可以通过vo的形式来返回自定义列的关联查询。
+
+
+
+::: warning 说明!!!
+> 虽然`include`方法支持vo对象返回,但是需要满足返回对象必须包含navigate映射的属性,就是说navigate的`selfProperty`和`targetProperty`可以以不同的列返回,但是必须存在于返回结果中,因为关联查询采用的是`splitQuery`
+
+
+方法  | 描述 | 说明 
+--- | --- | --- 
+columnInclude | 如果映射属性是对象  | 支持最后一个参数为表达式,用来实现VO查询需要实现的列处理,如果不填写默认`columnAll`
+columnIncludeMany | 如果映射属性是集合 | 支持最后一个参数为表达式,用来实现VO查询需要实现的列处理,如果不填写默认`columnAll`
+
+```java
+  List<SchoolStudent> list1 = easyQuery.queryable(SchoolStudent.class)
+                        //一对一查询启用追踪并且对子查询逻辑删除禁用
+                        .include(o -> o.one(SchoolStudent::getSchoolStudentAddress).asTracking().disableLogicDelete())
+                        .toList();
+```
+:::
+
+```java
+//学生VO对象
+@Data
+public class SchoolStudentVO {
+    private String id;
+    private String classId;
+    private String name;
+    @Navigate(RelationTypeEnum.ManyToOne)//VO对象使用只需要定义关联关系,其余信息不需要定义,定义了也会忽略
+    private SchoolClassVO schoolClass;
+    @Navigate(RelationTypeEnum.OneToOne)/VO对象使用只需要定义关联关系,其余信息不需要定义,定义了也会忽略
+    private SchoolStudentAddressVO schoolStudentAddress;
+}
+
+//学生地址VO对象
+@Data
+@ToString
+public class SchoolStudentAddressVO {
+    private String id;
+    private String studentId;
+    private String address;
+    @Navigate(value = RelationTypeEnum.ManyToOne)/VO对象使用只需要定义关联关系,其余信息不需要定义,定义了也会忽略
+    private SchoolStudentVO schoolStudent;
+}
+
+//班级
+@Data
+public class SchoolClassVO {
+    private String id;
+    private String name;
+    @Navigate(RelationTypeEnum.OneToMany)
+    private List<SchoolStudentVO> schoolStudents;
+    @Navigate(RelationTypeEnum.ManyToMany)
+    private List<SchoolTeacherVO> schoolTeachers;
+}
+
+//教师
+@Data
+@ToString
+public class SchoolTeacherVO {
+    private String id;
+    private String name;
+}
+
+```
+
+通过VO返回实现自定义列,并且实现额外的处理
+```java
+//查询学生表,并且额外查出对应的班级表
+//一对多
+List<SchoolStudentVO> list1 = easyQuery.queryable(SchoolStudent.class)
+        .include(o -> o.one(SchoolStudent::getSchoolClass))
+        .select(SchoolStudentVO.class,o->o
+                .columnAll()
+                //columnInclude表示单个关联属性的映射,多个采用columnIncludeMany,关联查询结果将学生表的班级
+                //信息映射到VO对的班级信息上面
+                .columnInclude(SchoolStudent::getSchoolClass,SchoolStudentVO::getSchoolClass)
+        )
+        .toList();
+
+
+
+==> Preparing: SELECT t.`id`,t.`class_id`,t.`name` FROM `school_student` t
+<== Time Elapsed: 2(ms)
+<== Total: 3
+==> Preparing: SELECT t.`id`,t.`name` FROM `school_class` t WHERE t.`id` IN (?,?)
+==> Parameters: class2(String),class1(String)
+<== Time Elapsed: 1(ms)
+<== Total: 2
+
+
+//一对多自定义列
+List<SchoolStudentVO> list1 = easyQuery.queryable(SchoolStudent.class)
+                        .include(o -> o.one(SchoolStudent::getSchoolClass))
+                        .select(SchoolStudentVO.class,o->o
+                                .columnAll()
+                                //将学生表信息查询额外查询出班级表,并且班级表只查询id不查询其他信息
+                                .columnInclude(SchoolStudent::getSchoolClass,SchoolStudentVO::getSchoolClass,s->s.column(SchoolClassVO::getId))
+                        )
+                        .toList();
+
+
+
+==> Preparing: SELECT t.`id`,t.`class_id`,t.`name` FROM `school_student` t
+<== Time Elapsed: 8(ms)
+<== Total: 3
+==> Preparing: SELECT t.`id` FROM `school_class` t WHERE t.`id` IN (?,?)
+==> Parameters: class2(String),class1(String)
+<== Time Elapsed: 3(ms)
+<== Total: 2
+
+
+//一对一自定义sql
+List<SchoolStudentVO> list1 = easyQuery.queryable(SchoolStudent.class)
+                        .include(o -> o.one(SchoolStudent::getSchoolStudentAddress).asTracking().disableLogicDelete())
+                        .select(SchoolStudentVO.class,o->o.columnAll()
+                                .columnInclude(SchoolStudent::getSchoolStudentAddress,SchoolStudentVO::getSchoolStudentAddress))
+                        .toList();
+
+
+==> Preparing: SELECT t.`id`,t.`class_id`,t.`name` FROM `school_student` t
+<== Time Elapsed: 8(ms)
+<== Total: 3
+==> Preparing: SELECT t.`id`,t.`student_id`,t.`address` FROM `school_student_address` t WHERE t.`student_id` IN (?,?,?)
+==> Parameters: 1(String),2(String),3(String)
+<== Time Elapsed: 3(ms)
+<== Total: 3
+
+
+//一对多
+List<SchoolClassVO> list1 = easyQuery.queryable(SchoolClass.class)
+                        .include(o -> o.many(SchoolClass::getSchoolStudents))
+                        .select(SchoolClassVO.class,o->o.columnAll()
+                                .columnIncludeMany(SchoolClass::getSchoolStudents,SchoolClassVO::getSchoolStudents))
+                        .toList();
+
+
+
+==> Preparing: SELECT t.`id`,t.`name` FROM `school_class` t
+<== Time Elapsed: 2(ms)
+<== Total: 3
+==> Preparing: SELECT t.`id`,t.`class_id`,t.`name` FROM `school_student` t WHERE t.`class_id` IN (?,?,?)
+==> Parameters: class3(String),class2(String),class1(String)
+<== Time Elapsed: 2(ms)
+<== Total: 3
+
+
+//多对多
+List<SchoolClassVO> list2 = easyQuery.queryable(SchoolClass.class)
+                        .include(o -> o.many(SchoolClass::getSchoolTeachers))
+                        .select(SchoolClassVO.class,o->o.columnAll()
+                                .columnIncludeMany(SchoolClass::getSchoolTeachers,SchoolClassVO::getSchoolTeachers))
+                        .toList();
+                        
+==> Preparing: SELECT t.`id`,t.`name` FROM `school_class` t
+<== Time Elapsed: 13(ms)
+<== Total: 3
+==> Preparing: SELECT `class_id`,`teacher_id` FROM `school_class_teacher` WHERE `class_id` IN (?,?,?)
+==> Parameters: class3(String),class2(String),class1(String)
+<== Time Elapsed: 7(ms)
+<== Total: 3
+==> Preparing: SELECT t.`id`,t.`name` FROM `school_teacher` t WHERE t.`id` IN (?,?)
+==> Parameters: teacher2(String),teacher1(String)
+<== Time Elapsed: 8(ms)
+<== Total: 2
+```
+
