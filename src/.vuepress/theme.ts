@@ -4,7 +4,6 @@ import { enSidebar, zhSidebar } from "./sidebar/index.js";
 
 export default hopeTheme({
   hostname: "https://vuepress-theme-hope-docs-demo.netlify.app",
-
   author: {
     name: "xuejmnet",
     url: "https://github.com/xuejmnet",
@@ -14,9 +13,11 @@ export default hopeTheme({
 
   logo: "/logo.svg",
 
-  repo: "https://github.com/xuejmnet/easy-query",
+  // repo: "https://github.com/xuejmnet/easy-query",
 
   docsDir: "demo/theme-docs/src",
+  // themeColor:true,
+  // outlookLocales:{},
 
   locales: {
     "/": {
@@ -89,9 +90,7 @@ export default hopeTheme({
       playground: {
         presets: ["ts", "vue"],
       },
-      presentation: {
-        plugins: ["highlight", "math", "search", "notes", "zoom"],
-      },
+      presentation: ["highlight", "math", "search", "notes", "zoom"],
       stylize: [
         {
           matcher: "Recommended",

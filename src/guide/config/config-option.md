@@ -18,6 +18,7 @@ logClass | -  | `spring-boot`下默认是`com.easy.query.sql.starter.logging.Slf
 queryLargeColumn | `true`  | 默认依然查询被标记为`@Column`下`large`的列，如果需要不查询建议在设置为`large`的前提下将对应列设置为`@UpdateIgnore`防止在全列更新后导致未查询结果也被更新为null
 printSql | `true`  | 是否打印执行sql,这个和log不一样,因为考虑到有时候可能需要查看sql而不是将log输出,所以如歌设置为true,那么执行的sql和执行的结果将会以`log.info()`被记录到日志里面,如果您没有设置log那么一样看不到对应的执行sql
 defaultTrack | `false` | 默认是否使用追踪模式,如果为`true`那么只需要开启当前上下文追踪,或者`SpringBoot`下使用`@EasyQueryTrack`那么默认就会调用`asTracking()`
+relationGroupSize | 512 | include的关联查询单次查询最多支持的关联id,如果超出将会分为两个语句执行
 
 ## 分表分库特有配置
 
