@@ -5,6 +5,10 @@ order: 10
 
 # 安装软件
 
+## 获取最新
+
+[https://central.sonatype.com/](https://central.sonatype.com/) 搜索`easy-query`获取最新安装包
+
 ## spring-boot工程
 ```xml
 <properties>
