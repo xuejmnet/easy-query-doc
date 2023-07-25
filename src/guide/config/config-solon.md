@@ -11,6 +11,12 @@ title: 国产框架Solon配置
 
 启动快 5 ～ 10 倍；qps 高 2～ 3 倍；运行时内存节省 1/3 ~ 1/2；打包可以缩到 1/2 ~ 1/10；同时支持 jdk8, jdk11, jdk17, jdk20, graalvm native image。
 
+
+
+## 获取最新
+
+[https://central.sonatype.com/](https://central.sonatype.com/) 搜索`easy-query`获取最新安装包
+
 ## 快速开始
 ## 新建java maven项目
 
@@ -146,3 +152,57 @@ public class TestController {
 ```
 
 <img src="/easy-query-solon-web-query-topic.png" />
+
+
+### Solon配置easy-query个性化
+```yml
+# 添加配置文件
+db1:
+  jdbcUrl: jdbc:mysql://127.0.0.1:3306/easy-query-test?serverTimezone=GMT%2B8&characterEncoding=utf-8&useSSL=false&allowMultiQueries=true&rewriteBatchedStatements=true
+  username: root
+  password: root
+  driver-class-name: com.mysql.cj.jdbc.Driver
+
+easy-query: 
+  # 配置自定义日志
+  # log-class: ...
+  db1:
+    # 支持mysql pgsql h2等其余数据库在适配中
+    database: mysql
+    # 支持underlined default
+    name-conversion: underlined
+    # 物理删除时抛出异常 不包括手写sql的情况
+    delete-throw: true
+    # 插入列策略 all_columns only_not_null_columns only_null_columns
+    insert-strategy: only_not_null_columns 
+    # 更新列策略 all_columns only_not_null_columns only_null_columns
+    update-strategy: all_columns connection_strictly
+    # 大字段依旧查询 如果不查询建议设置为updateIgnore防止update allcolumn将其改为null
+    query-large-column: true
+    # 分片链接模式 system_auto memory_strictly
+    # connection-mode: ...
+    # max-sharding-query-limit: ...
+    # executor-maximum-pool-size: ...
+    # executor-core-pool-size: ...
+    # throw-if-route-not-match: ...
+    # sharding-execute-timeout-millis: ...
+    # max-sharding-route-count: ...
+    # executor-queue-size: ...
+    # default-data-source-name: ...
+    # default-data-source-merge-pool-size: ...
+    # multi-conn-wait-timeout-millis: ...
+    # warning-busy: ...
+    # insert-batch-threshold: ...
+    # update-batch-threshold: ...
+    # print-sql: ...
+    # start-time-job: ...
+    # default-track: ...
+    # relation-group-size: ...
+
+# 记录器级别的配置示例 配置了print-sql没有配置对应的log也不会打印
+solon.logging.logger:
+  "root": #默认记录器配置
+    level: TRACE
+  "com.zaxxer.hikari":
+    level: WARN
+```
