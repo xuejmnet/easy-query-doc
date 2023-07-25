@@ -72,6 +72,22 @@ public class TestController {
 ```
 
 ### Solon启动
+```yml
+# 添加配置文件
+db1:
+  jdbcUrl: jdbc:mysql://127.0.0.1:3306/easy-query-test?serverTimezone=GMT%2B8&characterEncoding=utf-8&useSSL=false&allowMultiQueries=true&rewriteBatchedStatements=true
+  username: root
+  password: root
+  driver-class-name: com.mysql.cj.jdbc.Driver
+
+# 记录器级别的配置示例
+solon.logging.logger:
+  "root": #默认记录器配置
+    level: TRACE
+  "com.zaxxer.hikari":
+    level: WARN
+```
+
 ```java
 public class Main {
     public static void main(String[] args) {
