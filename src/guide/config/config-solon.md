@@ -4,7 +4,7 @@ title: 国产框架Solon配置
 
 ## 国产框架Solon配置
 
-`easy-query`在`^1.2.7`正式支持`Solon`适配国产框架的orm部分。
+`easy-query`在`^1.2.6`正式支持`Solon`适配国产框架的orm部分。
 
 ## 什么是Solon
 [`Solon`](https://solon.noear.org/) **Java 新的生态型应用开发框架：更快、更小、更简单。**
