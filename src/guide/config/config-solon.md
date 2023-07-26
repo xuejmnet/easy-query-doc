@@ -206,3 +206,100 @@ solon.logging.logger:
   "com.zaxxer.hikari":
     level: WARN
 ```
+
+### 额外配置
+
+#### 逻辑删除
+```java
+
+public class MyLogicDelStrategy extends AbstractLogicDeleteStrategy {
+    /**
+     * 允许datetime类型的属性
+     */
+    private final Set<Class<?>> allowTypes=new HashSet<>(Arrays.asList(LocalDateTime.class));
+    @Override
+    protected SQLExpression1<WherePredicate<Object>> getPredicateFilterExpression(LogicDeleteBuilder builder, String propertyName) {
+        return o->o.isNull(propertyName);
+    }
+
+    @Override
+    protected SQLExpression1<ColumnSetter<Object>> getDeletedSQLExpression(LogicDeleteBuilder builder, String propertyName) {
+//        LocalDateTime now = LocalDateTime.now();
+//        return o->o.set(propertyName,now);
+        //上面的是错误用法,将now值获取后那么这个now就是个固定值而不是动态值
+        return o->o.set(propertyName, LocalDateTime.now());
+    }
+
+    @Override
+    public String getStrategy() {
+        return "MyLogicDelStrategy";
+    }
+
+    @Override
+    public Set<Class<?>> allowedPropertyTypes() {
+        return allowTypes;
+    }
+}
+
+
+@Configuration
+public class DemoConfiguration {
+    @Bean(value = "db1")
+    public DataSource db1DataSource(@Inject("${db1}") HikariDataSource dataSource){
+        return dataSource;
+    }
+    @Bean(value = "db1")
+    public void db1QueryConfiguration(@Db("db1") QueryConfiguration configuration){
+        configuration.applyLogicDeleteStrategy(new MyLogicDelStrategy());
+//        configuration.applyEncryptionStrategy(...);
+//        configuration.applyInterceptor(...);
+//        configuration.applyShardingInitializer(...);
+//        configuration.applyValueConverter(...);
+//        configuration.applyValueUpdateAtomicTrack(...);
+    }
+    
+}
+
+```
+
+### Solon所有配置
+```java
+
+@Configuration
+public class DemoConfiguration {
+    @Bean(value = "db1")
+    public DataSource db1DataSource(@Inject("${db1}") HikariDataSource dataSource){
+        return dataSource;
+    }
+
+//    /**
+//     * 配置额外插件,比如自定义逻辑删除,加密策略,拦截器,分片初始化器,值转换,原子追踪更新
+//     * @param configuration
+//     */
+//    @Bean(value = "db1")
+//    public void db1QueryConfiguration(@Db("db1") QueryConfiguration configuration){
+//        configuration.applyLogicDeleteStrategy(new MyLogicDelStrategy());
+//        configuration.applyEncryptionStrategy(...);
+//        configuration.applyInterceptor(...);
+//        configuration.applyShardingInitializer(...);
+//        configuration.applyValueConverter(...);
+//        configuration.applyValueUpdateAtomicTrack(...);
+//    }
+
+//    /**
+//     * 添加分表或者分库的路由,分库数据源
+//     * @param runtimeContext
+//     */
+//    @Bean(value = "db1")
+//    public void db1QueryRuntimeContext(@Db("db1") QueryRuntimeContext runtimeContext){
+//        TableRouteManager tableRouteManager = runtimeContext.getTableRouteManager();
+//        DataSourceRouteManager dataSourceRouteManager = runtimeContext.getDataSourceRouteManager();
+//        tableRouteManager.addRoute(...);
+//        dataSourceRouteManager.addRoute(...);
+//
+//        DataSourceManager dataSourceManager = runtimeContext.getDataSourceManager();
+//
+//        dataSourceManager.addDataSource(key, dataSource, poolSize);
+//    }
+}
+```
