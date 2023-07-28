@@ -7,7 +7,7 @@ order: 10
 
 ## 获取最新
 
-[https://central.sonatype.com/](https://central.sonatype.com/) 搜索`easy-query`获取最新安装包
+[https://central.sonatype.com/](https://central.sonatype.com/) 搜索`com.easy-query`获取最新安装包
 
 ## api接口选型
 目前`easy-query`支持三种api接口方式：字符串属性,lambda属性,代理属性三种api接口调用,且可以互相调用
