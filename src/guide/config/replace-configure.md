@@ -13,6 +13,7 @@ title: 替换框架行为❗️❗️❗️
 ```java
 
     private void defaultConfiguration() {
+        
         replaceService(EasyQueryDataSource.class, DefaultEasyQueryDataSource.class)
                 .replaceService(Dialect.class, DefaultDialect.class)
                 .replaceService(NameConversion.class, UnderlinedNameConversion.class)
@@ -49,6 +50,8 @@ title: 替换框架行为❗️❗️❗️
                 .replaceService(DataSourceUnitFactory.class, DefaultDataSourceUnitFactory.class)
                 .replaceService(SQLSegmentFactory.class, DefaultSQLSegmentFactory.class)
                 .replaceService(EasyTimeJobManager.class, DefaultEasyTimeJobManager.class)
+                .replaceService(IncludeProcessorFactory.class, EasyIncludeProcessorFactory.class)
+                .replaceService(IncludeParserEngine.class, DefaultIncludeParserEngine.class)
                 .replaceService(EasyQueryClient.class, DefaultEasyQueryClient.class);
     }
 ```

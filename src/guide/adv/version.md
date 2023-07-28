@@ -1,5 +1,5 @@
 ---
-title: 版本号
+title: 乐观锁版本号
 order: 50
 ---
 # 版本号
@@ -56,7 +56,7 @@ nextVersion | 当前版本信息和对应的属性和对象信息  | 返回更�
 - `VersionIntStrategy`列对象为`int`,next version为当前version+1
 - `VersionLongStrategy`列对象为`long`,next version为当前version+1
 - `VersionUUIDStrategy`列对象为`string`,next version为当`UUID.randomUUID().toString().replaceAll("-","")`
-- `VersionTimestampStrategy`列对象为`long`,next version为当`System.currentTimeMillis()`
+- `VersionTimestampStrategy`列对象为`long`,next version为当`System.currentTimeMillis()` (不推荐)
 
 ## 测试数据
 

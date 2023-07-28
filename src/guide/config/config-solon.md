@@ -15,7 +15,7 @@ title: 国产框架Solon配置
 
 ## 获取最新
 
-[https://central.sonatype.com/](https://central.sonatype.com/) 搜索`easy-query`获取最新安装包
+[https://central.sonatype.com/](https://central.sonatype.com/) 搜索`com.easy-query`获取最新安装包
 
 ## 快速开始
 ## 新建java maven项目
@@ -167,9 +167,9 @@ easy-query:
   # 配置自定义日志
   # log-class: ...
   db1:
-    # 支持mysql pgsql h2等其余数据库在适配中
+    # 支持mysql pgsql h2 mssql dameng等其余数据库在适配中
     database: mysql
-    # 支持underlined default
+    # 支持underlined default lower_camel_case upper_camel_case upper_underlined
     name-conversion: underlined
     # 物理删除时抛出异常 不包括手写sql的情况
     delete-throw: true
