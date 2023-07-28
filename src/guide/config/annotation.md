@@ -130,3 +130,4 @@ value | - | 自行定义版本号策略
 - VersionLongStrategy
 - VersionTimestampStrategy (不推荐)
 - VersionUUIDStrategy
+
