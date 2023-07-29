@@ -116,7 +116,7 @@ public class Topic {
     @UpdateIgnore //逻辑删除字段不需要update时更新
     private Boolean deleted;
 }
-
+```
 ## Version
 乐观锁也就是版本号
 
