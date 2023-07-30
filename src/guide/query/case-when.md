@@ -20,7 +20,7 @@ SQLProxyFunc | 支持`EasyProxyQuery`表达式api   | SQLProxyFunc.caseWhenBuild
 List<Topic> list = easyProxyQuery.queryable(TopicProxy.DEFAULT)
                 .where((filter, t) -> filter.like(t.title(), "someTitle"))
                 .select(TopicProxy.DEFAULT, (selector, t) -> selector
-                        .sqlColumnAs(
+                        .sqlSegmentAs(
                                 SQLProxyFunc.caseWhenBuilder(selector)
                                         .caseWhen(f -> f.eq(t.title(), "123"), "111")
                                         .caseWhen(f -> f.eq(t.title(), "456"), "222")
@@ -38,7 +38,7 @@ List<Topic> list = easyProxyQuery.queryable(TopicProxy.DEFAULT)
 List<Topic> list = easyQuery.queryable(Topic.class)
                 .where(t -> t.like(Topic::getTitle, "someTitle"))
                 .select(Topic.class, t -> t
-                        .sqlColumnAs(
+                        .sqlSegmentAs(
                                 SQL4JFunc.caseWhenBuilder(t)
                                         .caseWhen(f -> f.eq(Topic::getTitle, "123"), "111")
                                         .caseWhen(f -> f.eq(Topic::getTitle, "456"), "222")
@@ -56,7 +56,7 @@ List<Topic> list = easyQuery.queryable(Topic.class)
 List<Topic> list = easyQueryClient.queryable(Topic.class)
                 .where(t -> t.like("title", "someTitle"))
                 .select(Topic.class, t -> t
-                        .sqlColumnAs(
+                        .sqlSegmentAs(
                                 SQLClientFunc.caseWhenBuilder(t)
                                         .caseWhen(f -> f.eq("title", "123"), "111")
                                         .caseWhen(f -> f.eq("title", "456"), "222")
@@ -78,7 +78,7 @@ List<Topic> list = easyQuery.queryable(Topic.class)
                     .innerJoin(BlogEntity.class,(t,t1)->t.eq(t1,Topic::getId,BlogEntity::getId))
                     .where(t -> t.like(Topic::getTitle, "someTitle"))
                     .select(Topic.class, (t,t1) -> t
-                            .sqlColumnAs(
+                            .sqlSegmentAs(
                                     SQL4JFunc.caseWhenBuilder(t,t1)
                                             .caseWhen((f,f1) -> f.eq(Topic::getTitle, "123").then(f1).le(BlogEntity::getStar,100), "111")
                                             .caseWhen((f,f1) -> f.eq(Topic::getTitle, "456").then(f1).ge(BlogEntity::getStar,200), "222")
