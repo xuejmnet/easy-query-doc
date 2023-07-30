@@ -8,10 +8,10 @@ title: 自定义SQL片段
 
 如何设计api完全可以看用户自行实现。
 
-## sqlColumnAs
+## sqlSegmentAs
 最好是封装自行实现
 
-## columnConst
+## sqlNativeSegment
 无需编写复杂封装代码
 
 ## 分组求第一条
@@ -37,8 +37,8 @@ public class H2BookTest {
 
 String sql = easyQuery.queryable(H2BookTest.class)
             .select(o -> o.columnAll()
-                    .columnConst("rank() over(order by {0} desc) as rank1", it -> it.expression(H2BookTest::getPrice))
-                    .columnConst("rank() over(partition by {0} order by {1} desc) as rank2", it -> it
+                    .sqlNativeSegment("rank() over(order by {0} desc) as rank1", it -> it.expression(H2BookTest::getPrice))
+                    .sqlNativeSegment("rank() over(partition by {0} order by {1} desc) as rank2", it -> it
                             .expression(H2BookTest::getStoreId)
                             .expression(H2BookTest::getPrice)
                     )
@@ -58,8 +58,8 @@ FROM t_book_test
 String sql = easyQuery.queryable(H2BookTest.class)
         .asAlias("x")
         .select(o -> o.columnAll()
-                .columnConst("rank() over(order by {0} desc) as rank1", it -> it.expression(H2BookTest::getPrice))
-                .columnConst("rank() over(partition by {0} order by {1} desc) as rank2", it -> it
+                .sqlNativeSegment("rank() over(order by {0} desc) as rank1", it -> it.expression(H2BookTest::getPrice))
+                .sqlNativeSegment("rank() over(partition by {0} order by {1} desc) as rank2", it -> it
                         .expression(H2BookTest::getStoreId)
                         .expression(H2BookTest::getPrice)
                 )
