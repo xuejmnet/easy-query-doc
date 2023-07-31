@@ -179,6 +179,8 @@ easy-query:
     update-strategy: all_columns connection_strictly
     # 大字段依旧查询 如果不查询建议设置为updateIgnore防止update allcolumn将其改为null
     query-large-column: true
+    # 更新删除无版本号报错
+    no-version-error: true
     # 分片链接模式 system_auto memory_strictly
     # connection-mode: ...
     # max-sharding-query-limit: ...
