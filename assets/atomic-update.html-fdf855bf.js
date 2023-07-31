@@ -1,0 +1,1 @@
+import{_ as e}from"./plugin-vue_export-helper-c27b6911.js";import{o as t,c}from"./app-a3ddca7d.js";const o={};function r(a,_){return t(),c("div")}const s=e(o,[["render",r],["__file","atomic-update.html.vue"]]);export{s as default};
