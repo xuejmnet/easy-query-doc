@@ -5,6 +5,10 @@ order: 50
 # 版本号
 `easy-query`提供了自动版本号功能，可以保证在高并发下数据一致性更新的问题。
 
+## 相关配置
+
+`noVersionError`默认为`true`当对象有Version字段并且更新修改不存在version字段将会报错,可以通过`noVersionError`或者`noVersionIgnore`来配置
+
 ## demo数据
 
 ::: code-tabs
@@ -105,12 +109,13 @@ Assert.assertEquals(1,l2);
 
 ### 表达式更新
 
-表达式删除必须要添加`withVersion`否则将不会使用行版本更新
+表达式删除必须要添加`withVersion`否则将不会使用行版本更新,并且如果配置或者没有配置`noVersionError`(默认true)将会报错,可以通过`noVersionIgnore`来忽略
 ```java
 //whereById主键更新
 long l2 = easyQuery.updatable(SysUserVersionLong.class)
         .set(SysUserVersionLong::getPhone, "123")
         .whereById(id)
+        .noVersionIgnore()
         .executeRows();
 Assert.assertEquals(1,l2);
 
@@ -121,6 +126,7 @@ Assert.assertEquals(1,l2);
 
 //where表达式更新
 long l3 = easyQuery.updatable(SysUserVersionLong.class)
+        .noVersionIgnore()
         .set(SysUserVersionLong::getPhone, "123")
         .where(o->o.eq(SysUserVersionLong::getId,id))
         .executeRows();
@@ -146,7 +152,7 @@ Assert.assertEquals(1,l4);
 
 
 ## 逻辑删除加版本号
-逻辑删除情况下删除数据将会对数据列进行行版本追加,并且where条件也会追加版本号，如果禁用逻辑删,那么行版本的追加只会纯在与where条件的追加
+逻辑删除情况下删除数据将会对数据列进行行版本追加,并且where条件也会追加版本号，如果禁用逻辑删,那么行版本的追加只会纯在与where条件的追加,并且如果配置或者没有配置`noVersionError`(默认true)将会报错,可以通过`noVersionIgnore`来忽略
 ::: code-tabs
 @tab SysUserVersionLongLogicDel
 ```java
@@ -245,6 +251,18 @@ Assert.assertEquals(1,l2);
 
 
 ==> Preparing: UPDATE t_sys_user_version_del SET `deleted` = ?,`version` = ? WHERE `deleted` = ? AND `version` = ? AND `id` = ?
+==> Parameters: true(Boolean),2(Long),false(Boolean),1(Long),5(String)
+<== Total: 1
+
+
+
+long l2 = easyQuery.deletable(SysUserVersionLongLogicDel.class)
+        .noVersionIgnore()
+        .whereById(id).executeRows();
+Assert.assertEquals(1,l2);
+
+
+==> Preparing: UPDATE t_sys_user_version_del SET `deleted` = ? WHERE `deleted` = ? AND `id` = ?
 ==> Parameters: true(Boolean),2(Long),false(Boolean),1(Long),5(String)
 <== Total: 1
 ```
