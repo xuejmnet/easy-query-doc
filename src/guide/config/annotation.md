@@ -131,3 +131,22 @@ value | - | 自行定义版本号策略
 - VersionTimestampStrategy (不推荐)
 - VersionUUIDStrategy
 
+#### VersionIntStrategy
+//这边使用的是Version=2也可以使用version+1但是其实是一样的因为where后面限定了version=1
+```sql
+update table set version=2 where id=xxx and version=1
+```
+#### VersionLongStrategy
+//这边使用的是Version=2也可以使用version+1但是其实是一样的因为where后面限定了version=1
+```sql
+update table set version=2 where id=xxx and version=1
+```
+
+#### VersionUUIDStrategy
+```sql
+update table set version=xxxxxxasd where id=xxx and version=xxxxasdasd
+```
+
+
+## Encryption
+列加密
