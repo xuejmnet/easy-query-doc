@@ -9,6 +9,12 @@ title: 大数据流式查询返回❗️❗️❗️
 > 需要配合java8的`try resource`或者`try finally close`来关闭资源,并且需要自行处理`SQLException`,和`mybatis`不同的是期间无需开始事务也可以使用
 :::
 
+::: tip 注意
+> 如果本次采用toStreamResult那么将不会支持`include`和`fillMany`和`fillOne`的api
+:::
+
+
+
 ## 案例
 ```java
 

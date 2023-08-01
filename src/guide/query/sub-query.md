@@ -1,5 +1,5 @@
 ---
-title: 子查询
+title: 子查询 In/Exists
 ---
 # 子查询
 `easy-qeury`提供支持子查询包括`exists`、`not exists`、`in`、`not in`

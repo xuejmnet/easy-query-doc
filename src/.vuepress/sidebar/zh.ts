@@ -4,6 +4,7 @@ export const zhSidebar = sidebar({
   "/": [
     "",
     "question",
+    "db_support",
     {
       text: "文档",
       icon: "note",
@@ -22,7 +23,7 @@ export const zhSidebar = sidebar({
         {
           text: "查询",
           prefix: "query/",
-          children: ["readme.md","or-condition","paging","multi-query","group","select","native-sql","dynamic-table","stream-query","basic-type","to-map","select-column","union","select-sub","sub-query","relation","where","reuse","case-when","client-dynaimic-where","client-dynamic-sort"],
+          children: ["readme.md","or-condition","paging","multi-query","group","select","native-sql","dynamic-table","stream-query","basic-type","to-map","select-column","union","select-sub","sub-query","relation","fill","where","reuse","case-when","client-dynaimic-where","client-dynamic-sort"],
         },
         {
           text: "高级",
