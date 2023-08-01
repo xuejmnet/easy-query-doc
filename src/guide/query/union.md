@@ -1,5 +1,5 @@
 ---
-title: 联合查询
+title: 联合查询 UNION (ALL)
 order: 80
 ---
 
