@@ -149,4 +149,33 @@ update table set version=xxxxxxasd where id=xxx and version=xxxxasdasd
 
 
 ## Encryption
-列加密
+列加密,支持自定义数据加密存储,并且支持在数据库层面进行like搜索处理,拥有非常高的性能,并不是利用数据库加解密函数
+
+### EncryptionStrategy
+用来处理如何加密解密数据策略,可以自定义实现
+
+默认实现有一个aes+base64的`AbstractAesBase64EncryptionStrategy`抽象类,用户需要返回16位的向量和秘钥
+
+### supportQueryLike
+用来表示是否需要支持like搜索,如果true那么就会在入参参数中对其进行分段加密
+
+## Navigate
+导航属性 用在数据库对象和返回结果上面用于处理一对一，一对多，多对一，多对多
+
+## ShardingDataSourceKey
+用来标识当前对象的数据库分库键是哪个
+
+## ShardingExtraDataSourceKey
+用来标识当前对象是数据库分库额外分库键是哪个
+
+## ShardingTableKey
+用来标识当前对象的数据库分表键是哪个
+
+## ShardingExtraTableKey
+用来标识当前对象的数据库分表额外键是哪个
+
+## EasyWhereCondition
+默认的动态条件对象查询条件
+
+## EasyQueryTrack
+默认的追踪上下文注解也可以自定义
