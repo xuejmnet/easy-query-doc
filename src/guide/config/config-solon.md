@@ -27,7 +27,7 @@ title: 国产框架Solon配置
 <dependency>
     <groupId>com.easy-query</groupId>
     <artifactId>sql-solon-plugin</artifactId>
-    <version>1.2.6</version>
+    <version>latest-version</version>
     <scope>compile</scope>
 </dependency>
 <dependency>
