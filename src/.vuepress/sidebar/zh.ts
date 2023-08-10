@@ -28,7 +28,7 @@ export const zhSidebar = sidebar({
         {
           text: "高级",
           prefix: "adv/",
-          children: ["readme.md","logic-delete","interceptor","batch","column-encryption","data-tracking","version","column-func","atomic-update"],
+          children: ["readme.md","logic-delete","interceptor","batch","column-encryption","column-sql-func-auto","data-tracking","version","column-func","atomic-update"],
         },
         {
           text: "超级",

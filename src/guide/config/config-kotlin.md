@@ -12,7 +12,7 @@ order: 10
 ## spring-boot工程
 ```xml
 <properties>
-    <easy-query.version>last-version</easy-query.version>
+    <easy-query.version>latest-version</easy-query.version>
 </properties>
 <dependency>
     <groupId>com.easy-query</groupId>
@@ -30,7 +30,7 @@ order: 10
 ## spring-boot初始化
 ```xml
 <properties>
-    <easy-query.version>last-version</easy-query.version>
+    <easy-query.version>latest-version</easy-query.version>
 </properties>
 <dependency>
     <groupId>com.easy-query</groupId>
@@ -70,7 +70,7 @@ private EasyProxyQuery easyProxyQuery;//对EasyQueryClient的增强通过apt代�
 ```xml
 
 <properties>
-    <easy-query.version>last-version</easy-query.version>
+    <easy-query.version>latest-version</easy-query.version>
 </properties>
 <!--  提供了代理模式支持apt模式以非lambda形式的强类型sql语法 -->
 <dependency>

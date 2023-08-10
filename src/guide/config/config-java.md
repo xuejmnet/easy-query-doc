@@ -16,7 +16,7 @@ order: 10
 @tab lambda属性
 ```xml
 <properties>
-    <easy-query.version>last-version</easy-query.version>
+    <easy-query.version>latest-version</easy-query.version>
 </properties>
 <!--  提供了以java语法强类型,如果不引用也可以使用只是无法使用lambda表达式来表示属性只能用字符串 -->
 <dependency>
@@ -34,7 +34,7 @@ order: 10
 @tab 代理属性
 ```xml
 <properties>
-    <easy-query.version>last-version</easy-query.version>
+    <easy-query.version>latest-version</easy-query.version>
 </properties>
 <!--  提供了代理模式支持apt模式以非lambda形式的强类型sql语法 -->
 <dependency>
@@ -58,7 +58,7 @@ order: 10
 @tab 字符串属性
 ```xml
 <properties>
-    <easy-query.version>last-version</easy-query.version>
+    <easy-query.version>latest-version</easy-query.version>
 </properties>
 <!--  这边以mysql为例 其实不需要添加下面的包也可以运行,指示默认的个别数据库行为语句没办法生成 -->
 <dependency>
@@ -153,7 +153,7 @@ Topic topic =  easyQueryClient.queryable(Topic.class)
 ```xml
 
 <properties>
-    <easy-query.version>last-version</easy-query.version>
+    <easy-query.version>latest-version</easy-query.version>
 </properties>
 <!--  提供了代理模式支持apt模式以非lambda形式的强类型sql语法 -->
 <dependency>

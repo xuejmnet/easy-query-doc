@@ -14,7 +14,7 @@ title: SpringBoot配置
 ## spring-boot工程
 ```xml
 <properties>
-    <easy-query.version>last-version</easy-query.version>
+    <easy-query.version>latest-version</easy-query.version>
 </properties>
 <dependency>
     <groupId>com.easy-query</groupId>
