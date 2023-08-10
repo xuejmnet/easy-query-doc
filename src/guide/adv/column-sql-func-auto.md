@@ -27,8 +27,8 @@ AES_DECRYPT(from_base64('手机号列'),'秘钥') | 将数据进行base64解码,
 
 方法  | 作用域 | 说明
 --- | ---  | ---
-columnConverter | 仅作用到select投影上面 | 用于做数据库列到java对象字段的函数处理比如 [AES_DECRYPT(from_base64(`phone`),'秘钥')]
-valueConverter | 仅作用到insert,update set值,where条件值 | 用于做java对象字段到数据库列的函数处理比如 [AES_DECRYPT(from_base64('手机号列'),'秘钥')]
+columnConvert | 仅作用到select投影上面 | 用于做数据库列到java对象字段的函数处理比如 [AES_DECRYPT(from_base64(`phone`),'秘钥')]
+valueConvert | 仅作用到insert,update set值,where条件值 | 用于做java对象字段到数据库列的函数处理比如 [AES_DECRYPT(from_base64('手机号列'),'秘钥')]
 
 ```java
 
@@ -41,7 +41,7 @@ public interface ColumnValueSQLConverter {
      * @param columnMetadata
      * @param sqlPropertyConverter
      */
-    void columnConverter(TableAvailable table, ColumnMetadata columnMetadata, SQLPropertyConverter sqlPropertyConverter, QueryRuntimeContext runtimeContext);
+    void columnConvert(TableAvailable table, ColumnMetadata columnMetadata, SQLPropertyConverter sqlPropertyConverter, QueryRuntimeContext runtimeContext);
 
     /**
      * insert update entity
@@ -52,7 +52,7 @@ public interface ColumnValueSQLConverter {
      * @param sqlParameter
      * @param sqlPropertyConverter
      */
-    void valueConverter(TableAvailable table, ColumnMetadata columnMetadata, SQLParameter sqlParameter, SQLPropertyConverter sqlPropertyConverter, QueryRuntimeContext runtimeContext);
+    void valueConvert(TableAvailable table, ColumnMetadata columnMetadata, SQLParameter sqlParameter, SQLPropertyConverter sqlPropertyConverter, QueryRuntimeContext runtimeContext);
 }
 
 ```
@@ -67,7 +67,7 @@ public class MySQLAesEncryptColumnValueSQLConverter implements ColumnValueSQLCon
      */
     private static final String SECRET="1234567890123456";
     @Override
-    public void columnConverter(TableAvailable table, ColumnMetadata columnMetadata, SQLPropertyConverter sqlPropertyConverter, QueryRuntimeContext runtimeContext) {
+    public void columnConvert(TableAvailable table, ColumnMetadata columnMetadata, SQLPropertyConverter sqlPropertyConverter, QueryRuntimeContext runtimeContext) {
 //        Dialect dialect = runtimeContext.getQueryConfiguration().getDialect();
         sqlPropertyConverter.sqlNativeSegment("AES_DECRYPT(from_base64({0}),{1})",context->{
            context
@@ -79,7 +79,7 @@ public class MySQLAesEncryptColumnValueSQLConverter implements ColumnValueSQLCon
     }
 
     @Override
-    public void valueConverter(TableAvailable table, ColumnMetadata columnMetadata, SQLParameter sqlParameter, SQLPropertyConverter sqlPropertyConverter, QueryRuntimeContext runtimeContext) {
+    public void valueConvert(TableAvailable table, ColumnMetadata columnMetadata, SQLParameter sqlParameter, SQLPropertyConverter sqlPropertyConverter, QueryRuntimeContext runtimeContext) {
         sqlPropertyConverter.sqlNativeSegment("to_base64(AES_ENCRYPT({0},{1}))",context->{
             context.value(sqlParameter).value(SECRET);
         });
