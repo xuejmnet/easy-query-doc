@@ -84,7 +84,7 @@ long l = easyQuery.sqlExecute("update t_blog set content=? where id=?", Arrays.a
 说明
 
 - `sqlNativeSegment`一次个参数为原生数据库片段
-- 第二个参数为表达式,如果第一个原生sql片段存在变量比如表列或者参数值,那么可以通过第二个参数lambda选择`expression`或者`value`，`expreesion`传入当前表的属性表达式或者制定表的,value传递常量值
+- 第二个参数为表达式,如果第一个原生sql片段存在变量比如表列或者参数值,那么可以通过第二个参数lambda选择`expression`或者`value`或`constValue`，`expreesion`传入当前表的属性表达式或者制定表的,value传递常量值会议参数形式体现在片段上,`constValue`会拼接到字符串上,拼接的规则底层为`MessageFormat`仅需满足此即可
 
 
 ## 案例二
