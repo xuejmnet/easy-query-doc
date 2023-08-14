@@ -73,8 +73,7 @@ public class MySQLAesEncryptColumnValueSQLConverter implements ColumnValueSQLCon
            context
                    .expression(columnMetadata.getPropertyName())//采用变量是因为可能出现join附带别名所以需要变量
                    .value(SECRET)
-                   .setAlias(columnMetadata.getName());
-                   //.constValue(dialect.getQuoteName(columnMetadata.getName()));//如果这边也是用变量就会导致join下不是别名而是带具体表的列比如:t.`phone`
+                   .setAlias(columnMetadata.getName());//如果这边也是用变量就会导致join下不是别名而是带具体表的列比如:t.`phone`
         });
     }
 
