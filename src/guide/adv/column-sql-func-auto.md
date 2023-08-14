@@ -194,3 +194,6 @@ SysUserSQLEncryption sysUserSQLEncryption1 = easyQuery.queryable(SysUserSQLEncry
 ::: warning 说明!!!
 > 如果采用加密对进行处理那么默认是不支持like函数的,因为为了高性能默认easy-query采用的是对表达式条件值进行加密匹配而不是数据库列解密匹配,如果需要支持解密可以采用上一篇文章的加密方式,可以实现高性能的加密列like
 :::
+
+## 相关博客
+- [《数据库列加密解密脱敏》](https://www.cnblogs.com/xuejiaming/p/17619102.html)
