@@ -111,12 +111,12 @@ List<BlogEntity> result = easyQuery.queryable(BlogEntity.class)
 ```
 
 ## 条件接受
-`ConditionAccepter` 条件接收器,`Queryable`默认行为`ConditionAllAccepter.DEFAULT`所有的条件都接受,框架提供了一个可选`ConditionDefaultAccepter.DEFAULT`当传入的条件参数值非null且字符串的情况下非空那么才会增加到条件里面,仅where条件生效。
+`1.4.1^`以上版本支持`ConditionAccepter` 条件接收器,`Queryable`默认行为`ConditionAllAccepter.DEFAULT`所有的条件都接受,框架提供了一个可选`ConditionDefaultAccepter.DEFAULT`当传入的条件参数值非null且字符串的情况下非空那么才会增加到条件里面,仅where条件生效。
 
 用户也可以自定义实现接口
 ```java
 public interface ConditionAccepter {
-    boolean accept(Object value);
+    boolean accept(TableAvailable table, String property, Object value);
 }
 
 public class ConditionAllAccepter implements ConditionAccepter {
@@ -125,7 +125,7 @@ public class ConditionAllAccepter implements ConditionAccepter {
 
     }
     @Override
-    public boolean accept(Object value) {
+    public boolean accept(TableAvailable table, String property, Object value) {
         return true;
     }
 }
@@ -133,7 +133,7 @@ public class ConditionAllAccepter implements ConditionAccepter {
 public class ConditionDefaultAccepter implements ConditionAccepter {
     public static final ConditionAccepter DEFAULT=new ConditionDefaultAccepter();
     @Override
-    public boolean accept(Object value) {
+    public boolean accept(TableAvailable table, String property, Object value) {
         if(value==null){
             return false;
         }
@@ -162,6 +162,34 @@ public class ConditionDefaultAccepter implements ConditionAccepter {
 // LEFT JOIN `t_blog` t2 ON t2.`deleted` = ? AND t.`id` = t2.`id` 
 // LEFT JOIN `t_blog` t3 ON t3.`deleted` = ? AND t.`id` = t3.`id` 
 // LIMIT 2 OFFSET 1
+   
+```
+
+条件拦截,加入我的where条件大部分都符合极个别不符合可以通过提前返回不符的来保证剩余的都可以进行
+```java
+String id="";
+String userName=null;
+String nickname="BBB";
+Boolean leftEnable=true;
+
+
+    String sql = easyQuery.queryable(DefTable.class)
+            .leftJoin(DefTableLeft1.class, (t, t1) -> t.eq(t1, DefTable::getId, DefTableLeft1::getDefId))
+            .conditionConfigure((t, p, v) -> {//分别是table，property，value
+                if ("id".equals(p)) { //无论.eq(DefTable::getId, id) 这个方法属性为id的比较是啥结果都会添加到条件里面
+                    return true;
+                }
+                return ConditionDefaultAccepter.DEFAULT.accept(t, p, v);
+            })
+            .where((t, t1) -> t
+                    .eq(DefTable::getId, id)//虽然id为空但是还是加入到了sql中
+                    .eq(DefTable::getUserName, userName)
+                    .eq(DefTable::getNickname, nickname)
+                    .then(t1).eq(DefTableLeft1::getEnable, leftEnable)).toSQL();
+// SELECT t.id,t.user_name,t.nickname,t.enable,t.score,t.mobile,t.avatar,t.number,t.status,t.created,t.options FROM t_def_table t 
+// LEFT JOIN t_def_table_left1 t1 ON t.id = t1.def_id 
+// WHERE t.id = ? AND t.nickname = ? AND t1.enable = ?
+       
    
 ```
 
