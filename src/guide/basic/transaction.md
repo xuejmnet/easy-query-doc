@@ -16,7 +16,7 @@ registerListener(TransactionListener transactionBehavior)| | 设置当前事务�
 close |   | 关闭事务,如果事务为提交则自动调用回滚
 
 ## 如何开启
-`springboot`不支持`this.method()`的非代理对象方法调用事务,有时候你可能需要这个方法那么可以在`springboot`中通过beginTransaction来开启事务,默认不支持和springboot的嵌套事务,不可以在`@Transactional`内开启`easy-query`的事务
+`springboot`如果当前方法没有添加`@Transactional`注解,内部调用`this.method()`的非代理对象方法调用事务,哪怕`this.method()`有注解`@Transactional`也会让事务失效,有时候你可能需要这个方法那么可以在`springboot`中通过beginTransaction来开启事务,默认不支持和springboot的嵌套事务,不可以在`@Transactional`内开启`easy-query`的事务
 ```java
 
 public void test(){
