@@ -47,11 +47,10 @@ private EasyProxyQuery easyProxyQuery;//对EasyQueryClient的增强通过apt代�
 
 
 ## springboot多数据源
-因为`easy-query`默认仅支持但数据源如果需要支持多数据源可以通过手动构建`EasyQuery`的Bean实例
+因为`easy-query`默认仅支持单数据源如果需要支持多数据源可以通过手动构建`EasyQuery`的Bean实例
 
 ```java
-@Bean
-    @ConditionalOnMissingBean
+    @Bean("ds2")
     public EasyQuery easyQuery(DataSource dataSource) {
         EasyQueryClient easyQueryClient = EasyQueryBootstrapper.defaultBuilderConfiguration()
                 .setDefaultDataSource(dataSource)
