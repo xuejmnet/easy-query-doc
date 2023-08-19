@@ -110,6 +110,64 @@ List<BlogEntity> result = easyQuery.queryable(BlogEntity.class)
 <== Total: 0
 ```
 
+## 条件接受
+`ConditionAccepter` 条件接收器,`Queryable`默认行为`ConditionAllAccepter.DEFAULT`所有的条件都接受,框架提供了一个可选`ConditionDefaultAccepter.DEFAULT`当传入的条件参数值非null且字符串的情况下非空那么才会增加到条件里面,仅where条件生效。
+
+用户也可以自定义实现接口
+```java
+public interface ConditionAccepter {
+    boolean accept(Object value);
+}
+
+public class ConditionAllAccepter implements ConditionAccepter {
+    public static final ConditionAccepter DEFAULT=new ConditionAllAccepter();
+    private ConditionAllAccepter(){
+
+    }
+    @Override
+    public boolean accept(Object value) {
+        return true;
+    }
+}
+
+public class ConditionDefaultAccepter implements ConditionAccepter {
+    public static final ConditionAccepter DEFAULT=new ConditionDefaultAccepter();
+    @Override
+    public boolean accept(Object value) {
+        if(value==null){
+            return false;
+        }
+        if(value instanceof String){
+            return EasyStringUtil.isNotBlank((String) value);
+        }
+        return false;
+    }
+}
+
+```
+
+```java
+  String toSql = easyQuery
+                .queryable(Topic.class)
+                .leftJoin(BlogEntity.class, (t, t1) -> t.eq(t1, Topic::getId, BlogEntity::getId))
+                .leftJoin(BlogEntity.class, (t,t1, t2) -> t.eq(t2, Topic::getId, BlogEntity::getId))
+                .leftJoin(BlogEntity.class, (t, t1, t2, t3) -> t.eq(t3, Topic::getId, BlogEntity::getId))
+                .conditionConfigure(ConditionDefaultAccepter.DEFAULT)//设置非null字符串非空 后续的where才会添加到条件中
+                .where(o -> o.eq(Topic::getId, ""))
+                //.conditionConfigure(ConditionAllAccepter.DEFAULT)//恢复如果后面没有自定义where那么不需要恢复
+                .limit(1, 2)
+                .toSQL();
+// SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM `t_topic` t 
+// LEFT JOIN `t_blog` t1 ON t1.`deleted` = ? AND t.`id` = t1.`id` 
+// LEFT JOIN `t_blog` t2 ON t2.`deleted` = ? AND t.`id` = t2.`id` 
+// LEFT JOIN `t_blog` t3 ON t3.`deleted` = ? AND t.`id` = t3.`id` 
+// LIMIT 2 OFFSET 1
+   
+```
+
+::: warning 注意点及说明!!!
+> 必须写到对应的`where`前面后续的`where`才会生效，用户可以自定义,比如满足的条件是优先满足`eq、ge、gt`等的第一个boolean条件,后续才会判断`conditionAccepter`，如果有多个`where`部分where需要自定义那么可以采用`conditionConfigure(ConditionDefaultAccepter.DEFAULT)`来恢复到所有参数都接受,一般用于查询时可以少写很多判断
+:::
 ## 查询对象
 
 
