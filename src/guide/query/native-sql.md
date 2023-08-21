@@ -87,6 +87,15 @@ long l = easyQuery.sqlExecute("update t_blog set content=? where id=?", Arrays.a
 - 第二个参数为表达式,如果第一个原生sql片段存在变量比如表列或者参数值,那么可以通过第二个参数lambda选择`expression`或者`value`或`constValue`，`expreesion`传入当前表的属性表达式或者制定表的,value传递常量值会议参数形式体现在片段上,`constValue`会拼接到字符串上,拼接的规则底层为`MessageFormat`仅需满足此即可
 
 
+方法  | 参数说明 | 描述  
+--- | --- | --- 
+expression | 对象属性,或者其他表的对象属性或者表达式query  | 如果是表对象属性那么无需管理表别名，哪怕是join下也可以自己适应,如果是query表达式那么可以实现子查询类似的功能
+value | 参数值  | 将以参数形式"?"附加到sql片段上面
+constValue | 常量值  | 将以普通字符串拼接的形式拼接上去
+setAlias | 别名  | 用于设置列别名一般用户查询较多
+
+
+
 ## 案例二
 `OVER(Partition By ... Order By ...)` 采用pgsql语法来实现
 
