@@ -30,7 +30,8 @@ public class Topic {
 --- | --- | --- 
 value | "" | 对应数据库表的列名,默认空为nameConversion.convert(属性名)
 primaryKey | false | 表示是否是主键,如果是那么在update对象delete对象将会以这个字段为id
-increment | false | 是否是自增列,如果是true,那么在获取自增id后将会填充到里面
+increment(弃用) | false | 是否是自增列,如果是true,那么在`insertable().executeRows(true)`后获取自增id后将会填充到里面
+generatedKey | false | 是否是自增列,如果是true,那么在`insertable().executeRows(true)`后获取自增id后将会填充到里面
 large | false | 用来描述当前列是否是大列,如果是可以通过默认配置或者运行时指定是否需要查询出该列
 conversion | DefaultValueConverter.class | 值转换器,默认表示不转换,可以自定义枚举或者json等
 valueUpdateAtomicTrack | DefaultValueUpdateAtomicTrack.class | 原子更新,默认表示无原子更新
