@@ -102,7 +102,7 @@ private EasyProxyQuery easyProxyQuery;//对EasyQueryClient的增强通过apt代�
 //         configuration.applyValueConverter(new JsonConverter());
 //         configuration.applyValueUpdateAtomicTrack(new IntegerNotValueUpdateAtomicTrack());
 //         configuration.applyColumnValueSQLConverter(new MySQLAesEncryptColumnValueSQLConverter());
-//         configuration.applyIncrementSQLColumnGenerator(new MyDatabaseIncrementSQLColumnGenerator());
+//         configuration.applyGeneratedKeySQLColumnGenerator(new MyDatabaseIncrementSQLColumnGenerator());
         return new EasyQuery(easyQueryClient);
     }
 ```

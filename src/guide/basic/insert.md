@@ -93,7 +93,7 @@ long rows = easyQuery.insertable(topics.get(0)).insert(topics.get(1)).executeRow
 @Table("t_topic_auto")
 public class TopicAuto {
 
-    @Column(primaryKey = true,increment = true)//设置主键为自增
+    @Column(primaryKey = true,generatedKey = true)//设置主键为自增
     private Integer id;
     private Integer stars;
     private String title;
