@@ -86,8 +86,7 @@ public class SQLFunc{
 
 
 Queryable<BlogEntityTest> queryable = easyQuery.queryable(BlogEntity.class)
-                    .select(BlogEntityTest.class, o -> o.columnIgnore(BlogEntity::getUrl)
-                            .columnFuncAs(SQLFunc.ifNULL(BlogEntity::getUrl), BlogEntityTest::getUrl));
+                    .select(BlogEntityTest.class, o -> o.columnFuncAs(SQLFunc.ifNULL(BlogEntity::getUrl), BlogEntityTest::getUrl));
 String sql = queryable.toSQL();
 
 // SELECT IFNULL(t.`url`,'') AS `url` FROM `t_blog` t WHERE t.`deleted` = ?
