@@ -46,7 +46,7 @@ java实体对象
 @Table("t_topic")
 public class Topic {
 
-    @PrimaryKey
+    @Column(primaryKey = true)
     private String id;
     private Integer stars;
     private String title;
