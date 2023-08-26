@@ -15,3 +15,5 @@ SqlServer RowNumber | sql-mssql  | mssql_row_number| mssql_row_number
 H2 | sql-h2  | h2| h2
 达梦dameng | sql-dameng  | dameng| dameng
 人大金仓KingbaseES | sql-kingbase-es  | kingbase_es| kingbase_es
+Oracle | sql-oracle  | oracle| oracle
+SQLite | sql-sqlite  | sqlite| sqlite
