@@ -58,7 +58,7 @@ public class Topic {
 添加这个注解的属性将不会再插入时被赋值
 
 ## UpdateIgnore
-添加这个注解的属性将不会再更新时被更新除非手动指定,比如`创建时间`、`创建人`、`逻辑删除字段`,`large column`
+添加这个注解的属性将不会再更新时被更新除非手动指定,比如`创建时间`、`创建人`、`逻辑删除字段`,`large column`,如果当前字段标记`update ignore`那么如果是非track更新那么将会直接忽略,如果属性`updateSetInTrackDiff = true`那么在track下更新那么还是有效的
 
 
 ::: warning 说明!!!
