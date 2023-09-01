@@ -398,7 +398,7 @@ public class SchoolTeacherVO {
 通过VO返回实现自定义列,并且实现额外的处理
 ```java
 //查询学生表,并且额外查出对应的班级表
-//一对多
+//一对一
 List<SchoolStudentVO> list1 = easyQuery.queryable(SchoolStudent.class)
         .include(o -> o.one(SchoolStudent::getSchoolClass))
         .select(SchoolStudentVO.class,o->o
@@ -420,7 +420,7 @@ List<SchoolStudentVO> list1 = easyQuery.queryable(SchoolStudent.class)
 <== Total: 2
 
 
-//一对多自定义列
+//一对一自定义列
 List<SchoolStudentVO> list1 = easyQuery.queryable(SchoolStudent.class)
                         .include(o -> o.one(SchoolStudent::getSchoolClass))
                         .select(SchoolStudentVO.class,o->o
