@@ -12,3 +12,7 @@ order: 30
 #### 目录
 - [《分表》](/easy-query-doc/guide/super/sharding-table) 数据库表进行分表处理
 - [《分库》](/easy-query-doc/guide/super/sharding-datasource) 数据库对象分库处理
+
+
+### 案例源码
+所有的超级功能的案例源码都在[easy-query-sample]()
