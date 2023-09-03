@@ -15,4 +15,4 @@ order: 30
 
 
 ### 案例源码
-所有的超级功能的案例源码都在[easy-query-sample]()
+所有的超级功能的案例源码都在[easy-query-sample](https://github.com/xuejmnet/easy-sample)

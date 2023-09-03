@@ -120,8 +120,8 @@ long l = easyQuery.deletable(BlogEntity.class)
 ```java
 long l = easyQuery.deletable(BlogEntity.class)
                     .where(o->o.eq(BlogEntity::getId,"id123456"))
-                    .disableLogicDelete()//禁用物理删除 生成delete语句
-                    .allowDeleteStatement(true)//如果不允许物理删除那么设置允许
+                    .disableLogicDelete()//禁用逻辑删除,使用物理删除 生成delete语句
+                    .allowDeleteStatement(true)//如果不允许物理删除那么设置允许 配置项delete-throw
                     .executeRows();
 
 ==> Preparing: DELETE FROM `t_blog` WHERE `id` = ?
