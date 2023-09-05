@@ -47,7 +47,6 @@ public abstract class BaseEntity implements Serializable, Cloneable {
     /**
      * 删除人
      */
-    @Length(max = 32, message = "删除人过长")
     @UpdateIgnore
     private String deleteBy;
 
