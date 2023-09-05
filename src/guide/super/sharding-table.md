@@ -3,7 +3,7 @@ title: 分表
 order: 10
 ---
 
-`easy-query`提供了高效,高性能的分片机制,不同于`sharding-jdbc`的sql的`antlr`解析采用自带的表达式解析性能高效,并且不同于`ShardingSphere-Proxy`的代理模式,导致未分片的对象也需要走代理,并且需要多次jdbc,`easy-query`采用客户端分片保证分片下的高性能查询结果返回,并且原生orm框架自带无需使用额外组件,更少的依赖来保证程序的健壮与可控
+`easy-query`提供了高效,高性能的分片机制,完美的屏蔽分片带来的业务复杂度,不同于`sharding-jdbc`的sql的`antlr`解析采用自带的表达式解析性能高效,并且不同于`ShardingSphere-Proxy`的代理模式,导致未分片的对象也需要走代理,并且需要多次jdbc,`easy-query`采用客户端分片保证分片下的高性能查询结果返回,并且原生orm框架自带无需使用额外组件,更少的依赖来保证程序的健壮与可控
 
 ## 创建表
 我们以订单表为例来实现订单的简单取模分表,将订单表按5取模进行分表分为t_order_00、t_order_01....t_order_04
@@ -108,6 +108,34 @@ public class OrderTableRoute extends AbstractModTableRoute<OrderEntity> {
 }
 ```
 :::
+
+## 配置文件
+因为分片涉及到跨表聚合所以需要设置默认数据源的连接池大小，并且设置分片可用数据源大小
+```yml
+
+server:
+  port: 8081
+
+spring:
+
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/easy_sample?serverTimezone=GMT%2B8&characterEncoding=utf-8&useSSL=false&allowMultiQueries=true&rewriteBatchedStatements=true
+    username: root
+    password: root
+    druid:
+      initial-size: 10
+      max-active: 100
+
+easy-query:
+  enable: true
+  name-conversion: underlined
+  database: mysql
+  defaultDataSourceMergePoolSize: 50
+```
+
+我们设置了最大连接数100,分片可用连接池数50
 
 ## 新增
 
@@ -230,4 +258,32 @@ public Object concurrentEdit() {
 : ==> http-nio-8081-exec-1, name:ds0, Preparing: UPDATE `order_00` SET `status` = ?,`create_time` = ? WHERE `id` = ? AND `status` = ?
 : ==> http-nio-8081-exec-1, name:ds0, Parameters: 3(Integer),2023-09-02T15:23:51.745936(LocalDateTime),2(String),2(Integer)
 : <== http-nio-8081-exec-1, name:ds0, Total: 1
+```
+
+## 删除
+
+```java
+
+@GetMapping("/delete")
+public Object delete() {
+    OrderEntity orderEntity = easyQuery.queryable(OrderEntity.class)
+            .asTracking()
+            .where(o->o.eq(OrderEntity::getId,"3")).firstNotNull("未找到对应的订单");
+    orderEntity.setCreateTime(LocalDateTime.now());
+    easyQuery.deletable(orderEntity)
+            .allowDeleteStatement(true)
+            .executeRows();
+    return orderEntity;
+}
+```
+
+使用分片键删除可以精确到对应的分片表
+```log
+: ==> http-nio-8081-exec-3, name:ds0, Preparing: SELECT `id`,`uid`,`order_no`,`status`,`create_time` FROM `order_01` WHERE `id` = ? LIMIT 1
+: ==> http-nio-8081-exec-3, name:ds0, Parameters: 3(String)
+: <== http-nio-8081-exec-3, name:ds0, Time Elapsed: 6(ms)
+: <== Total: 1
+: ==> http-nio-8081-exec-3, name:ds0, Preparing: DELETE FROM `order_01` WHERE `id` = ?
+: ==> http-nio-8081-exec-3, name:ds0, Parameters: 3(String)
+: <== http-nio-8081-exec-3, name:ds0, Total: 1
 ```
