@@ -133,3 +133,52 @@ java.lang.IllegalStateException: Unable to load cache item
     <artifactId>spring-boot-starter-aop</artifactId>
 </dependency>
 ```
+
+## 多数据源
+默认仅支持单个数据源的处理
+
+用户也可以自行构建其他数据库或者其他数据源的`easy-query`
+
+```java
+
+@Configuration
+public class MyConfiguration {
+    @Bean("myeq")
+    public EasyQuery easyQuery1(DataSource dataSource){//数据源是你要的即可
+        EasyQueryClient easyQueryClient = EasyQueryBootstrapper.defaultBuilderConfiguration()
+                .setDefaultDataSource(dataSource)
+                .replaceService(DataSourceUnitFactory.class, SpringDataSourceUnitFactory.class)//支持spring事务
+                .replaceService(ConnectionManager.class, SpringConnectionManager.class)//支持spring事务
+                .replaceService(NameConversion.class, UnderlinedNameConversion.class)
+                .optionConfigure(builder -> {
+                    //配置和springboot的配置一样
+                    builder.setDeleteThrowError(easyQueryProperties.getDeleteThrow());
+                    builder.setInsertStrategy(easyQueryProperties.getInsertStrategy());
+                    builder.setUpdateStrategy(easyQueryProperties.getUpdateStrategy());
+                    builder.setMaxShardingQueryLimit(easyQueryProperties.getMaxShardingQueryLimit());
+                    builder.setExecutorMaximumPoolSize(easyQueryProperties.getExecutorMaximumPoolSize());
+                    builder.setExecutorCorePoolSize(easyQueryProperties.getExecutorCorePoolSize());
+                    builder.setThrowIfRouteNotMatch(easyQueryProperties.isThrowIfRouteNotMatch());
+                    builder.setShardingExecuteTimeoutMillis(easyQueryProperties.getShardingExecuteTimeoutMillis());
+                    builder.setQueryLargeColumn(easyQueryProperties.isQueryLargeColumn());
+                    builder.setMaxShardingRouteCount(easyQueryProperties.getMaxShardingRouteCount());
+                    builder.setExecutorQueueSize(easyQueryProperties.getExecutorQueueSize());
+                    builder.setDefaultDataSourceName(easyQueryProperties.getDefaultDataSourceName());
+                    builder.setDefaultDataSourceMergePoolSize(easyQueryProperties.getDefaultDataSourceMergePoolSize());
+                    builder.setMultiConnWaitTimeoutMillis(easyQueryProperties.getMultiConnWaitTimeoutMillis());
+                    builder.setWarningBusy(easyQueryProperties.isWarningBusy());
+                    builder.setInsertBatchThreshold(easyQueryProperties.getInsertBatchThreshold());
+                    builder.setUpdateBatchThreshold(easyQueryProperties.getUpdateBatchThreshold());
+                    builder.setPrintSql(easyQueryProperties.isPrintSql());
+                    builder.setStartTimeJob(easyQueryProperties.isStartTimeJob());
+                    builder.setDefaultTrack(easyQueryProperties.isDefaultTrack());
+                    builder.setRelationGroupSize(easyQueryProperties.getRelationGroupSize());
+                    builder.setNoVersionError(easyQueryProperties.isNoVersionError());
+                })
+                .useDatabaseConfigure(new OracleDatabaseConfiguration())
+                .build();
+        return new DefaultEasyQuery(easyQueryClient);
+    }
+}
+
+```
