@@ -108,7 +108,7 @@ public class DsOrderShardingInitializer implements EntityShardingInitializer<DsO
 
 //分片的路由,路由使用默认抽象的分库路由AbstractDataSourceRoute,编写RouteFunction
 @Component
-public class DsOrderTableRoute extends AbstractDataSourceRoute<DsOrderEntity> {
+public class DsOrderDataSourceRoute extends AbstractDataSourceRoute<DsOrderEntity> {
 
     @Override
     protected RouteFunction<String> getRouteFilter(TableAvailable table, Object shardingValue, ShardingOperatorEnum shardingOperator, boolean withEntity) {
