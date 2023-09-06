@@ -80,6 +80,7 @@ create table ds_order
 public class DsOrderEntity {
     @Column(primaryKey = true)
     @ShardingDataSourceKey
+    @UpdateIgnore
     private String id;
     private String uid;
     private Integer orderNo;
