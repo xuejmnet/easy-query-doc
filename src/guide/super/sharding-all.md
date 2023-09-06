@@ -83,8 +83,10 @@ create table t_ds_order_01
 public class TDsOrderEntity {
     @Column(primaryKey = true)
     @ShardingDataSourceKey
+    @UpdateIgnore
     private String id;
     @ShardingTableKey
+    @UpdateIgnore
     private String uid;
     private Integer orderNo;
     private Integer status;

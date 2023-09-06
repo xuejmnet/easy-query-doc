@@ -64,6 +64,7 @@ create table order_04
 public class OrderEntity {
     @Column(primaryKey = true)
     @ShardingTableKey //标记当前属性为分片键
+    @UpdateIgnore
     private String id;
     private String uid;
     private Integer orderNo;
