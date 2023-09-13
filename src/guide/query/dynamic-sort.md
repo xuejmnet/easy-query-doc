@@ -163,7 +163,7 @@ public class UISort implements ObjectSort {
     @Override
     public void configure(ObjectSortBuilder builder) {
         for (Map.Entry<String, Boolean> s : sort.entrySet()) {
-
+            //自行判断key和value是否为null 因为是包装类型可能会出现npe
             builder.orderBy(s.getKey(),s.getValue());
         }
     }
