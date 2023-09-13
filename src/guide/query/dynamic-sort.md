@@ -173,8 +173,8 @@ public class UISort implements ObjectSort {
 排序交互全是属性所以完全可以避免sql注入的bug
 ```java
 HashMap<String, Boolean> id = new HashMap<String, Boolean>() {{
-    put("id", true);
-    put("title", false);
+    put("id", true);//id正序
+    put("title", false);//标题倒序
 }};
 String sql = easyQuery.queryable(BlogEntity.class)
         .orderByObject(new UISort(id))
@@ -185,7 +185,7 @@ Assert.assertEquals("SELECT `id`,`create_time`,`update_time`,`create_by`,`update
 
 
 HashMap<String, Boolean> id = new HashMap<String, Boolean>() {{
-    put("id1", true);
+    put("id1", true);//id1属性不在BlogEntity里面所以会进行报错
     put("title", false);
 }};
 
