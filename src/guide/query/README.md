@@ -87,7 +87,7 @@ List<Topic> topics = easyQuery
 
 ```java
 //根据条件查询表中的第一条记录
-List<Topic> topics = easyQuery
+List<Topic> topics = easyQueryClient
                 .queryable(Topic.class)
                 .limit(1)
                 .toList();
@@ -95,14 +95,14 @@ List<Topic> topics = easyQuery
 <== Total: 1
 
 //根据条件查询表中的第一条记录
-Topic topic = easyQuery
+Topic topic = easyQueryClient
                 .queryable(Topic.class)
                 .firstOrNull();
 ==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM t_topic t LIMIT 1
 <== Total: 1 
 
 //根据条件查询id为3的记录
-Topic topic = easyQuery
+Topic topic = easyQueryClient
                 .queryable(Topic.class)
                 .where(o->o.eq("id","3"))
                 .firstOrNull();
@@ -111,7 +111,7 @@ Topic topic = easyQuery
 <== Total: 1
 
 //根据条件查询id为3的集合
-List<Topic> topics = easyQuery
+List<Topic> topics = easyQueryClient
                 .queryable(Topic.class)
                 .where(o->o.eq("id","3"))
                 .toList();
@@ -182,7 +182,7 @@ List<BlogEntity> blogEntities = easyQuery
 @tab 字符串属性
 
 ```java
- Topic topic = easyQuery
+ Topic topic = easyQueryClient
                 .queryable(Topic.class)
                 //join 后面是双参数委托，参数顺序表示join表顺序，可以通过then函数切换
                 .leftJoin(BlogEntity.class, (t, t1) -> t.eq(t1, Topic::getId, BlogEntity::getId))
@@ -193,7 +193,7 @@ List<BlogEntity> blogEntities = easyQuery
 ==> Parameters: 3(String)
 <== Total: 1
 
-List<BlogEntity> blogEntities = easyQuery
+List<BlogEntity> blogEntities = easyQueryClient
                 .queryable(Topic.class)
                 //join 后面是双参数委托，参数顺序表示join表顺序，可以通过then函数切换
                 .innerJoin(BlogEntity.class, (t, t1) -> t.eq(t1, "id", "id"))

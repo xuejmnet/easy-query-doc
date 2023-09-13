@@ -146,3 +146,56 @@ String sql = easyQuery.queryable(BlogEntity.class)
 
 // SELECT t.`id`,t.`title`,t.`content` FROM `t_blog` t INNER JOIN `t_topic` t1 ON t.`id` = t1.`id` WHERE t.`deleted` = ? ORDER BY t.`title` ASC,t1.`create_time` DESC
 ```
+
+## UISort
+如果你不想为每个查询定义专门的排序类可以添加通用自行实现
+
+```java
+
+public class UISort implements ObjectSort {
+
+    private final Map<String, Boolean> sort;
+
+    public UISort(Map<String,Boolean> sort){
+
+        this.sort = sort;
+    }
+    @Override
+    public void configure(ObjectSortBuilder builder) {
+        for (Map.Entry<String, Boolean> s : sort.entrySet()) {
+
+            builder.orderBy(s.getKey(),s.getValue());
+        }
+    }
+}
+```
+
+排序交互全是属性所以完全可以避免sql注入的bug
+```java
+HashMap<String, Boolean> id = new HashMap<String, Boolean>() {{
+    put("id", true);
+    put("title", false);
+}};
+String sql = easyQuery.queryable(BlogEntity.class)
+        .orderByObject(new UISort(id))
+        .toSQL();
+Assert.assertEquals("SELECT `id`,`create_time`,`update_time`,`create_by`,`update_by`,`deleted`,`title`,`content`,`url`,`star`,`publish_time`,`score`,`status`,`order`,`is_top`,`top` FROM `t_blog` WHERE `deleted` = ? ORDER BY `id` ASC,`title` DESC",sql);
+
+
+
+
+HashMap<String, Boolean> id = new HashMap<String, Boolean>() {{
+    put("id1", true);
+    put("title", false);
+}};
+
+try {
+
+    String sql = easyQuery.queryable(BlogEntity.class)
+            .orderByObject(new UISort(id))
+            .toSQL();
+}catch (EasyQueryOrderByInvalidOperationException exception){
+    Assert.assertEquals("id1",exception.getPropertyName());
+    Assert.assertEquals("BlogEntity not found [id1] in entity class",exception.getMessage());
+}
+```

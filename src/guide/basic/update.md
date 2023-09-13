@@ -230,7 +230,7 @@ Assert.assertEquals(1, rows4);
  Topic topic = easyQuery.queryable(Topic.class)
                 .whereId("9").firstOrNull();
 long l1 = easyQuery.updatable(topic)
-                .setUpdateStrategy(UpdateStrategyEnum.ONLY_NULL_COLUMNS)
+                .setSQLStrategy(UpdateStrategyEnum.ONLY_NULL_COLUMNS)
                 .executeRows();
 ```
 ```log
@@ -244,7 +244,7 @@ long l1 = easyQuery.updatable(topic)
  Topic topic = easyQuery.queryable(Topic.class)
                 .whereId("10").firstOrNull();
 long l1 = easyQuery.updatable(topic)
-        .setUpdateStrategy(UpdateStrategyEnum.ONLY_NOT_NULL_COLUMNS)
+        .setSQLStrategy(UpdateStrategyEnum.ONLY_NOT_NULL_COLUMNS)
         .executeRows();
 ```
 ```log

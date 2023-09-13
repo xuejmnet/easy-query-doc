@@ -149,20 +149,20 @@ AES/PCBC/PKCS5Padding     | 32 |  16     | ❌
 AES/PCBC/ISO10126Padding  | 32 |  16    | ❌
 
 ### 实现加密策略
-`easy-query`很贴心的给各位提供了默认的加密策略抽象,您只需要将秘钥和偏移量进行填入即可`AbstractAesBase64EncryptionStrategy`或`AbstractSafeAesBase64EncryptionStrategy`。
+`easy-query`很贴心的给各位提供了默认的加密策略抽象,您只需要将秘钥和偏移量进行填入即可`AbstractUnSupportEmojiAesBase64EncryptionStrategy`或`AbstractSupportEmojiAesBase64EncryptionStrategy`。
 <font color='red'>这边提供的抽象秘钥和偏移量必须全是16位长度的字符串</font>】
 
 
 
 
 ::: warning 说明!!!
-> `AbstractAesBase64EncryptionStrategy`抽象类默认仅支持非emoji的列,比如中文数字英文特殊符号等,`AbstractSafeAesBase64EncryptionStrategy`支持emoji的处理
+> `AbstractUnSupportEmojiAesBase64EncryptionStrategy`抽象类默认仅支持非emoji的列,比如中文数字英文特殊符号等,`AbstractSupportEmojiAesBase64EncryptionStrategy`支持emoji的处理
 :::
 
-### AbstractAesBase64EncryptionStrategy
+### AbstractUnSupportEmojiAesBase64EncryptionStrategy
 不支持emoji
 
-### AbstractSafeAesBase64EncryptionStrategy
+### AbstractSupportEmojiAesBase64EncryptionStrategy
 
 方法  |  默认值   |  描述  
 --- | ---  | --- 
@@ -173,7 +173,7 @@ chineseCharOccupancyLength| 2| 一个中文占用长度
 throwIfDecryptFail| true | 遇到错误是否抛出
 
 ```java
-public class MyEncryptionStrategy extends AbstractSafeAesBase64EncryptionStrategy {
+public class MyEncryptionStrategy extends AbstractSupportEmojiAesBase64EncryptionStrategy {
     @Override
     public String getIv() {
         return "A-16-Byte-String";
