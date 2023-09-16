@@ -7,7 +7,77 @@ title: api使用 ❗️❗️❗️
 > 下面所有方法包括`where`、`select`、`groupBy`、`orderBy`、`having`都是相同原理,支持单参数时为主表,全参数时为一一对应的表,注意表达式应该以`select`作为整个表达式的终结方法,相当于`select`之后就是对之前的表达式进行匿名表处理,`select * from (select id,name from user) t` 如果提前`select`相当于是进行了一次匿名表,最后的终结方法收集器比如`toList`、`firstOrNull`、`count`等会自动判断是否需要`select`，如果需要会对当前表达式的主表进行`select(o->o.columnAll())`操作
 :::
 
-## 单表的查询api
+## 单表api使用
+
+::: code-tabs
+@tab 代理模式
+```java
+
+//以下大部分模式都是先定义局部变量来进行操作可以通过lambda入参o下的o.t(),o.t1(),o.t2()来操作
+
+// 创建一个可查询SysUser的表达式
+SysUserProxy sysUser = SysUserProxy.createTable();
+ProxyQueryable<SysUserProxy, SysUser> queryable = easyProxyQuery.queryable(sysUser);
+
+//单个条件链式查询
+//toList表示查询结果集
+SysUserProxy sysUser = SysUserProxy.createTable();
+List<SysUser> sysUsers = easyProxyQuery.queryable(sysUser)
+        .where(o -> o.eq(sysUser.id(), "123xxx"))
+        .toList();
+
+
+ 
+//如果不想定义局部变量 默认o.t()就是当前的SysUser表,join后会有t1、t2....t9
+List<SysUser> sysUsers = easyProxyQuery.queryable(SysUserProxy.createTable())
+        .where(o -> o.eq(o.t().id(), "123xxx"))
+        .toList();
+
+
+//条件= 和 like 组合 中间默认是and连接符
+SysUserProxy sysUser = SysUserProxy.createTable();
+List<SysUser> sysUsers = easyProxyQuery.queryable(sysUser)
+        .where(o -> o
+                .eq(sysUser.id(), "123xxx")
+                .like(sysUser.idCard(),"123")
+        ).toList();//toList表示查询结果集
+
+
+//多个where之间也是用and链接和上述方法一个意思 条件= 和 like 组合 中间默认是and连接符
+SysUserProxy sysUser = SysUserProxy.createTable();
+List<SysUser> sysUsers = easyProxyQuery.queryable(sysUser)
+        .where(o -> o.eq(sysUser.id(), "123xxx"))
+        .where(o -> o.like(sysUser.idCard(),"123")).toList();
+
+
+//返回单个对象没有查询到就返回null
+SysUserProxy sysUser = SysUserProxy.createTable();
+SysUser sysUser1 = easyProxyQuery.queryable(sysUser)
+        .where(o -> o.eq(sysUser.id(), "123xxx"))
+        .where(o -> o.like(sysUser.idCard(), "123")).firstOrNull();
+
+
+//采用创建时间倒序和id正序查询返回第一个
+SysUserProxy sysUser = SysUserProxy.createTable();
+SysUser sysUser1 = easyProxyQuery.queryable(sysUser)
+        .where(o -> o.eq(sysUser.id(), "123xxx"))
+        .where(o -> o.like(sysUser.idCard(), "123"))
+        .orderByDesc(o->o.column(sysUser.createTime()))
+        .orderByAsc(o->o.column(sysUser.id())).firstOrNull();
+
+//仅查询id和createTime两列
+SysUserProxy sysUser = SysUserProxy.createTable();
+SysUser sysUser1 = easyProxyQuery.queryable(sysUser)
+        .where(o -> o.eq(sysUser.id(), "123xxx"))
+        .where(o -> o.like(sysUser.idCard(), "123"))
+        .orderByDesc(o->o.column(sysUser.createTime()))
+        .orderByAsc(o->o.column(sysUser.id()))
+        .select(o->o.column(sysUser.id()).column(sysUser.createTime()))//也可以用columns
+        //.select(o->o.columns(sysUser.id(),sysUser.createTime()))
+        .firstOrNull();
+        
+```
+@tab lambda模式
 ```java
 // 创建一个可查询SysUser的表达式
 Queryable<SysUser> queryable = easyQuery.queryable(SysUser.class);
@@ -25,13 +95,6 @@ List<SysUser> sysUsers = easyQuery.queryable(SysUser.class)
                 .like(SysUser::getIdCard,"123")
         ).toList();//toList表示查询结果集 
 
-
-//条件= 和 like 组合 中间默认是and连接符
-List<SysUser> sysUsers = easyQuery.queryable(SysUser.class)
-        .where(o -> o
-                .eq(SysUser::getId, "123xxx")
-                .like(SysUser::getIdCard,"123")
-        ).toList();
 
 //多个where之间也是用and链接和上述方法一个意思 条件= 和 like 组合 中间默认是and连接符
 List<SysUser> sysUsers = easyQuery.queryable(SysUser.class)
@@ -62,8 +125,10 @@ SysUser sysUser1 = easyQuery.queryable(SysUser.class)
         .select(o->o.column(SysUser::getId).column(SysUser::getCreateTime))
         .firstOrNull();
 ```
+:::
 
 ## 多表查询api
+
 ```java
 
 List<Topic> list = easyQuery
@@ -87,6 +152,41 @@ List<Topic> list = easyQuery
 ```
 
 ## 多表返回表达式
+
+::: code-tabs
+@tab 代理模式
+```java
+//
+TopicProxy topicTable = TopicProxy.createTable();
+BlogEntityProxy blogTable = BlogEntityProxy.createTable();
+SysUserProxy userTable = SysUserProxy.createTable();
+TopicTypeVOProxy vo=TopicTypeVOProxy.createTable()；
+easyProxyQuery
+        .queryable(topicTable)
+        //第一个join采用双参数,参数1表示第一张表Topic 参数2表示第二张表 BlogEntity
+        .leftJoin(blogTable, o -> o.eq(topicTable.id(), blogTable.id()))
+        //第二个join采用三参数,参数1表示第一张表Topic 参数2表示第二张表 BlogEntity 第三个参数表示第三张表 SysUser
+        .leftJoin(userTable, o -> o.eq(topicTable.id(), userTable.id()))
+        .where(o -> o.eq(topicTable.id(), "123").like(blogTable.title(), "456")
+                .eq(userTable.createTime(), LocalDateTime.now()))
+        //如果不想用链式大括号方式执行顺序就是代码顺序,默认采用and链接
+        //动态表达式
+        .where(o -> {
+            o.eq(topicTable.id(), "1234");
+            if (true) {
+                o.eq(userTable.id(), "1234");
+            }
+        })
+        .select(o -> o.columns(userTable.id(), blogTable.id()))
+        .select(vo, o -> {
+            o.columns(userTable.id(), blogTable.id());
+            if(true){
+                o.columnAs(userTable.id(),vo.id());
+            }
+        });
+
+```
+@tab lambda模式
 ```java
 //返回Queryable3那么可以对这个查询表达式进行后续操作,操作都是可以操作三张表的
 Queryable3<Topic, BlogEntity, SysUser> where = easyQuery
@@ -126,6 +226,7 @@ Queryable<Topic> where = easyQuery
             t1.eq(BaseEntity::getCreateTime, LocalDateTime.now());
         });
 ```
+:::
 
 
 ## 多表自定义结果api
