@@ -101,10 +101,29 @@ public class Main {
                 .build();
         //创建代理模式api查询
         EasyProxyQuery easyProxyQuery = new DefaultEasyProxyQuery(easyQueryClient);
-        List<Topic> topics = easyProxyQuery.queryable(TopicProxy.DEFAULT)
-                .where((filter, o) -> filter.eq(o.id(), "123").like(o.name(), "您好"))
-                .orderByAsc((order, o) -> order.columns(o.createTime(), o.id()))
-                .select((selector, o) -> selector.columns(o.no(), o.id(), o.name()))
+        //第一种写法
+        List<Topic> topics = easyProxyQuery.queryable(TopicProxy.createTable())
+                .where(o -> o.eq(o.t().id(), "123").like(o.t().name(), "您好"))
+                .orderByAsc(o -> o.columns(o.t().createTime(), o.t().id()))
+                .select(o -> o.columns(o.t().no(), o.t().id(), o.t().name()))
+                .toList();
+        //第二种写法提取表变量
+        TopicProxy table = TopicProxy.createTable();
+        List<Topic> topics = easyProxyQuery.queryable(table)
+                .where(o -> o.eq(table.id(), "123").like(table.name(), "您好"))//表达式内部直接用表变量
+                .orderByAsc(o -> o.columns(table.createTime(), table.id()))
+                .select(o -> o.columns(table.no(), o.t().id(), table.name()))
+                .toList();
+        //join写法 更加直观
+        TopicTestProxy table = TopicTestProxy.createTable();
+        TopicAutoProxy table1 = TopicAutoProxy.createTable();
+        List<Topic> list = easyProxyQuery
+                .queryable(table)
+                .leftJoin(table1, o -> o.eq(table.id(), table1.title()))
+                .where(o -> o.eq(table.id(), "123")
+                        .or().eq(table1.title(), "111"))
+                .orderByAsc(o -> o.column(table1.id()))
+                .select(s -> s.columns(table1.id(), table1.createTime()).column(table.title()))
                 .toList();
     }
 }
@@ -115,10 +134,17 @@ public class Main {
 ==> Parameters: 123(String),%您好%(String)
 <== Time Elapsed: 17(ms)
 <== Total: 0
+
+
+-- join写法
+==> Preparing: SELECT t1.`id`,t1.`create_time`,t.`title` FROM `t_topic` t LEFT JOIN `t_topic_auto` t1 ON t.`id` = t1.`title` WHERE (t.`id` = ? OR t1.`title` = ?) ORDER BY t1.`id` ASC
+==> Parameters: 123(String),111(String)
+<== Time Elapsed: 52(ms)
+<== Total: 0
 ```
 
 
 
 ::: tip 说明!!!
-> 在代理模式下面查询相关方法都会多一个`'选择器'`委托入参,而不是仅仅只有表入参,比如`where`,原先如果是一张表那么可以写成`where(t->...)`现在必须要写成`where((f,t)->....)`其中第一个参数用来实现条件判断
+> 在代理模式下面查询相关方法入参都只有一个,比如入参为o那么对应的表就是o.t(),o.t1(),o.t2()....o.t9()分别对应上下文10张表,也可以讲`queryable`,`join`需要的表进行参数提取,作为局部变量来使用
 :::
