@@ -13,7 +13,7 @@ export const zhSidebar = sidebar({
         {
           text: "配置",
           prefix: "config/",
-          children: ["readme.md","dependency-injection","config-java","config-kotlin","config-solon","config-spring-boot","config-option","annotation","replace-configure","logging","value-converter"],
+          children: ["readme.md","dependency-injection","config-java","config-kotlin","config-solon","config-spring-boot","config-option","annotation","replace-configure","logging","value-converter","kapt"],
         },
         {
           text: "基础操作",
