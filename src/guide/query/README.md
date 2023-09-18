@@ -10,6 +10,43 @@ order: 20
 ## 单表查询
 
 ::: code-tabs
+@tab 代理属性
+```java
+//根据条件查询表中的第一条记录
+List<Topic> topics = easyProxyQuery
+                .queryable(TopicProxy.createTable())
+                .limit(1)
+                .toList();
+==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM t_topic t LIMIT 1
+<== Total: 1
+
+//根据条件查询表中的第一条记录
+Topic topic = easyProxyProxy
+                .queryable(TopicProxy.createTable())
+                .firstOrNull();
+==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM t_topic t LIMIT 1
+<== Total: 1 
+
+//根据条件查询id为3的记录
+TopicProxy table = TopicProxy.createTable();
+Topic topic = easyProxyQuery
+        .queryable(table)
+        .where(o->o.eq(table.id(),"3"))
+        .firstOrNull();
+==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM t_topic t WHERE t.`id` = ? LIMIT 1
+==> Parameters: 3(String)
+<== Total: 1
+
+//根据条件查询id为3的集合
+List<Topic> topics = easyProxyQuery
+                .queryable(TopicProxy.createTable())
+                .where(o->o.eq(o.t().id(),"3"))
+                .toList();
+
+==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM t_topic t WHERE t.`id` = ?
+==> Parameters: 3(String)
+<== Total: 1
+```
 @tab lambda属性
 
 ```java
@@ -41,42 +78,6 @@ Topic topic = easyQuery
 List<Topic> topics = easyQuery
                 .queryable(Topic.class)
                 .where(o->o.eq(Topic::getId,"3"))
-                .toList();
-
-==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM t_topic t WHERE t.`id` = ?
-==> Parameters: 3(String)
-<== Total: 1
-```
-@tab 代理属性
-```java
-//根据条件查询表中的第一条记录
-List<Topic> topics = easyQuery
-                .queryable(TopicProxy.DEFAULT)
-                .limit(1)
-                .toList();
-==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM t_topic t LIMIT 1
-<== Total: 1
-
-//根据条件查询表中的第一条记录
-Topic topic = easyQuery
-                .queryable(TopicProxy.DEFAULT)
-                .firstOrNull();
-==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM t_topic t LIMIT 1
-<== Total: 1 
-
-//根据条件查询id为3的记录
-Topic topic = easyQuery
-                .queryable(Topic.class)
-                .where((filter,o)->filter.eq(o.id(),"3"))
-                .firstOrNull();
-==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM t_topic t WHERE t.`id` = ? LIMIT 1
-==> Parameters: 3(String)
-<== Total: 1
-
-//根据条件查询id为3的集合
-List<Topic> topics = easyQuery
-                .queryable(TopicProxy.DEFAULT)
-                .where((filter,o)->filter.eq(o.id(),"3"))
                 .toList();
 
 ==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM t_topic t WHERE t.`id` = ?
@@ -125,6 +126,45 @@ List<Topic> topics = easyQueryClient
 ## 多表
 
 ::: code-tabs
+@tab 代理属性
+```java
+
+        TopicProxy topicTable = TopicProxy.createTable();
+        BlogEntityProxy blogTable = BlogEntityProxy.createTable();
+        Topic topic = easyProxyQuery
+                .queryable(topicTable)
+                .leftJoin(blogTable, o -> o.eq(topicTable.id(), blogTable.id()))
+                .where(o -> o.eq(topicTable.id(), "3"))
+                .firstOrNull();
+//下面这种写法也是可以的
+//Topic topic = easyProxyQuery
+//      .queryable(TopicProxy.createTable())
+//      .leftJoin(BlogEntityProxy.createTable(), o -> o.eq(o.t().id(), o.t1().id()))
+//      .where(o -> o.eq(o.t().id(), "3"))
+//      .firstOrNull();
+
+==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM t_topic t LEFT JOIN t_blog t1 ON t.`id` = t1.`id` WHERE t.`id` = ? LIMIT 1
+==> Parameters: 3(String)
+<== Total: 1
+
+TopicProxy topicTable = TopicProxy.createTable();
+BlogEntityProxy blogTable = BlogEntityProxy.createTable();
+BlogEntityProxy blogResult = BlogEntityProxy.createTable();
+
+List<BlogEntity> blogEntities = easyProxyQuery
+        .queryable(topicTable)
+        //join 后面是多参数委托,第一个为filter固定,后面两个分别数join的表，参数顺序表示join表顺序
+        .innerJoin(blogTable, o -> o.eq(topicTable.id(), blogTable.id()))
+        .where(o -> o.isNotNull(topicTable.title()).eq(blogTable.id(), "3"))
+        //join查询select必须要带对应的返回结果,可以是自定义dto也可以是实体对象,如果不带对象则返回t表主表数据
+        //参数依然是第一个是selector固定后面两个是join对象的表顺序
+        .select(blogResult, s -> s.columnAll(topicTable))
+        .toList();
+
+==> Preparing: SELECT t1.`id`,t1.`create_time`,t1.`update_time`,t1.`create_by`,t1.`update_by`,t1.`deleted`,t1.`title`,t1.`content`,t1.`url`,t1.`star`,t1.`publish_time`,t1.`score`,t1.`status`,t1.`order`,t1.`is_top`,t1.`top` FROM t_topic t INNER JOIN t_blog t1 ON t.`id` = t1.`id` WHERE t1.`title` IS NOT NULL AND t.`id` = ?
+==> Parameters: 3(String)
+<== Total: 1
+```
 @tab lambda属性
 
 ```java
@@ -146,33 +186,6 @@ List<BlogEntity> blogEntities = easyQuery
                 .where((t, t1) -> t1.isNotNull(BlogEntity::getTitle).then(t).eq(Topic::getId, "3"))
                 //join查询select必须要带对应的返回结果,可以是自定义dto也可以是实体对象,如果不带对象则返回t表主表数据
                 .select(BlogEntity.class, (t, t1) -> t1.columnAll())
-                .toList();
-
-==> Preparing: SELECT t1.`id`,t1.`create_time`,t1.`update_time`,t1.`create_by`,t1.`update_by`,t1.`deleted`,t1.`title`,t1.`content`,t1.`url`,t1.`star`,t1.`publish_time`,t1.`score`,t1.`status`,t1.`order`,t1.`is_top`,t1.`top` FROM t_topic t INNER JOIN t_blog t1 ON t.`id` = t1.`id` WHERE t1.`title` IS NOT NULL AND t.`id` = ?
-==> Parameters: 3(String)
-<== Total: 1
-```
-@tab 代理属性
-```java
- Topic topic = easyQuery
-                .queryable(TopicProxy.DEFAULT)
-                //join 后面是多参数委托,第一个为filter固定,后面两个分别数join的表，参数顺序表示join表顺序
-                .leftJoin(BlogEntityProxy.DEFAULT, (filter,t, t1) -> filter.eq(t.id(), t1.id()))
-                .where((filter,t) -> filter.eq(t.id(), "3"))
-                .firstOrNull();
-
-==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM t_topic t LEFT JOIN t_blog t1 ON t.`id` = t1.`id` WHERE t.`id` = ? LIMIT 1
-==> Parameters: 3(String)
-<== Total: 1
-
-List<BlogEntity> blogEntities = easyQuery
-                .queryable(TopicProxy.DEFAULT)
-                //join 后面是多参数委托,第一个为filter固定,后面两个分别数join的表，参数顺序表示join表顺序
-                .innerJoin(BlogEntityProxy.DEFAULT, (filter,t, t1) -> filter.eq(t.id(), t1.id()))
-                .where((filter,t, t1) -> filter.isNotNull(t1.title()).eq(t.id(), "3"))
-                //join查询select必须要带对应的返回结果,可以是自定义dto也可以是实体对象,如果不带对象则返回t表主表数据
-                //参数依然是第一个是selector固定后面两个是join对象的表顺序
-                .select(BlogEntityProxy.DEFAULT, (selector,t, t1) -> selector.columnAll(t1))
                 .toList();
 
 ==> Preparing: SELECT t1.`id`,t1.`create_time`,t1.`update_time`,t1.`create_by`,t1.`update_by`,t1.`deleted`,t1.`title`,t1.`content`,t1.`url`,t1.`star`,t1.`publish_time`,t1.`score`,t1.`status`,t1.`order`,t1.`is_top`,t1.`top` FROM t_topic t INNER JOIN t_blog t1 ON t.`id` = t1.`id` WHERE t1.`title` IS NOT NULL AND t.`id` = ?
