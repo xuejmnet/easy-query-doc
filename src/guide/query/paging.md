@@ -129,3 +129,84 @@ public class DefaultShardingPageResult<T> implements EasyShardingPageResult<T> {
 }
 
 ```
+
+## 无依赖使用自己的PageResult
+很多时候框架提供的`EasyPageResult<T>`提供了方便的同时让整个项目高度依赖`easy-query`这是一个非常不好的事情,所以`easy-query`在1.4.25提供了自定义`PageResult<TResult>`结果,并且提供了链式方法调用方便开发人员
+
+### 框架提供的分页器
+`Pager<TEntity,TPageResult>` 用户可以自行实现分页
+
+### 添加自己的分页返回结果接口
+```java
+//接口
+public interface PageResult<T> {
+    /**
+     * 返回总数
+     * @return
+     */
+    long getTotalCount();
+
+    /**
+     * 结果内容 
+     * @return
+     */
+    List<T> getList();
+}
+
+//实现
+public class MyPageResult<TEntity> implements PageResult<TEntity> {
+    private final long total;
+    private final List<TEntity> list;
+
+    public MyPageResult(long total, List<TEntity> list){
+
+        this.total = total;
+        this.list = list;
+    }
+    @Override
+    public long getTotalCount() {
+        return total;
+    }
+
+    @Override
+    public List<TEntity> getList() {
+        return list;
+    }
+}
+
+```
+### 自定义pager
+```java
+
+public class MyPager<TEntity> implements Pager<TEntity,PageResult<TEntity>> {
+    private final long pageIndex;
+    private final long pageSize;
+    private final long pageTotal;
+
+    public MyPager(long pageIndex, long pageSize){
+        this(pageIndex,pageSize,-1);
+    }
+    public MyPager(long pageIndex, long pageSize, long pageTotal){
+
+        this.pageIndex = pageIndex;
+        this.pageSize = pageSize;
+        this.pageTotal = pageTotal;
+    }
+    @Override
+    public PageResult<TEntity> toResult(Query<TEntity> query) {
+        EasyPageResult<TEntity> pageResult = query.toPageResult(pageIndex, pageSize,pageTotal);
+        return new MyPageResult<>(pageResult.getTotal(),pageResult.getData());
+    }
+}
+```
+
+### 测试代码
+```java
+//业务代码返回自定义PageResult<TEntity>
+PageResult<TopicGenericKey> pageResult = easyQuery
+        .queryable(TopicGenericKey.class)
+        .whereById("1")
+        .toPageResult(new MyPager<>(1, 2));
+Assert.assertEquals(1,pageResult.getTotalCount());
+Assert.assertEquals("1",pageResult.getList().get(0).getId());
+```
