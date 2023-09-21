@@ -30,6 +30,12 @@ public class Topic {
 }
 
 ```
+## 0.对象主键更新
+```java
+Topic topic=easyQuery.queryable(Topic.class).whereById("2").firstOrNull();
+long rows = easyQuery.updatable(topic)
+                .executeRows();
+```
 
 ## 1.更新指定列
 ```java
