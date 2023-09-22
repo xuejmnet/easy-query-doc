@@ -5,7 +5,7 @@ title: easy-trans扩展
 `easy-query`提供了很多丰富的功能,但是有些功能可以通过其他框架来实现,本章节就提供了一个解决方案,通过`easy-query`+`easy-trans`来实现数据字典的自动获取
 
 
-[`demo地址`](https://gitee.com/xuejm/easy-trans-easy-query-demo)  https://gitee.com/xuejm/easy-trans-easy-query-demo
+[`demo地址`](https://gitee.com/xuejm/easy-trans-easy-query-demo)
 
 ## 新建一个springboot项目
 添加`easy-trans`依赖
