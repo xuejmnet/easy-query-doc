@@ -18,7 +18,7 @@ UpdateSetInterceptor | 更新列拦截器  | 用户在更新update表达式的�
 方法  | 默认值/实现 | 描述  
 --- | --- | --- 
 order | 100  | 用于对拦截器进行顺序排序执行 越小越先执行
-enable | true  | 是否默认添加到表达式中前提是apply为true,true:默认添加,false:不添加可以通过`ThreadLocal`动态设置,或者调用useInterceptor(name)来显示使用
+enable | true  | 是否默认添加到表达式中前提是apply为true,true:默认添加,false:不添加可以通过`ThreadLocal`动态设置,或者调用useInterceptor(name)来显式使用
 name | 无  | 拦截器名称需要自己实现,默认可以使用类名
 apply | 哪些对象允许采用当前拦截器  | 默认可以才用是否为某个接口的实现`Interface.class.isAssignableFrom(entityClass);`
 
