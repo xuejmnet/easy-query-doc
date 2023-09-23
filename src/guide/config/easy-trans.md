@@ -9,7 +9,7 @@ title: easy-trans扩展
 
 ## 新建一个springboot项目
 添加`easy-trans`依赖
-``xml
+```xml
 <dependency>
      <groupId>com.fhs-opensource</groupId>
     <artifactId>easy-trans-spring-boot-starter</artifactId>
