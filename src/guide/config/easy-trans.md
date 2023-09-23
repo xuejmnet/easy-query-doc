@@ -97,6 +97,36 @@ public class EasyQueryTransDiver implements SimpleTransService.SimpleTransDiver 
     }
 
     @Override
+    public List<? extends VO> findByIds(List<? extends Serializable> ids, Class<? extends VO> targetClass, String uniqueField, Set<String> targetFields) {
+        return easyQueryClient.queryable(targetClass)
+                .whereByIds(ids)
+                .select(o->{
+                    Selector selector = o.getSelector();
+                    for (String targetField : targetFields) {
+                        selector.column(o.getTable(),targetField);
+                    }
+                })
+                .toList();
+    }
+
+    @Override
+    public VO findById(Serializable id, Class<? extends VO> targetClass, String uniqueField, Set<String> targetFields) {
+        VO vo = easyQueryClient.queryable(targetClass)
+                .whereById(id)
+                .select(o -> {
+                    Selector selector = o.getSelector();
+                    for (String targetField : targetFields) {
+                        selector.column(o.getTable(), targetField);
+                    }
+                })
+                .firstOrNull();
+        if(vo==null){
+            log.error(targetClass + " 根据id:" + id + "没有查询到数据");
+        }
+        return vo;
+    }
+
+    @Override
     public List<? extends VO> findByIds(List<? extends Serializable> ids, Class<? extends VO> targetClass, String uniqueField) {
         return easyQueryClient.queryable(targetClass)
                 .whereByIds(ids)
