@@ -84,6 +84,9 @@ public class DefaultEntityInterceptor implements EntityInterceptor, UpdateSetInt
         }
         if (baseEntity.getCreateBy() == null) {
             String userId = StringUtils.defaultString(currentUser.getUserId());
+            //如果使用sa-token这边采用StpUtil.getLoginIdAsString()会让导致程序需要验证
+            //,所以这边需要先判断是否登录,未登录就给默认值,不然就获取
+            //updateBy同理
             baseEntity.setCreateBy(userId);
         }
         if (baseEntity.getUpdateTime() == null) {

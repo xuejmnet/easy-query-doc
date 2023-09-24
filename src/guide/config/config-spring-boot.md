@@ -25,10 +25,15 @@ title: SpringBoot配置
 ```yml
 #配置文件
 easy-query:
+  #是否启动默认true
   enable: true
+  #支持的数据库
   database: mysql
+  #对象属性和数据库列名的转换器
   name-conversion: underlined
+  #当执行物理删除是否报错,true表示报错,false表示不报错,默认true,如果配置为true,可以通过allowDeleteStament来实现允许
   delete-throw: true
+  #是否打印sql 默认true 需要配置log信息才可以 默认实现sl4jimpl
   print-sql: true
 ```
 ```java
