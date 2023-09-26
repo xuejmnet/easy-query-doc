@@ -8,11 +8,12 @@ title: 关联查询 Fill
 :::
 
 ## api说明
+默认fill查询结果不消费null也就是produce里面不会消费null值
 ```java
-<TREntity> Queryable<T1> fillOne(boolean condition,SQLFuncExpression1<SQLFillSelector, Queryable<TREntity>> fillSetterExpression, Property<TREntity, ?> targetProperty, Property<T1, ?> selfProperty, BiConsumer<T1, TREntity> produce, boolean consumeNull)
+<TREntity> Queryable<T1> fillOne(SQLFuncExpression1<SQLFillSelector, Queryable<TREntity>> fillSetterExpression, Property<TREntity, ?> targetProperty, Property<T1, ?> selfProperty, BiConsumer<T1, TREntity> produce)
 
 
-<TREntity> Queryable<T1> fillMany(boolean condition, SQLFuncExpression1<SQLFillSelector, Queryable<TREntity>> fillSetterExpression, Property<TREntity, ?> targetProperty, Property<T1, ?> selfProperty, BiConsumer<T1, Collection<TREntity>> produce, boolean consumeNull)
+<TREntity> Queryable<T1> fillMany(SQLFuncExpression1<SQLFillSelector, Queryable<TREntity>> fillSetterExpression, Property<TREntity, ?> targetProperty,Property<T1, ?> selfProperty,  BiConsumer<T1, Collection<TREntity>> produce)
 ```
 
 参数  | 描述 | 场景 
@@ -38,14 +39,14 @@ List<Province> list = easyQuery.queryable(Province.class)
 List<City> list1 = easyQuery.queryable(City.class)
             .fillOne(x -> x.with(Province.class), Province::getCode, City::getProvinceCode, (x, y) -> {
                 x.setProvince(y);
-            }, false)
+            })
             .toList();
 ```
 
 vo转换
 ```java
     EasyPageResult<Province> pageResult1 = easyQuery.queryable(Province.class)
-                .fillMany(x -> x.with(City.class).where(y -> y.eq(City::getCode, "3306")).select(CityVO.class)//填充数据转成CityVO,
+                .fillMany(x -> x.consumeNull(true).with(City.class).where(y -> y.eq(City::getCode, "3306")).select(CityVO.class)//填充数据转成CityVO,
                         , CityVO::getProvinceCode
                         , Province::getCode
                         , (x, y) -> {
@@ -53,6 +54,6 @@ vo转换
                                 CityVO first = EasyCollectionUtil.first(y);//获取第一条city并且赋值
                                 x.setFirstCityName(first.getName());
                             }
-                        }, true)
+                        })
                 .toPageResult(1, 10);
 ```

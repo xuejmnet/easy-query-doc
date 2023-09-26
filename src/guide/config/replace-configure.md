@@ -52,6 +52,8 @@ title: 替换框架行为❗️❗️❗️
                 .replaceService(EasyTimeJobManager.class, DefaultEasyTimeJobManager.class)
                 .replaceService(IncludeProcessorFactory.class, EasyIncludeProcessorFactory.class)
                 .replaceService(IncludeParserEngine.class, DefaultIncludeParserEngine.class)
+                .replaceService(WhereObjectQueryExecutor.class, DefaultWhereObjectQueryExecutor.class)
+                .replaceService(ObjectSortQueryExecutor.class, DefaultObjectSortQueryExecutor.class)
                 .replaceService(EasyQueryClient.class, DefaultEasyQueryClient.class);
     }
 ```
