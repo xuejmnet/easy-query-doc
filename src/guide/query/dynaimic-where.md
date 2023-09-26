@@ -111,17 +111,17 @@ List<BlogEntity> result = easyQuery.queryable(BlogEntity.class)
 ```
 
 ## 条件接受
-`1.4.2^`以上版本支持`ConditionAccepter` 条件接收器,`Queryable`默认行为`ConditionAllAccepter.DEFAULT`所有的条件都接受,框架提供了一个可选`ConditionDefaultAccepter.DEFAULT`当传入的条件参数值非null且字符串的情况下非空那么才会增加到条件里面,仅where条件生效。
+`1.4.31^`以上版本支持`ValueFilter` 条件接收器,`Queryable`默认行为`AnyValueFilter.DEFAULT`所有的条件都接受,框架提供了一个可选`NotNullOrEmptyValueFilter.DEFAULT`当传入的条件参数值非null且字符串的情况下非空那么才会增加到条件里面,仅where条件生效。
 
 用户也可以自定义实现接口
 ```java
-public interface ConditionAccepter {
+public interface ValueFilter {
     boolean accept(TableAvailable table, String property, Object value);
 }
 
-public class ConditionAllAccepter implements ConditionAccepter {
-    public static final ConditionAccepter DEFAULT=new ConditionAllAccepter();
-    private ConditionAllAccepter(){
+public class AnyValueFilter implements ValueFilter {
+    public static final ValueFilter DEFAULT=new AnyValueFilter();
+    private AnyValueFilter(){
 
     }
     @Override
@@ -129,9 +129,8 @@ public class ConditionAllAccepter implements ConditionAccepter {
         return true;
     }
 }
-
-public class ConditionDefaultAccepter implements ConditionAccepter {
-    public static final ConditionAccepter DEFAULT=new ConditionDefaultAccepter();
+public class NotNullOrEmptyValueFilter implements ValueFilter {
+    public static final ValueFilter DEFAULT=new NotNullOrEmptyValueFilter();
     @Override
     public boolean accept(TableAvailable table, String property, Object value) {
         if(value==null){
@@ -140,7 +139,7 @@ public class ConditionDefaultAccepter implements ConditionAccepter {
         if(value instanceof String){
             return EasyStringUtil.isNotBlank((String) value);
         }
-        return false;
+        return true;
     }
 }
 
@@ -152,9 +151,9 @@ public class ConditionDefaultAccepter implements ConditionAccepter {
                 .leftJoin(BlogEntity.class, (t, t1) -> t.eq(t1, Topic::getId, BlogEntity::getId))
                 .leftJoin(BlogEntity.class, (t,t1, t2) -> t.eq(t2, Topic::getId, BlogEntity::getId))
                 .leftJoin(BlogEntity.class, (t, t1, t2, t3) -> t.eq(t3, Topic::getId, BlogEntity::getId))
-                .conditionConfigure(ConditionDefaultAccepter.DEFAULT)//设置非null字符串非空 后续的where才会添加到条件中
+                .filterConfigure(NotNullOrEmptyValueFilter.DEFAULT)//设置非null字符串非空 后续的where才会添加到条件中
                 .where(o -> o.eq(Topic::getId, ""))
-                //.conditionConfigure(ConditionAllAccepter.DEFAULT)//恢复如果后面没有自定义where那么不需要恢复
+                //.filterConfigure(AnyValueFilter.DEFAULT)//恢复如果后面没有自定义where那么不需要恢复
                 .limit(1, 2)
                 .toSQL();
 // SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM `t_topic` t 
@@ -175,11 +174,11 @@ Boolean leftEnable=true;
 
     String sql = easyQuery.queryable(DefTable.class)
             .leftJoin(DefTableLeft1.class, (t, t1) -> t.eq(t1, DefTable::getId, DefTableLeft1::getDefId))
-            .conditionConfigure((t, p, v) -> {//分别是table，property，value
+            .filterConfigure((t, p, v) -> {//分别是table，property，value
                 if ("id".equals(p)) { //无论.eq(DefTable::getId, id) 这个方法属性为id的比较是啥结果都会添加到条件里面
                     return true;
                 }
-                return ConditionDefaultAccepter.DEFAULT.accept(t, p, v);
+                return NotNullOrEmptyValueFilter.DEFAULT.accept(t, p, v);
             })
             .where((t, t1) -> t
                     .eq(DefTable::getId, id)//虽然id为空但是还是加入到了sql中
@@ -194,7 +193,7 @@ Boolean leftEnable=true;
 ```
 
 ::: warning 注意点及说明!!!
-> 必须写到对应的`where`前面后续的`where`才会生效，用户可以自定义,比如满足的条件是优先满足`eq、ge、gt`等的第一个boolean条件,后续才会判断`conditionAccepter`，如果有多个`where`部分where需要自定义那么可以采用`conditionConfigure(ConditionDefaultAccepter.DEFAULT)`来恢复到所有参数都接受,一般用于查询时可以少写很多判断
+> 必须写到对应的`where`前面后续的`where`才会生效，用户可以自定义,比如满足的条件是优先满足`eq、ge、gt`等的第一个boolean条件,后续才会判断`valueFilter`，如果有多个`where`部分where需要自定义那么可以采用`filterConfigure(NotNullOrEmptyValueFilter.DEFAULT)`来恢复到所有参数都接受,一般用于查询时可以少写很多判断
 :::
 ## 查询对象
 
@@ -208,6 +207,9 @@ tableIndex | 0  | 当前条件用于查询哪张表
 allowEmptyStrings | false  | 是否允许空字符串,如果允许表示空也会加入到表达式内而不是忽略
 propName | ""  | 当前属性映射到数据库对象的属性名称,为空表示使用当前属性名
 type | LIKE | 当前属性和数据库对象属性以哪种表达式构建条件
+mode | SINGLE | `SINGLE`:表示当前属性是一对一数据库列,`MULTI_OR`:表示当前值对多个数据库列并且用or来连接
+propNames | [] | 当前属性映射到哪两个属性列
+tablesIndex | [] | 可以和propNames长度不一样,不一样的代表0主表
 
 
 
@@ -275,7 +277,7 @@ public class BlogQuery2Request {
 }
 ```
 
-## 动态查询条件
+## 动态查询条件1
 ```java
 
  BlogQuery2Request query = new BlogQuery2Request();
@@ -310,7 +312,102 @@ List<BlogEntity> queryable = easyQuery.queryable(BlogEntity.class)
 <== Total: 0
 ```
 
+## 动态条件2
 
+```java
+
+@Data
+public class BlogQueryRequest implements ObjectSort {
+
+    /**
+     * 标题
+     */
+    @EasyWhereCondition
+    private String title;
+    /**
+     * 标题
+     */
+    @EasyWhereCondition(mode = EasyWhereCondition.Mode.MULTI_OR,propNames = {"title","content"})
+    private String title2;
+    /**
+     * 标题
+     */
+    @EasyWhereCondition(mode = EasyWhereCondition.Mode.MULTI_OR,propNames = {"id","content"},type = EasyWhereCondition.Condition.EQUAL)
+    private String title3;
+    /**
+     * 内容
+     */
+    @EasyWhereCondition(propName = "url")
+    private String content;
+    /**
+     * 点赞数
+     */
+    @EasyWhereCondition(type = EasyWhereCondition.Condition.EQUAL)
+    private Integer star;
+    /**
+     * 发布时间
+     */
+    @EasyWhereCondition(type = EasyWhereCondition.Condition.RANGE_LEFT_CLOSED,propName = "publishTime")
+    private LocalDateTime publishTimeBegin;
+    @EasyWhereCondition(type = EasyWhereCondition.Condition.RANGE_RIGHT_CLOSED,propName = "publishTime")
+    private LocalDateTime publishTimeEnd;
+    /**
+     * 评分
+     */
+    @EasyWhereCondition(type = EasyWhereCondition.Condition.GREATER_THAN_EQUAL)
+    private BigDecimal score;
+    /**
+     * 状态
+     */
+    @EasyWhereCondition(type = EasyWhereCondition.Condition.LESS_THAN_EQUAL)
+    private Integer status;
+    /**
+     * 排序
+     */
+    @EasyWhereCondition(type = EasyWhereCondition.Condition.GREATER_THAN)
+    private BigDecimal order;
+    /**
+     * 是否置顶
+     */
+    @EasyWhereCondition(type = EasyWhereCondition.Condition.NOT_EQUAL)
+    private Boolean isTop;
+    @EasyWhereCondition(type = EasyWhereCondition.Condition.IN,propName = "status")
+    private List<Integer> statusList=new ArrayList<>();
+    @EasyWhereCondition(type = EasyWhereCondition.Condition.NOT_IN,propName = "status")
+    private List<Integer> statusNotList=new ArrayList<>();
+
+
+    private List<String> orders=new ArrayList<>();
+    @Override
+    public void configure(ObjectSortBuilder builder) {
+        for (String order : orders) {
+            builder.orderBy(order,true);
+        }
+    }
+}
+
+
+BlogQueryRequest blogQueryRequest = new BlogQueryRequest();
+blogQueryRequest.setTitle("123");
+blogQueryRequest.setTitle2("123");
+blogQueryRequest.setTitle3("123");
+blogQueryRequest.setContent("123");
+blogQueryRequest.setStar(123);
+blogQueryRequest.setPublishTimeBegin(LocalDateTime.now());
+blogQueryRequest.setPublishTimeEnd(LocalDateTime.now());
+blogQueryRequest.setScore(new BigDecimal("123"));
+blogQueryRequest.setStatus(1);
+blogQueryRequest.setOrder(new BigDecimal("12"));
+blogQueryRequest.setIsTop(false);
+blogQueryRequest.getOrders().add("status");
+blogQueryRequest.getOrders().add("score");
+String sql = easyQuery.queryable(BlogEntity.class)
+        .whereObject(true, blogQueryRequest)
+        .orderByObject(true, blogQueryRequest)
+        .toSQL();
+Assert.assertEquals("SELECT `id`,`create_time`,`update_time`,`create_by`,`update_by`,`deleted`,`title`,`content`,`url`,`star`,`publish_time`,`score`,`status`,`order`,`is_top`,`top` FROM `t_blog` WHERE `deleted` = ? AND `title` LIKE ? AND (`title` LIKE ? OR `content` LIKE ?) AND (`id` = ? OR `content` = ?) AND `url` LIKE ? AND `star` = ? AND `publish_time` >= ? AND `publish_time` <= ? AND `score` >= ? AND `status` <= ? AND `order` > ? AND `is_top` <> ? ORDER BY `status` ASC,`score` ASC", sql);
+
+```
 
 
 类型  | 构建条件 
@@ -324,3 +421,14 @@ BigDecimal | 不为null
 LocalDateTime | 不为null
 List | 不为null且不为空
 Array | 不为null且不为空  
+
+## 替换whereObject实现
+`easy-query`默认采用接口模式实现`whereObject`用户可以自行替换框架行为,甚至`@EasyWhereCondition`也可以自己实现
+
+### 如何替换框架行为
+[《替换框架行为❗️❗️❗️》](/easy-query-doc/guide/config/replace-configure) 
+
+### 接口
+`WhereObjectQueryExecutor` 默认实现 `DefaultWhereObjectQueryExecutor`
+
+您可以自行实现这个并且使用自己的注解来配合使用
