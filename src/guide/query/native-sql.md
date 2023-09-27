@@ -184,6 +184,7 @@ SELECT id,name,edition,price,store_id FROM t_book_test WHERE regexp_like(price,?
 //join多表下的sql native segment
 String sql = easyQuery.queryable(H2BookTest.class)
                 .leftJoin(DefTable.class,(t,t1)->t.eq(t1,H2BookTest::getPrice,DefTable::getMobile))
+                //1.4.31后版本支持 参数复用 {1} {1}可以加多个并且支持
                 .where((o,o1) -> o.sqlNativeSegment("regexp_like({0},{1}) AND regexp_like({2},{1})", it -> it
                         .expression(H2BookTest::getPrice)//单参数使用默认表的也就是o.sqlNativeSegment的o表就是第一张表
                         .value("^Ste(v|ph)en$")
