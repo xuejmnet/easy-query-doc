@@ -23,7 +23,7 @@ export const zhSidebar = sidebar({
         {
           text: "查询",
           prefix: "query/",
-          children: ["readme.md","or-condition","paging","multi-query","group","select","native-sql","dynamic-table","stream-query","basic-type","to-map","select-column","union","select-sub","sub-query","relation","fill","where","reuse","case-when","dynaimic-where","dynamic-sort"],
+          children: ["readme.md","basic-type","or-condition","paging","multi-query","group","select","native-sql","dynamic-table","stream-query","to-map","select-column","union","select-sub","sub-query","relation","fill","where","reuse","case-when","dynaimic-where","dynamic-sort"],
         },
         {
           text: "高级",

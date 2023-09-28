@@ -105,6 +105,11 @@ setAlias | 别名  | 用于设置列别名一般用户查询较多
 - 获取书本价格在所有书籍中的名次
 - 获取数据的价格在所属书店中的名次
 
+
+::: warning 注意点及说明!!!
+> 如果`sqlNativeSegment`内部存在参数,那么整个表达式需要将单引号改成双引号,可以通过全局配置`keep-native-style:true`来全局将单引号默认替换为双引号,或者在使用的时候调用`.keepStyle()`
+:::
+
 ```java
 
 @Table("t_book_test")
@@ -195,4 +200,26 @@ String sql = easyQuery.queryable(H2BookTest.class)
 SELECT t.id,t.name,t.edition,t.price,t.store_id 
 FROM t_book_test t LEFT JOIN t_def_table t1 ON t.price = t1.mobile 
 WHERE regexp_like(t.price,?) AND regexp_like(t1.avatar,?)
+```
+
+## 注意 
+如果sqlNativeSegment内存在单引号,并且是模板模式存在变量,那么需要对其单引号变成双引号
+
+内部采用`MessageFormat`来格式化参数
+```java
+.sqlNativeSegment("DATE_FORMAT({0}, ''%Y-%m-%d'')", c -> { //因为存在变量参数所需需要使用双引号代替,或者将格式化值变成参数
+                    c.expression(User::getCreateTime);
+                })
+
+
+.sqlNativeSegment("DATE_FORMAT({0}, {1})", c -> { //因为存在变量参数所需需要使用双引号代替,或者将格式化值变成参数
+                    c.expression(User::getCreateTime).format("'%Y-%m-%d'");
+                })
+
+.sqlNativeSegment("DATE_FORMAT({0}, '%Y-%m-%d')", c -> { //因为存在变量参数所需需要使用双引号代替,可以调用keepStyle方法或者全局配置keep-native-style为true
+                    c.keepStyle().expression(User::getCreateTime);
+                })
+
+
+.sqlNativeSegment("DATE_FORMAT(`create_time`, '%Y-%m-%d')")//如果不存在变量则可以使用单引号
 ```
