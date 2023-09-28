@@ -44,8 +44,12 @@ easy-query:
   enable: true
   database: mysql
   name-conversion: underlined
+  #如果执行物理删除delete语句将会报错 如果改为false,后续可以通过allowDeleteStatment来允许
   delete-throw: true
+  #打印sql显示(需要框架默认有日志以 log.info打印)
   print-sql: true
+  #sqlNativeSegment输入和格式化无需处理单引号会自动处理为双单引号
+  keep-native-style: true
 ```
 ```java
 

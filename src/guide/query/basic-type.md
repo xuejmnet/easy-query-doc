@@ -1,5 +1,5 @@
 ---
-title: 基本类型查询 String/Integer...
+title: 基本类型查询
 ---
 
 # 基本类型查询

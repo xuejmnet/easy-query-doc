@@ -35,6 +35,8 @@ easy-query:
   delete-throw: true
   #是否打印sql 默认true 需要配置log信息才可以 默认实现sl4jimpl
   print-sql: true
+  #sqlNativeSegment输入和格式化无需处理单引号会自动处理为双单引号
+  keep-native-style: true
 ```
 ```java
 //依赖注入
@@ -144,10 +146,17 @@ java.lang.IllegalStateException: Unable to load cache item
 
 用户也可以自行构建其他数据库或者其他数据源的`easy-query`
 
+
+
+::: warning 注意点及说明!!!
+> 注意自行构建的数据源如果`DataSource`不是被spring接管的`Bean`那么事务将不会生效
+:::
+
 ```java
 
 @Configuration
 public class MyConfiguration {
+
     @Bean("myeq")
     public EasyQuery easyQuery1(DataSource dataSource){//数据源是你要的即可
         EasyQueryClient easyQueryClient = EasyQueryBootstrapper.defaultBuilderConfiguration()
