@@ -55,13 +55,13 @@ public class EnumDeserializer {
 //枚举转换器
 public class EnumConverter implements ValueConverter<IEnum<?>,Integer> {
     @Override
-    public Integer serialize(IEnum<?> anEnum) {
-        return anEnum.getCode();
+    public Integer serialize(IEnum<?> iEnum, ColumnMetadata columnMetadata) {
+        return iEnum.getCode();
     }
 
     @Override
-    public IEnum<?> deserialize(Class<IEnum<?>> propertyClass,Integer integer) {
-        return EnumDeserializer.deserialize(EasyObjectUtil.typeCast(propertyClass),integer);
+    public IEnum<?> deserialize(Integer integer, ColumnMetadata columnMetadata) {
+        return EnumDeserializer.deserialize(EasyObjectUtil.typeCast(columnMetadata.getPropertyType()),integer);
     }
 }
 //数据库枚举
@@ -198,6 +198,26 @@ TopicTypeVO(id=123, stars=123, title=title123, topicType1=TEACHER, createTime=20
 
 ```java
 
+public class JsonConverter implements ValueConverter<Object, String> {
+    @Override
+    public String serialize(Object o, ColumnMetadata columnMetadata) {
+        if(o==null){
+            return null;
+        }
+        return JSON.toJSONString(o, JSONWriter.Feature.WriteMapNullValue, JSONWriter.Feature.WriteNullListAsEmpty, JSONWriter.Feature.WriteNullStringAsEmpty);
+    }
+
+    @Override
+    public Object deserialize(String s, ColumnMetadata columnMetadata) {
+        if(EasyStringUtil.isBlank(s)){
+            return null;
+        }
+        //采用复杂类型支持对象json和array集合
+        ComplexPropType complexType = columnMetadata.getComplexPropType();
+        return JSON.parseObject(s, complexType.getComplexType());
+    }
+}
+
 @Data
 @Table("t_topic_type")
 @ToString
@@ -253,3 +273,65 @@ TopicTypeJson(id=1231, stars=123, title=TopicTypeJsonValue(name=123, age=456), t
 
 这样我们就实现了对应的值类型转换和枚举的转换
 
+
+## 集合类型的json支持
+```java
+@Data
+@Table("t_topic_type_array")
+@ToString
+public class TopicTypeArrayJson {
+
+    @Column(primaryKey = true)
+    private String id;
+    private Integer stars;
+    @Column(conversion = JsonConverter.class)
+    private TopicTypeJsonValue title;
+    @Column(conversion = JsonConverter.class, complexPropType = TopicTypeTitle2ComplexType.class)
+    private List<TopicTypeJsonValue> title2;
+    private Integer topicType;
+    private LocalDateTime createTime;
+}
+
+//实现接口ComplexPropType返回对应的复杂类型type
+public class TopicTypeTitle2ComplexType extends TypeReference<List<TopicTypeJsonValue>> implements ComplexPropType {
+
+    @Override
+    public Type getComplexType() {
+        return this.getType();
+    }
+}
+
+
+
+TopicTypeArrayJson topicType1 = new TopicTypeArrayJson();
+topicType1.setId(id);
+topicType1.setStars(123);
+TopicTypeJsonValue topicTypeJsonValue = new TopicTypeJsonValue();
+topicTypeJsonValue.setName("123");
+topicTypeJsonValue.setAge(456);
+topicType1.setTitle(topicTypeJsonValue);
+ArrayList<TopicTypeJsonValue> topicTypeJsonValues = new ArrayList<>();
+{
+
+    TopicTypeJsonValue topicTypeJsonValue1 = new TopicTypeJsonValue();
+    topicTypeJsonValue1.setName("1234");
+    topicTypeJsonValue1.setAge(4565);
+    topicTypeJsonValues.add(topicTypeJsonValue1);
+}
+{
+
+    TopicTypeJsonValue topicTypeJsonValue1 = new TopicTypeJsonValue();
+    topicTypeJsonValue1.setName("12345");
+    topicTypeJsonValue1.setAge(45655);
+    topicTypeJsonValues.add(topicTypeJsonValue1);
+}
+topicType1.setTitle2(topicTypeJsonValues);
+
+topicType1.setTopicType(TopicTypeEnum.CLASSER.getCode());
+topicType1.setCreateTime(LocalDateTime.now());
+long l = easyQuery.insertable(topicType1).executeRows();
+
+==> Preparing: INSERT INTO `t_topic_type_array` (`id`,`stars`,`title`,`title2`,`topic_type`,`create_time`) VALUES (?,?,?,?,?,?)
+==> Parameters: 1231(String),123(Integer),{"age":456,"name":"123"}(String),[{"age":4565,"name":"1234"},{"age":45655,"name":"12345"}](String),9(Integer),2023-10-04T22:37:32.049(LocalDateTime)
+<== Total: 1
+```
