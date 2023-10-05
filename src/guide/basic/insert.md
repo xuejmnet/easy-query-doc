@@ -258,3 +258,20 @@ easyQuery.insertable(topicAuto)
 
 //INSERT INTO "t_topic_auto" ("stars","title","create_time") VALUES (?,?,?) ON CONFLICT ("title") DO UPDATE SET "stars" = EXCLUDED."stars", "create_time" = EXCLUDED."create_time"
 ```
+
+## Map插入
+`easy-query`还支持`Map`结构的数据插入支持,其中`map`的`key`表示数据库对应的列名,并且不需要添加asTable来指定操作的数据库表名
+```java
+Map<String, Object> stringObjectHashMap = new LinkedHashMap<>();
+stringObjectHashMap.put("id",123);
+stringObjectHashMap.put("name","小明");
+stringObjectHashMap.put("name1","小明");
+stringObjectHashMap.put("name2",null);
+easyQuery.mapInsertable(stringObjectHashMap)
+        .asTable("sys_table")
+        .setSQLStrategy(SQLExecuteStrategyEnum.ONLY_NOT_NULL_COLUMNS)
+        .executeRows();
+
+
+INSERT INTO `sys_table` (`id`,`name`,`name1`) VALUES (?,?,?)
+```

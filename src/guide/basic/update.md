@@ -259,7 +259,26 @@ long l1 = easyQuery.updatable(topic)
 <== Total: 1
 ```
 
+
+## Map更新
+`easy-query`还支持`Map`结构的数据更新支持,其中`map`的`key`表示数据库对应的列名,并且不需要添加asTable来指定操作的数据库表名
+```java
+HashMap<String, Object> stringObjectHashMap = new HashMap<>();
+stringObjectHashMap.put("id","123");
+stringObjectHashMap.put("name","123");
+stringObjectHashMap.put("name1",null);
+easyQuery.mapUpdatable(stringObjectHashMap)
+        .asTable("my_table")
+        .setSQLStrategy(SQLExecuteStrategyEnum.ALL_COLUMNS)
+        .whereColumns("id")
+        .executeRows();
+
+
+UPDATE `my_table` SET `name` = ?,`name1` = ? WHERE `id` = ?
+```
+
 ## 6.注意
 更新优先级顺序
 
 手动指定 > 策略 > 追踪 > 全量更新
+
