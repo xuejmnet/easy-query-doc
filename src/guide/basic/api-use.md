@@ -74,6 +74,7 @@ SysUser sysUser1 = easyProxyQuery.queryable(sysUser)
         .orderByAsc(o->o.column(sysUser.id()))
         .select(o->o.column(sysUser.id()).column(sysUser.createTime()))//也可以用columns
         //.select(o->o.columns(sysUser.id(),sysUser.createTime()))
+        //.select(o->o.columnAll(sysUser).columnIgnore(sysUser.createTime()))//获取user表的所有字段除了createTime字段
         .firstOrNull();
         
 ```
@@ -123,6 +124,7 @@ SysUser sysUser1 = easyQuery.queryable(SysUser.class)
         .orderByDesc(o->o.column(SysUser::getCreateTime))
         .orderByAsc(o->o.column(SysUser::getId))
         .select(o->o.column(SysUser::getId).column(SysUser::getCreateTime))
+        //.select(o->o.columnAll().columnIgnore(SysUser::getCreateTime))//获取user表的所有字段除了createTime字段
         .firstOrNull();
 ```
 :::
@@ -163,9 +165,7 @@ SysUserProxy userTable = SysUserProxy.createTable();
 TopicTypeVOProxy vo=TopicTypeVOProxy.createTable()；
 easyProxyQuery
         .queryable(topicTable)
-        //第一个join采用双参数,参数1表示第一张表Topic 参数2表示第二张表 BlogEntity
         .leftJoin(blogTable, o -> o.eq(topicTable.id(), blogTable.id()))
-        //第二个join采用三参数,参数1表示第一张表Topic 参数2表示第二张表 BlogEntity 第三个参数表示第三张表 SysUser
         .leftJoin(userTable, o -> o.eq(topicTable.id(), userTable.id()))
         .where(o -> o.eq(topicTable.id(), "123").like(blogTable.title(), "456")
                 .eq(userTable.createTime(), LocalDateTime.now()))
@@ -191,9 +191,9 @@ easyProxyQuery
 //返回Queryable3那么可以对这个查询表达式进行后续操作,操作都是可以操作三张表的
 Queryable3<Topic, BlogEntity, SysUser> where = easyQuery
         .queryable(Topic.class)
-        //第一个join采用双参数,参数1表示第一张表Topic 参数2表示第二张表 BlogEntity
-        .leftJoin(BlogEntity.class, (t, t1) -> t.eq(t1, Topic::getId, BlogEntity::getId))
-        //第二个join采用三参数,参数1表示第一张表Topic 参数2表示第二张表 BlogEntity 第三个参数表示第三张表 SysUser
+        //第一个join采用双参数,参数1表示第一张表Topic 参数2表示第二张表 BlogEntity,对应关系就是参数顺序
+        .leftJoin(BlogEntity.class, (t, t1) -> t.eq(t1, Topic::getId, BlogEntity::getId))//t表示Topic表,t1表示BlogEntity表,对应关系就是参数顺序
+        //第二个join采用三参数,参数1表示第一张表Topic 参数2表示第二张表 BlogEntity 第三个参数表示第三张表 SysUser,对应关系就是参数顺序
         .leftJoin(SysUser.class, (t, t1, t2) -> t.eq(t2, Topic::getId, SysUser::getId))
         .where(o -> o.eq(Topic::getId, "123"))//单个条件where参数为主表Topic
         //支持单个参数或者全参数,全参数个数为主表+join表个数 链式写法期间可以通过then来切换操作表
