@@ -156,7 +156,7 @@ AES/PCBC/ISO10126Padding  | 32 |  16    | ❌
 
 
 ::: warning 说明!!!
-> `AbstractUnSupportEmojiAesBase64EncryptionStrategy`抽象类默认仅支持非emoji的列,比如中文数字英文特殊符号等,`AbstractSupportEmojiAesBase64EncryptionStrategy`支持emoji的处理
+> `AbstractUnSupportEmojiAesBase64EncryptionStrategy`抽象类默认仅支持非emoji的列,比如中文数字英文特殊符号等,`AbstractSupportEmojiAesBase64EncryptionStrategy`支持emoji的处理,两者的区别就是相对的不支持`Emoji`的策略性能会稍微高一点点
 :::
 
 ### AbstractUnSupportEmojiAesBase64EncryptionStrategy
