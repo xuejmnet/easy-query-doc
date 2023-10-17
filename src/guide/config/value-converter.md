@@ -1,8 +1,8 @@
 ---
-title: 对象数据库值转换
+title: Java对象数据库值转换
 ---
 
-# 对象数据库值转换
+# Java对象数据库值转换
 `easy-query`默认提供了数据库值对象转换功能,可以实现数据库对象属性枚举转换的功能或者对象string转json对象的功能
 
 **注意:** 如果需要支持差异更新需要实现重写`hashcode`和`equals` `Enum`除外
@@ -182,6 +182,159 @@ TopicTypeVO topicTypeVO = easyQuery.queryable(TopicType.class)
 
 TopicTypeVO(id=123, stars=123, title=title123, topicType1=TEACHER, createTime=2023-05-23T22:16:45)
 ```
+## 注解模式
+```java
+//注解
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.FIELD, ElementType.ANNOTATION_TYPE})
+public @interface EnumValue {
+}
+//静态方法
+
+//性能问题自行处理 相对没有接口模式性能高
+
+public class EnumValueDeserializer {
+    private static final Map<String, Field> ENUM_TYPES = new ConcurrentHashMap<>();
+
+    public static <T extends Enum<T>> Object serialize(Enum<T> enumValue) {
+        if (enumValue == null) {
+            return null;
+        }
+        Optional<Field> codeOptional = getEnumValueField(enumValue.getClass());
+        if (codeOptional.isPresent()) {
+            Field filed = codeOptional.get();
+            filed.setAccessible(true);
+            try {
+                return filed.get(enumValue);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        throw new IllegalArgumentException("Invalid integer value for enum: " + enumValue + ",from :" + EasyClassUtil.getInstanceSimpleName(enumValue));
+
+    }
+
+    public static <T extends Enum<T>> T deserialize(Class<T> enumClass, Integer code) {
+        if (code == null) {
+            return null;
+        }
+        Optional<Field> codeOptional = getEnumValueField(enumClass);
+        if (codeOptional.isPresent()) {
+            Field filed = codeOptional.get();
+            T[] enumConstants = enumClass.getEnumConstants();
+            for (T enumConstant : enumConstants) {
+                filed.setAccessible(true);
+                try {
+                    if (Objects.equals(code, filed.get(enumConstant))) {
+                        return enumConstant;
+                    }
+
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        throw new IllegalArgumentException("Invalid integer value for enum: " + code + ",from :" + EasyClassUtil.getSimpleName(enumClass));
+
+    }
+
+    public static <T extends Enum<T>> Optional<Field> getEnumValueField(Class<T> enumClass) {
+        if (enumClass != null && enumClass.isEnum()) {
+            String className = enumClass.getName();
+            Field s = EasyMapUtil.computeIfAbsent(ENUM_TYPES, className, key -> {
+                Collection<Field> allFields = EasyClassUtil.getAllFields(enumClass);
+                Optional<Field> optional = allFields.stream()
+                        // 过滤包含注解@EnumValue的字段
+                        .filter(field ->field.isAnnotationPresent(EnumValue.class))
+                        .findFirst();
+                return optional.orElse(null);
+            });
+            return Optional.ofNullable(s);
+        }
+        return Optional.empty();
+
+    }
+}
+
+//转换器
+public class EnumValueConverter implements ValueConverter<Enum<?>,Integer> {
+    @Override
+    public Integer serialize(Enum<?> enumValue, ColumnMetadata columnMetadata) {
+        return (Integer) EnumValueDeserializer.serialize(enumValue);
+    }
+
+    @Override
+    public Enum<?> deserialize(Integer integer, ColumnMetadata columnMetadata) {
+        return EnumValueDeserializer.deserialize(EasyObjectUtil.typeCast(columnMetadata.getPropertyType()),integer);
+    }
+}
+
+
+public enum TopicTypeEnum {
+    STUDENT(1),
+
+    TEACHER(3),
+
+    CLASSER(9);
+    @EnumValue
+    private final Integer code;
+
+    TopicTypeEnum(Integer code){
+
+        this.code = code;
+    }
+    @Override
+    public Integer getCode() {
+        return code;
+    }
+}
+
+
+@Data
+@Table("t_topic_type")
+@ToString
+public class TopicTypeTest2 {
+
+    @Column(primaryKey = true)
+    private String id;
+    private Integer stars;
+    private String title;
+    @Column(value = "topic_type",conversion = EnumValueConverter.class)
+    private TopicTypeEnum topicType;
+    private LocalDateTime createTime;
+}
+
+
+TopicTypeTest2 topicType2 = new TopicTypeTest2();
+topicType2.setId("123");
+topicType2.setStars(123);
+topicType2.setTitle("title123");
+topicType2.setTopicType(TopicTypeEnum.CLASSER);
+topicType2.setCreateTime(LocalDateTime.now());
+long l = easyQuery.insertable(topicType2).executeRows();
+
+
+==> Preparing: INSERT INTO `t_topic_type` (`id`,`stars`,`title`,`topic_type`,`create_time`) VALUES (?,?,?,?,?)
+==> Parameters: 123(String),123(Integer),title123(String),9(Integer),2023-05-23T22:12:12.703(LocalDateTime)
+<== Total: 1
+
+
+TopicTypeTest2 topicTypeVO = easyQuery.queryable(TopicTypeTest2.class)
+        .whereById("123")
+        .firstOrNull();
+
+System.out.println(topicTypeVO);
+
+==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`topic_type`,t.`create_time` FROM `t_topic_type` t WHERE t.`id` = ? LIMIT 1
+==> Parameters: 123(String)
+<== Time Elapsed: 4(ms)
+<== Total: 1
+
+
+TopicTypeTest2(id=123, stars=123, title=title123, topicType=CLASSER, createTime=2023-05-23T22:13:32)
+```
+
 ## json对象
 ::: warning 注意
 > 因为update会使用track追踪模式更新所以这边json对象必须要重写`equals`和`hashcode`
