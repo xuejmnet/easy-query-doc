@@ -359,7 +359,7 @@ public class SchoolStudentVO {
     private String name;
     @Navigate(RelationTypeEnum.ManyToOne)//VO对象使用只需要定义关联关系,其余信息不需要定义,定义了也会忽略
     private SchoolClassVO schoolClass;
-    @Navigate(RelationTypeEnum.OneToOne)/VO对象使用只需要定义关联关系,其余信息不需要定义,定义了也会忽略
+    @Navigate(RelationTypeEnum.OneToOne)//VO对象使用只需要定义关联关系,其余信息不需要定义,定义了也会忽略
     private SchoolStudentAddressVO schoolStudentAddress;
 }
 
@@ -370,7 +370,7 @@ public class SchoolStudentAddressVO {
     private String id;
     private String studentId;
     private String address;
-    @Navigate(value = RelationTypeEnum.ManyToOne)/VO对象使用只需要定义关联关系,其余信息不需要定义,定义了也会忽略
+    @Navigate(value = RelationTypeEnum.ManyToOne)//VO对象使用只需要定义关联关系,其余信息不需要定义,定义了也会忽略
     private SchoolStudentVO schoolStudent;
 }
 

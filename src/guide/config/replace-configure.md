@@ -113,3 +113,17 @@ public class MyNameConversion implements NameConversion {
                 .replaceService(NameConversion.class, MyNameConversion.class)//放在最后面可以替换掉前面所有方法
                 .build();
 ```
+
+### solon环境替换默认行为
+
+```java
+public class App {
+    public static void main(String[] args) {
+        Solon.start(App.class,args,app->{
+            app.onEvent(EasyQueryBuilderConfiguration.class,e->{
+                e.replaceService(originalSerivce.class,replaceService.class);
+            });
+        });
+    }
+}
+```
