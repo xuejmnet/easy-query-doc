@@ -15,6 +15,27 @@ firstNotNull | - | 查询返回第一条数据,如果没有结果将会抛错`Ea
 singleOrNull |  null | 查询返回第一条数据,如果没有结果返回null,如果本次查询结果数据条数大于1条那么将会抛错`EasyQuerySingleMoreElementException`,和`first`的区别是`不会`添加`limit 1`或者`top 1`
 singleNotNull| - | 查询返回第一条数据,如果没有结果将会抛错`EasyQuerySingleOrNotNullException`,如果本次查询结果数据条数大于1条那么将会抛错`EasyQuerySingleMoreElementException`,和`first`的区别是`不会`添加`limit 1`或者`top 1`
 
+
+
+`toList`对查询结果进行多条数据返回
+方法  | 默认值 | 描述  
+--- | --- | --- 
+toList |  `new ArrayList`  | 查询返回符合条件的所有数据,并且以`ArrayList`集合进行返回,如果没有符合条件的结果将返回空的`ArrayList`而不是`null`
+
+
+
+`toPageResult`对查询结果进行分页查询
+方法  | 默认值 | 描述  
+--- | --- | --- 
+toPageResult |  `new DefaultPageResult`  | 查询返回符合条件的分页结果,如果没有符合条件的结果将返回默认分页对象而不是`null`
+
+
+
+`toStreamResult`对查询结果进行迭代器模式返回,符合超大数量级的数据获取
+方法  | 默认值 | 描述  
+--- | --- | --- 
+toStreamResult |  `new DefaultJdbcStreamResultSet`  | 查询返回符合条件的可迭代结果集,支持获取`Iterable`接口也支持`foreach`,使用时需要配合`try finally`来关闭资源
+
 ### 测试数据
 ```java
 @Data

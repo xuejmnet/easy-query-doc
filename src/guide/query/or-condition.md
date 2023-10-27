@@ -81,3 +81,28 @@ Topic topic3 = easyQuery.queryable(Topic.class)
 <== Time Elapsed: 3(ms)
 <== Total: 1
 ```
+
+多列`or`条件模糊搜索,传入`List<String>`的name集合,需要查询主题id和标题包含的结果
+
+```java
+
+List<String> searchValues = Arrays.asList("1", "小明", "小红");
+List<Topic> list = easyQuery
+        .queryable(Topic.class)
+        .where(o -> o.isBank(Topic::getId))
+        .where(o -> {
+                for (String searchValue : searchValues) {
+                o.and(x -> { //每次and就是代表一个括号,括号里面用or来链接
+                        x.like(Topic::getId, searchValue)
+                                .or().like(Topic::getTitle, searchValue);
+                });
+                }
+        })
+        .toList();
+
+
+==> Preparing: SELECT `id`,`stars`,`title`,`create_time` FROM `t_topic` WHERE IFNULL(`id`,?) = ? AND (`id` LIKE ? OR `title` LIKE ?) AND (`id` LIKE ? OR `title` LIKE ?) AND (`id` LIKE ? OR `title` LIKE ?)
+==> Parameters: (String),(String),%1%(String),%1%(String),%小明%(String),%小明%(String),%小红%(String),%小红%(String)
+<== Time Elapsed: 53(ms)
+<== Total: 0
+```
