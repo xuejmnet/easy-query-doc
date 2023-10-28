@@ -4,6 +4,15 @@ title: 自定义数据库函数(旧)
 
 # 自定义数据库函数
 目前框架未提供相应的数据库函数,仅提供了count,sum,min,max等
+
+::: warning 说明!!!
+> 目前不是很建议看这一章节,因为当前的函数设计只适合单个属性的处理,并且过于繁琐,所以建议使用`sqlNativeSegment`或者`SqlFunction`来实现数据库方言自定义
+:::
+[`sqlNativeSegment`](/easy-query-doc/guide/query/native-sql)
+
+[`自定义数据库函数(新)`](/easy-query-doc/guide/adv/column-func-new)
+<!-- [`SqlFunction`]() -->
+
 ```sql
 SELECT IFNULL(t.`url`,'') AS `url` FROM `t_blog` t WHERE t.`deleted` = ?
 ```
