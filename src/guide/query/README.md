@@ -83,6 +83,7 @@ List<Topic> topics = easyQuery
 ==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM t_topic t WHERE t.`id` = ?
 ==> Parameters: 3(String)
 <== Total: 1
+
 ```
 @tab 字符串属性
 
@@ -237,6 +238,35 @@ List<BlogEntity> topics = easyQuery
 ==> Preparing: SELECT t.`id`,t.`create_time`,t.`update_time`,t.`create_by`,t.`update_by`,t.`deleted`,t.`title`,t.`content`,t.`url`,t.`star`,t.`publish_time`,t.`score`,t.`status`,t.`order`,t.`is_top`,t.`top` FROM t_blog t LEFT JOIN (SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM t_topic t WHERE t.`id` = ?) t1 ON t.`id` = t1.`id` WHERE t.`id` IS NOT NULL AND t.`id` = ?
 ==> Parameters: 3(String),3(String)
 <== Total: 1
+```
+
+## 自定义VO返回结果
+```java
+//映射规则为BlogEntity的属性字段对应的column_name和VO对象BlogEntityTest的属性字段对应的column_name一样即可直接映射
+List<BlogEntityTest> list = easyQuery.queryable(BlogEntity.class)
+        .select(BlogEntityTest.class).toList();
+
+==> Preparing: SELECT t.`title`,t.`content`,t.`url`,t.`star`,t.`publish_time`,t.`score`,t.`status`,t.`order`,t.`is_top`,t.`top` FROM `t_blog` t WHERE t.`deleted` = ?
+==> Parameters: false(Boolean)
+<== Time Elapsed: 3(ms)
+<== Total: 100
+//如果遇到无法对应的可以通过手动as来实现映射
+String sql = easyQuery.queryable(BlogEntity.class)
+        .where(o -> o.eq(BlogEntity::getId, "2"))
+        .select(BlogEntityVO1.class, o -> o.columnIgnore(BlogEntity::getId)
+                .columnAs(BlogEntity::getOrder, BlogEntityVO1::getScore))//将查询的order映射到vo对象的score上
+                .limit(1).toSQL();
+Assert.assertEquals("SELECT t.`order` AS `score` FROM `t_blog` t WHERE t.`deleted` = ? AND t.`id` = ? LIMIT 1", sql);
+
+Queryable<BlogEntityTest2> queryable = easyQuery.queryable(BlogEntity.class)
+                    .select(BlogEntityTest2.class, o -> {
+                        o.columnAll()//等于*但是不会用*这种暴力的语法会将字段列出
+                        .columnIgnore(BlogEntity::getTitle)//忽略前面的columnAll里面的title列
+                        .columnAs(BlogEntity::getUrl, BlogEntityTest2::getMyUrl);//并且将url映射到my_url上
+                    });
+            String sql = queryable.toSQL();
+            Assert.assertEquals("SELECT t.`content`,t.`star`,t.`publish_time`,t.`score`,t.`status`,t.`order`,t.`is_top`,t.`top`,t.`url` AS `my_url` FROM `t_blog` t WHERE t.`deleted` = ?", sql);
+           
 ```
 
 ## API
