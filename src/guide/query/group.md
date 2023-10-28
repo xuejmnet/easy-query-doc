@@ -19,6 +19,17 @@ List<TopicGroupTestDTO> topicGroupTestDTOS = easyQuery.queryable(Topic.class)
 <== Total: 1
 
 
+List<TopicGroupTestDTO> topicGroupTestDTOS = easyQuery.queryable(Topic.class)
+                .where(o -> o.eq(Topic::getId, "3"))
+                .groupBy(o->o.column(Topic::getId))
+                .select(TopicGroupTestDTO.class, o->o.groupKeysAs(0, TopicGroupTestDTO::getId).columnCount(Topic::getId,TopicGroupTestDTO::getIdCount))
+                .toList();
+
+
+==> Preparing: SELECT t.`id` AS `id`,COUNT(t.`id`) AS `idCount` FROM t_topic t WHERE t.`id` = ? GROUP BY t.`id`
+==> Parameters: 3(String)
+<== Total: 1
+
 
 List<TopicGroupTestDTO> topicGroupTestDTOS = easyQuery.queryable(Topic.class)
                 .where(o -> o.eq(Topic::getId, "3"))
