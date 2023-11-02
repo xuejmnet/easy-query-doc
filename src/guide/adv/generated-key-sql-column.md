@@ -20,7 +20,7 @@ public class CustomIncrement {
 
 自定义插入列函数
 ```java
-public class MyDatabaseIncrementSQLColumnGenerator implements IncrementSQLColumnGenerator {
+public class MyDatabaseIncrementSQLColumnGenerator implements GeneratedKeySQLColumnGenerator {
     @Override
     public void configure(TableAvailable table, ColumnMetadata columnMetadata, SQLPropertyConverter sqlPropertyConverter, QueryRuntimeContext runtimeContext) {
         sqlPropertyConverter.sqlNativeSegment("mysqlNextId()");
