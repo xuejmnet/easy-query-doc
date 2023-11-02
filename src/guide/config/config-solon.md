@@ -176,12 +176,12 @@ easy-query:
     # 插入列策略 all_columns only_not_null_columns only_null_columns
     insert-strategy: only_not_null_columns 
     # 更新列策略 all_columns only_not_null_columns only_null_columns
-    update-strategy: all_columns connection_strictly
+    update-strategy: all_columns 
     # 大字段依旧查询 如果不查询建议设置为updateIgnore防止update allcolumn将其改为null
     query-large-column: true
     # 更新删除无版本号报错
     no-version-error: true
-    # 分片链接模式 system_auto memory_strictly
+    # 分片链接模式 system_auto memory_strictly connection_strictly
     # connection-mode: ...
     # max-sharding-query-limit: ...
     # executor-maximum-pool-size: ...
