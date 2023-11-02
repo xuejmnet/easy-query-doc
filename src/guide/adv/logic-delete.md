@@ -172,6 +172,13 @@ public class CurrentUserHelper {
 ```java
 
 //@Component //如果是spring
+//非spring或者spring且自行构建build的Qu二有RuntimeContext那么就需要调用
+//configuration.applyLogicDeleteStrategy(new MyLogicDelStrategy());
+//其中configuration通过以下代码来获取
+QueryRuntimeContext runtimeContext = easyQuery.getRuntimeContext();
+QueryConfiguration configuration = runtimeContext.getQueryConfiguration();
+configuration.applyLogicDeleteStrategy(new MyLogicDelStrategy());
+
 public class MyLogicDelStrategy extends AbstractLogicDeleteStrategy {
     /**
      * 允许datetime类型的属性
