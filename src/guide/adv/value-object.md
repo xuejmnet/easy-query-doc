@@ -141,7 +141,7 @@ create table my_company
 ```
 
 ::: warning 注意点及说明!!!
-> 属性模式已经原生支持,通过属性.属性来访问和使用,其中proxy还在适配中,java的lambda版本需要自行实现,kotlin也需要自行实现
+> 属性模式已经原生支持,通过属性.属性来访问和使用,其中proxy已适配完成,java的lambda版本需要自行实现,kotlin也需要自行实现
 :::
 
 ## java版本实现
