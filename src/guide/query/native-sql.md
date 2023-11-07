@@ -203,9 +203,9 @@ WHERE regexp_like(t.price,?) AND regexp_like(t1.avatar,?)
 ```
 
 ## 注意 
-如果sqlNativeSegment内存在单引号,并且是模板模式存在变量,那么需要对其单引号变成双引号
+如果sqlNativeSegment中存在单引号,并且是模板模式存在变量,那么需要对其单引号变成双引号,或者将单引号作为参数或者使用`keepStyle()`,也可以全局设置`keepStyle()`,
 
-内部采用`MessageFormat`来格式化参数
+内部采用`MessageFormat`来格式化参数,所以如果有大数字需要传入`format`请先`toString()`后传入
 ```java
 .sqlNativeSegment("DATE_FORMAT({0}, ''%Y-%m-%d'')", c -> { //因为存在变量参数所需需要使用双引号代替,或者将格式化值变成参数
                     c.expression(User::getCreateTime);
@@ -223,3 +223,8 @@ WHERE regexp_like(t.price,?) AND regexp_like(t1.avatar,?)
 
 .sqlNativeSegment("DATE_FORMAT(`create_time`, '%Y-%m-%d')")//如果不存在变量则可以使用单引号
 ```
+
+
+
+## 相关搜索
+`原生sql` `自定义sql` `sql片段` `原生sql片段`

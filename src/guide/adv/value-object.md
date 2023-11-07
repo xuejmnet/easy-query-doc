@@ -421,3 +421,6 @@ easyQuery.updatable(company).executeRows();
 ==> Parameters: myCompany1(String),province1(String),city1(String),area1(String),license1(String),2023-01-01T00:00(LocalDateTime),www.baidu.com(String),it编程(String),my1(String)
 <== Total: 1
 ```
+
+## 相关搜索
+`@Embedded` `@Embeddable` `值类型` `值对象`
