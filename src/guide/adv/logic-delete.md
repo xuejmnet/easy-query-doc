@@ -264,3 +264,7 @@ long l = easyQuery.deletable(logicDelTopic).executeRows();
 
 到这里为止我们就完全实现了逻辑删除自定义并且支持更新多字段
 
+
+
+## 相关搜索
+`逻辑删除` `软删除` `soft delete` `logic delete`
