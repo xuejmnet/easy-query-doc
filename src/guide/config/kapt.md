@@ -8,7 +8,6 @@ title: kotlin代理模式
 
 <img src="/kapt1.png">
 
-
 ## 添加依赖
 ```xml
 
