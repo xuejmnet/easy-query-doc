@@ -5,31 +5,32 @@ title: 使用代理模式
 # 代理模式
 `easy-query`提供了多种api接口方便用户调用,其中代理模式的使用上面更加符合人性化,如果您是c#开发人员那么肯定这种模式相对的会更加适合您的开发理念
 
+加群配合插件可以快速生成apt代理类无需每次都要`build`
+
 ## psvm下
 
 ### 安装依赖
+
+`easy-query.version`版本建议大于1.7.3+
 ```xml
 
 <!-- easy-query mysql语法 -->
 <dependency>
     <groupId>com.easy-query</groupId>
     <artifactId>sql-mysql</artifactId>
-    <version>${project.version}</version>
-    <scope>compile</scope>
+    <version>${easy-query.version}</version>
 </dependency>
 <!-- apt生成代理类 -->
 <dependency>
     <groupId>com.easy-query</groupId>
     <artifactId>sql-processor</artifactId>
-    <version>1.1.12</version>
-    <scope>compile</scope>
+    <version>${easy-query.version}</version>
 </dependency>
 <!-- 代理api -->
 <dependency>
     <groupId>com.easy-query</groupId>
     <artifactId>sql-api-proxy</artifactId>
-    <version>1.1.12</version>
-    <scope>compile</scope>
+    <version>${easy-query.version}</version>
 </dependency>
 <!-- mysql驱动 -->
 <dependency>
@@ -51,11 +52,21 @@ title: 使用代理模式
 </dependency>
 ```
 
+
+::: warning 说明!!!
+> 如果您的项目是多模块,请在对应模块额外添加`sql-processor`
+
+> 会在target包下的xgenerated-sources下生成`TopicProxy.java`类
+
+> 如果idea无法智能提示那么就刷新一下maven
+
+:::
+
 ### 新建java类
 ```java
 @Data
 @Table("t_topic")
-@EntityProxy
+@EntityProxy //必须添加这个注解
 public class Topic {
     @Column(primaryKey = true)
     private String id;
@@ -73,6 +84,7 @@ public class Topic {
 > 会在target包下的xgenerated-sources下生成`TopicProxy.java`类
 
 > 如果idea无法智能提示那么就刷新一下maven
+
 :::
 ### 初始化代码
 ```java

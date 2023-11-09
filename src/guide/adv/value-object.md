@@ -1,7 +1,7 @@
 ---
 title: 值类型对象
 ---
-`easy-query`在`1.7.0^`版本支持`value-object`值类型对象,用于描述数据库对象的聚合列,譬如
+`easy-query`在`1.7.3^`版本支持`value-object`值类型对象,用于描述数据库对象的聚合列,譬如
 ```java
 
 @Table("my_company")
