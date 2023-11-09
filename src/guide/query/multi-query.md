@@ -73,3 +73,106 @@ Topic topic = easyQuery
 ==> Parameters: 3(String),false(Boolean),3(String)
 <== Total: 1
 ```
+
+## join2表以上
+
+
+```java
+//返回Queryable3那么可以对这个查询表达式进行后续操作,操作都是可以操作三张表的
+Queryable3<Topic, BlogEntity, SysUser> where = easyQuery
+        .queryable(Topic.class)
+        //第一个join采用双参数,参数1表示第一张表Topic 参数2表示第二张表 BlogEntity,对应关系就是参数顺序
+        .leftJoin(BlogEntity.class, (t, t1) -> t.eq(t1, Topic::getId, BlogEntity::getId))//t表示Topic表,t1表示BlogEntity表,对应关系就是参数顺序
+        //第二个join采用三参数,参数1表示第一张表Topic 参数2表示第二张表 BlogEntity 第三个参数表示第三张表 SysUser,对应关系就是参数顺序
+        .leftJoin(SysUser.class, (t, t1, t2) -> t.eq(t2, Topic::getId, SysUser::getId))
+        .where(o -> o.eq(Topic::getId, "123"))//单个条件where参数为主表Topic
+        //支持单个参数或者全参数,全参数个数为主表+join表个数 链式写法期间可以通过then来切换操作表
+        .where((t, t1, t2) -> t.eq(Topic::getId, "123").then(t1).like(BlogEntity::getTitle, "456")
+                .then(t2).eq(BaseEntity::getCreateTime, LocalDateTime.now()))
+        //如果不想用链式的then来切换也可以通过lambda 大括号方式执行顺序就是代码顺序,默认采用and链接
+        .where((t, t1, t2) -> {
+            t.eq(Topic::getId, "123");
+            t1.like(BlogEntity::getTitle, "456");
+            t1.eq(BaseEntity::getCreateTime, LocalDateTime.now());
+        });
+
+
+
+//也支持单表的Queryable返回,但是这样后续操作只可以操作单表没办法操作其他join表了
+Queryable<Topic> where = easyQuery
+        .queryable(Topic.class)
+        //第一个join采用双参数,参数1表示第一张表Topic 参数2表示第二张表 BlogEntity
+        .leftJoin(BlogEntity.class, (t, t1) -> t.eq(t1, Topic::getId, BlogEntity::getId))
+        //第二个join采用三参数,参数1表示第一张表Topic 参数2表示第二张表 BlogEntity 第三个参数表示第三张表 SysUser
+        .leftJoin(SysUser.class, (t, t1, t2) -> t.eq(t2, Topic::getId, SysUser::getId))
+        .where(o -> o.eq(Topic::getId, "123"))//单个条件where参数为主表Topic
+        //支持单个参数或者全参数,全参数个数为主表+join表个数 链式写法期间可以通过then来切换操作表
+        //如果where参数过多不想写可以用whereMerge,selectMerge,orderByMerge同理
+        .where((t, t1, t2) -> t.eq(Topic::getId, "123").then(t1).like(BlogEntity::getTitle, "456")
+                .then(t2).eq(BaseEntity::getCreateTime, LocalDateTime.now()))
+        //如果不想用链式的then来切换也可以通过lambda 大括号方式执行顺序就是代码顺序,默认采用and链接
+        .where((t, t1, t2) -> {
+            t.eq(Topic::getId, "123");
+            t1.like(BlogEntity::getTitle, "456");
+            t1.eq(BaseEntity::getCreateTime, LocalDateTime.now());
+        });
+```
+
+
+## 一个相对比较全的查询
+```java
+easyQuery.queryable(Topic.class)
+                .leftJoin(Topic.class, (t, t1) -> t.eq(t1, Topic::getId, Topic::getId))
+                .leftJoinMerge(Topic.class, o -> o.t().eq(o.t2(), Topic::getId, Topic::getId))
+                .leftJoinMerge(Topic.class, o -> o.t().eq(o.t3(), Topic::getId, Topic::getId))
+                .leftJoinMerge(Topic.class, o -> o.t().eq(o.t4(), Topic::getId, Topic::getId))
+                .leftJoinMerge(Topic.class, o -> o.t().eq(o.t5(), Topic::getId, Topic::getId))
+                .leftJoinMerge(Topic.class, o -> o.t().eq(o.t6(), Topic::getId, Topic::getId))
+                .where(o -> o.eq(Topic::getId, 1))
+                .where(false, o -> o.eq(Topic::getId, 1))
+                .whereById("1")
+                .whereById(false, "1")
+                .whereById(Collections.singletonList("1"))
+                .whereById(false, Collections.singletonList("1"))
+                .whereObject(topicRequest)
+                .whereObject(false, topicRequest)
+                .whereMerge(o -> {
+                    o.t().eq(Topic::getId, "1");
+                    o.t().eq(false, Topic::getId, "1");
+                    o.t().ne(Topic::getId, "1");
+                    o.t().ne(false, Topic::getId, "1");
+                    o.t().ge(Topic::getId, "1");
+                    o.t().ge(false, Topic::getId, "1");
+                    o.t().gt(Topic::getId, "1");
+                    o.t().gt(false, Topic::getId, "1");
+                    o.t().le(Topic::getId, "1");
+                    o.t().le(false, Topic::getId, "1");
+                    o.t().lt(Topic::getId, "1");
+                    o.t().lt(false, Topic::getId, "1");
+                    o.t().like(Topic::getId, "1");
+                    o.t().like(false, Topic::getId, "1");
+                    o.t().notLike(Topic::getId, "1");
+                    o.t().notLike(false, Topic::getId, "1");
+                    o.t().likeMatchLeft(Topic::getId, "1");
+                    o.t().likeMatchLeft(false, Topic::getId, "1");
+                    o.t().likeMatchRight(Topic::getId, "1");
+                    o.t().likeMatchRight(false, Topic::getId, "1");
+                    o.t().notLikeMatchLeft(Topic::getId, "1");
+                    o.t().notLikeMatchLeft(false, Topic::getId, "1");
+                    o.t().notLikeMatchRight(Topic::getId, "1");
+                    o.t().notLikeMatchRight(false, Topic::getId, "1");
+                })
+                .limit(1, 2)
+                .orderByAsc(o -> o.column(Topic::getCreateTime))
+                .orderByDesc(o -> o.column(Topic::getCreateTime))
+                .orderByAsc(false, o -> o.column(Topic::getCreateTime))
+                .orderByDesc(false, o -> o.column(Topic::getCreateTime))
+                .orderByAscMerge(o -> o.t().column(Topic::getCreateTime))
+                .orderByDescMerge(o -> o.t().column(Topic::getCreateTime))
+                .orderByAscMerge(false, o -> o.t().column(Topic::getCreateTime))
+                .orderByDescMerge(false, o -> o.t().column(Topic::getCreateTime))
+                .groupByMerge(o -> o.t().column(Topic::getId))
+                .groupByMerge(false, o -> o.t().column(Topic::getId))
+                .havingMerge(o -> o.t().count(Topic::getId, AggregatePredicateCompare.GE, 1))
+                .havingMerge(false, o -> o.t().count(Topic::getId, AggregatePredicateCompare.GE, 1));
+```
