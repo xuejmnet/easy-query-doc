@@ -54,12 +54,7 @@ title: 使用代理模式
 
 
 ::: warning 说明!!!
-> 如果您的项目是多模块,请在对应模块额外添加`sql-processor`
-
-> 会在target包下的xgenerated-sources下生成`TopicProxy.java`类
-
-> 如果idea无法智能提示那么就刷新一下maven
-
+> 如果您的项目是多模块,请在对应模块需要生成代理对象的类处都添加`sql-processor`
 :::
 
 ### 新建java类
