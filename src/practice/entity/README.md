@@ -67,6 +67,8 @@ public abstract class BaseEntity implements Serializable, Cloneable {
 @AllArgsConstructor(onConstructor_ = @Autowired)
 public class DefaultEntityInterceptor implements EntityInterceptor, UpdateSetInterceptor {
 
+    //如果你是springsecurity可以用这个SecurityContextHolder.getContext()
+    //如果你是satoken那么直接用StpUtil
     private final CurrentUser currentUser;//对springboot进行的封装可以通过jwt获取对应的当前操作人用户
 
     /**
