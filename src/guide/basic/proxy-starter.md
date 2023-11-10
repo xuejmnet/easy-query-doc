@@ -7,11 +7,18 @@ title: 使用代理模式
 
 加群配合插件可以快速生成apt代理类无需每次都要`build`
 
+## 🔔交流QQ群
+::: center
+<img src="/qrcode.jpg" alt="群号: 170029046" class="no-zoom" style="width:100px;">
+
+#### EasyQuery官方QQ群: 170029046
+:::
+
 ## psvm下
 
 ### 安装依赖
 
-`easy-query.version`版本建议大于1.7.3+
+`easy-query.version`版本建议大于1.7.5+
 ```xml
 
 <!-- easy-query mysql语法 -->
