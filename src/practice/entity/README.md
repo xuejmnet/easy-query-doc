@@ -132,7 +132,7 @@ public class DefaultEntityInterceptor implements EntityInterceptor, UpdateSetInt
     public void configure(Class<?> entityClass, EntityUpdateExpressionBuilder entityUpdateExpressionBuilder, ColumnSetter<Object> columnSetter) {
         String updateBy = "updateBy";
         String updateTime = "updateTime";
-        //是否已经set了
+        //是否已经set了 如果你觉得你程序里面不会手动去修改这两个值那么也可以不加这个判断
         if (!entityUpdateExpressionBuilder.getSetColumns().containsOnce(entityClass, updateBy)) {
             String userId = StringUtils.defaultString(currentUser.getUserId());
             columnSetter.set(updateBy, userId);
