@@ -409,6 +409,10 @@ Assert.assertEquals("SELECT `id`,`create_time`,`update_time`,`create_by`,`update
 
 ```
 
+## 动态条件多表join
+
+通过修改`@EasyWhereCondition`的`tableIndex`或者`tablesIndex`(区别就是属性是否是对应多个属性)来指定当前属性对应的join的哪张表
+
 
 类型  | 构建条件 
 --- | --- 
