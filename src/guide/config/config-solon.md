@@ -266,8 +266,9 @@ public class DemoConfiguration {
 ```
 
 ### Solon所有配置
-```java
 
+针对单个数据源进行配置,如果需要影响到所有数据源看下面的影响到所有数据源
+```java
 @Configuration
 public class DemoConfiguration {
     @Bean(name = "db1",typed=true)
@@ -304,5 +305,29 @@ public class DemoConfiguration {
 //
 //        dataSourceManager.addDataSource(key, dataSource, poolSize);
 //    }
+}
+```
+
+### 配置影响到所有的数据源
+```java
+public class App {
+    public static void main(String[] args) {
+        Solon.start(App.class,args,app->{
+            app.onEvent(EasyQueryBuilderConfiguration.class,e->{
+                //如果需要区分数据源可以通过e.getName()来区分
+                e.replaceServiceFactory(QueryConfiguration.class, s->{
+                    QueryConfiguration queryConfiguration = new QueryConfiguration(s.getService(EasyQueryOption.class)
+                            ,s.getService(Dialect.class)
+                            ,s.getService(NameConversion.class)
+                            ,s.getService(EasyTimeJobManager.class)
+                    );
+//                    queryConfiguration.applyInterceptor();
+//                    queryConfiguration.applyLogicDeleteStrategy();
+//                    queryConfiguration.applyValueConverter();
+                    return queryConfiguration;
+                });
+            });
+        });
+    }
 }
 ```
