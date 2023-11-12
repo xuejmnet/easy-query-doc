@@ -61,7 +61,9 @@ public class LogSlowSQLListener implements JdbcExecutorListener {
         //记录耗时操作
         long elapsed = afterArg.getEnd() - beforeArg.getStart();
         //耗时3秒以上的sql需要记录
-        if(elapsed>=3*1000){
+        //因为sqlParameters第一层大于1表示是批处理,批处理的时间一般是比较多的你可以选择
+        //不记录本次sql或者只记录sql不记录sql参数自行处理
+        if(elapsed>=3*1000 && beforeArg.getSqlParameters().length()<=1){
             //发送http请求
             
             String sql = beforeArg.getSql();
@@ -130,7 +132,9 @@ public class LogSlowSQLListener implements JdbcExecutorListener {
         //记录耗时操作
         long elapsed = afterArg.getEnd() - beforeArg.getStart();
         //耗时3秒以上的sql需要记录
-        if(elapsed>=3*1000){
+        //因为sqlParameters第一层大于1表示是批处理,批处理的时间一般是比较多的你可以选择
+        //不记录本次sql或者只记录sql不记录sql参数自行处理
+        if(elapsed>=3*1000 && beforeArg.getSqlParameters().length()<=1){
             //发送http请求
 
             String sql = beforeArg.getSql();
@@ -200,7 +204,9 @@ public class LogSlowSQLListener implements JdbcExecutorListener {
         //记录耗时操作
         long elapsed = afterArg.getEnd() - beforeArg.getStart();
         //耗时3秒以上的sql需要记录
-        if(elapsed>=3*1000){
+        //因为sqlParameters第一层大于1表示是批处理,批处理的时间一般是比较多的你可以选择
+        //不记录本次sql或者只记录sql不记录sql参数自行处理
+        if(elapsed>=3*1000 && beforeArg.getSqlParameters().length()<=1){
             //发送http请求
 
             String sql = beforeArg.getSql();
@@ -266,7 +272,9 @@ public class LogSlowSQLListener implements JdbcExecutorListener {
         //记录耗时操作
         long elapsed = afterArg.getEnd() - beforeArg.getStart();
         //耗时3秒以上的sql需要记录
-        if(elapsed>=3*1000){
+        //因为sqlParameters第一层大于1表示是批处理,批处理的时间一般是比较多的你可以选择
+        //不记录本次sql或者只记录sql不记录sql参数自行处理
+        if(elapsed>=3*1000 && beforeArg.getSqlParameters().length()<=1){
             //发送http请求
 
             String sql = beforeArg.getSql();
