@@ -24,6 +24,13 @@ name | 无  | 拦截器名称需要自己实现,默认可以使用类名
 apply | 哪些对象允许采用当前拦截器  | 默认可以才用是否为某个接口的实现`Interface.class.isAssignableFrom(entityClass);`
 
 
+
+
+::: warning 说明!!!
+> 创建完拦截器后需要配置到`QueryConfiguration`,如果你是`springboot`并且是默认`easy-query`只需要添加`@Component`如果是`solon`那么可以查看[配置或配置到所有数据源](/easy-query-doc/guide/config/config-solon.html#solon所有配置)
+:::
+
+
 ## demo数据
 
 ::: code-tabs
