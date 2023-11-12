@@ -11,6 +11,28 @@ enable | false  | 表示是否使用监听器
 onExecuteBefore | 空  | 用来记录监听前的参数信息
 onExecuteAfter | 空  | 用来监听监听后的参数信息
 
+### JdbcExecuteBeforeArg
+执行前参数
+
+方法 | 类型| 默认 | 描述  
+--- | --- | --- | --- 
+traceId | `String` | `UUID.randomUUID().toString()`  | 用来连接前后执行的追踪id,可以自己重写
+sql | `String` | 执行的sql  | 用来记录监听前的参数信息
+sqlParameters | `List<List<SQLParameter>>` | `Collections.emptyList()`  | 用来监听监听后的参数信息
+start | `long` | `System.currentTimeMillis()`  | 执行当前方法的毫秒数
+state | `Map<String,Object>` | null  | 用来监听监听后的参数信息
+
+### JdbcExecuteAfterArg
+执行后参数
+
+方法 | 类型| 默认 | 描述  
+--- | --- | --- | --- 
+beforeArg | `JdbcExecuteBeforeArg` | null  | 执行前的参数
+rows | `int` | 受影响行数  | 如果当前是查询那么这个值永远为0,因为查询是stream模式获取,无法在jdbc返回后知晓结果
+sqlParameters | `List<List<SQLParameter>>` | `Collections.emptyList()`  | 用来监听监听后的参数信息
+exception | `Exception` | null  | 执行时发生的异常
+end | `long` | `System.currentTimeMillis()`  | 执行当前方法的毫秒数
+
 ## 自定义监听器
 创建一个自定义监听器监听耗时3秒以上的sql,并且发送到监控平台
 ```java
@@ -185,6 +207,67 @@ public class App {
             app.onEvent(EasyQueryBuilderConfiguration.class,e->{
                 HttpLogRequest httpLogRequest = app.context().getBean(HttpLogRequest.class);
                 e.replaceService(httpLogRequest);
+                e.replaceService(JdbcExecutorListener.class,LogSlowSQLListener.class);
+            });
+        });
+    }
+}
+```
+
+
+::: warning 说明!!!
+> 如果solon在app处onEvent无法获取bean那么可以通过延迟获取的方式
+:::
+```java
+
+public class LogSlowSQLListener implements JdbcExecutorListener {
+
+    private final ServiceProvider serviceProvider;
+
+    public LogSlowSQLListener(ServiceProvider serviceProvider){
+
+        this.serviceProvider = serviceProvider;
+    }
+    @Override
+    public boolean enable() {
+        return true;//表示需要开启监听
+    }
+
+    @Override
+    public void onExecuteBefore(JdbcExecuteBeforeArg arg) {
+        //这边可以通过setState来传递参数
+//        HashMap<String, Object> state = new HashMap<>();
+//        arg.setState(state);
+    }
+
+    @Override
+    public void onExecuteAfter(JdbcExecuteAfterArg afterArg) {
+        //通过serviceProvider来获取注册的bean实例
+        AppContext service = serviceProvider.getService(AppContext.class);
+        HttpLogRequest httpLogRequest = service.getBean(HttpLogRequest.class);
+        JdbcExecuteBeforeArg beforeArg = afterArg.getBeforeArg();
+        //通过getState来获取before的参数
+//        Map<String, Object> state = beforeArg.getState();
+        //记录耗时操作
+        long elapsed = afterArg.getEnd() - beforeArg.getStart();
+        //耗时3秒以上的sql需要记录
+        if(elapsed>=3*1000){
+            //发送http请求
+
+            String sql = beforeArg.getSql();
+            List<List<SQLParameter>> sqlParameters = beforeArg.getSqlParameters();
+        }
+    }
+}
+
+
+
+public class App {
+    public static void main(String[] args) {
+        Solon.start(App.class,args,app->{
+            app.onEvent(EasyQueryBuilderConfiguration.class,e->{
+//                HttpLogRequest httpLogRequest = app.context().getBean(HttpLogRequest.class);
+                e.replaceService(app.context());
                 e.replaceService(JdbcExecutorListener.class,LogSlowSQLListener.class);
             });
         });

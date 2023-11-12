@@ -274,6 +274,7 @@ Queryable<BlogEntityTest2> queryable = easyQuery.queryable(BlogEntity.class)
 
 方法  | 参数 | 返回  | 描述
 --- | --- | --- | --- 
+fetch | `Function<Stream<T>,TR> fetcher`  | 任意stream的终结方法 | 使用java方式只需要迭代一次返回符合stream的结果
 toSql |   | string | 返回当前表达式即将执行的sql语句
 any |   | boolean | 返回当前表达式是在数据库中是否存在匹配项,存在至少一条返回true,无法匹配任意一条在返回false
 all | lambda  | boolean | 返回当前表达式是在数据库中是否所有的都匹配,参数为符合条件的表达式
