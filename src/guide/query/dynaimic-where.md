@@ -195,7 +195,8 @@ Boolean leftEnable=true;
 ::: warning 注意点及说明!!!
 > 必须写到对应的`where`前面后续的`where`才会生效，用户可以自定义,比如满足的条件是优先满足`eq、ge、gt`等的第一个boolean条件,后续才会判断`valueFilter`，如果有多个`where`部分where需要自定义那么可以采用`filterConfigure(NotNullOrEmptyValueFilter.DEFAULT)`来恢复到所有参数都接受,一般用于查询时可以少写很多判断
 :::
-## 查询对象
+## 属性一对一查询
+object的一个属性对应数据库查询的一列
 
 
 `@EasyWhereCondition`
@@ -312,7 +313,8 @@ List<BlogEntity> queryable = easyQuery.queryable(BlogEntity.class)
 <== Total: 0
 ```
 
-## 动态条件2
+## 属性一对多查询
+object的一个属性对应数据库查询的多列
 
 ```java
 
