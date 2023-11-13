@@ -63,11 +63,14 @@ public class LogSlowSQLListener implements JdbcExecutorListener {
         //耗时3秒以上的sql需要记录
         //因为sqlParameters第一层大于1表示是批处理,批处理的时间一般是比较多的你可以选择
         //不记录本次sql或者只记录sql不记录sql参数自行处理
-        if(elapsed>=3*1000 && beforeArg.getSqlParameters().length()<=1){
+        if(elapsed>=3*1000 && beforeArg.getSqlParameters().size()<=1){
             //发送http请求
             
             String sql = beforeArg.getSql();
             List<List<SQLParameter>> sqlParameters = beforeArg.getSqlParameters();
+            if(sqlParameters.size()==1){
+                String params =  EasySQLUtil::sqlParameterToString(sqlParameters.get(0))
+            }
             Exception exception = afterArg.getException();
         }
     }
@@ -134,11 +137,14 @@ public class LogSlowSQLListener implements JdbcExecutorListener {
         //耗时3秒以上的sql需要记录
         //因为sqlParameters第一层大于1表示是批处理,批处理的时间一般是比较多的你可以选择
         //不记录本次sql或者只记录sql不记录sql参数自行处理
-        if(elapsed>=3*1000 && beforeArg.getSqlParameters().length()<=1){
+        if(elapsed>=3*1000 && beforeArg.getSqlParameters().size()<=1){
             //发送http请求
 
             String sql = beforeArg.getSql();
             List<List<SQLParameter>> sqlParameters = beforeArg.getSqlParameters();
+            if(sqlParameters.size()==1){
+                String params =  EasySQLUtil::sqlParameterToString(sqlParameters.get(0))
+            }
             Exception exception = afterArg.getException();
         }
     }
@@ -206,11 +212,14 @@ public class LogSlowSQLListener implements JdbcExecutorListener {
         //耗时3秒以上的sql需要记录
         //因为sqlParameters第一层大于1表示是批处理,批处理的时间一般是比较多的你可以选择
         //不记录本次sql或者只记录sql不记录sql参数自行处理
-        if(elapsed>=3*1000 && beforeArg.getSqlParameters().length()<=1){
+        if(elapsed>=3*1000 && beforeArg.getSqlParameters().size()<=1){
             //发送http请求
 
             String sql = beforeArg.getSql();
             List<List<SQLParameter>> sqlParameters = beforeArg.getSqlParameters();
+            if(sqlParameters.size()==1){
+                String params =  EasySQLUtil::sqlParameterToString(sqlParameters.get(0))
+            }
             Exception exception = afterArg.getException();
         }
     }
@@ -274,11 +283,14 @@ public class LogSlowSQLListener implements JdbcExecutorListener {
         //耗时3秒以上的sql需要记录
         //因为sqlParameters第一层大于1表示是批处理,批处理的时间一般是比较多的你可以选择
         //不记录本次sql或者只记录sql不记录sql参数自行处理
-        if(elapsed>=3*1000 && beforeArg.getSqlParameters().length()<=1){
+        if(elapsed>=3*1000 && beforeArg.getSqlParameters().size()<=1){
             //发送http请求
 
             String sql = beforeArg.getSql();
             List<List<SQLParameter>> sqlParameters = beforeArg.getSqlParameters();
+            if(sqlParameters.size()==1){
+                String params =  EasySQLUtil::sqlParameterToString(sqlParameters.get(0))
+            }
             Exception exception = afterArg.getException();
         }
     }
