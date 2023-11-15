@@ -7,6 +7,15 @@ title: easy-trans扩展
 
 [`demo地址`](https://gitee.com/xuejm/easy-trans-easy-query-demo)
 
+:::warning 
+easy-trans.is-enable-global=true
+:::
+
+::: warning 注意点及说明!!!
+> 如果集成后不行请注意是否开启全局翻译 配置文件`easy-trans.is-enable-global=true`
+:::
+
+
 ## 新建一个springboot项目
 添加`easy-trans`依赖
 ```xml
