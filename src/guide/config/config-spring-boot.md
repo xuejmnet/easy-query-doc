@@ -196,3 +196,60 @@ public class MyConfiguration {
 }
 
 ```
+
+```log
+Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'easyQueryInitializeOption' defined in class path resource [com/easy/query/sql/starter/EasyQueryStarterAutoConfiguration.class]: Unsatisfied dependency expressed through method 'easyQueryInitializeOption' parameter 1; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'java.util.Map<java.lang.String, com.easy.query.core.basic.extension.version.VersionStrategy>' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {}
+```
+
+可能是springboot版本太低导致没有的依赖不是以空map返回而是报错
+
+建议重写bean
+```java
+//    @Bean
+//    @ConditionalOnMissingBean
+//    public EasyQueryInitializeOption easyQueryInitializeOption(Map<String, Interceptor> interceptorMap,
+//                                                               Map<String, VersionStrategy> versionStrategyMap,
+//                                                               Map<String, LogicDeleteStrategy> logicDeleteStrategyMap,
+//                                                               Map<String, ShardingInitializer> shardingInitializerMap,
+//                                                               Map<String, EncryptionStrategy> encryptionStrategyMap,
+//                                                               Map<String, ValueConverter<?, ?>> valueConverterMap,
+//                                                               Map<String, TableRoute<?>> tableRouteMap,
+//                                                               Map<String, DataSourceRoute<?>> dataSourceRouteMap,
+//                                                               Map<String, ValueUpdateAtomicTrack<?>> valueUpdateAtomicTrackMap,
+//                                                               Map<String, JdbcTypeHandler> jdbcTypeHandlerMap,
+//                                                               Map<String, ColumnValueSQLConverter> columnValueSQLConverterMap,
+//                                                               Map<String, IncrementSQLColumnGenerator> incrementSQLColumnGeneratorMap
+//    ) {
+//        return new EasyQueryInitializeOption(interceptorMap,
+//                versionStrategyMap,
+//                logicDeleteStrategyMap,
+//                shardingInitializerMap,
+//                encryptionStrategyMap,
+//                valueConverterMap,
+//                tableRouteMap,
+//                dataSourceRouteMap,
+//                valueUpdateAtomicTrackMap,
+//                jdbcTypeHandlerMap,
+//                columnValueSQLConverterMap,
+//                incrementSQLColumnGeneratorMap);
+//    }
+
+
+    @Bean
+    @Primary
+    public EasyQueryInitializeOption easyQueryInitializeOption(Map<String, Interceptor> interceptorMap
+    ) {
+        return new EasyQueryInitializeOption(interceptorMap,
+                versionStrategyMap,
+                Collections.emptyMap(),
+                Collections.emptyMap(),
+                Collections.emptyMap(),
+                Collections.emptyMap(),
+                Collections.emptyMap(),
+                Collections.emptyMap(),
+                Collections.emptyMap(),
+                Collections.emptyMap(),
+                Collections.emptyMap(),
+                Collections.emptyMap());
+    }
+```
