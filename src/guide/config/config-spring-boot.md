@@ -253,3 +253,245 @@ Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Err
                 Collections.emptyMap());
     }
 ```
+
+# 无依赖配置
+有些用户喜欢拥有非常强的强迫症,这边给出如何自行处理实现类starter,无依赖引入`easy-query`
+
+## 创建springboot应用
+下载地址 https://start.spring.io/
+
+## 添加依赖
+
+### 属性模式
+
+```xml
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jdbc</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.easy-query</groupId>
+			<artifactId>sql-core</artifactId>
+			<version>1.7.10</version>
+		</dependency>
+<!--		自己选择对应的驱动-->
+		<dependency>
+			<groupId>com.easy-query</groupId>
+			<artifactId>sql-mysql</artifactId>
+			<version>1.7.10</version>
+		</dependency>
+		<!-- mysql驱动 -->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>8.0.31</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+```
+### 代理模式
+```xml
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jdbc</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.easy-query</groupId>
+			<artifactId>sql-core</artifactId>
+			<version>1.7.10</version>
+		</dependency>
+<!--		代理模式-->
+		<dependency>
+			<groupId>com.easy-query</groupId>
+			<artifactId>sql-api-proxy</artifactId>
+			<version>1.7.10</version>
+		</dependency>
+<!--		自己选择对应的驱动-->
+		<dependency>
+			<groupId>com.easy-query</groupId>
+			<artifactId>sql-mysql</artifactId>
+			<version>1.7.10</version>
+		</dependency>
+<!--		用来生成代理对象-->
+		<dependency>
+			<groupId>com.easy-query</groupId>
+			<artifactId>sql-processor</artifactId>
+			<version>1.7.10</version>
+		</dependency>
+		<!-- mysql驱动 -->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>8.0.31</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+```
+
+## 添加配置
+
+首先我们如果需要支持springboot的事务需要再`easy-query`的`springboot-strater`处拷贝三个源码文件
+
+
+```java
+
+public class SpringConnectionManager extends DefaultConnectionManager {
+
+    public SpringConnectionManager(EasyQueryDataSource easyDataSource, EasyConnectionFactory easyConnectionFactory, EasyDataSourceConnectionFactory easyDataSourceConnectionFactory) {
+        super(easyDataSource, easyConnectionFactory, easyDataSourceConnectionFactory);
+    }
+
+    @Override
+    public boolean currentThreadInTransaction() {
+        return TransactionSynchronizationManager.isActualTransactionActive() || isOpenTransaction();
+    }
+
+    @Override
+    public void closeEasyConnection(EasyConnection easyConnection) {
+        if(easyConnection==null){
+            return;
+        }
+        //当前没开事务,但是easy query手动开启了
+        if (!TransactionSynchronizationManager.isActualTransactionActive()) {
+            if (super.isOpenTransaction()) {
+                return;
+            }
+        } else {
+            if (super.isOpenTransaction()) {
+                throw new EasyQueryException("repeat transaction can't closed connection");
+            }
+        }
+        DataSourceWrapper dataSourceUnit = easyDataSource.getDataSourceNotNull(easyConnection.getDataSourceName(), ConnectionStrategyEnum.ShareConnection);
+        DataSourceUtils.releaseConnection(easyConnection.getConnection(), dataSourceUnit.getDataSourceUnit().getDataSource());
+    }
+}
+
+
+public class SpringDataSourceUnit extends DefaultDataSourceUnit {
+    public SpringDataSourceUnit(String dataSourceName, DataSource dataSource, int mergePoolSize, boolean warningBusy) {
+        super(dataSourceName,dataSource,mergePoolSize,warningBusy);
+    }
+
+    @Override
+    protected Connection getConnection() throws SQLException {
+        return DataSourceUtils.getConnection(dataSource);
+    }
+}
+
+
+public class SpringDataSourceUnitFactory implements DataSourceUnitFactory {
+    private final EasyQueryOption easyQueryOption;
+
+    public SpringDataSourceUnitFactory(EasyQueryOption easyQueryOption){
+
+        this.easyQueryOption = easyQueryOption;
+    }
+    @Override
+    public DataSourceUnit createDataSourceUnit(String dataSourceName, DataSource dataSource, int mergePoolSize) {
+        return new SpringDataSourceUnit(dataSourceName,dataSource,mergePoolSize,easyQueryOption.isWarningBusy());
+    }
+}
+
+
+```
+
+## 注入bean
+
+
+```java
+
+@Configuration
+public class EasyQueryConfiguration {
+    @Bean
+    public EasyQueryClient easyQueryClient(DataSource dataSource){
+        EasyQueryClient easyQueryClient = EasyQueryBootstrapper.defaultBuilderConfiguration()
+                .setDefaultDataSource(dataSource)
+                .replaceService(DataSourceUnitFactory.class, SpringDataSourceUnitFactory.class)
+                .replaceService(NameConversion.class, UnderlinedNameConversion.class)
+                .replaceService(ConnectionManager.class, SpringConnectionManager.class)
+                .optionConfigure(builder -> {
+//                    builder.setDeleteThrowError(easyQueryProperties.getDeleteThrow());
+//                    builder.setInsertStrategy(easyQueryProperties.getInsertStrategy());
+//                    builder.setUpdateStrategy(easyQueryProperties.getUpdateStrategy());
+//                    builder.setMaxShardingQueryLimit(easyQueryProperties.getMaxShardingQueryLimit());
+//                    builder.setExecutorMaximumPoolSize(easyQueryProperties.getExecutorMaximumPoolSize());
+//                    builder.setExecutorCorePoolSize(easyQueryProperties.getExecutorCorePoolSize());
+//                    builder.setThrowIfRouteNotMatch(easyQueryProperties.isThrowIfRouteNotMatch());
+//                    builder.setShardingExecuteTimeoutMillis(easyQueryProperties.getShardingExecuteTimeoutMillis());
+//                    builder.setQueryLargeColumn(easyQueryProperties.isQueryLargeColumn());
+//                    builder.setMaxShardingRouteCount(easyQueryProperties.getMaxShardingRouteCount());
+//                    builder.setExecutorQueueSize(easyQueryProperties.getExecutorQueueSize());
+//                    builder.setDefaultDataSourceName(easyQueryProperties.getDefaultDataSourceName());
+//                    builder.setDefaultDataSourceMergePoolSize(easyQueryProperties.getDefaultDataSourceMergePoolSize());
+//                    builder.setMultiConnWaitTimeoutMillis(easyQueryProperties.getMultiConnWaitTimeoutMillis());
+//                    builder.setWarningBusy(easyQueryProperties.isWarningBusy());
+//                    builder.setInsertBatchThreshold(easyQueryProperties.getInsertBatchThreshold());
+//                    builder.setUpdateBatchThreshold(easyQueryProperties.getUpdateBatchThreshold());
+//                    builder.setPrintSql(easyQueryProperties.isPrintSql());
+//                    builder.setStartTimeJob(easyQueryProperties.isStartTimeJob());
+//                    builder.setDefaultTrack(easyQueryProperties.isDefaultTrack());
+//                    builder.setRelationGroupSize(easyQueryProperties.getRelationGroupSize());
+//                    builder.setKeepNativeStyle(easyQueryProperties.isKeepNativeStyle());
+//                    builder.setNoVersionError(easyQueryProperties.isNoVersionError());
+//                    builder.setReverseOffsetThreshold(easyQueryProperties.getReverseOffsetThreshold());
+                })
+                .useDatabaseConfigure(new MySQLDatabaseConfiguration())
+                .build();
+
+        return easyQueryClient;
+    }
+    
+    @Bean
+    public EasyProxyQuery easyProxyQuery(EasyQueryClient easyQueryClient){
+        return new DefaultEasyProxyQuery(easyQueryClient);
+    }
+}
+```
+
+## 添加配置文件
+```yml
+server:
+  port: 8080
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/easy-sharding-test?serverTimezone=GMT%2B8&characterEncoding=utf-8&useSSL=false&allowMultiQueries=true&rewriteBatchedStatements=true
+    username: root
+    password: root
+```
+
+## 添加控制器
+```java
+
+@RestController
+@RequestMapping("/my")
+public class MyController {
+    @Autowired
+    private EasyProxyQuery easyProxyQuery;
+    @GetMapping("/test")
+    public Object test() {
+        return "hello world";
+    }
+}
+```
