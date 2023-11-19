@@ -11,3 +11,9 @@ title: 插件助手
 ### 插件功能介绍
 - 自动apt文件编译 如果你是proxy模式那么这个插件可以帮助你快速实现apt的proxy类 快捷键shift+p
 - sql日志批量生成无占位可直接运行的sql 快捷键shift+m
+
+
+<img src="/plugin-tools.png">
+
+<img src="/plugin-sql-format-preview.jpg">
+<img src="/plugin-sql-format-preview2.jpg">
