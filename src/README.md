@@ -7,7 +7,7 @@ heroText: easy-query
 tagline: 🚀 一款Java/Kotlin 语言下无依赖、高性能、轻量级、强类型的ORM框架支持分库分表读写分离
 actions:
   - text: 开始使用 →
-    link: /guide/
+    link: /quick-preview
     type: primary
 
   - text: 爱心支持💡

@@ -3,6 +3,7 @@ import { sidebar } from "vuepress-theme-hope";
 export const zhSidebar = sidebar({
   "/": [
     "",
+    "quick-preview",
     "question",
     "db_support",
     {
@@ -13,7 +14,7 @@ export const zhSidebar = sidebar({
         {
           text: "配置",
           prefix: "config/",
-          children: ["readme.md","dependency-injection","config-java","config-kotlin","config-solon","config-spring-boot","config-option","annotation","replace-configure","logging","value-converter","kapt","easy-trans","plugin"],
+          children: ["readme.md","dependency-injection","config-java","config-kotlin","config-solon","config-spring-boot","config-option","annotation","replace-configure","logging","api-mode","kapt","easy-trans","plugin"],
         },
         {
           text: "基础操作",
@@ -28,7 +29,7 @@ export const zhSidebar = sidebar({
         {
           text: "高级",
           prefix: "adv/",
-          children: ["readme.md","logic-delete","interceptor","batch","sql-func","column-encryption","column-sql-func-auto","generated-key-sql-column","data-tracking","version","column-func-new","column-func","atomic-update","value-object","jdbc-listener"],
+          children: ["readme.md","value-converter","logic-delete","interceptor","batch","sql-func","column-encryption","column-sql-func-auto","generated-key-sql-column","data-tracking","version","column-func-new","column-func","atomic-update","value-object","jdbc-listener"],
         },
         {
           text: "超级",

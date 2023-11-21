@@ -3,14 +3,17 @@ title: OR条件
 ---
 
 # OR条件查询
-where默认提供了`and`和`or`关键字并且提供了泛型版本所以用户可以通过`and`和`or`来进行组合对应的条件,默认条件和条件之间用and进行链接
+`where`默认提供了`and`和`or`关键字并且提供了泛型版本所以用户可以通过`and`和`or`来进行组合对应的条件,默认条件和条件之间用and进行链接
+
+- `and(()->{条件})`表示`and`内部的条件是以括号包裹,并且和前一个条件之间是`AND`关系
+- `or(()->{条件})`表示`or`内部的条件是以括号包裹,并且和前一个条件之间是`OR`关系
 
 ## 案例
 `and`内部使用`or`链接那么可以将`and`视为括号`(....or....or....)`
 ```java
 Topic topic = easyQuery.queryable(Topic.class)
                 .where(o -> o.eq(Topic::getId, "1").and(
-                        x -> x.like(Topic::getTitle, "你好")
+                        () -> o.like(Topic::getTitle, "你好")
                                 .or()
                                 .eq(Topic::getTitle, "我是title")
                                 .or()
@@ -41,7 +44,7 @@ List<Topic> topic2 = easyQuery.queryable(Topic.class)
 ```java
 BlogEntity blog = easyQuery.queryable(BlogEntity.class)
                 .where(o -> o.eq(BlogEntity::getId, "1").and(
-                        x -> x.like(BlogEntity::getTitle, "你好")
+                        () -> o.like(BlogEntity::getTitle, "你好")
                                 .or()
                                 .eq(BlogEntity::getTitle, "我是title")
                                 .or()
@@ -71,7 +74,7 @@ BlogEntity blog1 = easyQuery.queryable(BlogEntity.class)
 ```java
 Topic topic3 = easyQuery.queryable(Topic.class)
                 .where(o -> o.eq(Topic::getId, "1").or(
-                        x -> x.like(Topic::getTitle, "你好")
+                        () -> o.like(Topic::getTitle, "你好")
                                 .eq(Topic::getTitle, "我是title")
                                 .le(Topic::getCreateTime, LocalDateTime.now())
                 )).firstOrNull();
@@ -92,8 +95,8 @@ List<Topic> list = easyQuery
         .where(o -> o.isBank(Topic::getId))
         .where(o -> {
                 for (String searchValue : searchValues) {
-                o.and(x -> { //每次and就是代表一个括号,括号里面用or来链接
-                        x.like(Topic::getId, searchValue)
+                o.and(() -> { //每次and就是代表一个括号,括号里面用or来链接
+                        o.like(Topic::getId, searchValue)
                                 .or().like(Topic::getTitle, searchValue);
                 });
                 }
