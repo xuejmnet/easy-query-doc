@@ -4,9 +4,9 @@ title: 关联查询 Include
 
 `easy-query` 1.2.1+ 支持关联查询,支持多级关联查询,并且只支持first和tolist两个返回方法,支持vo对象返回支持`include`追加追踪、禁止、逻辑删除、where过滤、order、limit等一系列处理，但是返回结果必须是数据库对象实例(include方法内部),如果需要额外字段返回可以使用`columnInclude`/`columnIncludeMany`自定义返回
 
-::: warning 说明!!!
+<!-- ::: warning 说明!!!
 > 暂时不支持`proxy`模式
-:::
+::: -->
 
 类型  | 描述 | 场景 
 --- | --- | --- 
