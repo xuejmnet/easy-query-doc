@@ -11,12 +11,12 @@ title: 基本类型查询
 
 
 ::: code-tabs
-@tab lambda属性
-
+@tab 代理属性
 ```java
-List<String> list = easyQuery.queryable(Topic.class)
-                .where(o -> o.eq(Topic::getId, "1"))
-                .select(String.class, o -> o.column(Topic::getId))
+TopicProxy table = TopicProxy.createTable();
+List<String> list2 = easyProxyQuery.queryable(table)
+                .where(f -> f.eq(table.id(), "1"))
+                .select(StringProxy.createTable(), s -> s.column(table.id()))
                 .toList();
 
 ==> Preparing: SELECT t.`id` FROM `t_topic` t WHERE t.`id` = ?
@@ -24,11 +24,12 @@ List<String> list = easyQuery.queryable(Topic.class)
 <== Time Elapsed: 2(ms)
 <== Total: 1
 ```
-@tab 代理属性
+@tab lambda属性
+
 ```java
-List<String> list2 = easyProxyQuery.queryable(TopicProxy.DEFAULT)
-                .where((f, t) -> f.eq(t.id(), "1"))
-                .select(StringProxy.DEFAULT, (s, t) -> s.column(t.id()))
+List<String> list = easyQuery.queryable(Topic.class)
+                .where(o -> o.eq(Topic::getId, "1"))
+                .select(String.class, o -> o.column(Topic::getId))
                 .toList();
 
 ==> Preparing: SELECT t.`id` FROM `t_topic` t WHERE t.`id` = ?
@@ -57,6 +58,19 @@ List<String> list1 = easyQueryClient.queryable(Topic.class)
 
 
 ::: code-tabs
+@tab 代理属性
+```java
+TopicProxy table = TopicProxy.createTable();
+List<Integer> list2 = easyProxyQuery.queryable(table)
+                .where(f -> f.eq(table.id(), "1"))
+                .select(IntegerProxy.createTable(), s -> s.column(table.stars()))
+                .toList();
+
+==> Preparing: SELECT t.`stars` FROM `t_topic` t WHERE t.`id` = ?
+==> Parameters: 1(String)
+<== Time Elapsed: 2(ms)
+<== Total: 1
+```
 @tab lambda属性
 
 ```java
@@ -65,18 +79,6 @@ List<Integer> list = easyQuery.queryable(Topic.class)
         .where(o -> o.eq(Topic::getId, "1"))
         .select(Integer.class, o -> o.column(Topic::getStars))
         .toList();
-
-==> Preparing: SELECT t.`stars` FROM `t_topic` t WHERE t.`id` = ?
-==> Parameters: 1(String)
-<== Time Elapsed: 2(ms)
-<== Total: 1
-```
-@tab 代理属性
-```java
-List<Integer> list2 = easyProxyQuery.queryable(TopicProxy.DEFAULT)
-                .where((f, t) -> f.eq(t.id(), "1"))
-                .select(IntegerProxy.DEFAULT, (s, t) -> s.column(t.stars()))
-                .toList();
 
 ==> Preparing: SELECT t.`stars` FROM `t_topic` t WHERE t.`id` = ?
 ==> Parameters: 1(String)
@@ -105,6 +107,32 @@ List<Integer> list1 = easyQueryClient.queryable(Topic.class)
 
 
 ::: code-tabs
+@tab 代理属性
+```java
+TopicProxy table = TopicProxy.createTable();
+Class<Map<String,Object>> mapClass= EasyObjectUtil.typeCastNullable(Map.class);
+List<Map<String,Object>> list2 = easyProxyQuery.queryable(table)
+                    .where(f -> f.eq(table.id(), "1"))
+                    .select(MapProxy.createTable(), s -> s.columnAll(table))
+                    .toList();
+
+==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM `t_topic` t WHERE t.`id` = ?
+==> Parameters: 1(String)
+<== Time Elapsed: 2(ms)
+<== Total: 1
+
+
+List<Map<String,Object>> list2 = easyProxyQuery.queryable(table)
+                    .where(f -> f.eq(table.id(), "1"))
+                    .select(MapProxy.createTable())
+                    .toList();
+
+
+==> Preparing: SELECT * FROM `t_topic` t WHERE t.`id` = ?
+==> Parameters: 1(String)
+<== Time Elapsed: 9(ms)
+<== Total: 1
+```
 @tab lambda属性
 
 ```java
@@ -125,31 +153,6 @@ List<Map<String,Object>> list = easyQuery.queryable(Topic.class)
                 .where(o -> o.eq(Topic::getId, "1"))
                 .select(mapClass)
                 .toList();
-
-
-==> Preparing: SELECT * FROM `t_topic` t WHERE t.`id` = ?
-==> Parameters: 1(String)
-<== Time Elapsed: 9(ms)
-<== Total: 1
-```
-@tab 代理属性
-```java
-Class<Map<String,Object>> mapClass= EasyObjectUtil.typeCastNullable(Map.class);
-List<Map<String,Object>> list2 = easyProxyQuery.queryable(TopicProxy.DEFAULT)
-                    .where((f, t) -> f.eq(t.id(), "1"))
-                    .select(MapProxy.DEFAULT, (s, t) -> s.columnAll(t))
-                    .toList();
-
-==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM `t_topic` t WHERE t.`id` = ?
-==> Parameters: 1(String)
-<== Time Elapsed: 2(ms)
-<== Total: 1
-
-
-List<Map<String,Object>> list2 = easyProxyQuery.queryable(TopicProxy.DEFAULT)
-                    .where((f, t) -> f.eq(t.id(), "1"))
-                    .select(MapProxy.DEFAULT)
-                    .toList();
 
 
 ==> Preparing: SELECT * FROM `t_topic` t WHERE t.`id` = ?

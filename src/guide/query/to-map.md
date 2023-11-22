@@ -54,10 +54,11 @@ List<Map<String, Object>> blogs = easyQuery.sqlQueryMap("SELECT * FROM t_blog t 
 ::: code-tabs
 @tab 代理属性
 ```java
+TopicProxy table = TopicProxy.createTable();
 Class<Map<String,Object>> mapClass= EasyObjectUtil.typeCastNullable(Map.class);
-List<Map<String,Object>> list2 = easyProxyQuery.queryable(TopicProxy.DEFAULT)
+List<Map<String,Object>> list2 = easyProxyQuery.queryable(table)
                     .where((f, t) -> f.eq(t.id(), "1"))
-                    .select(MapProxy.DEFAULT, (s, t) -> s.columnAll(t))
+                    .select(MapProxy.createTable(), (s, t) -> s.columnAll(t))
                     .toList();
 
 ==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM `t_topic` t WHERE t.`id` = ?
@@ -66,9 +67,9 @@ List<Map<String,Object>> list2 = easyProxyQuery.queryable(TopicProxy.DEFAULT)
 <== Total: 1
 
 
-List<Map<String,Object>> list2 = easyProxyQuery.queryable(TopicProxy.DEFAULT)
-                    .where((f, t) -> f.eq(t.id(), "1"))
-                    .select(MapProxy.DEFAULT)
+List<Map<String,Object>> list2 = easyProxyQuery.queryable(table)
+                    .where(f -> f.eq(table.id(), "1"))
+                    .select(MapProxy.createTable())
                     .toList();
 
 

@@ -19,8 +19,9 @@ queryLargeColumn | `true`  | 默认依然查询被标记为`@Column`下`large`�
 printSql | `true`  | 是否打印执行sql,这个和log不一样,因为考虑到有时候可能需要查看sql而不是将log输出,所以如歌设置为true,那么执行的sql和执行的结果将会以`log.info()`被记录到日志里面,如果您没有设置log那么一样看不到对应的执行sql
 defaultTrack | `false` | 默认是否使用追踪模式,如果为`true`那么只需要开启当前上下文追踪,或者`SpringBoot`下使用`@EasyQueryTrack`那么默认就会调用`asTracking()`
 relationGroupSize | 512 | include的关联查询单次查询最多支持的关联id,如果超出将会分为两个语句执行
-noVersionError | true | 当对象存在版本号并且是表达式更新的那么如果不添加版本号`withVersion`将会报错,必须要设置对应的版本号,如果不希望报错可以通过`noVersionIgnore`来忽略
+noVersionError | true | 当对象存在版本号并且是表达式更新的那么如果不添加版本号`withVersion`将会报错,必须要设置对应的版本号,如果不希望报错可以通过`ignoreVersion`来忽略
 keepNativeStyle | false | `false`:表示默认行为,`sqlNativeSegment`中如果纯在参数行为,那么默认单引号字符串模板需要改成双引号,因为底层format采用的是`MessageFormat`.如果配置为`true`,那么默认将单引号改为双引号,用户输入的表达式将会和执行的一致,当然可以在调用时调用`keepStyle`或者将单引号改为双单引号来处理
+warningColumnMiss| `true` | 当jdbc的resultSet对应的coluName无法映射到entity属性上时将会以log.warning进行日志输出，`true`:表示警告.`false`:表示不警告
 ## 分表分库特有配置
 
 配置名称  | 默认值 | 描述  
