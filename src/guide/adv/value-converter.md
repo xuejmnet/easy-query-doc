@@ -16,6 +16,7 @@ title: Java对象数据库值转换
 接口  | 功能  
 ---  | --- 
 ValueConverter  | 将数据库和对象值进行互相转换的接口
+EnumValueAutoConverter  | 支持枚举类型全局作用到没有添加`ValueConverter`注解的属性上(只要对应的apply方法返回true)
 \<TProperty>  | 对象属性类型
 \<TProvider>  | 数据库对应的java类型
 
@@ -64,6 +65,27 @@ public class EnumConverter implements ValueConverter<IEnum<?>,Integer> {
         return EnumDeserializer.deserialize(EasyObjectUtil.typeCast(columnMetadata.getPropertyType()),integer);
     }
 }
+
+//如果你希望当前枚举转换配置到全局可以使用 EnumValueAutoConverter
+
+
+public class EnumConverter implements EnumValueAutoConverter<IEnum<?>,Integer> {
+    @Override
+    public Integer serialize(IEnum<?> iEnum, ColumnMetadata columnMetadata) {
+        return iEnum.getCode();
+    }
+
+    @Override
+    public IEnum<?> deserialize(Integer integer, ColumnMetadata columnMetadata) {
+        return EnumDeserializer.deserialize(EasyObjectUtil.typeCast(columnMetadata.getPropertyType()),integer);
+    }
+    @Override
+    public boolean apply(Class<?> entityClass, Class<IEnum<?>> propertyType) {
+        return true; //true表示如果对应的属性没有添加注解或者没有指定ValueConverter,并且是枚举Enum<?>,那么会进入当前方法如果返回true那么会默认将当前转换作用到属性上
+    }
+}
+
+
 //数据库枚举
 public enum TopicTypeEnum implements IEnum<TopicTypeEnum> {
     STUDENT(1),
