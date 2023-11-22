@@ -52,9 +52,9 @@ public class LogSlowSQLListener implements JdbcExecutorListener {
 
     @Override
     public void onExecuteAfter(JdbcExecuteAfterArg afterArg) {
-        //为了不影响性能建议采用异步线程池发送http,同步的化会影响性能
-        //为了不影响性能建议采用异步线程池发送http,同步的化会影响性能
-        //为了不影响性能建议采用异步线程池发送http,同步的化会影响性能
+        //为了不影响性能建议采用异步线程池发送http,同步的话会影响性能
+        //为了不影响性能建议采用异步线程池发送http,同步的话会影响性能
+        //为了不影响性能建议采用异步线程池发送http,同步的话会影响性能
         JdbcExecuteBeforeArg beforeArg = afterArg.getBeforeArg();
         //通过getState来获取before的参数
 //        Map<String, Object> state = beforeArg.getState();
@@ -126,9 +126,9 @@ public class LogSlowSQLListener implements JdbcExecutorListener {
 
     @Override
     public void onExecuteAfter(JdbcExecuteAfterArg afterArg) {
-        //为了不影响性能建议采用异步线程池发送http,同步的化会影响性能
-        //为了不影响性能建议采用异步线程池发送http,同步的化会影响性能
-        //为了不影响性能建议采用异步线程池发送http,同步的化会影响性能
+        //为了不影响性能建议采用异步线程池发送http,同步的话会影响性能
+        //为了不影响性能建议采用异步线程池发送http,同步的话会影响性能
+        //为了不影响性能建议采用异步线程池发送http,同步的话会影响性能
         JdbcExecuteBeforeArg beforeArg = afterArg.getBeforeArg();
         //通过getState来获取before的参数
 //        Map<String, Object> state = beforeArg.getState();
@@ -201,9 +201,9 @@ public class LogSlowSQLListener implements JdbcExecutorListener {
 
     @Override
     public void onExecuteAfter(JdbcExecuteAfterArg afterArg) {
-        //为了不影响性能建议采用异步线程池发送http,同步的化会影响性能
-        //为了不影响性能建议采用异步线程池发送http,同步的化会影响性能
-        //为了不影响性能建议采用异步线程池发送http,同步的化会影响性能
+        //为了不影响性能建议采用异步线程池发送http,同步的话会影响性能
+        //为了不影响性能建议采用异步线程池发送http,同步的话会影响性能
+        //为了不影响性能建议采用异步线程池发送http,同步的话会影响性能
         JdbcExecuteBeforeArg beforeArg = afterArg.getBeforeArg();
         //通过getState来获取before的参数
 //        Map<String, Object> state = beforeArg.getState();
@@ -269,9 +269,9 @@ public class LogSlowSQLListener implements JdbcExecutorListener {
 
     @Override
     public void onExecuteAfter(JdbcExecuteAfterArg afterArg) {
-        //为了不影响性能建议采用异步线程池发送http,同步的化会影响性能
-        //为了不影响性能建议采用异步线程池发送http,同步的化会影响性能
-        //为了不影响性能建议采用异步线程池发送http,同步的化会影响性能
+        //为了不影响性能建议采用异步线程池发送http,同步的话会影响性能
+        //为了不影响性能建议采用异步线程池发送http,同步的话会影响性能
+        //为了不影响性能建议采用异步线程池发送http,同步的话会影响性能
         //通过serviceProvider来获取注册的bean实例
         AppContext service = serviceProvider.getService(AppContext.class);
         HttpLogRequest httpLogRequest = service.getBean(HttpLogRequest.class);
