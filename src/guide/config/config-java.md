@@ -16,24 +16,6 @@ order: 10
 目前`easy-query`支持三种api接口方式：字符串属性,lambda属性,代理属性三种api接口调用,且可以互相调用
 
 ::: code-tabs
-@tab lambda属性
-```xml
-<properties>
-    <easy-query.version>latest-version</easy-query.version>
-</properties>
-<!--  提供了以java语法强类型,如果不引用也可以使用只是无法使用lambda表达式来表示属性只能用字符串 -->
-<dependency>
-    <groupId>com.easy-query</groupId>
-    <artifactId>sql-api4j</artifactId>
-    <version>${easy-query.version}</version>
-</dependency>
-<!--  这边以mysql为例 其实不需要添加下面的包也可以运行,指示默认的个别数据库行为语句没办法生成 -->
-<dependency>
-    <groupId>com.easy-query</groupId>
-    <artifactId>sql-mysql</artifactId>
-    <version>${easy-query.version}</version>
-</dependency>
-```
 @tab 代理属性
 ```xml
 <properties>
@@ -49,6 +31,24 @@ order: 10
 <dependency>
     <groupId>com.easy-query</groupId>
     <artifactId>sql-processor</artifactId>
+    <version>${easy-query.version}</version>
+</dependency>
+<!--  这边以mysql为例 其实不需要添加下面的包也可以运行,指示默认的个别数据库行为语句没办法生成 -->
+<dependency>
+    <groupId>com.easy-query</groupId>
+    <artifactId>sql-mysql</artifactId>
+    <version>${easy-query.version}</version>
+</dependency>
+```
+@tab lambda属性
+```xml
+<properties>
+    <easy-query.version>latest-version</easy-query.version>
+</properties>
+<!--  提供了以java语法强类型,如果不引用也可以使用只是无法使用lambda表达式来表示属性只能用字符串 -->
+<dependency>
+    <groupId>com.easy-query</groupId>
+    <artifactId>sql-api4j</artifactId>
     <version>${easy-query.version}</version>
 </dependency>
 <!--  这边以mysql为例 其实不需要添加下面的包也可以运行,指示默认的个别数据库行为语句没办法生成 -->
@@ -75,6 +75,32 @@ order: 10
 ## 使用示例
 
 ::: code-tabs
+@tab 代理属性
+```java
+
+@Data
+@Table("t_topic")
+@EntityProxy //添加这个属性那么Topic对象会代理生成TopicProxy (需要idea build一下当前项目)
+public class Topic {
+
+    @Column(primaryKey = true)
+    private String id;
+    private Integer stars;
+    private String title;
+    private LocalDateTime createTime;
+}
+
+TopicProxy table = TopicProxy.createTable();
+Topic topic = easyProxyQuery.queryable(table)
+                .where(filter -> filter.eq(table.id(), "3").or().like(table.title(), "你好"))
+                .firstOrNull();
+
+
+==> Preparing: SELECT `id`,`stars`,`title`,`create_time` FROM `t_topic` WHERE (`id` = ? OR `title` LIKE ?) LIMIT 1
+==> Parameters: 3(String),%你好%(String)
+<== Time Elapsed: 3(ms)
+<== Total: 1
+```
 @tab lambda属性
 ```java
 @Data
@@ -94,29 +120,6 @@ Topic topic = easyQuery.queryable(Topic.class)
 ==> Preparing: SELECT `id`,`stars`,`title`,`create_time` FROM `t_topic` WHERE (`id` = ? OR `title` LIKE ?) LIMIT 1
 ==> Parameters: 3(String),%你好%(String)
 <== Time Elapsed: 2(ms)
-<== Total: 1
-```
-@tab 代理属性
-```java
-
-@Data
-@Table("t_topic")
-@EntityProxy //添加这个属性那么Topic对象会代理生成TopicProxy (需要idea build一下当前项目)
-public class Topic {
-
-    @Column(primaryKey = true)
-    private String id;
-    private Integer stars;
-    private String title;
-    private LocalDateTime createTime;
-}
-Topic topic = easyProxyQuery.queryable(TopicProxy.DEFAULT)
-                .where((filter, t) -> filter.eq(t.id(), "3").or().like(t.title(), "你好"))
-                .firstOrNull();
-
-==> Preparing: SELECT `id`,`stars`,`title`,`create_time` FROM `t_topic` WHERE (`id` = ? OR `title` LIKE ?) LIMIT 1
-==> Parameters: 3(String),%你好%(String)
-<== Time Elapsed: 3(ms)
 <== Total: 1
 ```
 @tab 字符串属性

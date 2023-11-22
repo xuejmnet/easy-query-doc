@@ -17,16 +17,17 @@ SQLProxyFunc | 支持`EasyProxyQuery`表达式api   | SQLProxyFunc.caseWhenBuild
 ## 简单查询
 ```java
 //proxy代理模式
-List<Topic> list = easyProxyQuery.queryable(TopicProxy.DEFAULT)
-                .where((filter, t) -> filter.like(t.title(), "someTitle"))
-                .select(TopicProxy.DEFAULT, (selector, t) -> selector
+TopicProxy table = TopicProxy.createTable();
+List<Topic> list = easyProxyQuery.queryable(table)
+                .where(filter -> filter.like(table.title(), "someTitle"))
+                .select(TopicProxy.createTable(), selector -> selector
                         .sqlSegmentAs(
                                 SQLProxyFunc.caseWhenBuilder(selector)
-                                        .caseWhen(f -> f.eq(t.title(), "123"), "111")
-                                        .caseWhen(f -> f.eq(t.title(), "456"), "222")
+                                        .caseWhen(f -> f.eq(table.title(), "123"), "111")
+                                        .caseWhen(f -> f.eq(table.title(), "456"), "222")
                                         .elseEnd("222")
                                 , TopicProxy::title)
-                        .column(t.id())
+                        .column(table.id())
                 ).toList();
 
 ==> Preparing: SELECT CASE WHEN t.`title` = ? THEN ? WHEN t.`title` = ? THEN ? ELSE ? END AS `title`,t.`id` FROM `t_topic` t WHERE t.`title` LIKE ?
