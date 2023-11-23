@@ -39,6 +39,7 @@ executorMaximumPoolSize | `0`  | 分片聚合最大线程数,默认为0将使用
 executorCorePoolSize | `Math.min(processors, 4)`  | 仅`executorMaximumPoolSize`>0时生效,其中`processors`是`Runtime.getRuntime().availableProcessors()`
 executorQueueSize | `1024`  | 仅`executorMaximumPoolSize`>0时生效，线程池有界队列大小
 startTimeJob| `false` | 当使用系统默认的按时间分片时设置这个配置为`true`那么框架会在内存中添加对应的系统表,原理就是开启一个定时任务线程去执行
+shardingFetchSize| `1000` | 在分片下默认拉取大小设置
 
 ## spring-boot
 通过配置文件可以直接配置上述选项

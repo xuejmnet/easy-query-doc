@@ -7,18 +7,25 @@ title: 大数据流式查询返回❗️❗️❗️
 
 ::: warning 注意
 > 需要配合java8的`try resource`或者`try finally close`来关闭资源,并且需要自行处理`SQLException`,和`mybatis`不同的是期间无需开始事务也可以使用
+> 如果您是mysql数据库那么需要默认在连接字符串添加配置信息`useCursorFetch=true`,譬如`jdbc:mysql://127.0.0.1:3306/eq_db?useCursorFetch=true`
 :::
 
 ::: tip 注意
 > 如果本次采用toStreamResult那么将不会支持`include`和`fillMany`和`fillOne`的api
 :::
 
+# toStreamResult
 
+## API
+参数  | 作用 | 描述
+--- | --- | --- 
+fetchSize | 设置每次拉取的大小  | 用来放置流式拉取一次性拉取过多数据用户可以自行设置
+`SQLConsumer<Statement>` | 设置`statement`的参数属性  | 比如`fetchSize`、`fetchDirection`等等
 
 ## 案例
 ```java
 
-try(JdbcStreamResult<BlogEntity> streamResult = easyQuery.queryable(BlogEntity.class).where(o -> o.le(BlogEntity::getStar, 100)).orderByAsc(o -> o.column(BlogEntity::getCreateTime)).toStreamResult()){
+try(JdbcStreamResult<BlogEntity> streamResult = easyQuery.queryable(BlogEntity.class).where(o -> o.le(BlogEntity::getStar, 100)).orderByAsc(o -> o.column(BlogEntity::getCreateTime)).toStreamResult(1000)){
 
             LocalDateTime begin = LocalDateTime.of(2020, 1, 1, 1, 1, 1);
             int i = 0;
@@ -51,7 +58,39 @@ try(JdbcStreamResult<BlogEntity> streamResult = easyQuery.queryable(BlogEntity.c
 
 ```
 
+# fetch
 
+## API
+参数  | 作用 | 描述
+--- | --- | --- 
+`Function<Stream<T>,TR>` | 拉取器  | 用来返回处理迭代结果
+fetchSize | 设置每次拉取的大小  | 用来放置流式拉取一次性拉取过多数据用户可以自行设置
+`SQLConsumer<Statement>` | 设置`statement`的参数属性  | 比如`fetchSize`、`fetchDirection`等等
+
+## 案例
+
+```java
+    Optional<Topic> traceId1 = easyProxyQuery.queryable(TopicProxy.createTable())
+                .filterConfigure(NotNullOrEmptyValueFilter.DEFAULT)
+                .where(o -> o.eq(o.t().id(), "1"))
+                .fetch(o -> {
+                    return o.findFirst();
+                },1);
+
+==> Preparing: SELECT `id`,`stars`,`title`,`create_time` FROM `t_topic` WHERE `id` = ?
+==> Parameters: 1(String)
+<== Time Elapsed: 2(ms)
+
+Set<Topic> traceId1 = easyProxyQuery.queryable(TopicProxy.createTable())
+            .where(o -> o.eq(o.t().id(), "1"))
+            .fetch(o -> {
+                return o.peek(x -> x.setTitle(traceId)).collect(Collectors.toSet());
+            },100);
+
+==> Preparing: SELECT `id`,`stars`,`title`,`create_time` FROM `t_topic` WHERE `id` = ?
+==> Parameters: 1(String)
+<== Time Elapsed: 3(ms)
+```
 
 ## 相关搜索
 `流式结果` `流式查询` `迭代返回` `游标查询`
