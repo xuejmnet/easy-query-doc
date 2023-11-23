@@ -57,11 +57,17 @@ public class EnumDeserializer {
 public class EnumConverter implements ValueConverter<IEnum<?>,Integer> {
     @Override
     public Integer serialize(IEnum<?> iEnum, ColumnMetadata columnMetadata) {
+        if(iEnum=null){
+            return null;
+        }
         return iEnum.getCode();
     }
 
     @Override
     public IEnum<?> deserialize(Integer integer, ColumnMetadata columnMetadata) {
+        if(integer=null){
+            return null;
+        }
         return EnumDeserializer.deserialize(EasyObjectUtil.typeCast(columnMetadata.getPropertyType()),integer);
     }
 }
@@ -72,11 +78,17 @@ public class EnumConverter implements ValueConverter<IEnum<?>,Integer> {
 public class EnumConverter implements EnumValueAutoConverter<IEnum<?>,Integer> {
     @Override
     public Integer serialize(IEnum<?> iEnum, ColumnMetadata columnMetadata) {
+        if(iEnum=null){
+            return null;
+        }
         return iEnum.getCode();
     }
 
     @Override
     public IEnum<?> deserialize(Integer integer, ColumnMetadata columnMetadata) {
+        if(integer=null){
+            return null;
+        }
         return EnumDeserializer.deserialize(EasyObjectUtil.typeCast(columnMetadata.getPropertyType()),integer);
     }
     @Override
@@ -283,11 +295,17 @@ public class EnumValueDeserializer {
 public class EnumValueConverter implements ValueConverter<Enum<?>,Integer> {
     @Override
     public Integer serialize(Enum<?> enumValue, ColumnMetadata columnMetadata) {
+        if(enumValue=null){
+            return null;
+        }
         return (Integer) EnumValueDeserializer.serialize(enumValue);
     }
 
     @Override
     public Enum<?> deserialize(Integer integer, ColumnMetadata columnMetadata) {
+        if(integer=null){
+            return null;
+        }
         return EnumValueDeserializer.deserialize(EasyObjectUtil.typeCast(columnMetadata.getPropertyType()),integer);
     }
 }
