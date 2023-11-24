@@ -8,7 +8,7 @@ export default hopeTheme({
     name: "xuejmnet",
     url: "https://github.com/xuejmnet",
   },
-
+  favicon:"/favicon.ico",
   iconAssets: "iconfont",
 
   logo: "/logo.svg",
