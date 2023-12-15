@@ -7,7 +7,9 @@ title: 大数据流式查询返回❗️❗️❗️
 
 ::: warning 注意
 > 需要配合java8的`try resource`或者`try finally close`来关闭资源,并且需要自行处理`SQLException`,和`mybatis`不同的是期间无需开始事务也可以使用
-> 如果您是mysql数据库那么需要默认在连接字符串添加配置信息`useCursorFetch=true`,譬如`jdbc:mysql://127.0.0.1:3306/eq_db?useCursorFetch=true`
+> 如果您是mysql、pgsql那么请查看文档底部问题
+> mysql数据库那么需要默认在连接字符串添加配置信息`useCursorFetch=true`,譬如`jdbc:mysql://127.0.0.1:3306/eq_db?useCursorFetch=true`
+> pgsql数据库那么需要满足`fechSize设置需要 > 0`、`jdbc连接字符串不能加 preferQueryMode =simple`、`需要设置autocommit为false`
 :::
 
 ::: tip 注意
@@ -90,7 +92,16 @@ Set<Topic> traceId1 = easyProxyQuery.queryable(TopicProxy.createTable())
 ==> Preparing: SELECT `id`,`stars`,`title`,`create_time` FROM `t_topic` WHERE `id` = ?
 ==> Parameters: 1(String)
 <== Time Elapsed: 3(ms)
+
 ```
+
+# 问题
+
+## mysql不生效
+https://blog.csdn.net/dkz97/article/details/116355022
+
+## pgsql不生效
+https://blog.csdn.net/dkz97/article/details/115643516
 
 ## 相关搜索
 `流式结果` `流式查询` `迭代返回` `游标查询`

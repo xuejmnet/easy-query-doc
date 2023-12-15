@@ -2,6 +2,36 @@
 title: 快速了解 🔥
 ---
 
+## 预览
+```java
+List<SysUser> users = entityQuery.queryable(SysUser.class)
+                            .where(o->{
+                                o.id().eq("1");
+                                o.id().eq(false,"1");//true/false表示是否使用该条件默认true
+                                o.id().like("123");
+                                o.id().like(false,"123");
+                            })
+                            .groupBy(o->o.id())
+                            .select(o->o.id().concat(o.id().count().as(o.phone())))
+                            .toList();
+
+==> Preparing: SELECT t.`id`,COUNT(t.`id`) AS `phone` FROM `t_sys_user` t WHERE t.`id` = ? AND t.`id` LIKE ? GROUP BY t.`id`
+==> Parameters: 1(String),%123%(String)
+
+List<SysUser> users = entityQuery.queryable(SysUser.class)
+                            .where(o->{
+                                o.id().eq("1");// t.`id` = 1
+                                o.id().eq(o.createTime().dateTimeFormat("yyyy-MM-dd"));// t.`id` = DATE_FORMAT(t.`create_time`,'%Y-%m-%d')
+                                o.createTime().dateTimeFormat("yyyy-MM-dd").eq("2023-01-02");//DATE_FORMAT(t.`create_time`,'%Y-%m-%d') = '2023-01-02'
+                                o.name().nullDefault("unknown").like("123");
+                                o.phone().isNotBank();
+                            })
+                            .select(o->o.FETCHER.id().name().phone().departName())
+                            .toList();
+
+==> Preparing: SELECT t.`id`,t.`name`,t.`phone`,t.`depart_name` FROM `a222` t WHERE t.`id` = ? AND  t.`id` = DATE_FORMAT(t.`create_time`,'%Y-%m-%d') AND DATE_FORMAT(t.`create_time`,'%Y-%m-%d') = ? AND IFNULL(t.`name`,?) LIKE ? AND (t.`phone` IS NOT NULL AND t.`phone` <> '' AND LTRIM(t.`phone`) <> '')
+==> Parameters: 1(String),2023-01-02(String),unknown(String),%123%(String)
+```
 ## 快速实现表单查询
 业务场景
 <img src="/admin-form-query.png" >
@@ -9,9 +39,9 @@ title: 快速了解 🔥
 ### 数据库对象
 ```java
 @Table("t_sys_user")
-@EntityProxy
+@EntityFileProxy
 @Data
-public class SysUser {
+public class SysUser implements ProxyEntityAvailable<SysUser , SysUserProxy> {
     @Column(primaryKey = true)
     private String id;
     private String name;
@@ -19,8 +49,14 @@ public class SysUser {
     private String departName;
     private String phone;
     private LocalDateTime createTime;
+
+    @Override
+    public Class<SysUserProxy> proxyTableClass() {
+        return SysUserProxy.class;
+    }
 }
 ```
+其中`ProxyEntityAvailable<SysUser , SysUserProxy>`接口和`SysUserProxy`全部由插件自动生成,如果你不想用插件那么可以将注解`@EntityFileProxy`换成`@EntityProxy`
 ### 查询对象
 ```java
 
@@ -49,14 +85,18 @@ sysUserQueryRequest.setCreateTimeBegin(LocalDateTime.now().plusDays(-10));
 sysUserQueryRequest.setCreateTimeEnd(LocalDateTime.now());
 sysUserQueryRequest.setPhone("180");
 
-//需要查询的表代理由apt自动生成entity添加注解@EntityProxy即可
-SysUserProxy sysUserTable = SysUserProxy.createTable();
 
-//快速实现分页查询 动态对象条件
-SysUserProxy sysUserTable = SysUserProxy.createTable();
-EasyPageResult<SysUser> pageResult = easyProxyQuery.queryable(sysUserTable)
-        .whereObject(sysUserQueryRequest)
-        .toPageResult(1, 10);
+//快速实现分页查询 条件过滤默认非null不加入条件如果是字符串还需满足非空
+List<SysUser> pageResult = entityQuery.queryable(SysUser.class)
+                .filterConfigure(NotNullOrEmptyValueFilter.DEFAULT)//非null并且字符串非空即加入条件
+                .where(o -> {
+                        o.name().like(sysUserQueryRequest.getName());
+                        o.account().like(sysUserQueryRequest.getAccount());
+                        o.phone().like(sysUserQueryRequest.getPhone());
+                        o.departName().like(sysUserQueryRequest.getDepartName());
+                        o.createTime().rangeClosed(sysUserQueryRequest.getCreateTimeBegin(), sysUserQueryRequest.getCreateTimeEnd());
+                })
+                .toList();
 ```
 ```log
 ==> Preparing: SELECT COUNT(*) FROM `t_sys_user` WHERE `name` LIKE ? AND `phone` LIKE ? AND `create_time` >= ? AND `create_time` <= ?
@@ -75,20 +115,11 @@ sysUserQueryRequest.setCreateTimeBegin(LocalDateTime.now().plusDays(-10));
 sysUserQueryRequest.setCreateTimeEnd(LocalDateTime.now());
 sysUserQueryRequest.setPhone("180");
 
-//需要查询的表代理由apt自动生成entity添加注解@EntityProxy即可
-SysUserProxy sysUserTable = SysUserProxy.createTable();
 
-//快速实现分页查询 条件过滤默认非null不加入条件如果是字符串还需满足非空
-EasyPageResult<SysUser> pageResult = easyProxyQuery.queryable(sysUserTable)
-        .filterConfigure(NotNullOrEmptyValueFilter.DEFAULT)
-        .where(o -> o
-                .like(sysUserTable.name(), sysUserQueryRequest.getName())
-                .like(sysUserTable.account(), sysUserQueryRequest.getAccount())
-                .like(sysUserTable.phone(), sysUserQueryRequest.getPhone())
-                .like(sysUserTable.departName(), sysUserQueryRequest.getDepartName())
-                .rangeClosed(sysUserTable.createTime(), sysUserQueryRequest.getCreateTimeBegin(), sysUserQueryRequest.getCreateTimeEnd())
-        )
-        .toPageResult(1, 10);
+//快速实现分页查询 动态对象条件
+EasyPageResult<SysUser> pageResult = entityQuery.queryable(SysUser.class)
+                        .whereObject(sysUserQueryRequest)
+                        .toPageResult(1, 10);
 ```
 
 ### 表单查询3
@@ -100,17 +131,24 @@ sysUserQueryRequest.setCreateTimeBegin(LocalDateTime.now().plusDays(-10));
 sysUserQueryRequest.setCreateTimeEnd(LocalDateTime.now());
 sysUserQueryRequest.setPhone("180");
 
-//需要查询的表代理由apt自动生成entity添加注解@EntityProxy即可
-SysUserProxy sysUserTable = SysUserProxy.createTable();
 
 //快速实现分页查询 手动处理是否需要添加到查询条件中
-EasyPageResult<SysUser> pageResult = easyProxyQuery.queryable(sysUserTable)
-        .where(o -> o
-                .like(EasyStringUtil.isNotBlank(sysUserQueryRequest.getName()),sysUserTable.name(), sysUserQueryRequest.getName())
-                .like(EasyStringUtil.isNotBlank(sysUserQueryRequest.getAccount()),sysUserTable.account(), sysUserQueryRequest.getAccount())
-                .like(EasyStringUtil.isNotBlank(sysUserQueryRequest.getPhone()),sysUserTable.phone(), sysUserQueryRequest.getPhone())
-                .like(EasyStringUtil.isNotBlank(sysUserQueryRequest.getDepartName()),sysUserTable.departName(), sysUserQueryRequest.getDepartName())
-                .rangeClosed(sysUserTable.createTime(),sysUserQueryRequest.getCreateTimeBegin()!=null, sysUserQueryRequest.getCreateTimeBegin(),sysUserQueryRequest.getCreateTimeEnd()!=null, sysUserQueryRequest.getCreateTimeEnd())
-        )
-        .toPageResult(1, 10);
+List<SysUser> pageResult = entityQuery.queryable(SysUser.class)
+        .where(o -> {//条件里面判断是否要继续
+                o.name().like(EasyStringUtil.isNotBlank(sysUserQueryRequest.getName()),sysUserQueryRequest.getName());
+                o.account().like(EasyStringUtil.isNotBlank(sysUserQueryRequest.getAccount()),sysUserQueryRequest.getAccount());
+                o.phone().like(EasyStringUtil.isNotBlank(sysUserQueryRequest.getPhone()),sysUserQueryRequest.getPhone());
+                o.departName().like(EasyStringUtil.isNotBlank(sysUserQueryRequest.getDepartName()),sysUserQueryRequest.getDepartName());
+                o.createTime().rangeClosed(sysUserQueryRequest.getCreateTimeBegin() != null,sysUserQueryRequest.getCreateTimeBegin(),sysUserQueryRequest.getCreateTimeEnd() != null, sysUserQueryRequest.getCreateTimeEnd());
+        })
+        .toList();
+
+
+List<SysUser> pageResult = entityQuery.queryable(SysUser.class)//where第一个参数表示后面的条件是否需要追加上去
+        .where(EasyStringUtil.isNotBlank(sysUserQueryRequest.getName()),o->o.name().like(sysUserQueryRequest.getName()))
+        .where(EasyStringUtil.isNotBlank(sysUserQueryRequest.getAccount()),o->o.account().like(sysUserQueryRequest.getAccount()))
+        .where(EasyStringUtil.isNotBlank(sysUserQueryRequest.getPhone()),o->o.phone().like(sysUserQueryRequest.getPhone()))
+        .where(sysUserQueryRequest.getCreateTimeBegin() != null,o->o.createTime().gt(sysUserQueryRequest.getCreateTimeBegin()))
+        .where(sysUserQueryRequest.getCreateTimeEnd() != null,o->o.createTime().lt(sysUserQueryRequest.getCreateTimeEnd()))
+        .toList();
 ```

@@ -9,11 +9,11 @@ title: api模式❗️❗️❗️
 - `lambda`模式
 
 
-api  | 开发方便性 | 可维护性 | 性能
---- | --- | ---  | --- 
-属性 | 一般主要没有智能提示  | 难维护 | 非常好
-代理 | 好,配合插件非常好,拥有完善的智能提示,书写非常方便  | 易维护 | 非常好
-lambda | 非常好无需插件配合就有完善的智能提示,书写一般Class::Method  | 易维护 | 较好
+api  | 开发方便性 | 可维护性 | 性能| 缺点
+--- | --- | ---  | --- | --- 
+属性 | 一般主要没有智能提示  | 难维护 | 非常好 | 难维护,重构无法找到属性对应的引用
+代理 | 好,配合插件非常好,拥有完善的智能提示,书写非常方便  | 易维护 | 非常好 | 重构无法通过对象的属性对应的引用,需要额外通过代理对象找引用(插件可以解决)
+lambda | 非常好无需插件配合就有完善的智能提示,书写一般Class::Method  | 易维护 | 较好 | 解析表达式性能会稍稍低于`属性模式`和`代理模式`,需要将`lambda转成属性`
 
 
 ## 单表查询
@@ -185,4 +185,37 @@ SysUser sysUser1 = easyQuery.queryable(SysUser.class)
         //.select(o->o.columnAll().columnIgnore("createTime"))//获取user表的所有字段除了createTime字段
         .firstOrNull();
 ```
+:::
+
+## proxy模式
+因为proxy涉及到apt代理对象的自动生成和插件的整合,所以这边单独进行文档编写说来演示如何使用proxy编写易于表达维护的orm语法
+
+### 依赖安装
+如果你只需要使用代理模式那么在可以自行安装依赖或者使用整合包比如`springboot`下的`starter`或者`solon`下的`plugin`,下面仅展示控制台程序下使用的依赖
+```xml
+<properties>
+    <easy-query.version>latest-version</easy-query.version>
+</properties>
+<!--  提供了代理模式支持apt模式以非lambda形式的强类型sql语法 -->
+<dependency>
+    <groupId>com.easy-query</groupId>
+    <artifactId>sql-api-proxy</artifactId>
+    <version>${easy-query.version}</version>
+</dependency>
+<!--  提供了apt自动生成代理对象 -->
+<dependency>
+    <groupId>com.easy-query</groupId>
+    <artifactId>sql-processor</artifactId>
+    <version>${easy-query.version}</version>
+</dependency>
+<!--  这边以mysql为例 其实不需要添加下面的包也可以运行,指示默认的个别数据库行为语句没办法生成 -->
+<dependency>
+    <groupId>com.easy-query</groupId>
+    <artifactId>sql-mysql</artifactId>
+    <version>${easy-query.version}</version>
+</dependency>
+```
+
+::: warning 说明!!!
+> 如果您的项目是多模块,请在对应模块需要生成代理对象的类处都添加`sql-processor`,对应的模块是指当前模块有`@EntityProxy`注解
 :::
