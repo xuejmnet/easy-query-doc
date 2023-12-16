@@ -258,9 +258,7 @@ List<Topic> list = entityQuery.queryable(Topic.class)
             o.title().like("123");
             o.createTime().ge(LocalDateTime.of(2022,2,1,3,4));
         })
-        .groupBy(o-> GroupBy.of(
-                o.id()
-        ))
+        .groupBy(o-> o.id())
         .select(Topic.class,(o,tr)->Select.of(
                 o.id(),
                 o.id().count().as(tr.stars())//count(id) as stars
