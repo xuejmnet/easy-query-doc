@@ -4,6 +4,7 @@ export const zhSidebar = sidebar({
   "/": [
     "",
     "quick-preview",
+    "quick-start",
     "question",
     "db_support",
     {
