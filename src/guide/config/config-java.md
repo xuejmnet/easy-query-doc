@@ -13,9 +13,27 @@ order: 10
 [https://central.sonatype.com/](https://central.sonatype.com/) 搜索`com.easy-query`获取最新安装包
 
 ## api接口选型
-目前`easy-query`支持三种api接口方式：字符串属性,lambda属性,代理属性三种api接口调用,且可以互相调用
+目前`easy-query`支持四种api接口方式：字符串属性,lambda属性,代理属性,对象查询四种api接口调用,且可以互相调用
 
 ::: code-tabs
+@tab 对象查询
+```xml
+<properties>
+    <easy-query.version>latest-version</easy-query.version>
+</properties>
+<!--  提供了代理模式支持apt模式以非lambda形式的强类型sql语法 -->
+<dependency>
+    <groupId>com.easy-query</groupId>
+    <artifactId>sql-api-proxy</artifactId>
+    <version>${easy-query.version}</version>
+</dependency>
+<!--  这边以mysql为例 其实不需要添加下面的包也可以运行,指示默认的个别数据库行为语句没办法生成 -->
+<dependency>
+    <groupId>com.easy-query</groupId>
+    <artifactId>sql-mysql</artifactId>
+    <version>${easy-query.version}</version>
+</dependency>
+```
 @tab 代理属性
 ```xml
 <properties>
@@ -75,6 +93,42 @@ order: 10
 ## 使用示例
 
 ::: code-tabs
+@tab 对象查询
+```java
+
+@Data
+@Table("t_topic")
+@EntityFileProxy //添加这个属性那么Topic对象会代理生成TopicProxy (需要idea build一下当前项目)
+//@EntityProxy @EntityFileProxy两个都可以 File是插件处理,不带file的需要额外引入sql-processor是apt生成
+public class Topic implements ProxyEntityAvailable<Topic , TopicProxy>{//implements ProxyEntityAvailable<Topic , TopicProxy>接口有插件生成也可以自行添加
+
+    @Column(primaryKey = true)
+    private String id;
+    private Integer stars;
+    private String title;
+    private LocalDateTime createTime;
+    //方法也由插件生成
+    @Override
+    public Class<TopicProxy> proxyTableClass() {
+        return TopicProxy.class;
+    }
+}
+
+Topic topic = entityQuery.queryable(Topic.class)
+                .where(o -> {
+                    o.or(()->{
+                        o.id().eq("3");
+                        o.title().like("你好");
+                    });
+                })
+                .firstOrNull();
+
+
+==> Preparing: SELECT `id`,`stars`,`title`,`create_time` FROM `t_topic` WHERE (`id` = ? OR `title` LIKE ?) LIMIT 1
+==> Parameters: 3(String),%你好%(String)
+<== Time Elapsed: 3(ms)
+<== Total: 1
+```
 @tab 代理属性
 ```java
 

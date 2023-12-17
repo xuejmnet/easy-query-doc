@@ -3,7 +3,8 @@ title: api模式❗️❗️❗️
 ---
 
 ## 三种模式
-`easy-query`提供了三种模式的api查询
+`easy-query`提供了四种模式的api查询
+- `对象`模式
 - `属性`模式
 - `代理`模式
 - `lambda`模式
@@ -11,6 +12,7 @@ title: api模式❗️❗️❗️
 
 api  | 开发方便性 | 可维护性 | 性能| 缺点
 --- | --- | ---  | --- | --- 
+对象 | 非常好配合插件几乎无敌流畅 | 易维护 | 非常好 | 需要插件才能非常流畅
 属性 | 一般主要没有智能提示  | 难维护 | 非常好 | 难维护,重构无法找到属性对应的引用
 代理 | 好,配合插件非常好,拥有完善的智能提示,书写非常方便  | 易维护 | 非常好 | 重构无法通过对象的属性对应的引用,需要额外通过代理对象找引用(插件可以解决)
 lambda | 非常好无需插件配合就有完善的智能提示,书写一般Class::Method  | 易维护 | 较好 | 解析表达式性能会稍稍低于`属性模式`和`代理模式`,需要将`lambda转成属性`
@@ -19,6 +21,66 @@ lambda | 非常好无需插件配合就有完善的智能提示,书写一般Clas
 ## 单表查询
 
 ::: code-tabs
+@tab 对象模式
+```java
+
+
+// 创建一个可查询SysUser的表达式
+EntityQueryable<SysUserProxy, SysUser> queryable = entityQuery.queryable(SysUser.class);
+
+//单个条件链式查询
+//toList表示查询结果集
+List<SysUser> sysUsers = entityQuery.queryable(SysUser.class)
+        .where(o -> o.id().eq( "123xxx"))
+        .toList();
+
+
+
+//条件= 和 like 组合 中间默认是and连接符
+List<SysUser> sysUsers =entityQuery.queryable(SysUser.class)
+        .where(o ->{
+                o.id().eq("123xxx");
+                o.idCard().like("123")
+        }).toList();//toList表示查询结果集
+
+
+//多个where之间也是用and链接和上述方法一个意思 条件= 和 like 组合 中间默认是and连接符
+List<SysUser> sysUsers = entityQuery.queryable(SysUser.class)
+        .where(o -> o.id().eq("123xxx"))
+        .where(o -> o.idCard().like("123")).toList();
+
+
+//返回单个对象没有查询到就返回null
+SysUser sysUser1 = entityQuery.queryable(SysUser.class)
+        .where(o -> o.id().eq("123xxx"))
+        .where(o -> o.idCard().like( "123")).firstOrNull();
+
+
+//采用创建时间倒序和id正序查询返回第一个
+SysUser sysUser1 = entityQuery.queryable(SysUser.class)
+        .where(o -> o.id().eq"123xxx"))
+        .where(o -> o.idCard().like("123"))
+        .orderBy(o->o.createTime().desc())
+        .orderBy(o->o.id().asc()).firstOrNull();
+
+//仅查询id和createTime两列
+SysUser sysUser1 = entityQuery.queryable(SysUser.class)
+        .where(o -> o.id().eq("123xxx"))
+        .where(o -> o.idCard().like("123"))
+        .orderBy(o->o.createTime().desc())
+        .orderBy(o->o.id().asc())
+        .select(o->o.FETCHER.id().createTime())//也可以用Select.of(o.id(),o.createTime())如果只有一个参数不需要Select.of()
+        //.select(o->Select.of(o.id(),o.createTime()))
+        //.select(o->o.allFieldsExclude(o.createTime()))//获取user表的所有字段除了createTime字段
+        //   .select(o -> {//甚至可以创建一个Fetcher来实现拉取
+        //       Fetcher fetcher = Select.createFetcher();
+        //       fetcher.fetch(o.id(), o.title());
+        //       fetcher.fetch(o.stars().as(o.stars()));
+        //       return fetcher;
+        //   })
+        .firstOrNull();
+        
+```
 @tab 代理模式
 ```java
 
@@ -202,7 +264,7 @@ SysUser sysUser1 = easyQuery.queryable(SysUser.class)
     <artifactId>sql-api-proxy</artifactId>
     <version>${easy-query.version}</version>
 </dependency>
-<!--  提供了apt自动生成代理对象 -->
+<!--  提供了apt自动生成代理对象 如果您使用entityQuery查询并且采用@EntityFileProxy那么这个依赖可以省略-->
 <dependency>
     <groupId>com.easy-query</groupId>
     <artifactId>sql-processor</artifactId>
