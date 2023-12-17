@@ -14,24 +14,24 @@ title: api使用 ❗️❗️❗️
 
 我们以这个简单的例子为例可以看到我们应该编写的顺序是select在最后
 ```java
-easyProxyQuery.queryable(HelpProvinceProxy.createTable())
-        .where(o->o.eq(o.t().id(),"1"))
-        .orderByAsc(o->o.column(o.t().id()))
-        .select(o->o.columns(o.t().id(),o.t().name()))
+entityQuery.queryable(HelpProvince.class)
+        .where(o->o.id().eq("1"))
+        .orderBy(o->o.id().asc())
+        .select(o->o.FETCHER.id().name())
         .toList();
+
 ```
 
 复杂的查询顺序
 <img src="/simple-nest-query.jpg">
 
 ```java
-easyProxyQuery.queryable(HelpProvinceProxy.createTable()) //1
-        .where(o->o.eq(o.t().id(),"1")) //2
-        .orderByAsc(o->o.column(o.t().id())) //3
-        //这边必须使用select的双参数重载就是第一个参数必须是返回结果这样才会生成为匿名表
-        .select(HelpProvinceProxy.createTable(),o->o.columns(o.t().id(),o.t().name())) //4 
-        .where(o->o.eq(o.t().id(),"1")) // 5
-        .select(o->o.column(o.t().id())) //6
+entityQuery.queryable(HelpProvince.class) //1
+        .where(o->o.id().eq("1")) //2
+        .orderBy(o->o.id().asc()) //3
+        .select(o->o.FETCHER.id().name()) //4 
+        .where(o->o.id().eq("1")) // 5
+        .select(o->o.id()) //6 如果有多个参数可以使用FETCHER或者Select.of(....)
         .toList();
 ```
 
@@ -43,6 +43,65 @@ easyProxyQuery.queryable(HelpProvinceProxy.createTable()) //1
 ## 单表api使用
 
 ::: code-tabs
+@tab 对象模式
+```java
+
+// 创建一个可查询SysUser的表达式
+EntityQueryable<SysUserProxy, SysUser> queryable = entityQuery.queryable(SysUser.class);
+
+//单个条件链式查询
+//toList表示查询结果集
+List<SysUser> sysUsers = entityQuery.queryable(SysUser.class)
+        .where(o -> o.id().eq( "123xxx"))
+        .toList();
+
+
+
+//条件= 和 like 组合 中间默认是and连接符
+List<SysUser> sysUsers =entityQuery.queryable(SysUser.class)
+        .where(o ->{
+                o.id().eq("123xxx");
+                o.idCard().like("123")
+        }).toList();//toList表示查询结果集
+
+
+//多个where之间也是用and链接和上述方法一个意思 条件= 和 like 组合 中间默认是and连接符
+List<SysUser> sysUsers = entityQuery.queryable(SysUser.class)
+        .where(o -> o.id().eq("123xxx"))
+        .where(o -> o.idCard().like("123")).toList();
+
+
+//返回单个对象没有查询到就返回null
+SysUser sysUser1 = entityQuery.queryable(SysUser.class)
+        .where(o -> o.id().eq("123xxx"))
+        .where(o -> o.idCard().like( "123")).firstOrNull();
+
+
+//采用创建时间倒序和id正序查询返回第一个
+SysUser sysUser1 = entityQuery.queryable(SysUser.class)
+        .where(o -> o.id().eq"123xxx"))
+        .where(o -> o.idCard().like("123"))
+        .orderBy(o->o.createTime().desc())
+        .orderBy(o->o.id().asc()).firstOrNull();
+
+//仅查询id和createTime两列
+SysUser sysUser1 = entityQuery.queryable(SysUser.class)
+        .where(o -> o.id().eq("123xxx"))
+        .where(o -> o.idCard().like("123"))
+        .orderBy(o->o.createTime().desc())
+        .orderBy(o->o.id().asc())
+        .select(o->o.FETCHER.id().createTime())//也可以用Select.of(o.id(),o.createTime())如果只有一个参数不需要Select.of()
+        //.select(o->Select.of(o.id(),o.createTime()))
+        //.select(o->o.allFieldsExclude(o.createTime()))//获取user表的所有字段除了createTime字段
+        //   .select(o -> {//甚至可以创建一个Fetcher来实现拉取
+        //       Fetcher fetcher = Select.createFetcher();
+        //       fetcher.fetch(o.id(), o.title());
+        //       fetcher.fetch(o.stars().as(o.stars()));
+        //       return fetcher;
+        //   })
+        .firstOrNull();
+        
+```
 @tab 代理模式
 ```java
 
@@ -164,6 +223,39 @@ SysUser sysUser1 = easyQuery.queryable(SysUser.class)
 
 ## 多表查询api
 
+
+::: code-tabs
+@tab 对象模式
+```java
+
+// 创建一个可查询SysUser的表达式
+EntityQueryable<SysUserProxy, SysUser> queryable = entityQuery.queryable(SysUser.class);
+
+
+List<Topic> list = entityQuery
+        .queryable(Topic.class)
+        //第一个join采用双参数,参数1表示第一张表Topic 参数2表示第二张表 BlogEntity
+        .leftJoin(BlogEntity.class, (t, t1) -> t.id().eq(t1.id()))
+        //第二个join采用三参数,参数1表示第一张表Topic 参数2表示第二张表 BlogEntity 第三个参数表示第三张表 SysUser
+        .leftJoin(SysUser.class, (t, t1, t2) -> t.id().eq(t2.id()))
+        .where(o -> o.id().eq("123"))//单个条件where参数为主表Topic
+        //支持单个参数或者全参数,全参数个数为主表+join表个数 链式写法期间可以通过then来切换操作表
+        .where((t, t1, t2) -> {
+                t.id().eq("123");
+                t1.title().like("456");
+                t2.createTime().eq(LocalDateTime.now());
+        })
+        //如果不想用链式的then来切换也可以通过lambda 大括号方式执行顺序就是代码顺序,默认采用and链接
+        .where((t, t1, t2) -> {
+            t.id().eq("123");
+            t1.title().like("456");
+            t1.createTime().eq(LocalDateTime.now());
+        })
+        //toList默认只查询主表数据
+        .toList();
+        
+```
+@tab lambda模式
 ```java
 
 List<Topic> list = easyQuery
@@ -185,10 +277,43 @@ List<Topic> list = easyQuery
         //toList默认只查询主表数据
         .toList();
 ```
+:::
 
 ## 多表返回表达式
 
 ::: code-tabs
+@tab 对象模式
+```java
+//
+entityQuery
+        .queryable(Topic.class)
+        .leftJoin(BlogEntity.class, (t,t1) -> t.id().eq(t1.id()))
+        .leftJoin(SysUser.class, (t,t1,t2) -> t.id().eq(t2.id()))
+        .where((t,t1,t2) -> {
+                t.id().eq("123");
+                t1.title().like("456");
+                t2.createTime().eq(LocalDateTime.now());
+        })
+        //如果不想用链式大括号方式执行顺序就是代码顺序,默认采用and链接
+        //动态表达式
+        .where(o -> {
+            o.id().eq("1234");
+            if (true) {
+                o.id().eq("1234");//false表示不使用这个条件
+            }
+            o.id().eq(true,"1234");//false表示不使用这个条件
+
+        })
+        .select((t,t1,t2) -> o.columns(userTable.id(), blogTable.id()))
+        .select(TopicTypeVO.class, (t,t1,t2,tr) -> {//t,t1,t2表示join的三张表,tr表示vo结果用于映射
+                return Select.of(
+                        t2.id(),
+                        t1.id(),
+                        Select.of(true,t2.id().as(tr.id()))//true表示要返回这个查询
+                )
+        });
+
+```
 @tab 代理模式
 ```java
 //
@@ -263,6 +388,81 @@ Queryable<Topic> where = easyQuery
 
 
 ## 多表自定义结果api
+
+
+::: code-tabs
+@tab 对象模式
+```java
+
+
+@Data
+@EntityFileProxy
+public class  QueryVO implements ProxyEntityAvailable<QueryVO , QueryVOProxy> {
+    private String id;
+    private String field1;
+    private String field2;
+
+    @Override
+    public Class<QueryVOProxy> proxyTableClass() {
+        return QueryVOProxy.class;
+    }
+}
+
+List<QueryVO> list = entityQuery.queryable(Topic.class)
+        //第一个join采用双参数,参数1表示第一张表Topic 参数2表示第二张表 BlogEntity
+        .leftJoin(BlogEntity.class, (t, t1) -> t.id().eq(t1.id()))
+        //第二个join采用三参数,参数1表示第一张表Topic 参数2表示第二张表 BlogEntity 第三个参数表示第三张表 SysUser
+        .leftJoin(SysUser.class, (t, t1, t2) -> t.id().eq(t2.id()))
+        .where(o -> o.id().eq("123"))//单个条件where参数为主表Topic
+        //支持单个参数或者全参数,全参数个数为主表+join表个数 链式写法期间可以通过then来切换操作表
+        .where((t, t1, t2) -> {
+                t.id().eq("123");
+                t1.title().like("456");
+                t2.createTime().eq(LocalDateTime.of(2021, 1, 1, 1, 1));
+        })
+        .select(QueryVO.class, (t, t1, t2, tr) -> {
+                return Select.of(
+                        t.id(),
+                        t1.title().as(tr.field1()),//将第二张表的title字段映射到VO的field1字段上
+                        t2.id().as(tr.field2())//将第三张表的id字段映射到VO的field2字段上
+                );
+        }).toList();
+
+==> Preparing: SELECT t.`id`,t1.`title` AS `field1`,t2.`id` AS `field2` FROM `t_topic` t LEFT JOIN `t_blog` t1 ON t1.`deleted` = ? AND t.`id` = t1.`id` LEFT JOIN `easy-query-test`.`t_sys_user` t2 ON t.`id` = t2.`id` WHERE t.`id` = ? AND t.`id` = ? AND t1.`title` LIKE ? AND t2.`create_time` = ?
+==> Parameters: false(Boolean),123(String),123(String),%456%(String),2021-01-01T01:01(LocalDateTime)
+<== Time Elapsed: 3(ms)
+<== Total: 0
+
+
+
+List<QueryVO> list = entityQuery.queryable(Topic.class)
+        //第一个join采用双参数,参数1表示第一张表Topic 参数2表示第二张表 BlogEntity
+        .leftJoin(BlogEntity.class, (t, t1) -> t.id().eq(t1.id()))
+        //第二个join采用三参数,参数1表示第一张表Topic 参数2表示第二张表 BlogEntity 第三个参数表示第三张表 SysUser
+        .leftJoin(SysUser.class, (t, t1, t2) -> t.id().eq(t2.id()))
+        .where(o -> o.id().eq("123"))//单个条件where参数为主表Topic
+        //支持单个参数或者全参数,全参数个数为主表+join表个数 链式写法期间可以通过then来切换操作表
+        .where((t, t1, t2) -> {
+                t.id().eq("123");
+                t1.title().like("456");
+                t2.createTime().eq(LocalDateTime.of(2021, 1, 1, 1, 1));
+        })
+        .select(QueryVO.class, (t, t1, t2, tr) -> {
+                return Select.of(
+                        //将第一张表的所有属性的列映射到vo的列名上,忽略掉title属性的映射
+                        t.allFieldsExclude(t.title()),
+                        t1.title().as(tr.field1()),//将第二张表的title字段映射到VO的field1字段上
+                        t2.id().as(tr.field2())//将第三张表的id字段映射到VO的field2字段上
+                );
+        }).toList();
+
+
+==> Preparing: SELECT t.`id`,t1.`title` AS `field1`,t2.`id` AS `field2` FROM `t_topic` t LEFT JOIN `t_blog` t1 ON t1.`deleted` = ? AND t.`id` = t1.`id` LEFT JOIN `easy-query-test`.`t_sys_user` t2 ON t.`id` = t2.`id` WHERE t.`id` = ? AND t.`id` = ? AND t1.`title` LIKE ? AND t2.`create_time` = ?
+==> Parameters: false(Boolean),123(String),123(String),%456%(String),2021-01-01T01:01(LocalDateTime)
+<== Time Elapsed: 2(ms)
+<== Total: 0
+```
+@tab lambda模式
 ```java
 
 
@@ -331,3 +531,4 @@ Queryable<Topic> where = easyQuery
                                 .columnAs(SysUser::getId, QueryVO::getField2)
                 ).toList();
 ```
+:::

@@ -489,9 +489,46 @@ public class TopicTypeArrayJson {
 public class TopicTypeTitle2ComplexType extends TypeReference<List<TopicTypeJsonValue>> implements ComplexPropType {
 
     @Override
-    public Type getComplexType() {
+    public Type complexType() {
         return this.getType();
     }
+}
+
+如果不想使用`TopicTypeTitle2ComplexType`额外定义一个类可以在json对象上直接定义
+
+@Data
+@EqualsAndHashCode
+public class TopicTypeJsonValue implements ComplexPropType {
+    private String name;
+    private Integer age;
+
+    @Override
+    public Type complexType() {
+        return myType(new TypeReference<List<TopicTypeJsonValue>>() {
+        });
+    }
+
+    private <T> Type myType(TypeReference<T> typeReference) {
+        return typeReference.getType();
+    }
+}
+
+然后实体对象定义为
+
+@Data
+@Table("t_topic_type_array")
+@ToString
+public class TopicTypeArrayJson {
+
+    @Column(primaryKey = true)
+    private String id;
+    private Integer stars;
+    @Column(conversion = JsonConverter.class)
+    private TopicTypeJsonValue title;
+    @Column(conversion = JsonConverter.class, complexPropType = TopicTypeJsonValue.class)//修改为TopicTypeJsonValue.class
+    private List<TopicTypeJsonValue> title2;
+    private Integer topicType;
+    private LocalDateTime createTime;
 }
 
 

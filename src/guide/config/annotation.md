@@ -176,7 +176,13 @@ update table set version=xxxxxxasd where id=xxx and version=xxxxasdasd
 用来标识当前对象的数据库分表额外键是哪个
 
 ## EasyWhereCondition
-默认的动态条件对象查询条件
+默认的动态条件对象查询条件,可以自行替换自定义注解来实现动态条件
 
 ## EasyQueryTrack
-默认的追踪上下文注解也可以自定义
+默认的追踪上下文注解也可以自定义,用于方法之上
+
+## EntityProxy
+生成代理对象,添加到实体和dto之上用来自动生成apt代理类,生成的文件存在于target目录下,clean后需要重新build
+
+## EntityFileProxy
+同`EntityProxy`但是生成的文件存在源码中
