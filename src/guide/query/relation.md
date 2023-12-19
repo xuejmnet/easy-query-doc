@@ -15,6 +15,30 @@ OneToMany | 一对多 | 班级和学生
 ManyToOne | 多对一  | 学生和班级
 ManyToMany | 多对多  | 班级和老师
 
+::: tip 感谢!!!
+> 以下关系图有网友 [`人无完人`](https://gitee.com/gollyhu) 大佬提供十分感谢
+:::
+
+### 一对一说明
+<img src="/include1.jpg">
+
+### 多对一说明
+<img src="/include2.jpg">
+
+### 一对多说明
+
+<img src="/include3.jpg">
+
+### 多对多说明
+
+<img src="/include4.jpg">
+
+### 多次include
+
+<img src="/include5.jpg">
+
+<img src="/include6.jpg">
+
 
 ::: warning 说明!!!
 > `include` 内部属于独立查询,如果您需要差异更新并且没有配置默认启动追踪查询那么需要独立进行`asTracking()`等,include的后one或者many的第二个参数表示以多少关联属性为一组进行获取

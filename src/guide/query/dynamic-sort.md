@@ -164,6 +164,7 @@ public class UISort implements ObjectSort {
     public void configure(ObjectSortBuilder builder) {
         for (Map.Entry<String, Boolean> s : sort.entrySet()) {
             //自行判断key和value是否为null 因为是包装类型可能会出现npe
+            // key为需要排序的属性,value表示需要排序是不是asc
             builder.orderBy(s.getKey(),s.getValue());
         }
     }
