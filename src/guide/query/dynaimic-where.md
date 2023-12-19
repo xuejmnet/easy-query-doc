@@ -111,7 +111,7 @@ List<BlogEntity> result = easyQuery.queryable(BlogEntity.class)
 ```
 
 ## 条件接受
-`1.4.31^`以上版本支持`ValueFilter` 条件接收器,`Queryable`默认行为`AnyValueFilter.DEFAULT`所有的条件都接受,框架提供了一个可选`NotNullOrEmptyValueFilter.DEFAULT`当传入的条件参数值非null且字符串的情况下非空那么才会增加到条件里面,仅where条件生效。
+`1.4.31^`以上版本支持`ValueFilter` 条件接收器,`Queryable`默认行为`AnyValueFilter.DEFAULT`所有的条件都接受,框架提供了一个可选`NotNullOrEmptyValueFilter.DEFAULT`当传入的条件参数值非null且字符串的情况下非空那么才会增加到条件里面,仅where条件生效。并且只有左侧是属性而非属性函数时才会生效如果左侧为函数那么将不会生效
 
 用户也可以自定义实现接口
 ```java
