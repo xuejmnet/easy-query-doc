@@ -26,4 +26,7 @@ java.lang.IllegalStateException: Unable to load cache item
 		</dependency>
 ```
 
-## 
+## 没有生成Proxy
+如果没有生成`Proxy`请先确定是否引入`sql-api-proxy`包,如果使用`@EntityProxy`请确定是否引入`sql-processor`各个生成的模块都需要,如果是`@EntityFileProxy`请确认是否引用插件。
+插件可以有效的提升用户体验
+
