@@ -100,6 +100,8 @@ create table t_topic
 
 <img src="/topic-plugin-use3.png">
 
+自动生成的`EntityProxy`类会在用户修改属性字段后同步修改
+
 ## 运行
 ```java
 
@@ -114,6 +116,7 @@ public class Main {
         dataSource.setMaximumPoolSize(20);
         //采用控制台输出打印sql
         LogFactory.useStdOutLogging();
+        //property的api
         EasyQueryClient easyQueryClient = EasyQueryBootstrapper.defaultBuilderConfiguration()
                 .setDefaultDataSource(dataSource)
                 .optionConfigure(op -> {
@@ -122,6 +125,10 @@ public class Main {
                 })
                 .useDatabaseConfigure(new MySQLDatabaseConfiguration())
                 .build();
+        //lambda模式的api
+        //DefaultEasyQuery easyQuery = new DefaultEasyQuery(easyQueryClient)
+        
+        //使用新版本api对象查询
         DefaultEntityQuery entityQuery = new DefaultEntityQuery(easyQueryClient);
 
         Topic topic = entityQuery.queryable(Topic.class)
@@ -270,6 +277,23 @@ List<Topic> list = entityQuery.queryable(Topic.class)
 ==> Parameters: %123%(String),2022-02-01T03:04(LocalDateTime)
 <== Time Elapsed: 2(ms)
 <== Total: 98
+
+//草稿模式无需定义返回结果,返回草稿支持1-10 Draft1-Draft10
+List<Draft2<String, Long>> list = entityQuery.queryable(Topic.class)
+        .where(o -> {
+            o.title().like("123");
+            o.createTime().ge(LocalDateTime.of(2022, 2, 1, 3, 4));
+        })
+        .groupBy(o -> o.id())//多个用GroupBy.of(.....)
+        .select(Topic.class, (o, tr) -> Select.of(
+                o.id(),
+                o.id().count().as(tr.stars())//count(id) as stars
+        ))
+        .selectDraft(o -> Select.draft(
+                o.id(),
+                o.id().count()
+        ))
+        .toList();
 ```
 
 ### 分页
@@ -370,4 +394,22 @@ List<Topic> list = entityQuery.queryable(Topic.class)
 ==> Preparing: SELECT t.`stars`,t.`create_time`,t1.`title` AS `id` FROM `t_topic` t LEFT JOIN `t_topic` t1 ON t.`id` = t1.`id` ORDER BY t.`id` ASC,t1.`create_time` DESC
 <== Time Elapsed: 6(ms)
 <== Total: 101
+
+//使用草稿无需定义返回结果
+List<Draft3<Integer, LocalDateTime, String>> list = entityQuery.queryable(Topic.class)
+                .leftJoin(Topic.class, (t, t1) -> {
+                    t.id().eq(t1.id());
+                })
+                .orderBy((t, t1) -> {
+                    t.id().asc();
+                    t1.createTime().desc();
+                })
+                .selectDraft((t, t1) -> Select.draft(
+                        t.stars(),
+                        t.createTime(),
+                        t1.title()
+                ))
+                .toList();
+
+==> Preparing: SELECT t.`stars` AS `value1`,t.`create_time` AS `value2`,t1.`title` AS `value3` FROM `t_topic` t LEFT JOIN `t_topic` t1 ON t.`id` = t1.`id` ORDER BY t.`id` ASC,t1.`create_time` DESC
 ```

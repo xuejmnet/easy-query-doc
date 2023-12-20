@@ -82,7 +82,7 @@ private EasyProxyQuery easyProxyQuery;//对EasyQueryClient的增强通过apt代�
     <artifactId>sql-api-proxy</artifactId>
     <version>${easy-query.version}</version>
 </dependency>
-<!--  提供了apt自动生成代理对象 -->
+<!--  提供了apt自动生成代理对象  如果使用EntityFileProxy使用插件那么可以不引入这个包-->
 <dependency>
     <groupId>com.easy-query</groupId>
     <artifactId>sql-processor</artifactId>
@@ -111,4 +111,6 @@ private EasyProxyQuery easyProxyQuery;//对EasyQueryClient的增强通过apt代�
  EasyKtQuery easyKtQuery = new DefaultEasyKtQuery(easyQueryClient);
 //强类型api
  EasyProxyuery easyProxyQuery = new DefaultEasyProxyQuery(easyQueryClient);
+//使用新版本api对象查询
+EntityQuery entityQuery = new DefaultEntityQuery(easyQueryClient);
 ```
