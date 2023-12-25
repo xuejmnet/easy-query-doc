@@ -31,6 +31,9 @@ title: 插件助手
 #### EasyQuery官方QQ群: 170029046
 :::
 
+## 版本升级
+如果你是`@EntityProxy`那么只需要升级对应的框架版本和插件版本然后重新clean即可,如果你是`@EntityFileProxy`那么升级完框架和插件版本后需要重新调用插件的`AutoCompile`让生成的代理文件重新生成一遍
+
 ## 下载
 从idea的插件市场下载插件
 
