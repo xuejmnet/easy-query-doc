@@ -25,6 +25,18 @@ java.lang.IllegalStateException: Unable to load cache item
 			<artifactId>spring-boot-starter-aop</artifactId>
 		</dependency>
 ```
+如果不想使用aop可以禁用默认加载aop追踪 在`application.yml`同级目录下添加`easy-query-track:enable:false`
+```yml
+easy-query:
+  enable: true
+  database: mysql
+  name-conversion: underlined
+  start-time-job: true
+
+easy-query-track:
+  # 默认是true
+  enable: false
+```
 
 ## 没有生成Proxy
 如果没有生成`Proxy`请先确定是否引入`sql-api-proxy`包,如果使用`@EntityProxy`请确定是否引入`sql-processor`各个生成的模块都需要,如果是`@EntityFileProxy`请确认是否引用插件。
