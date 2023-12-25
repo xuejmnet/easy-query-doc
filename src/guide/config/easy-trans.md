@@ -8,7 +8,7 @@ title: easy-trans扩展
 [`demo地址`](https://gitee.com/xuejm/easy-trans-easy-query-demo)
 
 :::warning 
-easy-trans.is-enable-global=true,默认`toPageResult`是`final`的结果,如果需要支持可以通过自行实现`EasyPageResultProvider`或者`Pager<TEntity,TPageResult>`接口
+easy-trans.is-enable-global=true,默认`toPageResult`是`final`的结果,如果需要支持可以通过自行实现`EasyPageResultProvider`或者`Pager<TEntity,TPageResult>`接口,包括其他返回结果需要注意返回的对象不可以是final之类的
 :::
 
 ::: warning 注意点及说明!!!
