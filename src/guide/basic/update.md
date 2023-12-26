@@ -38,6 +38,34 @@ long rows = easyQuery.updatable(topic)
 ```
 
 ## 1.更新指定列
+
+::: code-tabs
+@tab 对象模式
+```java
+
+long rows = entityQuery.updatable(Topic.class)
+                .setColumns(o->{
+                    o.stars().set(12);//如果存在多个set就自行添加即可
+                    //o.title().set("newTitle");
+                })
+                .where(o->o.id().eq(2))
+                .executeRows()
+//rows为1
+entityQuery.updatable(Topic.class)
+                .setColumns(o->{
+                    o.stars().set(12);
+                })
+                .where(o->o.id().eq(2))
+                    .executeRows(1,"更新失败");
+//判断受影响行数并且进行报错,如果当前操作不在事务内执行那么会自动开启事务!!!会自动开启事务!!!会自动开启事务!!!来实现并发更新控制,异常为:EasyQueryConcurrentException 
+//抛错后数据将不会被更新
+==> Preparing: UPDATE t_topic SET `stars` = ? WHERE `id` = ?
+==> Parameters: 12(Integer),2(String)
+<== Total: 1
+        
+```
+@tab lambda模式
+
 ```java
 long rows = easyQuery.updatable(Topic.class)
                 .set(Topic::getStars, 12)
@@ -50,29 +78,93 @@ easyQuery.updatable(Topic.class)
                     .executeRows(1,"更新失败");
 //判断受影响行数并且进行报错,如果当前操作不在事务内执行那么会自动开启事务!!!会自动开启事务!!!会自动开启事务!!!来实现并发更新控制,异常为:EasyQueryConcurrentException 
 //抛错后数据将不会被更新
-```
-```log
 ==> Preparing: UPDATE t_topic SET `stars` = ? WHERE `id` = ?
 ==> Parameters: 12(Integer),2(String)
 <== Total: 1
 ```
+:::
 支持多次`set`,多次set表示`set`拼接
 
 ## 2.表列自更新
+
+::: code-tabs
+@tab 对象模式
+```java
+
+long rows = entityQuery.updatable(Topic.class)
+                .setColumns(o->{
+                    o.stars().set(o.stars());
+                })
+                .where(o->o.id().eq("2"))
+                .executeRows();
+//rows为1
+
+==> Preparing: UPDATE t_topic SET `title` = `stars` WHERE `id` = ?
+==> Parameters: 2(String)
+<== Total: 1
+        
+```
+@tab lambda模式
+
 ```java
 long rows = easyQuery.updatable(Topic.class)
                     .set(Topic::getTitle, Topic::getStars)
                     .where(o -> o.eq(Topic::getId, "2"))
                     .executeRows();
 //rows为1
-```
-```log
+
 ==> Preparing: UPDATE t_topic SET `title` = `stars` WHERE `id` = ?
 ==> Parameters: 2(String)
 <== Total: 1
 ```
+:::
 
 ## 3.表列原子更新
+::: code-tabs
+@tab 对象模式
+
+```java
+
+    long rows1 = entityQuery.updatable(Topic.class)
+                .setColumns(o->{
+                    o.stars().increment();
+                })
+                .where(o->o.id().eq("2"))
+                .executeRows();
+    long rows2 = entityQuery.updatable(Topic.class)
+                .setColumns(o->{
+                    o.stars().increment(2);
+                })
+                .where(o->o.id().eq("2"))
+                .executeRows();
+   long rows3 = entityQuery.updatable(Topic.class)
+                .setColumns(o->{
+                    o.stars().decrement();
+                })
+                .where(o->o.id().eq("2"))
+                .executeRows();
+  long rows4 = entityQuery.updatable(Topic.class)
+                .setColumns(o->{
+                    o.stars().decrement(2);
+                })
+                .where(o->o.id().eq("2"))
+                .executeRows();
+
+==> Preparing: UPDATE t_topic SET `stars` = `stars`+? WHERE `id` = ?
+==> Parameters: 1(Integer),2(String)
+<== Total: 1
+==> Preparing: UPDATE t_topic SET `stars` = `stars`+? WHERE `id` = ?
+==> Parameters: 2(Integer),2(String)
+<== Total: 1
+==> Preparing: UPDATE t_topic SET `stars` = `stars`-? WHERE `id` = ?
+==> Parameters: 1(Integer),2(String)
+<== Total: 1
+==> Preparing: UPDATE t_topic SET `stars` = `stars`-? WHERE `id` = ?
+==> Parameters: 2(Integer),2(String)
+<== Total: 1
+```
+@tab lambda模式
+
 ```java
 long rows1 = easyQuery.updatable(Topic.class)
         .setIncrement(Topic::getStars)
@@ -90,8 +182,6 @@ long rows4 = easyQuery.updatable(Topic.class)
         .setDecrement(Topic::getStars,2)
         .where(o -> o.eq(Topic::getId, "2")).executeRows();
 
-```
-```log
 ==> Preparing: UPDATE t_topic SET `stars` = `stars`+? WHERE `id` = ?
 ==> Parameters: 1(Integer),2(String)
 <== Total: 1
@@ -105,6 +195,7 @@ long rows4 = easyQuery.updatable(Topic.class)
 ==> Parameters: 2(Integer),2(String)
 <== Total: 1
 ```
+:::
 
 
 ## 3.差异更新
