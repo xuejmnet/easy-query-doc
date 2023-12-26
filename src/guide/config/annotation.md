@@ -186,3 +186,6 @@ update table set version=xxxxxxasd where id=xxx and version=xxxxasdasd
 
 ## EntityFileProxy
 同`EntityProxy`但是生成的文件存在源码中
+
+## ProxyProperty
+用来防止生成的apt属性和系统自带的重复,可以再属性上定义别名

@@ -27,6 +27,7 @@ order: 10
     <artifactId>sql-api-proxy</artifactId>
     <version>${easy-query.version}</version>
 </dependency>
+<!--  我们使用EntityFileProxy所以不需要引入sql-processor包 -->
 <!--  这边以mysql为例 其实不需要添加下面的包也可以运行,指示默认的个别数据库行为语句没办法生成 -->
 <dependency>
     <groupId>com.easy-query</groupId>
