@@ -13,6 +13,26 @@ select a,b,c,(select count(t1.id) from a t1) as xx from b
 
 ## count连表统计
 
+::: code-tabs
+@tab 对象模式
+```java
+@Data
+@EntityFileProxy
+public class TopicSubQueryBlog implements ProxyEntityAvailable<TopicSubQueryBlog , TopicSubQueryBlogProxy> {
+    private String id;
+    private Integer stars;
+    private String title;
+    private LocalDateTime createTime;
+    private Long blogCount;
+
+    @Override
+    public Class<TopicSubQueryBlogProxy> proxyTableClass() {
+        return TopicSubQueryBlogProxy.class;
+    }
+}
+
+@tab lambda模式
+
 ```java
 
 @Data
@@ -25,6 +45,8 @@ public class TopicSubQueryBlog {
 }
 
 ```
+
+:::
 
 
 ::: code-tabs
