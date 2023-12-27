@@ -422,8 +422,18 @@ public class SpringDataSourceUnitFactory implements DataSourceUnitFactory {
 
 @Configuration
 public class EasyQueryConfiguration {
-    @Bean
-    public EasyQueryClient easyQueryClient(DataSource dataSource){
+    
+    @Bean("oracleDataSource")
+    public DataSource oracleDataSource(){
+        return DataSourceBuilder.create()
+                .url("jdbc:h2:mem:testdb")
+                .driverClassName("org.h2.Driver")
+                .username("sa")
+                .password("password")
+                .build();
+    }
+    @Bean("orcale")//使用的时候通过注入指定名称即可
+    public EasyQueryClient easyQueryClient(@Qualifier("oracleDataSource") DataSource dataSource){
         EasyQueryClient easyQueryClient = EasyQueryBootstrapper.defaultBuilderConfiguration()
                 .setDefaultDataSource(dataSource)
                 .replaceService(DataSourceUnitFactory.class, SpringDataSourceUnitFactory.class)
@@ -455,7 +465,7 @@ public class EasyQueryConfiguration {
 //                    builder.setNoVersionError(easyQueryProperties.isNoVersionError());
 //                    builder.setReverseOffsetThreshold(easyQueryProperties.getReverseOffsetThreshold());
                 })
-                .useDatabaseConfigure(new MySQLDatabaseConfiguration())
+                .useDatabaseConfigure(new OracleDatabaseConfiguration())
                 .build();
 
         return easyQueryClient;
