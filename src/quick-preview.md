@@ -108,7 +108,7 @@ sysUserQueryRequest.setPhone("180");
 
 
 //快速实现分页查询 条件过滤默认非null不加入条件如果是字符串还需满足非空
-List<SysUser> pageResult = entityQuery.queryable(SysUser.class)
+List<SysUser> pageResult = easyEntityQuery.queryable(SysUser.class)
                 .filterConfigure(NotNullOrEmptyValueFilter.DEFAULT)//非null并且字符串非空即加入条件
                 .where(o -> {
                         o.name().like(sysUserQueryRequest.getName());
@@ -138,7 +138,7 @@ sysUserQueryRequest.setPhone("180");
 
 
 //快速实现分页查询 动态对象条件
-EasyPageResult<SysUser> pageResult = entityQuery.queryable(SysUser.class)
+EasyPageResult<SysUser> pageResult = easyEntityQuery.queryable(SysUser.class)
                         .whereObject(sysUserQueryRequest)
                         .toPageResult(1, 10);
 ```
@@ -154,7 +154,7 @@ sysUserQueryRequest.setPhone("180");
 
 
 //快速实现分页查询 手动处理是否需要添加到查询条件中
-List<SysUser> pageResult = entityQuery.queryable(SysUser.class)
+List<SysUser> pageResult = easyEntityQuery.queryable(SysUser.class)
         .where(o -> {//条件里面判断是否要继续
                 o.name().like(EasyStringUtil.isNotBlank(sysUserQueryRequest.getName()),sysUserQueryRequest.getName());
                 o.account().like(EasyStringUtil.isNotBlank(sysUserQueryRequest.getAccount()),sysUserQueryRequest.getAccount());
@@ -165,7 +165,7 @@ List<SysUser> pageResult = entityQuery.queryable(SysUser.class)
         .toList();
 
 
-List<SysUser> pageResult = entityQuery.queryable(SysUser.class)//where第一个参数表示后面的条件是否需要追加上去
+List<SysUser> pageResult = easyEntityQuery .queryable(SysUser.class)//where第一个参数表示后面的条件是否需要追加上去
         .where(EasyStringUtil.isNotBlank(sysUserQueryRequest.getName()),o->o.name().like(sysUserQueryRequest.getName()))
         .where(EasyStringUtil.isNotBlank(sysUserQueryRequest.getAccount()),o->o.account().like(sysUserQueryRequest.getAccount()))
         .where(EasyStringUtil.isNotBlank(sysUserQueryRequest.getPhone()),o->o.phone().like(sysUserQueryRequest.getPhone()))
