@@ -2,23 +2,43 @@
 title: 快速了解 🔥
 ---
 
+
+
+::: warning 说明!!!
+> `1.8.0+`版本`easy-query`推出了实验性api,`entity-query`在之后的一周时间里面,作者对框架的api进行了大刀阔斧,现在做到了非常强大，如果你们是`c#`使用过`efcore`，`freesql`，`sqlsugar`那么使用这个框架对你们来说肯定是最完美的,`1.9.0`之后的版本和之前的easyEntityQuery有着很大的不一样,实在抱歉这次`changebreak`因为这次更新实在是让人太着迷了
+
+- group by 感知,一款没有group 感知的orm称不上一个好orm
+- 匿名类型平替,因为java没有匿名类型所以在多次select后需要创建VO对象来作为临时存储是非常复杂的事情,所以提供了draft草稿类型来平替匿名类型
+- 强类型纠错,提供了强类型纠错防止number类型赋值给string或者datetime等类型
+:::
+
 ## 预览
 ```java
-List<SysUser> users = entityQuery.queryable(SysUser.class)
-                            .where(o->{
+ List<SysUser> users = easyEntityQuery.queryable(SysUser.class)
+                            .where(o -> {
                                 o.id().eq("1");
-                                o.id().eq(false,"1");//true/false表示是否使用该条件默认true
+                                o.id().eq(false, "1");//true/false表示是否使用该条件默认true
                                 o.id().like("123");
-                                o.id().like(false,"123");
+                                o.id().like(false, "123");
                             })
-                            .groupBy(o->o.id())
-                            .select(o->o.id().concat(o.id().count().as(o.phone())))
+                            .groupBy(o->GroupBy.keys(o.id()))//创建group by
+                            .select(o -> new SysUserProxy(){{//创建user代理
+                                id().setColumn(o.key1());//对当前id进行赋值
+                                phone().setFunction(o.count().toStr());//对当前phone进行赋值因为phone是string类型所以goup后的count需要强转成string也就是cast
+                            }})
+                            //下面是平替写法其实是一样的
+                            // .select(o -> {
+                            //     SysUserProxy sysUserProxy = new SysUserProxy();
+                            //     sysUserProxy.id().setColumn(o.key1());
+                            //     sysUserProxy.phone().setFunction(o.count().toStr());
+                            //     return sysUserProxy;
+                            // })
                             .toList();
 
-==> Preparing: SELECT t.`id`,COUNT(t.`id`) AS `phone` FROM `t_sys_user` t WHERE t.`id` = ? AND t.`id` LIKE ? GROUP BY t.`id`
+==> Preparing: SELECT t.`id` AS `id`,CAST(COUNT(*) AS CHAR) AS `phone` FROM `sys_user` t WHERE t.`id` = ? AND t.`id` LIKE ? GROUP BY t.`id`
 ==> Parameters: 1(String),%123%(String)
 
-List<SysUser> users = entityQuery.queryable(SysUser.class)
+List<SysUser> users = easyEntityQuery.queryable(SysUser.class)
                             .where(o->{
                                 o.id().eq("1");// t.`id` = 1
                                 o.id().eq(o.createTime().dateTimeFormat("yyyy-MM-dd"));// t.`id` = DATE_FORMAT(t.`create_time`,'%Y-%m-%d')
@@ -26,7 +46,8 @@ List<SysUser> users = entityQuery.queryable(SysUser.class)
                                 o.name().nullDefault("unknown").like("123");
                                 o.phone().isNotBank();
                             })
-                            .select(o->o.FETCHER.id().name().phone().departName())
+                            //可以使用select也可以使用fetcher来实现 fetcher适合返回单个对象的数据获取
+                            .fetcher(o->o.FETCHER.id().name().phone().departName())
                             .toList();
 
 ==> Preparing: SELECT t.`id`,t.`name`,t.`phone`,t.`depart_name` FROM `a222` t WHERE t.`id` = ? AND  t.`id` = DATE_FORMAT(t.`create_time`,'%Y-%m-%d') AND DATE_FORMAT(t.`create_time`,'%Y-%m-%d') = ? AND IFNULL(t.`name`,?) LIKE ? AND (t.`phone` IS NOT NULL AND t.`phone` <> '' AND LTRIM(t.`phone`) <> '')
