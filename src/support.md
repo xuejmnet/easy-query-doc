@@ -17,3 +17,17 @@ icon: creative
 <img src="/wx.jpg" class="no-zoom" style="width:200px;">
 
 <img src="/zfb.jpg" class="no-zoom" style="width:200px;">
+
+
+
+<!-- 
+::: code-tabs
+@tab 对象模式
+
+@tab lambda模式
+@tab proxy模式
+@tab 属性模式
+
+
+::: 
+-->

@@ -13,6 +13,10 @@ title: 快速了解 🔥
 :::
 
 ## 预览
+
+::: code-tabs
+@tab 对象模式
+
 ```java
  List<SysUser> users = easyEntityQuery.queryable(SysUser.class)
                             .where(o -> {
@@ -41,8 +45,8 @@ title: 快速了解 🔥
 List<SysUser> users = easyEntityQuery.queryable(SysUser.class)
                             .where(o->{
                                 o.id().eq("1");// t.`id` = 1
-                                o.id().eq(o.createTime().dateTimeFormat("yyyy-MM-dd"));// t.`id` = DATE_FORMAT(t.`create_time`,'%Y-%m-%d')
-                                o.createTime().dateTimeFormat("yyyy-MM-dd").eq("2023-01-02");//DATE_FORMAT(t.`create_time`,'%Y-%m-%d') = '2023-01-02'
+                                o.id().eq(o.createTime().format("yyyy-MM-dd"));// t.`id` = DATE_FORMAT(t.`create_time`,'%Y-%m-%d')
+                                o.createTime().format("yyyy-MM-dd").eq("2023-01-02");//DATE_FORMAT(t.`create_time`,'%Y-%m-%d') = '2023-01-02'
                                 o.name().nullDefault("unknown").like("123");
                                 o.phone().isNotBank();
                             })
@@ -53,6 +57,78 @@ List<SysUser> users = easyEntityQuery.queryable(SysUser.class)
 ==> Preparing: SELECT t.`id`,t.`name`,t.`phone`,t.`depart_name` FROM `a222` t WHERE t.`id` = ? AND  t.`id` = DATE_FORMAT(t.`create_time`,'%Y-%m-%d') AND DATE_FORMAT(t.`create_time`,'%Y-%m-%d') = ? AND IFNULL(t.`name`,?) LIKE ? AND (t.`phone` IS NOT NULL AND t.`phone` <> '' AND LTRIM(t.`phone`) <> '')
 ==> Parameters: 1(String),2023-01-02(String),unknown(String),%123%(String)
 ```
+@tab lambda模式
+
+```java
+ List<SysUser> list = easyQuery.queryable(SysUser.class)
+                .where(o -> {
+                    o.eq(SysUser::getId, "1")
+                            .eq(false, SysUser::getId, "1")
+                            .like(SysUser::getId, "123")
+                            .like(false, SysUser::getId, "123");
+                })
+                .groupBy(o -> o.column(SysUser::getId))
+                .select(SysUser.class, o -> {
+                    o.columnAs(SysUser::getId, SysUser::getId)
+                            .columnCountAs(SysUser::getId, SysUser::getPhone);
+                }).toList();
+
+==> Preparing: SELECT t.`id` AS `id`,COUNT(t.`id`) AS `phone` FROM `t_sys_user` t WHERE t.`id` = ? AND t.`id` LIKE ? GROUP BY t.`id`
+==> Parameters: 1(String),%123%(String)
+
+List<SysUser> list = easyQuery.queryable(SysUser.class)
+                .where(o -> {
+                    LambdaSQLFunc<SysUser> fx = o.fx();
+                    o.eq(SysUser::getId, "1");
+                    o.eq(fx.dateTimeFormat(SysUser::getCreateTime, "yyyy-MM-dd"), "2023-01-01");
+                    o.isNotBank(SysUser::getPhone);
+                })
+                .select(o -> o.column(SysUser::getId).column(SysUser::getName).column(SysUser::getPhone).column(SysUser::getDepartName))
+                .toList();
+
+==> Preparing: SELECT `id`,`name`,`phone`,`depart_name` FROM `t_sys_user` WHERE `id` = ? AND DATE_FORMAT(`create_time`,'%Y-%m-%d') = ? AND (`phone` IS NOT NULL AND `phone` <> '' AND LTRIM(`phone`) <> '')
+==> Parameters: 1(String),2023-01-01(String)
+```
+@tab proxy模式
+```java
+
+SysUserProxy utable = SysUserProxy.createTable();
+List<SysUser> list = easyProxyQuery.queryable(utable)
+        .where(o -> {
+            o.eq(utable.id(), "1")
+                    .eq(false, utable.id(), "1")
+                    .like(utable.id(), "123")
+                    .like(false, utable.id(), "123");
+        })
+        .groupBy(o -> o.column(utable.id()))
+        .select(SysUserProxy.createTable(), o -> {
+            o.columnAs(utable.id(), o.tr().id())
+                    .columnCountAs(utable.id(), o.tr().phone());
+        })
+        .toList();
+
+==> Preparing: SELECT t.`id` AS `id`,COUNT(t.`id`) AS `phone` FROM `t_sys_user` t WHERE t.`id` = ? AND t.`id` LIKE ? GROUP BY t.`id`
+==> Parameters: 1(String),%123%(String)
+```
+@tab 属性模式
+```java
+
+List<SysUser> list = easyQueryClient.queryable(SysUser.class)
+        .where(o -> {
+            SQLFunc fx = o.fx();
+            o.eq("id", "1");
+            o.eq(fx.dateTimeFormat("createTime", "yyyy-MM-dd"), "2023-01-01");
+            o.isNotBank("phone");
+        })
+        .select(o -> o.column("id").column("name").column("phone").column("departName"))
+        .toList();
+
+==> Preparing: SELECT `id`,`name`,`phone`,`depart_name` FROM `t_sys_user` WHERE `id` = ? AND DATE_FORMAT(`create_time`,'%Y-%m-%d') = ? AND (`phone` IS NOT NULL AND `phone` <> '' AND LTRIM(`phone`) <> '')
+==> Parameters: 1(String),2023-01-01(String)
+```
+
+
+::: 
 ## 快速实现表单查询
 业务场景
 <img src="/admin-form-query.png" >
