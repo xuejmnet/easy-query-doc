@@ -3,10 +3,10 @@ title: 快速开始🔥🔥🔥
 ---
 
 ## 简介
-在使用前您需要知晓目前1.8.0+版本的`easy-query`提供了4中api机制分别是`lambda`、`property`、`proxy`、`entity`其中每个api都有自己的特点,其中`entityQuery`是最新开发的api,使用起来非常顺畅流畅,非常推荐,4种模式可以在一个应用里面共存
+在使用前您需要知晓目前1.8.0+版本的`easy-query`提供了4中api机制分别是`lambda`、`property`、`proxy`、`entity`其中每个api都有自己的特点,其中`easyEntityQuery`是最新开发的api,使用起来非常顺畅流畅,非常推荐,4种模式可以在一个应用里面共存
 
 ## EntityQuery
-本次我们采用`entityQuery`来实现优雅的crud
+本次我们采用`easyEntityQuery`来实现优雅的crud
 
 ## idea 插件安装
 插件的安装可以帮助我们针对自动生成的文件进行快速管理无感.
@@ -87,9 +87,12 @@ create table t_topic
 ## 自动生成
 - `@EntityFileProxy`这个注解会在当前类同级包下创建一个proxy包并且生成对应的代理对象用来操作 生成到源码文件里面
 - `@EntityProxy`这个注解会在当前类同级包下创建一个proxy包并且生成对应的代理对象用来操作 生成到`target`目录下需要build
+- `ProxyEntityAvailable`这个接口仅数据库对象需要实现,vo bo之类的无需实现该接口只需要添加注解`@EntityFileProxy`或者`@EntityProxy`
 
+::: warning 说明!!!
+> 这两个注解仅生成文件路径不一样,file的需要插件支持,没有file的需要引入`sql-processor`包,如果您不想依赖插件或者您不是idea开发java那么可以采用`@EntityProxy`配合`sql-processor`包在build之后会自动生成代理对象,如果还是报错只需要刷新下maven即可
+:::
 
-这两个注解仅生成文件路径不一样,file的需要插件支持,没有file的需要引入`sql-processor`包
 <img src="/topic-entity.png">
 
 <img src="/topic-plugin-use1.png">
@@ -125,15 +128,35 @@ public class Main {
                 })
                 .useDatabaseConfigure(new MySQLDatabaseConfiguration())
                 .build();
-        //lambda模式的api
+        //lambda模式的api 需要引入sql-api4j包
         //DefaultEasyQuery easyQuery = new DefaultEasyQuery(easyQueryClient)
-        
-        //使用新版本api对象查询
-        DefaultEntityQuery entityQuery = new DefaultEntityQuery(easyQueryClient);
+        // 需要引入sql-api-proxy
+        //EasyProxyQuery easyProxyQuery = new DefaultEasyProxyQuery(easyQueryClient);
 
-        Topic topic = entityQuery.queryable(Topic.class)
+        //使用新版本api对象查询
+        //需要引入sql-api-proxy
+        EasyEntityQuery easyEntityQuery = new DefaultEasyEntityQuery(easyQueryClient);
+
+        //根据id查询第一条
+        Topic topic1 = easyEntityQuery.queryable(Topic.class)
                 .whereById("1").firstOrNull();
 
+        //根据id查询并且断言仅一条
+        Topic topic2 = easyEntityQuery.queryable(Topic.class)
+                .whereById("1").singleOrNull();
+        //根据id查询自定义条件返回第一条
+        Topic topic3 = easyEntityQuery.queryable(Topic.class)
+                .where(o -> {
+                    o.id().eq("1");
+                })
+                .firstOrNull();
+
+
+        List<Topic> list = easyEntityQuery.queryable(Topic.class)
+                .where(o -> {
+                    o.id().eq("1");
+                })
+                .toList();
 
         System.out.println("Hello world!");
     }
@@ -151,7 +174,7 @@ public class Main {
 ```java
 
 //根据id查询第一条
-Topic topic1 = entityQuery.queryable(Topic.class)
+Topic topic1 = easyEntityQuery.queryable(Topic.class)
         .whereById("1").firstOrNull();
 ==> Preparing: SELECT `id`,`stars`,`title`,`create_time` FROM `t_topic` WHERE `id` = ? LIMIT 1
 ==> Parameters: 1(String)
@@ -160,7 +183,7 @@ Topic topic1 = entityQuery.queryable(Topic.class)
 
 
 //根据id查询并且断言仅一条
-Topic topic2 = entityQuery.queryable(Topic.class)
+Topic topic2 = easyEntityQuery.queryable(Topic.class)
         .whereById("1").singleOrNull();
 
 ==> Preparing: SELECT `id`,`stars`,`title`,`create_time` FROM `t_topic` WHERE `id` = ?
@@ -170,7 +193,7 @@ Topic topic2 = entityQuery.queryable(Topic.class)
 
 
 //根据id查询自定义条件返回第一条
-Topic topic3 = entityQuery.queryable(Topic.class)
+Topic topic3 = easyEntityQuery.queryable(Topic.class)
         .where(o -> {
             o.id().eq("1");
         })
@@ -184,7 +207,7 @@ Topic topic3 = entityQuery.queryable(Topic.class)
 
 ### 返回列表
 ```java
-List<Topic> list = entityQuery.queryable(Topic.class)
+List<Topic> list = easyEntityQuery.queryable(Topic.class)
         .where(o -> {
             o.id().eq("1");
         })
@@ -199,13 +222,13 @@ List<Topic> list = entityQuery.queryable(Topic.class)
 ### count查询
 ```java
 
-long count = entityQuery.queryable(Topic.class)
+long count = easyEntityQuery.queryable(Topic.class)
         .where(o -> {
             o.title().like("11");
             o.createTime().le(LocalDateTime.now());
         }).count();
 
-long intCount = entityQuery.queryable(Topic.class)
+int intCount = easyEntityQuery.queryable(Topic.class)
         .where(o -> {
             o.title().like("11");
             o.createTime().le(LocalDateTime.now());
@@ -220,7 +243,7 @@ long intCount = entityQuery.queryable(Topic.class)
 ### 返回自定义列
 ```java
 
-List<Topic> list = entityQuery.queryable(Topic.class)
+List<Topic> list = easyEntityQuery.queryable(Topic.class)
         .where(o->{
             o.title().like("123");
             o.createTime().ge(LocalDateTime.of(2022,2,1,3,4));
@@ -229,18 +252,21 @@ List<Topic> list = entityQuery.queryable(Topic.class)
             o.id().asc();
             o.createTime().desc();
         })
-        .select(o->o.FETCHER.id().title())//仅返回id和title
+        .select(o->new TopicProxy(){{
+            id().set(o.id()); //手动指定赋值
+            title().set(o.title())
+        }})
         .toList();
 
 
 
-==> Preparing: SELECT t.`id`,t.`title` FROM `t_topic` t WHERE t.`title` LIKE ? AND t.`create_time` >= ? ORDER BY t.`id` ASC,t.`create_time` DESC
+==> Preparing: SELECT t.`id` as `id`,t.`title` as `title` FROM `t_topic` t WHERE t.`title` LIKE ? AND t.`create_time` >= ? ORDER BY t.`id` ASC,t.`create_time` DESC
 ==> Parameters: %123%(String),2022-02-01T03:04(LocalDateTime)
 <== Time Elapsed: 4(ms)
 <== Total: 98
 
 
-List<Topic> list = entityQuery.queryable(Topic.class)
+List<Topic> list = easyEntityQuery.queryable(Topic.class)
         .where(o->{
             o.title().like("123");
             o.createTime().ge(LocalDateTime.of(2022,2,1,3,4));
@@ -249,7 +275,10 @@ List<Topic> list = entityQuery.queryable(Topic.class)
             o.id().asc();
             o.createTime().desc();
         })
-        .select(o->o.FETCHER.allFieldsExclude(o.id()))//返回所有字段除了id
+        .select(o->new TopicProxy(){{
+            selectAll(o);//查询所有
+            selectIgnores(o.id());//忽略id
+        }})
         .toList();
 
 ==> Preparing: SELECT t.`stars`,t.`title`,t.`create_time` FROM `t_topic` t WHERE t.`title` LIKE ? AND t.`create_time` >= ? ORDER BY t.`id` ASC,t.`create_time` DESC
@@ -260,46 +289,51 @@ List<Topic> list = entityQuery.queryable(Topic.class)
 
 ### 分组
 ```java
-List<Topic> list = entityQuery.queryable(Topic.class)
-        .where(o->{
-            o.title().like("123");
-            o.createTime().ge(LocalDateTime.of(2022,2,1,3,4));
-        })
-        .groupBy(o-> o.id())//多个用GroupBy.of(.....)
-        .select(Topic.class,(o,tr)->Select.of(
-                o.id(),
-                o.id().count().as(tr.stars())//count(id) as stars
-        ))
-        .toList();
-        
+ List<Topic> list = easyEntityQuery.queryable(Topic.class)
+                .where(o->{
+                    o.title().like("123");
+                    o.createTime().ge(LocalDateTime.of(2022,2,1,3,4));
+                })
+                //会生成{key1:x,key2:x.... group:{t1:xx,t2:xx}}其中key1...keyn表示key默认支持10个 t1...tn表示前面的表
+                //无论join了多少张表group后全部只有一个入参参数其余参数在group属性里面
+                .groupBy(o-> GroupKeys.of(o.id()))
+                .select(o->new TopicProxy(){{
+                    id().set(o.key1());//key1就是id
+                    stars().set(o.intCount());//COUNT(*)返回int 默认返回long类型
+                }})
+                .toList();
 
-==> Preparing: SELECT t.`id`,COUNT(t.`id`) AS `stars` FROM `t_topic` t WHERE t.`title` LIKE ? AND t.`create_time` >= ? GROUP BY t.`id`
+==> Preparing: SELECT t.`id` AS `id`,COUNT(*) AS `stars` FROM `t_topic` t WHERE t.`title` LIKE ? AND t.`create_time` >= ? GROUP BY t.`id`
 ==> Parameters: %123%(String),2022-02-01T03:04(LocalDateTime)
-<== Time Elapsed: 2(ms)
-<== Total: 98
+
 
 //草稿模式无需定义返回结果,返回草稿支持1-10 Draft1-Draft10
-List<Draft2<String, Long>> list = entityQuery.queryable(Topic.class)
+List<Draft3<String, Integer, Integer>> list = easyEntityQuery.queryable(Topic.class)
         .where(o -> {
             o.title().like("123");
             o.createTime().ge(LocalDateTime.of(2022, 2, 1, 3, 4));
         })
-        .groupBy(o -> o.id())//多个用GroupBy.of(.....)
-        .select(Topic.class, (o, tr) -> Select.of(
-                o.id(),
-                o.id().count().as(tr.stars())//count(id) as stars
-        ))
+        .groupBy(o -> GroupKeys.of(o.id()))
+        .select(o -> new TopicProxy() {{
+            id().set(o.key1());//key1就是id
+            stars().set(o.intCount());//COUNT(*)返回int 默认返回long类型
+        }})
         .selectDraft(o -> Select.draft(
-                o.id(),
-                o.id().count()
+                o.id().nullDefault("123"),//如果为空就赋值123
+                o.stars(),
+                o.stars().abs()//取绝对值
         ))
         .toList();
+
+
+==> Preparing: SELECT IFNULL(t1.`id`,?) AS `value1`,t1.`stars` AS `value2`,ABS(t1.`stars`) AS `value3` FROM (SELECT t.`id` AS `id`,COUNT(*) AS `stars` FROM `t_topic` t WHERE t.`title` LIKE ? AND t.`create_time` >= ? GROUP BY t.`id`) t1
+==> Parameters: 123(String),%123%(String),2022-02-01T03:04(LocalDateTime)
 ```
 
 ### 分页
 ```java
 
-EasyPageResult<Topic> pageResult = entityQuery.queryable(Topic.class)
+EasyPageResult<Topic> pageResult = easyEntityQuery.queryable(Topic.class)
         .where(o -> {
             o.title().like("123");
             o.createTime().ge(LocalDateTime.of(2022, 2, 1, 3, 4));
@@ -308,14 +342,20 @@ EasyPageResult<Topic> pageResult = entityQuery.queryable(Topic.class)
             o.id().asc();
             o.createTime().desc();
         })
-        .select(o -> o.FETCHER.id().title())
+        .select(o -> new TopicProxy(){{
+            selectExpression(o.id(),o.title());//表达式仅查询id和title
+            //下面的和上面的一致 下面的是手动指定返回结果
+            //如果查询列名和VO结果一致那么可以不需要手动指定
+            //id().set(o.id());
+            //title().set(o.title());
+        }})
+        //.select(o->new TopicProxy())//全属性映射等于selectAll(o)
         .toPageResult(1, 20);
-
 
 
 ==> Preparing: SELECT COUNT(*) FROM `t_topic` t WHERE t.`title` LIKE ? AND t.`create_time` >= ?
 ==> Parameters: %123%(String),2022-02-01T03:04(LocalDateTime)
-<== Time Elapsed: 2(ms)
+<== Time Elapsed: 3(ms)
 <== Total: 1
 ==> Preparing: SELECT t.`id`,t.`title` FROM `t_topic` t WHERE t.`title` LIKE ? AND t.`create_time` >= ? ORDER BY t.`id` ASC,t.`create_time` DESC LIMIT 20
 ==> Parameters: %123%(String),2022-02-01T03:04(LocalDateTime)
@@ -326,60 +366,33 @@ EasyPageResult<Topic> pageResult = entityQuery.queryable(Topic.class)
 ### join多表查询
 
 ```java
-List<Topic> list = entityQuery.queryable(Topic.class)
+
+List<Topic> list = easyEntityQuery.queryable(Topic.class)
         .leftJoin(Topic.class, (t, t1) -> {//第一个参数t表示第一个表,第二个参数t1表示第二个表
             t.id().eq(t1.id());// ON t.`id` = t1.`id`
         })
         .where((t, t1) -> {
             t.title().like("11");
             t1.createTime().le(LocalDateTime.of(2021, 1, 1, 1, 1));
-        }).select(Topic.class, (t, t1, tr) -> {//t表示sql的第一个表,t1表示第二个表,tr表示返回的结果匿名表
-            TopicProxy.TopicProxyFetcher idAndStars = t.FETCHER.id().stars();
-            TopicProxy.TopicProxyFetcher idAsTitle = t1.FETCHER.id().as(tr.title());
-            return Select.of(idAndStars, idAsTitle);
-        }).toList();
+        })
+        .select((t, t1) -> new TopicProxy() {{
+            id().set(t.id());
+            stars().set(t.stars());
+            title().set(t1.id());
+        }}).toList();
 
 
-==> Preparing: SELECT t.`id`,t.`stars`,t1.`id` AS `title` FROM `t_topic` t LEFT JOIN `t_topic` t1 ON t.`id` = t1.`id` WHERE t.`title` LIKE ? AND t1.`create_time` <= ?
+==> Preparing: SELECT t.`id` AS `id`,t.`stars` AS `stars`,t1.`id` AS `title` FROM `t_topic` t LEFT JOIN `t_topic` t1 ON t.`id` = t1.`id` WHERE t.`title` LIKE ? AND t1.`create_time` <= ?
 ==> Parameters: %11%(String),2021-01-01T01:01(LocalDateTime)
-<== Time Elapsed: 3(ms)
+<== Time Elapsed: 12(ms)
 <== Total: 0
-```
-可能第一眼觉得select过于复杂
-```java
-List<Topic> list = entityQuery.queryable(Topic.class)
-        .leftJoin(Topic.class, (t, t1) -> {
-            t.id().eq(t1.id());
-        })
-        .where((t, t1) -> {
-            t.title().like("11");
-            t1.createTime().le(LocalDateTime.of(2021, 1, 1, 1, 1));
-        }).select(Topic.class, (t, t1, tr) -> Select.of(
-                    t.FETCHER.id().stars(),//这两者写法是一样的`FETCHER`是为了链式你也可以不用fetcher
-                    t1.FETCHER.id().as(tr.title())
-            )).toList();
-
-
-
-List<Topic> list = entityQuery.queryable(Topic.class)
-        .leftJoin(Topic.class, (t, t1) -> {
-            t.id().eq(t1.id());
-        })
-        .where((t, t1) -> {
-            t.title().like("11");
-            t1.createTime().le(LocalDateTime.of(2021, 1, 1, 1, 1));
-        }).select(Topic.class, (t, t1, tr) -> Select.of(
-                    t.id(),//不使用`FETCHER`直接返回也是可以的
-                    t1.stars(),
-                    t1.id().as(tr.title())
-            )).toList();
 ```
 
 ### 排序
 
 ```java
 
-List<Topic> list = entityQuery.queryable(Topic.class)
+List<Topic> list = easyEntityQuery.queryable(Topic.class)
         .leftJoin(Topic.class, (t, t1) -> {
             t.id().eq(t1.id());
         })
@@ -387,16 +400,20 @@ List<Topic> list = entityQuery.queryable(Topic.class)
             t.id().asc();
             t1.createTime().desc();
         })
-        //查询t表的所有除了id和title,并且返回t1的title取别名为id
-        .select(Topic.class,(t,t1,tr)->t.allFieldsExclude(t.id(),t.title())._concat(t1.title().as(tr.id())))
+        //查询t表的所有除了id和title,并且返回t1的title取别名为content
+        .select((t,t1)->new TopicProxy(){{
+            selectAll(t);
+            selectIgnores(t.id(),t.title());
+            id().set(t1.title());
+        }})
         .toList();
 
 ==> Preparing: SELECT t.`stars`,t.`create_time`,t1.`title` AS `id` FROM `t_topic` t LEFT JOIN `t_topic` t1 ON t.`id` = t1.`id` ORDER BY t.`id` ASC,t1.`create_time` DESC
-<== Time Elapsed: 6(ms)
+<== Time Elapsed: 14(ms)
 <== Total: 101
 
 //使用草稿无需定义返回结果
-List<Draft3<Integer, LocalDateTime, String>> list = entityQuery.queryable(Topic.class)
+List<Draft3<Integer, LocalDateTime, String>> list = easyEntityQuery.queryable(Topic.class)
                 .leftJoin(Topic.class, (t, t1) -> {
                     t.id().eq(t1.id());
                 })
