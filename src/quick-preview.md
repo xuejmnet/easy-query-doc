@@ -109,6 +109,23 @@ List<SysUser> list = easyProxyQuery.queryable(utable)
 
 ==> Preparing: SELECT t.`id` AS `id`,COUNT(t.`id`) AS `phone` FROM `t_sys_user` t WHERE t.`id` = ? AND t.`id` LIKE ? GROUP BY t.`id`
 ==> Parameters: 1(String),%123%(String)
+
+
+ SysUserProxy utable = SysUserProxy.createTable();
+        List<SysUser> list = easyProxyQuery.queryable(utable)
+                .where(o -> {
+                    o.eq(utable.id(), "1")
+                            .eq(utable.id(), utable.createTime().format("yyyy-MM-dd"))
+                            .eq(utable.createTime().format("yyyy-MM-dd"),"2023-01-01")
+                            .like(utable.name().nullDefault("unknown"),"123")
+                            .isNotBank(utable.phone());
+                })
+                .groupBy(o -> o.column(utable.id()))
+                .select(SysUserProxy.createTable(), o -> o.columns(utable.id(),utable.name(),utable.phone(),utable.departName()))
+                .toList();
+
+==> Preparing: SELECT t.`id`,t.`name`,t.`phone`,t.`depart_name` FROM `t_sys_user` t WHERE t.`id` = ? AND  t.`id` = DATE_FORMAT(t.`create_time`,'%Y-%m-%d') AND DATE_FORMAT(t.`create_time`,'%Y-%m-%d') = ? AND IFNULL(t.`name`,?) LIKE ? AND (t.`phone` IS NOT NULL AND t.`phone` <> '' AND LTRIM(t.`phone`) <> '') GROUP BY t.`id`
+==> Parameters: 1(String),2023-01-01(String),unknown(String),%123%(String)
 ```
 @tab 属性模式
 ```java
