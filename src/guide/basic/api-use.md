@@ -14,24 +14,23 @@ title: api使用 ❗️❗️❗️
 
 我们以这个简单的例子为例可以看到我们应该编写的顺序是select在最后
 ```java
-entityQuery.queryable(HelpProvince.class)
+easyEntityQuery.queryable(HelpProvince.class)
         .where(o->o.id().eq("1"))
         .orderBy(o->o.id().asc())
-        .select(o->o.FETCHER.id().name())
+        .fetcher(o->o.FETCHER.id().name())
         .toList();
-
 ```
 
 复杂的查询顺序
 <img src="/simple-nest-query.jpg">
 
 ```java
-entityQuery.queryable(HelpProvince.class) //1
+easyEntityQuery.queryable(HelpProvince.class) //1
         .where(o->o.id().eq("1")) //2
         .orderBy(o->o.id().asc()) //3
-        .select(o->o.FETCHER.id().name()) //4 
+        .fetcher(o->o.FETCHER.id().name()) //4 
         .where(o->o.id().eq("1")) // 5
-        .select(o->o.id()) //6 如果有多个参数可以使用FETCHER或者Select.of(....)
+        .fetcher(o->o.FETCHER.id()) //6 如果有多个参数可以使用new Proxy(){{}}
         .toList();
 ```
 
@@ -39,6 +38,66 @@ entityQuery.queryable(HelpProvince.class) //1
 > select一般都是最后写的,在你没有写表的时候只能用 * 来代替,先写表确定,然后写条件写排序写分组等确定了之后写选择的select的列不写就是主表的*如果在写where就对前面的表进行括号进行匿名表处理以此类推
 :::
 
+## 分解表达式
+
+### 1
+```java
+表达式:easyEntityQuery.queryable(HelpProvince.class)
+
+sql:select * from help_province
+```
+### 2
+```java
+表达式:easyEntityQuery.queryable(HelpProvince.class).where(o->o.id().eq("1")) 
+
+sql:select * from help_province where id='1'
+```
+
+### 3
+```java
+表达式:easyEntityQuery.queryable(HelpProvince.class).where(o->o.id().eq("1")).orderBy(o->o.id().asc())
+
+sql:select * from help_province where id='1' order by id asc
+```
+### 4
+```java
+表达式:easyEntityQuery.queryable(HelpProvince.class).where(o->o.id().eq("1")).orderBy(o->o.id().asc()).select(o->new HelpProvinceProxy(){{
+        id().set(o.id());
+        name().set(o.name());
+}})
+
+sql:select id,name from help_province where id='1' order by id asc
+```
+以`select`方法作为终结方法结束本次`sql`链式,后续的操作就是将`select`和之前的表达式转成`匿名sql`类似`select * from (select * from help_province) t`，其中`fetcher`是`select`的简化操作不支持返回VO，当且仅当返回结果为自身时用于快速选择列
+
+### 5
+```java
+表达式:easyEntityQuery.queryable(HelpProvince.class).where(o->o.id().eq("1")).orderBy(o->o.id().asc()).select(o->new HelpProvinceProxy(){{
+        id().set(o.id());
+        name().set(o.name());
+}})//转成匿名表sql
+.where(o->o.id().eq("1")) 
+
+sql:select * from (select id,name from help_province where id='1' order by id asc) t where t.id='1'
+```
+
+### 6
+```java
+表达式:easyEntityQuery.queryable(HelpProvince.class).where(o->o.id().eq("1")).orderBy(o->o.id().asc()).select(o->new HelpProvinceProxy(){{
+        id().set(o.id());
+        name().set(o.name());
+}})//转成匿名表sql
+.where(o->o.id().eq("1")).select(o->new HelpProvinceProxy(){{
+        id().set(o.id());
+}}) 
+
+sql:select id from (select id,name from help_province where id='1' order by id asc) t where t.id='1'
+```
+
+::: tip 链式说明!!!
+> select之前的所有操作比如多个where,多个orderby都是对之前的追加,limit是替换前面的操作多次limit获取最后一次
+> 在entityQuery下groupBy不支持连续调用两个groupBy之间必须存在一个select指定要查询的结果才可以,其他api下多次调用行为也是追加
+:::
 
 ## 单表api使用
 
@@ -90,15 +149,10 @@ SysUser sysUser1 = entityQuery.queryable(SysUser.class)
         .where(o -> o.idCard().like("123"))
         .orderBy(o->o.createTime().desc())
         .orderBy(o->o.id().asc())
-        .select(o->o.FETCHER.id().createTime())//也可以用Select.of(o.id(),o.createTime())如果只有一个参数不需要Select.of()
-        //.select(o->Select.of(o.id(),o.createTime()))
-        //.select(o->o.allFieldsExclude(o.createTime()))//获取user表的所有字段除了createTime字段
-        //   .select(o -> {//甚至可以创建一个Fetcher来实现拉取
-        //       Fetcher fetcher = Select.createFetcher();
-        //       fetcher.fetch(o.id(), o.title());
-        //       fetcher.fetch(o.stars().as(o.stars()));
-        //       return fetcher;
-        //   })
+        .select(o->new SysUserProxy(){{
+                id().set(o.id());
+                createTime().set(o.createTime());
+        }})
         .firstOrNull();
         
 ```
@@ -245,12 +299,6 @@ List<Topic> list = entityQuery
                 t1.title().like("456");
                 t2.createTime().eq(LocalDateTime.now());
         })
-        //如果不想用链式的then来切换也可以通过lambda 大括号方式执行顺序就是代码顺序,默认采用and链接
-        .where((t, t1, t2) -> {
-            t.id().eq("123");
-            t1.title().like("456");
-            t1.createTime().eq(LocalDateTime.now());
-        })
         //toList默认只查询主表数据
         .toList();
         
@@ -279,6 +327,13 @@ List<Topic> list = easyQuery
 ```
 :::
 
+
+::: tip 链式说明!!!
+> leftJoin第二个lambda入参参数个数和join使用的表个数一样,入参参数顺序就是from和join的表
+
+> 在entityQuery下groupBy不支持连续调用两个groupBy之间必须存在一个select指定要查询的结果才可以,其他api下多次调用行为也是追加
+:::
+
 ## 多表返回表达式
 
 ::: code-tabs
@@ -304,14 +359,15 @@ entityQuery
             o.id().eq(true,"1234");//false表示不使用这个条件
 
         })
-        .select((t,t1,t2) -> o.columns(userTable.id(), blogTable.id()))
-        .select(TopicTypeVO.class, (t,t1,t2,tr) -> {//t,t1,t2表示join的三张表,tr表示vo结果用于映射
-                return Select.of(
-                        t2.id(),
-                        t1.id(),
-                        Select.of(true,t2.id().as(tr.id()))//true表示要返回这个查询
-                )
-        });
+        .select((t,t1,t2) -> new TopicTypeVOProxy(){{
+                id().set(t2.id());
+                name().set(t1.name());
+                content().set(t2.title());
+        }});
+        //上下两种表达式都是一样的,上面更加符合bean设置,并且具有强类型推荐使用上面这种
+        // .select((t,t1,t2) -> new TopicTypeVOProxy(){{
+        //         selectExpression(t2.id(),t1.name(),t2.title().as(content()))
+        // }});
 
 ```
 @tab 代理模式
@@ -420,13 +476,11 @@ List<QueryVO> list = entityQuery.queryable(Topic.class)
                 t1.title().like("456");
                 t2.createTime().eq(LocalDateTime.of(2021, 1, 1, 1, 1));
         })
-        .select(QueryVO.class, (t, t1, t2, tr) -> {
-                return Select.of(
-                        t.id(),
-                        t1.title().as(tr.field1()),//将第二张表的title字段映射到VO的field1字段上
-                        t2.id().as(tr.field2())//将第三张表的id字段映射到VO的field2字段上
-                );
-        }).toList();
+        .select((t, t1, t2)->new QueryVOProxy(){{
+                id().set(t.id());
+                field1().set(t1.title());//将第二张表的title字段映射到VO的field1字段上
+                field2().set(t2.id());//将第三张表的id字段映射到VO的field2字段上
+        }}).toList();
 
 ==> Preparing: SELECT t.`id`,t1.`title` AS `field1`,t2.`id` AS `field2` FROM `t_topic` t LEFT JOIN `t_blog` t1 ON t1.`deleted` = ? AND t.`id` = t1.`id` LEFT JOIN `easy-query-test`.`t_sys_user` t2 ON t.`id` = t2.`id` WHERE t.`id` = ? AND t.`id` = ? AND t1.`title` LIKE ? AND t2.`create_time` = ?
 ==> Parameters: false(Boolean),123(String),123(String),%456%(String),2021-01-01T01:01(LocalDateTime)
@@ -447,14 +501,12 @@ List<QueryVO> list = entityQuery.queryable(Topic.class)
                 t1.title().like("456");
                 t2.createTime().eq(LocalDateTime.of(2021, 1, 1, 1, 1));
         })
-        .select(QueryVO.class, (t, t1, t2, tr) -> {
-                return Select.of(
-                        //将第一张表的所有属性的列映射到vo的列名上,忽略掉title属性的映射
-                        t.allFieldsExclude(t.title()),
-                        t1.title().as(tr.field1()),//将第二张表的title字段映射到VO的field1字段上
-                        t2.id().as(tr.field2())//将第三张表的id字段映射到VO的field2字段上
-                );
-        }).toList();
+        .select((t, t1, t2)->new QueryVOProxy(){{
+                selectAll(t);//查询t.*查询t表Topic表全字段
+                selectIgnores(t.title());//忽略掉Topic的title字段
+                field1().set(t1.title());//将第二张表的title字段映射到VO的field1字段上
+                field2().set(t2.id());//将第三张表的id字段映射到VO的field2字段上
+        }}).toList();
 
 
 ==> Preparing: SELECT t.`id`,t1.`title` AS `field1`,t2.`id` AS `field2` FROM `t_topic` t LEFT JOIN `t_blog` t1 ON t1.`deleted` = ? AND t.`id` = t1.`id` LEFT JOIN `easy-query-test`.`t_sys_user` t2 ON t.`id` = t2.`id` WHERE t.`id` = ? AND t.`id` = ? AND t1.`title` LIKE ? AND t2.`create_time` = ?
