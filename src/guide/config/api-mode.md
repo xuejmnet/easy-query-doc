@@ -69,15 +69,9 @@ SysUser sysUser1 = entityQuery.queryable(SysUser.class)
         .where(o -> o.idCard().like("123"))
         .orderBy(o->o.createTime().desc())
         .orderBy(o->o.id().asc())
-        .select(o->o.FETCHER.id().createTime())//也可以用Select.of(o.id(),o.createTime())如果只有一个参数不需要Select.of()
-        //.select(o->Select.of(o.id(),o.createTime()))
-        //.select(o->o.allFieldsExclude(o.createTime()))//获取user表的所有字段除了createTime字段
-        //   .select(o -> {//甚至可以创建一个Fetcher来实现拉取
-        //       Fetcher fetcher = Select.createFetcher();
-        //       fetcher.fetch(o.id(), o.title());
-        //       fetcher.fetch(o.stars().as(o.stars()));
-        //       return fetcher;
-        //   })
+        .select(o->new SysUserProxy(){{
+                selectExpressions(o.id(),o.createTime());
+        }})
         .firstOrNull();
         
 ```
