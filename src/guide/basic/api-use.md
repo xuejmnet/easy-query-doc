@@ -340,7 +340,7 @@ List<Topic> list = easyQuery
 @tab 对象模式
 ```java
 //
-entityQuery
+easyEntityQuery
         .queryable(Topic.class)
         .leftJoin(BlogEntity.class, (t,t1) -> t.id().eq(t1.id()))
         .leftJoin(SysUser.class, (t,t1,t2) -> t.id().eq(t2.id()))
@@ -464,7 +464,7 @@ public class  QueryVO implements ProxyEntityAvailable<QueryVO , QueryVOProxy> {
     }
 }
 
-List<QueryVO> list = entityQuery.queryable(Topic.class)
+List<QueryVO> list = easyEntityQuery.queryable(Topic.class)
         //第一个join采用双参数,参数1表示第一张表Topic 参数2表示第二张表 BlogEntity
         .leftJoin(BlogEntity.class, (t, t1) -> t.id().eq(t1.id()))
         //第二个join采用三参数,参数1表示第一张表Topic 参数2表示第二张表 BlogEntity 第三个参数表示第三张表 SysUser
@@ -489,7 +489,7 @@ List<QueryVO> list = entityQuery.queryable(Topic.class)
 
 
 
-List<QueryVO> list = entityQuery.queryable(Topic.class)
+List<QueryVO> list = easyEntityQuery.queryable(Topic.class)
         //第一个join采用双参数,参数1表示第一张表Topic 参数2表示第二张表 BlogEntity
         .leftJoin(BlogEntity.class, (t, t1) -> t.id().eq(t1.id()))
         //第二个join采用三参数,参数1表示第一张表Topic 参数2表示第二张表 BlogEntity 第三个参数表示第三张表 SysUser

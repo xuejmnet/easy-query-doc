@@ -20,22 +20,38 @@ java实体对象
 ```java
 @Data
 @Table("t_topic")
-public class Topic {
+@EntityFileProxy
+public class Topic implements ProxyEntityAvailable<Topic , TopicProxy> {
 
     @Column(primaryKey = true)
     private String id;
     private Integer stars;
     private String title;
     private LocalDateTime createTime;
+
+    @Override
+    public Class<TopicProxy> proxyTableClass() {
+        return TopicProxy.class;
+    }
 }
 
 ```
 ## 0.对象主键更新
+
+::: code-tabs
+@tab 对象模式
+```java
+Topic topic=easyEntityQuery.queryable(Topic.class).whereById("2").firstOrNull();
+long rows = easyEntityQuery.updatable(topic)
+                .executeRows();
+```
+@tab lambda模式
 ```java
 Topic topic=easyQuery.queryable(Topic.class).whereById("2").firstOrNull();
 long rows = easyQuery.updatable(topic)
                 .executeRows();
 ```
+:::
 
 ## 1.更新指定列
 
@@ -43,7 +59,7 @@ long rows = easyQuery.updatable(topic)
 @tab 对象模式
 ```java
 
-long rows = entityQuery.updatable(Topic.class)
+long rows = easyEntityQuery.updatable(Topic.class)
                 .setColumns(o->{
                     o.stars().set(12);//如果存在多个set就自行添加即可
                     //o.title().set("newTitle");
@@ -299,6 +315,20 @@ return testUserMysql;
 ```
 ## 4.指定列更新或条件
 在对象更新的情况下可以选择对应的列进行set或者进行where
+::: code-tabs
+@tab 对象模式
+```java
+
+Topic topic = easyEntityQuery.queryable(Topic.class).whereById("15").firstOrNull();
+Assert.assertNotNull(topic);
+long rows4 = easyEntityQuery.updatable(topic)
+        .setColumns(o->o.createTime())//多个字段使用FETCHER.setColumns(o->o.FETCHER.createTime().title().name())
+        .whereColumns(o->o.stars()).executeRows();//多个字段使用FETCHER.whereColumns(o->o.FETCHER.createTime().title().name())
+Assert.assertEquals(1, rows4);
+
+```
+
+@tab lambda模式
 ```java
 
 Topic topic = easyQuery.queryable(Topic.class).whereById("15").firstOrNull();
@@ -309,6 +339,8 @@ long rows4 = easyQuery.updatable(topic)
 Assert.assertEquals(1, rows4);
 
 ```
+
+::: 
 
 ```sql
 

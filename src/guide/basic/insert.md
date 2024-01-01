@@ -20,13 +20,19 @@ java实体对象
 ```java
 @Data
 @Table("t_topic")
-public class Topic {
+@EntityFileProxy
+public class Topic implements ProxyEntityAvailable<Topic , TopicProxy>{
 
     @Column(primaryKey = true)
     private String id;
     private Integer stars;
     private String title;
     private LocalDateTime createTime;
+
+    @Override
+    public Class<TopicProxy> proxyTableClass() {
+        return TopicProxy.class;
+    }
 }
 
 List<Topic> topics = new ArrayList<>();
@@ -41,10 +47,21 @@ for (int i = 0; i < 10; i++) {
 ```
 
 ## 1.单条插入
+::: code-tabs
+@tab 对象模式
+```java
+long rows = easyEntityQuery.insertable(topics.get(0)).executeRows();
+//返回结果rows为1
+```
+
+@tab lambda模式
 ```java
 long rows = easyQuery.insertable(topics.get(0)).executeRows();
 //返回结果rows为1
 ```
+
+::: 
+
 ```log
 插入sql：INSERT INTO t_topic (`id`,`stars`,`title`,`create_time`) VALUES (?,?,?,?) 
 ==> Preparing: INSERT INTO t_topic (`id`,`stars`,`title`,`create_time`) VALUES (?,?,?,?) 
@@ -55,10 +72,21 @@ long rows = easyQuery.insertable(topics.get(0)).executeRows();
 
 ## 2.多条插入
 批量插入需要jdbc链接字符串开启`&allowMultiQueries=true&rewriteBatchedStatements=true`开启后性能将会大幅提升,并且默认需要使`InsertStrategy`用`ALL_COULMNS`策略,不然还是单条执行,当然可以使用batch或者到了插入批处理阈值也是可以的
+
+
+::: code-tabs
+@tab 对象模式
+```java
+long rows = easyEntityQuery.insertable(topics).executeRows();
+//返回结果rows为10
+```
+@tab lambda模式
 ```java
 long rows = easyQuery.insertable(topics).executeRows();
 //返回结果rows为10
-````
+```
+:::
+
 ```log
 ==> Preparing: INSERT INTO t_topic (`id`,`stars`,`title`,`create_time`) VALUES (?,?,?,?) 
 ==> Parameters: 0(String),100(Integer),标题0(String),2023-03-16T21:38:22.114(LocalDateTime)
@@ -75,10 +103,19 @@ long rows = easyQuery.insertable(topics).executeRows();
 ```
 
 ## 3.链式添加
+::: code-tabs
+@tab 对象模式
+```java
+long rows = easyEntityQuery.insertable(topics.get(0)).insert(topics.get(1)).executeRows();
+//返回结果rows为2
+```
+@tab lambda模式
 ```java
 long rows = easyQuery.insertable(topics.get(0)).insert(topics.get(1)).executeRows();
 //返回结果rows为2
-````
+```
+:::
+
 ```log
 ==> Preparing: INSERT INTO t_topic (`id`,`stars`,`title`,`create_time`) VALUES (?,?,?,?) 
 ==> Parameters: 0(String),100(Integer),标题0(String),2023-03-16T21:42:12.542(LocalDateTime)
@@ -91,13 +128,19 @@ long rows = easyQuery.insertable(topics.get(0)).insert(topics.get(1)).executeRow
 ```java
 @Data
 @Table("t_topic_auto")
-public class TopicAuto {
+@EntityFileProxy
+public class TopicAuto implements ProxyEntityAvailable<TopicAuto , TopicAutoProxy>{
 
     @Column(primaryKey = true,generatedKey = true)//设置主键为自增
     private Integer id;
     private Integer stars;
     private String title;
     private LocalDateTime createTime;
+
+    @Override
+    public Class<TopicAutoProxy> proxyTableClass() {
+        return TopicAutoProxy.class;
+    }
 }
 
 
