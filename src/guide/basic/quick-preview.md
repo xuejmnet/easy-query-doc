@@ -366,7 +366,6 @@ Topic topic = easyQueryClient.queryable(Topic.class)
 ::: 
 
 ### 创建匿名表
-通过`select(class,expression)`表达式可以创建对应的匿名表,如果使用`select(expression)`那么不会创建匿名表
 
 ::: code-tabs
 @tab 对象模式
@@ -395,6 +394,7 @@ LEFT JOIN `t_topic` t2 ON t1.`id` = t2.`id` WHERE t2.`id`
 
 @tab lambda模式
 ```java
+通过`select(class,expression)`表达式可以创建对应的匿名表,如果使用`select(expression)`那么不会创建匿名表
 //  SELECT `id`,`title` FROM `t_topic` WHERE `id` = ? 
 Queryable<Topic> query = easyQuery.queryable(Topic.class)
                     .where(o -> o.eq(Topic::getId, "1"))
