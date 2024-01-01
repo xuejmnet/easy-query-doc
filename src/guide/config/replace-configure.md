@@ -14,7 +14,7 @@ title: 替换框架行为❗️❗️❗️
 
     private void defaultConfiguration() {
         
-        replaceService(EasyQueryDataSource.class, DefaultEasyQueryDataSource.class)
+       replaceService(EasyQueryDataSource.class, DefaultEasyQueryDataSource.class)
                 .replaceService(Dialect.class, DefaultDialect.class)
                 .replaceService(NameConversion.class, UnderlinedNameConversion.class)
                 .replaceService(QueryConfiguration.class)
@@ -36,6 +36,7 @@ title: 替换框架行为❗️❗️❗️
                 .replaceService(RewriteContextFactory.class, DefaultRewriteContextFactory.class)
                 .replaceService(ExecutionContextFactory.class, DefaultExecutionContextFactory.class)
                 .replaceService(EntityExpressionExecutor.class, DefaultEntityExpressionExecutor.class)
+//                .replaceService(EntityExpressionExecutor.class, ShardingEntityExpressionExecutor.class)
                 .replaceService(ShardingExecutorService.class, DefaultEasyShardingExecutorService.class)
                 .replaceService(ExpressionFactory.class, DefaultEasyExpressionFactory.class)
                 .replaceService(ShardingComparer.class, JavaLanguageShardingComparer.class)
@@ -54,6 +55,9 @@ title: 替换框架行为❗️❗️❗️
                 .replaceService(IncludeParserEngine.class, DefaultIncludeParserEngine.class)
                 .replaceService(WhereObjectQueryExecutor.class, DefaultWhereObjectQueryExecutor.class)
                 .replaceService(ObjectSortQueryExecutor.class, DefaultObjectSortQueryExecutor.class)
+                .replaceService(JdbcExecutorListener.class, EmptyJdbcExecutorListener.class)
+                .replaceService(AssertExceptionFactory.class, DefaultAssertExceptionFactory.class)
+                .replaceService(SQLFunc.class, SQLFuncImpl.class)
                 .replaceService(EasyQueryClient.class, DefaultEasyQueryClient.class);
     }
 ```
