@@ -17,7 +17,11 @@ title: api使用 ❗️❗️❗️
 easyEntityQuery.queryable(HelpProvince.class)
         .where(o->o.id().eq("1"))
         .orderBy(o->o.id().asc())
-        .fetcher(o->o.FETCHER.id().name())
+        .select(o->new HelpProvinceProxy(){{
+                id().set(o.id());
+                name().set(o.name());
+        }})
+        //.fetcher(o->o.FETCHER.id().name())//如果返回结果一样可以用fetcher
         .toList();
 ```
 
@@ -28,9 +32,15 @@ easyEntityQuery.queryable(HelpProvince.class)
 easyEntityQuery.queryable(HelpProvince.class) //1
         .where(o->o.id().eq("1")) //2
         .orderBy(o->o.id().asc()) //3
-        .fetcher(o->o.FETCHER.id().name()) //4 
+        .select(o->new HelpProvinceProxy(){{//4 
+                id().set(o.id());
+                name().set(o.name());
+        }})
+        //.fetcher(o->o.FETCHER.id().name())//如果返回结果一样可以用fetcher
         .where(o->o.id().eq("1")) // 5
-        .fetcher(o->o.FETCHER.id()) //6 如果有多个参数可以使用new Proxy(){{}}
+        .select(o->new HelpProvinceProxy(){{//6
+                id().set(o.id());
+        }})
         .toList();
 ```
 
