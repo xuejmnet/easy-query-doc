@@ -41,7 +41,7 @@ public class Topic implements ProxyEntityAvailable<Topic , TopicProxy> {
 ::: code-tabs
 @tab 对象模式
 ```java
-Topic topic=easyEntityQuery.queryable(Topic.class).whereById("2").firstOrNull();
+Topic topic=easyeasyEntityQuery.queryable(Topic.class).whereById("2").firstOrNull();
 long rows = easyEntityQuery.updatable(topic)
                 .executeRows();
 ```
@@ -67,7 +67,7 @@ long rows = easyEntityQuery.updatable(Topic.class)
                 .where(o->o.id().eq(2))
                 .executeRows()
 //rows为1
-entityQuery.updatable(Topic.class)
+easyEntityQuery.updatable(Topic.class)
                 .setColumns(o->{
                     o.stars().set(12);
                 })
@@ -107,7 +107,7 @@ easyQuery.updatable(Topic.class)
 @tab 对象模式
 ```java
 
-long rows = entityQuery.updatable(Topic.class)
+long rows = easyEntityQuery.updatable(Topic.class)
                 .setColumns(o->{
                     o.stars().set(o.stars());
                 })
@@ -141,25 +141,25 @@ long rows = easyQuery.updatable(Topic.class)
 
 ```java
 
-    long rows1 = entityQuery.updatable(Topic.class)
+    long rows1 = easyEntityQuery.updatable(Topic.class)
                 .setColumns(o->{
                     o.stars().increment();
                 })
                 .where(o->o.id().eq("2"))
                 .executeRows();
-    long rows2 = entityQuery.updatable(Topic.class)
+    long rows2 = easyEntityQuery.updatable(Topic.class)
                 .setColumns(o->{
                     o.stars().increment(2);
                 })
                 .where(o->o.id().eq("2"))
                 .executeRows();
-   long rows3 = entityQuery.updatable(Topic.class)
+   long rows3 = easyEntityQuery.updatable(Topic.class)
                 .setColumns(o->{
                     o.stars().decrement();
                 })
                 .where(o->o.id().eq("2"))
                 .executeRows();
-  long rows4 = entityQuery.updatable(Topic.class)
+  long rows4 = easyEntityQuery.updatable(Topic.class)
                 .setColumns(o->{
                     o.stars().decrement(2);
                 })
