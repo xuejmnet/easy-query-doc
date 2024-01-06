@@ -1,6 +1,112 @@
 ---
 title: OR条件
 ---
+# 说明
+OR条件主要分为两大类一类是`entityQuery`,一类是`其他api`,因为`entitQuery`和`其他Api`有所不一样所以需要单独讲
+
+# EntityQuery的OR
+一句话很简单`or`内部全部用`or`链接,`and`内部用`and`链接
+```java
+
+List<BlogEntity> list = easyEntityQuery.queryable(BlogEntity.class)
+        .where(o -> {
+                o.id().eq("2" );
+                o.id().eq("3" );
+                o.or(() -> {
+                o.id().eq("4" );
+                o.id().eq("5" );
+                });
+        })
+        .toList();
+
+
+SELECT
+    `id`,
+    `create_time`,
+    `update_time`,
+    `create_by`,
+    `update_by`,
+    `deleted`,
+    `title`,.....
+FROM
+    `t_blog` 
+WHERE
+    `deleted` = false 
+    AND `id` = '2' 
+    AND `id` = '3' 
+    AND (
+        `id` = '4' 
+        OR `id` = '5'
+    )
+```
+
+
+```java
+
+
+
+
+
+        List<Topic> list = easyEntityQuery.queryable(Topic.class)
+                .where(o -> {
+                    o.title().ne("title0");//==0
+                    o.or(()->{
+                        o.title().eq("1");
+                        o.title().eq("2");
+                        o.title().eq("3");
+                        o.and(()->{
+                            o.title().eq("4");
+                            o.title().eq("5");
+                            o.title().eq("6");
+                            o.or(()->{
+                                o.title().eq("7");
+                                o.title().eq("8");
+                                o.title().eq("9");
+                            });
+                            o.title().eq("10");
+                            o.title().eq("11");
+                            o.title().eq("12");
+                        });
+
+                        o.title().eq("13");
+                        o.title().eq("14");
+                        o.title().eq("15");
+                    });
+                })
+                .toList();
+
+通过表达式可以看到or内部的直接关系为条件1,2,3,一块and和13,14,15全部是or链接
+SELECT
+    `id`,
+    `stars`,
+    `title`,
+    `create_time` 
+FROM
+    `t_topic` 
+WHERE
+    `title` <> 'title0' 
+    AND (
+        `title` = '1' 
+        OR `title` = '2' 
+        OR `title` = '3' 
+        OR (
+            `title` = '4' 
+            AND `title` = '5' 
+            AND `title` = '6' 
+            AND (
+                `title` = '7' 
+                OR `title` = '8' 
+                OR `title` = '9'
+            ) 
+            AND `title` = '10' 
+            AND `title` = '11' 
+            AND `title` = '12'
+        ) 
+        OR `title` = '13' 
+        OR `title` = '14' 
+        OR `title` = '15'
+    )
+```
 
 # OR条件查询
 `where`默认提供了`and`和`or`关键字并且提供了泛型版本所以用户可以通过`and`和`or`来进行组合对应的条件,默认条件和条件之间用and进行链接
