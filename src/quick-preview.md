@@ -153,7 +153,7 @@ List<SysUser> list = easyQueryClient.queryable(SysUser.class)
 ### 数据库对象
 ```java
 @Table("t_sys_user")
-@EntityFileProxy
+@EntityProxy
 @Data
 public class SysUser implements ProxyEntityAvailable<SysUser , SysUserProxy> {
     @Column(primaryKey = true)
