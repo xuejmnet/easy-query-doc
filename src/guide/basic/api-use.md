@@ -303,7 +303,7 @@ List<Topic> list = entityQuery
         //第二个join采用三参数,参数1表示第一张表Topic 参数2表示第二张表 BlogEntity 第三个参数表示第三张表 SysUser
         .leftJoin(SysUser.class, (t, t1, t2) -> t.id().eq(t2.id()))
         .where(o -> o.id().eq("123"))//单个条件where参数为主表Topic
-        //支持单个参数或者全参数,全参数个数为主表+join表个数 链式写法期间可以通过then来切换操作表
+        //支持单个参数或者全参数,全参数个数为主表+join表个数 
         .where((t, t1, t2) -> {
                 t.id().eq("123");
                 t1.title().like("456");
@@ -480,7 +480,7 @@ List<QueryVO> list = easyEntityQuery.queryable(Topic.class)
         //第二个join采用三参数,参数1表示第一张表Topic 参数2表示第二张表 BlogEntity 第三个参数表示第三张表 SysUser
         .leftJoin(SysUser.class, (t, t1, t2) -> t.id().eq(t2.id()))
         .where(o -> o.id().eq("123"))//单个条件where参数为主表Topic
-        //支持单个参数或者全参数,全参数个数为主表+join表个数 链式写法期间可以通过then来切换操作表
+        //支持单个参数或者全参数,全参数个数为主表+join表个数 
         .where((t, t1, t2) -> {
                 t.id().eq("123");
                 t1.title().like("456");
