@@ -11,6 +11,18 @@ title: 基本类型查询
 
 
 ::: code-tabs
+@tab 对象模式
+```java
+List<String> list2 = easyEntityQuery.queryable(Topic.class)
+                .where(f -> f.id().eq("1"))
+                .select(s -> new StringProxy(table.id()))
+                .toList();
+
+==> Preparing: SELECT t.`id` FROM `t_topic` t WHERE t.`id` = ?
+==> Parameters: 1(String)
+<== Time Elapsed: 2(ms)
+<== Total: 1
+```
 @tab 代理属性
 ```java
 TopicProxy table = TopicProxy.createTable();
@@ -58,6 +70,18 @@ List<String> list1 = easyQueryClient.queryable(Topic.class)
 
 
 ::: code-tabs
+@tab 对象模式
+```java
+List<Integer> list2 = easyEntityQuery.queryable(Topic.class)
+                .where(f -> f.id().eq( "1"))
+                .select(s -> new IntegerProxy(table.stars()))
+                .toList();
+
+==> Preparing: SELECT t.`stars` FROM `t_topic` t WHERE t.`id` = ?
+==> Parameters: 1(String)
+<== Time Elapsed: 2(ms)
+<== Total: 1
+```
 @tab 代理属性
 ```java
 TopicProxy table = TopicProxy.createTable();
@@ -107,6 +131,44 @@ List<Integer> list1 = easyQueryClient.queryable(Topic.class)
 
 
 ::: code-tabs
+@tab 对象模式
+```java
+List<Map<String,Object>> list2 = easyEntityQuery.queryable(Topic.class)
+                    .where(f -> f.id().eq( "1"))
+                    .select(s -> new MapProxy(){{
+                        put("id",s.id());
+                        put("name",s.stars());
+                    }})
+                    .toList();
+
+==> Preparing: SELECT t.`id` AS `id`,t.`stars` AS `name` FROM `t_topic` t WHERE t.`id` = ?
+==> Parameters: 1(String)
+<== Time Elapsed: 2(ms)
+<== Total: 1
+
+List<Map<String,Object>> list2 = easyEntityQuery.queryable(Topic.class)
+                    .where(f -> f.id().eq( "1"))
+                    .select(s -> new MapProxy(){{
+                        selectAll(s);
+                    }})
+                    .toList();
+==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM `t_topic` t WHERE t.`id` = ?
+==> Parameters: 1(String)
+<== Time Elapsed: 2(ms)
+<== Total: 1
+
+
+List<Map<String,Object>> list2 = easyEntityQuery.queryable(table)
+                    .where(f -> f.id().eq( "1"))
+                    .select(s -> new MapProxy())
+                    .toList();
+
+
+==> Preparing: SELECT * FROM `t_topic` t WHERE t.`id` = ?
+==> Parameters: 1(String)
+<== Time Elapsed: 9(ms)
+<== Total: 1
+```
 @tab 代理属性
 ```java
 TopicProxy table = TopicProxy.createTable();

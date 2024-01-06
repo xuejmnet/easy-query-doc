@@ -69,11 +69,24 @@ long l = easyQuery.deletable(Topic.class)
 <== Total: 1
 ```
 - 表达式删除
+
+::: code-tabs
+@tab 对象模式
+```java
+long l = easyEntityQuery.deletable(Topic.class)
+                    .where(o->o.title().eq("title998"))
+                    .executeRows();
+```
+
+@tab lambda模式
 ```java
 long l = easyQuery.deletable(Topic.class)
                     .where(o->o.eq(Topic::getTitle,"title998"))
                     .executeRows();
 ```
+
+
+::: 
 ```log
 ==> Preparing: DELETE FROM t_topic WHERE `title` = ?
 ==> Parameters: title998(String)
@@ -105,6 +118,19 @@ long l = easyQuery.deletable(Topic.class).whereById("999").allowDeleteStatement(
 
 ## 3.强制物理删除
 逻辑删除
+
+::: code-tabs
+@tab 对象模式
+```java
+long l = easyQuery.deletable(BlogEntity.class)
+                    .where(o->o.id().eq("id123456"))
+                    .executeRows();
+
+==> Preparing: UPDATE `t_blog` SET `deleted` = ? WHERE `deleted` = ? AND `id` = ?
+==> Parameters: true(Boolean),false(Boolean),id123456(String)
+<== Total: 0
+```
+@tab lambda模式
 ```java
 long l = easyQuery.deletable(BlogEntity.class)
                     .where(o->o.eq(BlogEntity::getId,"id123456"))
@@ -114,9 +140,25 @@ long l = easyQuery.deletable(BlogEntity.class)
 ==> Parameters: true(Boolean),false(Boolean),id123456(String)
 <== Total: 0
 ```
+::: 
 
 
 物理删除
+
+::: code-tabs
+@tab 对象模式
+```java
+long l = easyQuery.deletable(BlogEntity.class)
+                    .where(o->o.id().eq("id123456"))
+                    .disableLogicDelete()//禁用逻辑删除,使用物理删除 生成delete语句
+                    .allowDeleteStatement(true)//如果不允许物理删除那么设置允许 配置项delete-throw
+                    .executeRows();
+
+==> Preparing: DELETE FROM `t_blog` WHERE `id` = ?
+==> Parameters: id123456(String)
+<== Total: 0
+```
+@tab lambda模式
 ```java
 long l = easyQuery.deletable(BlogEntity.class)
                     .where(o->o.eq(BlogEntity::getId,"id123456"))
@@ -128,3 +170,4 @@ long l = easyQuery.deletable(BlogEntity.class)
 ==> Parameters: id123456(String)
 <== Total: 0
 ```
+::: 

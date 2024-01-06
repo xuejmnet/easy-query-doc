@@ -10,6 +10,46 @@ order: 20
 ## 单表查询
 
 ::: code-tabs
+@tab 对象模式
+```java
+//根据条件查询表中的第一条记录
+List<Topic> topics = easyEntityProxy
+                .queryable(Topic.class)
+                .limit(1)
+                .toList();
+==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM t_topic t LIMIT 1
+<== Total: 1
+
+//根据条件查询表中的第一条记录
+Topic topic = easyEntityProxy
+                .queryable(Topic.class)
+                .firstOrNull();
+==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM t_topic t LIMIT 1
+<== Total: 1 
+
+//根据条件查询id为3的记录
+Topic topic = easyEntityProxy
+        .queryable(Topic.class)
+        .where(o->o.id().eq("3"))
+        .firstOrNull();
+==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM t_topic t WHERE t.`id` = ? LIMIT 1
+==> Parameters: 3(String)
+<== Total: 1
+
+
+Topic topic = easyEntityProxy
+        .queryable(Topic.class)
+        .where(o->{
+                o.id().eq("3");
+                o.title().like("3")
+        })
+        .firstOrNull();
+==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM t_topic t WHERE t.`id` = ? AND t.`title` like ? LIMIT 1
+==> Parameters: 3(String),%3%(String)
+<== Total: 1
+
+```
+
 @tab 代理属性
 ```java
 //根据条件查询表中的第一条记录
@@ -127,6 +167,42 @@ List<Topic> topics = easyQueryClient
 ## 多表
 
 ::: code-tabs
+@tab 对象模式
+```java
+
+Topic topic = easyEntityQuery
+        .queryable(Topic.class)
+        .leftJoin(BlogEntity.class, (t,b) -> t.id().eq(b.id()))
+        .where((t,b) -> t.id().eq("3"))
+        .firstOrNull();
+
+==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM t_topic t LEFT JOIN t_blog t1 ON t.`id` = t1.`id` WHERE t.`id` = ? LIMIT 1
+==> Parameters: 3(String)
+<== Total: 1
+
+TopicProxy topicTable = TopicProxy.createTable();
+BlogEntityProxy blogTable = BlogEntityProxy.createTable();
+BlogEntityProxy blogResult = BlogEntityProxy.createTable();
+
+List<BlogEntity> blogEntities = easyEntityQuery
+        .queryable(Topic.class)
+        //join 后面是多参数委托,第一个主表,第二个参数为join表
+        .innerJoin(BlogEntity.class, (t,b) -> t.id().eq(b.id()))
+        .where((t,b) -> {
+                t.title().isNotNull();
+                b.id().eq("3");
+        })
+        //select 参数个数和join表个数一样,group后参数为一个,返回一个对象代理
+        //可以对其进行自定义赋值比如id().set(t.title())将title赋值给id属性
+        .select((t,b)->new BlogEntityProxy(){{
+                selectAll(t);
+        }})
+        .toList();
+
+==> Preparing: SELECT t1.`id`,t1.`create_time`,t1.`update_time`,t1.`create_by`,t1.`update_by`,t1.`deleted`,t1.`title`,t1.`content`,t1.`url`,t1.`star`,t1.`publish_time`,t1.`score`,t1.`status`,t1.`order`,t1.`is_top`,t1.`top` FROM t_topic t INNER JOIN t_blog t1 ON t.`id` = t1.`id` WHERE t1.`title` IS NOT NULL AND t.`id` = ?
+==> Parameters: 3(String)
+<== Total: 1
+```
 @tab 代理属性
 ```java
 
@@ -224,6 +300,30 @@ List<BlogEntity> blogEntities = easyQueryClient
 
 
 ## 嵌套多表
+
+::: code-tabs
+@tab 对象模式
+```java
+ EntityQueryable<TopicProxy, Topic> sql = easyEntityQuery
+                .queryable(Topic.class)
+                .where(o -> o.id().eq("3" ));
+//SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM t_topic t WHERE t.`id` = ?
+
+List<BlogEntity> topics = easyEntityQuery
+        .queryable(BlogEntity.class)
+        .leftJoin(sql,(a,b)->a.id().eq(b.id()))
+        .where((a,b) -> {
+                a.id().isNotNull();
+                b.id().isNotNull();
+        })
+        .toList();
+
+==> Preparing: SELECT t.`id`,t.`create_time`,t.`update_time`,t.`create_by`,t.`update_by`,t.`deleted`,t.`title`,t.`content`,t.`url`,t.`star`,t.`publish_time`,t.`score`,t.`status`,t.`order`,t.`is_top`,t.`top` FROM `t_blog` t LEFT JOIN (SELECT t1.`id`,t1.`stars`,t1.`title`,t1.`create_time` FROM `t_topic` t1 WHERE t1.`id` = ?) t2 ON t.`id` = t2.`id` WHERE t.`deleted` = ? AND t.`id` IS NOT NULL AND t2.`id` IS NOT NULL
+==> Parameters: 3(String),false(Boolean)
+<== Total: 1
+```
+
+@tab lambda模式
 ```java
 Queryable<Topic> sql = easyQuery
         .queryable(Topic.class)
@@ -240,7 +340,52 @@ List<BlogEntity> topics = easyQuery
 <== Total: 1
 ```
 
+
+::: 
+
 ## 自定义VO返回结果
+
+::: code-tabs
+@tab 对象模式
+```java
+//以下三种都是一样的结果,但是`toList(BlogEntityTest.class)`这种方式是不需要对返回结果进行后续处理或者自定义的情况下使用的
+//映射规则为BlogEntity的属性字段对应的column_name和VO对象BlogEntityTest的属性字段对应的column_name一样即可直接映射
+List<BlogEntityTest> list = easyEntityQuery.queryable(BlogEntity.class)
+        .select(o->new BlogEntityTestProxy()).toList();
+
+List<BlogEntityTest> list = easyEntityQuery.queryable(BlogEntity.class)
+        .select(o->new BlogEntityTestProxy(){{
+                selectAll(o)
+        }}).toList();
+
+List<BlogEntityTest> list = easyEntityQuery.queryable(BlogEntity.class).toList(BlogEntityTest.class);
+
+==> Preparing: SELECT t.`title`,t.`content`,t.`url`,t.`star`,t.`publish_time`,t.`score`,t.`status`,t.`order`,t.`is_top`,t.`top` FROM `t_blog` t WHERE t.`deleted` = ?
+==> Parameters: false(Boolean)
+<== Time Elapsed: 3(ms)
+<== Total: 100
+//如果遇到无法对应的可以通过手动set来实现映射
+String sql = easyEntityQuery.queryable(BlogEntity.class)
+                .where(o -> o.id().eq( "2"))
+                .select(o->new BlogEntityVO1Proxy(){{
+                    score().set(o.order());//将查询的order映射到vo对象的score上
+                }})
+                .limit(1).toSQL();
+Assert.assertEquals("SELECT t.`order` AS `score` FROM `t_blog` t WHERE t.`deleted` = ? AND t.`id` = ? LIMIT 1", sql);
+
+
+EntityQueryable<BlogEntityTest2Proxy, BlogEntityTest2> queryable = easyEntityQuery.queryable(BlogEntity.class)
+                .select(o -> new BlogEntityTest2Proxy() {{
+                    selectAll(o);//等于*但是不会用*这种暴力的语法会将字段列出
+                    selectIgnores(o.title());//忽略前面的selectAll里面的title列
+                    url().set(o.url());//并且将url映射到my_url上
+                }});
+            String sql = queryable.toSQL();
+            Assert.assertEquals("SELECT t.`content`,t.`star`,t.`publish_time`,t.`score`,t.`status`,t.`order`,t.`is_top`,t.`top`,t.`url` AS `my_url` FROM `t_blog` t WHERE t.`deleted` = ?", sql);
+           
+```
+
+@tab lambda模式
 ```java
 //映射规则为BlogEntity的属性字段对应的column_name和VO对象BlogEntityTest的属性字段对应的column_name一样即可直接映射
 List<BlogEntityTest> list = easyQuery.queryable(BlogEntity.class)
@@ -268,6 +413,9 @@ Queryable<BlogEntityTest2> queryable = easyQuery.queryable(BlogEntity.class)
             Assert.assertEquals("SELECT t.`content`,t.`star`,t.`publish_time`,t.`score`,t.`status`,t.`order`,t.`is_top`,t.`top`,t.`url` AS `my_url` FROM `t_blog` t WHERE t.`deleted` = ?", sql);
            
 ```
+
+
+::: 
 
 ## API
 

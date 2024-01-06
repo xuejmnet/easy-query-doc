@@ -223,14 +223,35 @@ long rows4 = easyQuery.updatable(Topic.class)
 如果希望默认是追踪的可以设置启动配置`defaultTrack`为true那么只需要开始上下文环境即可
 
 ::: danger 错误的用法!!!
-> 开启上下文追踪当时没有讲查询结果对象附加到当前上下文,所以框架无法追踪对象变更无法有效生成差异更新
+> 开启上下文追踪但是没有将查询结果对象附加到当前上下文,所以框架无法追踪对象变更无法有效生成差异更新
 :::
+
+当全局配置`default-track`未配置或者配置为`false`时以下不使用`asTracking`的查询结果不会被追踪所有视为错误用法,但是如果`default-track`设置为了`true`那么以下用法查询的数据会被追踪被视为正确的用法
+::: code-tabs
+@tab 对象模式
+```java
+TrackManager trackManager = easyEntityQuery.getRuntimeContext().getTrackManager();
+try{
+
+        trackManager.begin();
+        Topic topic = easyEntityQuery.queryable(Topic.class)
+                .where(o -> o.id().eq("7")).firstNotNull("未找到对应的数据");
+        String newTitle = "test123" + new Random().nextInt(100);
+        topic.setTitle(newTitle);
+        long rows=easyEntityQuery.updatable(topic).executeRows();
+
+}finally {
+        trackManager.release();
+}
+```
+
+@tab lambda模式
 ```java
 TrackManager trackManager = easyQuery.getRuntimeContext().getTrackManager();
 try{
 
         trackManager.begin();
-        Topic topic = easyQuery.queryable(Topic.class)
+        Topic topic = easyEntityQuery.queryable(Topic.class)
                 .where(o -> o.eq(Topic::getId, "7")).firstNotNull("未找到对应的数据");
         String newTitle = "test123" + new Random().nextInt(100);
         topic.setTitle(newTitle);
@@ -240,6 +261,9 @@ try{
         trackManager.release();
 }
 ```
+
+
+::: 
 ```log
 ==> Preparing: UPDATE t_topic SET `stars` = ?,`title` = ?,`create_time` = ? WHERE `id` = ?
 ==> Parameters: 107(Integer),test12364(String),2023-03-27T22:05:23(LocalDateTime),7(String)
@@ -249,7 +273,27 @@ try{
 ::: tip 正确的用法!!!
 > - 要注意是否开启了追踪`spring-boot`下用`@EasyQueryTrack`注解即可开启
 > - 是否将当前对象添加到了追踪上下文 查询添加`asTracking`或者 手动将查询出来的对象进行`easyQuery.addTracking(Object entity)`
+> - 全局配置`default-track`设置为`true`那么查询不需要加`asTracking`,否则需要手动加`asTracking`才能对查询出来的结果进行追踪,如果不需要追踪可以使用`asNoTracking`
 :::
+
+::: code-tabs
+@tab 对象模式
+```java
+TrackManager trackManager = easyEntityQuery.getRuntimeContext().getTrackManager();
+try{
+        trackManager.begin();
+        Topic topic = easyEntityQuery.queryable(Topic.class)
+                .where(o -> o.id().eq( "7")).asTracking().firstNotNull("未找到对应的数据");
+        String newTitle = "test123" + new Random().nextInt(100);
+        topic.setTitle(newTitle);
+        long l = easyEntityQuery.updatable(topic).executeRows();
+}finally {
+
+        trackManager.release();
+}
+```
+
+@tab lambda模式
 ```java
 TrackManager trackManager = easyQuery.getRuntimeContext().getTrackManager();
 try{
@@ -264,6 +308,9 @@ try{
         trackManager.release();
 }
 ```
+
+
+::: 
 ```log
 ==> Preparing: UPDATE t_topic SET `title` = ? WHERE `id` = ?
 ==> Parameters: test1239(String),7(String)
