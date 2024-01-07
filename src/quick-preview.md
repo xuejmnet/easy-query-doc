@@ -26,10 +26,10 @@ title: 快速了解 🔥
                                 o.id().like(false, "123");
                             })
                             .groupBy(o->GroupKeys.of(o.id()))//创建group by
-                            .select(o -> new SysUserProxy(){{//创建user代理
-                                id().set(o.key1());//对当前id进行赋值
-                                phone().set(o.count().toStr());//对当前phone进行赋值因为phone是string类型所以goup后的count需要强转成string也就是cast
-                            }})
+                            .select(o -> new SysUserProxy().adapter(r->{//创建user代理
+                                r.id().set(o.key1());//对当前id进行赋值
+                                r.phone().set(o.count().toStr());//对当前phone进行赋值因为phone是string类型所以goup后的count需要强转成string也就是cast
+                            }))
                             //下面是平替写法其实是一样的
                             // .select(o -> {
                             //     SysUserProxy sysUserProxy = new SysUserProxy();
