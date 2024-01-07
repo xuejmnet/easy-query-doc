@@ -13,8 +13,8 @@ List<BlogEntity> list = easyEntityQuery.queryable(BlogEntity.class)
                 o.id().eq("2" );
                 o.id().eq("3" );
                 o.or(() -> {
-                o.id().eq("4" );
-                o.id().eq("5" );
+                        o.id().eq("4" );
+                        o.id().eq("5" );
                 });
         })
         .toList();
