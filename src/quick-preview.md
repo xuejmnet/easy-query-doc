@@ -19,16 +19,16 @@ title: 快速了解 🔥
 
 ```java
  List<SysUser> users = easyEntityQuery.queryable(SysUser.class)
-                            .where(o -> {
-                                o.id().eq("1");
-                                o.id().eq(false, "1");//true/false表示是否使用该条件默认true
-                                o.id().like("123");
-                                o.id().like(false, "123");
+                            .where(user -> {
+                                user.id().eq("1");
+                                user.id().eq(false, "1");//true/false表示是否使用该条件默认true
+                                user.id().like("123");
+                                user.id().like(false, "123");
                             })
-                            .groupBy(o->GroupKeys.of(o.id()))//创建group by
-                            .select(o -> new SysUserProxy().adapter(r->{//创建user代理
-                                r.id().set(o.key1());//对当前id进行赋值
-                                r.phone().set(o.count().toStr());//对当前phone进行赋值因为phone是string类型所以goup后的count需要强转成string也就是cast
+                            .groupBy(user->GroupKeys.of(user.id()))//创建group by
+                            .select(group -> new SysUserProxy().adapter(r->{//创建user代理
+                                r.id().set(group.key1());//对当前id进行赋值
+                                r.phone().set(group.count().toStr());//对当前phone进行赋值因为phone是string类型所以goup后的count需要强转成string也就是cast
                             }))
                             //下面是平替写法其实是一样的
                             // .select(o -> {

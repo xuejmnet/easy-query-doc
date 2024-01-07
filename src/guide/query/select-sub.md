@@ -52,21 +52,17 @@ public class TopicSubQueryBlog {
 ::: code-tabs
 @tab 对象模式
 ```java
- List<TopicSubQueryBlog> list = entityQuery.queryable(Topic.class)
-                    .where(o -> o.title().isNotNull())
-                    .select(TopicSubQueryBlog.class, (o, tr) -> {
-                        return Select.of(
-                                o.allFields(),
-                                Select.subQueryAs(() -> {
-                                    //.select(LongProxy.createTable(),x->x.id().count())这个是COUNT(id)和selectCount是COUNT(*)两者是一致的
-                                    return entityQuery.queryable(BlogEntity.class).where(x -> x.id().eq(o.id())).selectCount();//count(*)
-                                }, tr.blogCount())
-                        );
-                    }).toList();
+        List<TopicSubQueryBlog> list = easyEntityQuery.queryable(Topic.class)
+                .where(o -> o.title().isNotNull())
+                .select(o->new TopicSubQueryBlogProxy().adapter(r->{
+                    r.selectAll(o);
+                    Query<Long> subQuery = easyEntityQuery.queryable(BlogEntity.class).where(x -> x.id().eq(o.id())).selectCount();//count(*)
+                    r.blogCount().setSubQuery(subQuery);
+                })).toList();
 
 ==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time`,(SELECT COUNT(*) FROM `t_blog` t1 WHERE t1.`deleted` = ? AND t1.`id` = t.`id`) AS `blog_count` FROM `t_topic` t WHERE t.`title` IS NOT NULL
 ==> Parameters: false(Boolean)
-<== Time Elapsed: 5(ms)
+<== Time Elapsed: 6(ms)
 <== Total: 99
         
 ```
@@ -97,22 +93,17 @@ List<TopicSubQueryBlog> list = easyQuery
 @tab 对象模式
 ```java
 
-List<TopicSubQueryBlog> list = entityQuery.queryable(Topic.class)
-        .where(o -> o.title().isNotNull())
-        .select(TopicSubQueryBlog.class, (o, tr) -> {
-            return Select.of(
-                    o.allFields(),
-                    Select.subQueryAs(() -> {
-                        return entityQuery.queryable(BlogEntity.class)
-                                .where(x -> x.id().eq(o.id())).
-                                select(LongProxy.createTable(),x->x.star().sum());
-                    }, tr.blogCount())
-            );
-        }).toList();
+        List<TopicSubQueryBlog> list = easyEntityQuery.queryable(Topic.class)
+                .where(o -> o.title().isNotNull())
+                .select(o->new TopicSubQueryBlogProxy().adapter(r->{
+                    r.selectAll(o);
+                    EntityQueryable<LongProxy, Long> subQuery = easyEntityQuery.queryable(BlogEntity.class).where(x -> x.id().eq(o.id())).select(x -> new LongProxy(x.star().sum()));//SUM(t1.`star`)
+                    r.blogCount().setSubQuery(subQuery);
+                })).toList();
 
 ==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time`,(SELECT SUM(t1.`star`) FROM `t_blog` t1 WHERE t1.`deleted` = ? AND t1.`id` = t.`id`) AS `blog_count` FROM `t_topic` t WHERE t.`title` IS NOT NULL
 ==> Parameters: false(Boolean)
-<== Time Elapsed: 4(ms)
+<== Time Elapsed: 6(ms)
 <== Total: 99
         
 ```
