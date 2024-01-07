@@ -69,9 +69,9 @@ SysUser sysUser1 = entityQuery.queryable(SysUser.class)
         .where(o -> o.idCard().like("123"))
         .orderBy(o->o.createTime().desc())
         .orderBy(o->o.id().asc())
-        .select(o->new SysUserProxy(){{
-                selectExpressions(o.id(),o.createTime());
-        }})
+        .select(o->new SysUserProxy().adapter(r->{
+                r.selectExpressions(o.id(),o.createTime());
+        }))
         .firstOrNull();
         
 ```

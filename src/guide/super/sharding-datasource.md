@@ -96,13 +96,12 @@ public class DsOrderShardingInitializer implements EntityShardingInitializer<DsO
         EntityMetadata entityMetadata = builder.getEntityMetadata();
         String tableName = entityMetadata.getTableName();
         List<String> tables = Collections.singletonList(tableName);
-        LinkedHashMap<String, Collection<String>> initTables = new LinkedHashMap<String, Collection<String>>() {{
-            put("ds0", tables);
-            put("ds1", tables);
-            put("ds2", tables);
-            put("ds3", tables);
-            put("ds4", tables);
-        }};
+        LinkedHashMap<String, Collection<String>> initTables = new LinkedHashMap<String, Collection<String>>();
+        initTables.put("ds0", tables);
+        initTables.put("ds1", tables);
+        initTables.put("ds2", tables);
+        initTables.put("ds3", tables);
+        initTables.put("ds4", tables);
         builder.actualTableNameInit(initTables);
     }
 }

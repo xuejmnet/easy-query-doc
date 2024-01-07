@@ -106,11 +106,10 @@ public class TDsOrderShardingInitializer implements EntityShardingInitializer<TD
         tables.add(tableName+"_00");
         tables.add(tableName+"_01");
         //设置5个数据源都有对应的表
-        LinkedHashMap<String, Collection<String>> initTables = new LinkedHashMap<String, Collection<String>>() {{
-            put("ds0", tables);
-            put("ds1", tables);
-            put("ds2", tables);
-        }};
+        LinkedHashMap<String, Collection<String>> initTables = new LinkedHashMap<String, Collection<String>>();
+        initTables.put("ds0", tables);
+        initTables.put("ds1", tables);
+        initTables.put("ds2", tables);
         builder.actualTableNameInit(initTables);
     }
 }

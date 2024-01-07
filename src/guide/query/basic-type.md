@@ -135,10 +135,10 @@ List<Integer> list1 = easyQueryClient.queryable(Topic.class)
 ```java
 List<Map<String,Object>> list2 = easyEntityQuery.queryable(Topic.class)
                     .where(f -> f.id().eq( "1"))
-                    .select(s -> new MapProxy(){{
-                        put("id",s.id());
-                        put("name",s.stars());
-                    }})
+                    .select(s -> new MapProxy().adapter(r->{
+                        r.put("id",s.id());
+                        r.put("name",s.stars());
+                    }))
                     .toList();
 
 ==> Preparing: SELECT t.`id` AS `id`,t.`stars` AS `name` FROM `t_topic` t WHERE t.`id` = ?
@@ -148,9 +148,7 @@ List<Map<String,Object>> list2 = easyEntityQuery.queryable(Topic.class)
 
 List<Map<String,Object>> list2 = easyEntityQuery.queryable(Topic.class)
                     .where(f -> f.id().eq( "1"))
-                    .select(s -> new MapProxy(){{
-                        selectAll(s);
-                    }})
+                    .select(s -> new MapProxy().selectAll(s))
                     .toList();
 ==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM `t_topic` t WHERE t.`id` = ?
 ==> Parameters: 1(String)
