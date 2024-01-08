@@ -447,7 +447,42 @@ easyQuery.mapUpdatable(stringObjectHashMap)
 UPDATE `my_table` SET `name` = ?,`name1` = ? WHERE `id` = ?
 ```
 
-## 6.注意
+## 6.更新自定义sql
+
+::: code-tabs
+@tab 对象模式
+```java
+
+long rows = easyEntityQuery.updatable(Topic.class)
+        .setColumns(o->{
+        o.stars().setSQL("ifnull({0},0)+{1}", (context) -> {
+                context.expression(o.stars())
+                        .value(1);
+        });
+        })
+        .where(o -> o.id().eq("2"))
+        .executeRows();
+
+UPDATE `t_topic` SET `stars` = ifnull(`stars`,0)+? WHERE `id` = ?
+```
+
+@tab lambda模式
+```java
+
+long rows = easyQuery.updatable(Topic.class)
+        .setSQLSegment(Topic::getStars, "ifnull({0},0)+{1}", (context) -> {
+        context.expression(Topic::getStars)
+                .value(1);
+        })
+        .where(o -> o.eq(Topic::getId, "2"))
+        .executeRows();
+
+UPDATE `t_topic` SET `stars` = ifnull(`stars`,0)+? WHERE `id` = ?
+```
+
+::: 
+
+## 7.注意
 更新优先级顺序
 
 手动指定 > 策略 > 追踪 > 全量更新
