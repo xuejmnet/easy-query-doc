@@ -78,6 +78,122 @@ long l = easyQuery.sqlExecute("update t_blog set content=? where id=?", Arrays.a
 
 **建议参考 case when,如果临时使用建议使用 sqlNativeSegment**
 
+## entityQuery
+因为entityQuery的特殊性原生sql片段有如下特殊规则
+
+- `where`、`join on`、`order`、`having`的sqlNativeSegment是具体表的`executeSQL`方法
+- 如果需要返回expression则为表点sql比如`o.sql(....)` 
+- `select`别名和`update set`为`setSQL`
+
+```java
+//where
+
+            List<Topic> list2 = easyEntityQuery.queryable(Topic.class)
+                    .where(o -> {
+
+                        o.createTime().format("yyyy/MM/dd" ).eq("2023/01/01" );
+                        o.or(() -> {
+                            o.stars().ne(1);
+                            o.createTime().le(LocalDateTime.of(2024, 1, 1, 1, 1));
+                            o.title().notLike("abc" );
+                        });
+                        o.createTime().format("yyyy/MM/dd" ).eq("2023/01/01" );
+                        o.id().nullDefault("yyyy/MM/dd" ).eq("xxx" );
+                        o.executeSQL("{0} != {1}" , c -> {
+                            c.expression(o.stars()).expression(o.createTime());
+                        });
+                        o.or(() -> {
+                            o.createTime().format("yyyy/MM/dd" ).eq("2023/01/01" );
+                            o.id().nullDefault("yyyy/MM/dd" ).eq("xxx" );
+                            o.executeSQL("{0} != {1}" , c -> {
+                                c.expression(o.stars()).expression(o.createTime());
+                            });
+                        });
+
+                        o.createTime().format("yyyy/MM/dd" ).eq("2023/01/02" );
+                        o.id().nullDefault("yyyy/MM/dd2" ).eq("xxx1" );
+                    })
+                    .fetcher(o -> o.FETCHER
+                            .allFieldsExclude(o.id(), o.title())
+                            .id().as(o.title())
+                            .id())
+                    .toList();
+
+
+-- 第1条sql数据
+SELECT
+    t.`stars`,
+    t.`create_time`,
+    t.`id` AS `title`,
+    t.`id` 
+FROM
+    `t_topic` t 
+WHERE
+    DATE_FORMAT(t.`create_time`,'%Y/%m/%d') = '2023/01/01' 
+    AND (
+        t.`stars` <> 1 
+        OR t.`create_time` <= '2024-01-01 01:01' 
+        OR t.`title` NOT LIKE '%abc%'
+    ) 
+    AND DATE_FORMAT(t.`create_time`,'%Y/%m/%d') = '2023/01/01' 
+    AND IFNULL(t.`id`,'yyyy/MM/dd') = 'xxx' 
+    AND t.`stars` != t.`create_time` 
+    AND (
+        DATE_FORMAT(t.`create_time`,'%Y/%m/%d') = '2023/01/01' 
+        OR IFNULL(t.`id`,'yyyy/MM/dd') = 'xxx' 
+        OR t.`stars` != t.`create_time`
+    ) 
+    AND DATE_FORMAT(t.`create_time`,'%Y/%m/%d') = '2023/01/02' 
+    AND IFNULL(t.`id`,'yyyy/MM/dd2') = 'xxx1'
+
+//order by
+List<Topic> list3 = easyEntityQuery.queryable(Topic.class)
+                    .where(o -> {
+                        o.title().eq("title" );
+                        o.id().eq("1" );
+                    })
+                    .orderBy(o -> {
+                        o.createTime().format("yyyy-MM-dd HH:mm:ss" ).desc();
+                        o.executeSQL("IFNULL({0},'') ASC" , c -> {
+                            c.keepStyle().expression(o.stars());
+                        });
+                    })
+                    .select(o -> new TopicProxy().selectExpression(o.FETCHER.title().id(), o.createTime().format("yyyy-MM-dd HH:mm:ss" )))
+                    .toList();
+
+SELECT t.`title`,t.`id`,DATE_FORMAT(t.`create_time`,'%Y-%m-%d %H:%i:%s') FROM `t_topic` t WHERE t.`title` = ? AND t.`id` = ? ORDER BY DATE_FORMAT(t.`create_time`,'%Y-%m-%d %H:%i:%s') DESC,IFNULL(t.`stars`,'') ASC
+
+
+//select
+List<Topic> list2 = easyEntityQuery.queryable(Topic.class)
+                    .where(o -> o.createTime().format("yyyy/MM/dd" ).eq("2023/01/01" ))
+                    .select(o -> new TopicProxy().adapter(r->{
+
+                        r.title().set(o.stars().nullDefault(0).toStr());
+                        r.alias().setSQL("IFNULL({0},'')" , c -> {
+                            c.keepStyle();
+                            c.expression(o.id());
+                        });
+                    }))
+                    .toList();
+
+SELECT CAST(IFNULL(t.`stars`,?) AS CHAR) AS `title`,IFNULL(t.`id`,'') AS `alias` FROM `t_topic` t WHERE DATE_FORMAT(t.`create_time`,'%Y/%m/%d') = ?
+
+
+//update set
+long rows = easyEntityQuery.updatable(Topic.class)
+                    .setColumns(o->{
+                        o.stars().setSQL("ifnull({0},0)+{1}", (context) -> {
+                            context.expression(o.stars())
+                                    .value(1);
+                        });
+                    })
+                    .where(o -> o.id().eq("2"))
+                    .executeRows();
+
+UPDATE `t_topic` SET `stars` = ifnull(`stars`,0)+? WHERE `id` = ?
+```
+
 ## sqlNativeSegment
 无需编写复杂封装代码
 
