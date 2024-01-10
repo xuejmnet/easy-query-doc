@@ -2,7 +2,8 @@
 title: 快速了解 🔥
 ---
 
-
+# QQ群
+EasyQuery官方QQ群: 170029046
 
 ::: warning 说明!!!
 > `1.8.0+`版本`easy-query`推出了实验性api,`entity-query`在之后的一周时间里面,作者对框架的api进行了大刀阔斧,现在做到了非常强大，如果你们是`c#`使用过`efcore`，`freesql`，`sqlsugar`那么使用这个框架对你们来说肯定是最完美的,`1.9.0`之后的版本和之前的easyEntityQuery有着很大的不一样,实在抱歉这次`changebreak`因为这次更新实在是让人太着迷了
