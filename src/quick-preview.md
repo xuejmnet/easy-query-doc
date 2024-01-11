@@ -26,7 +26,7 @@ EasyQuery官方QQ群: 170029046
                                 user.id().like("123");
                                 user.id().like(false, "123");
                             })
-                            .groupBy(user->GroupKeys.of(user.id()))//创建group by
+                            .groupBy(user->GroupKeys.TABLE1.of(user.id()))//创建group by
                             .select(group -> new SysUserProxy().adapter(r->{//创建user代理
                                 r.id().set(group.key1());//对当前id进行赋值
                                 r.phone().set(group.count().toStr());//对当前phone进行赋值因为phone是string类型所以goup后的count需要强转成string也就是cast
@@ -38,10 +38,31 @@ EasyQuery官方QQ群: 170029046
                             //     sysUserProxy.phone().set(o.count().toStr());
                             //     return sysUserProxy;
                             // })
+                            //如果映射属性对应的column name是一样的【！！！不是属性名是属性对应的列名是一样的】
+                            //也可以用以下写法
+                            // .select(o -> new SysUserProxy().selectExpression(o.id(),o.name(),o.title()))
                             .toList();
 
 ==> Preparing: SELECT t.`id` AS `id`,CAST(COUNT(*) AS CHAR) AS `phone` FROM `sys_user` t WHERE t.`id` = ? AND t.`id` LIKE ? GROUP BY t.`id`
 ==> Parameters: 1(String),%123%(String)
+
+//左右结构转换,大部分orm只支持左列右值但是easy-query还支持右值左列或者右值左值
+
+LocalDateTime begin=LocalDateTime.of(2020,1,1,1,1);
+LocalDateTime end=LocalDateTime.of(2022,1,1,1,1);
+
+List<TopicTypeTest1> list = easyEntityQuery.queryable(TopicTypeTest1.class).where(o -> {
+    o.SQLParameter().valueOf(begin).le(o.createTime());
+    o.createTime().le(end);
+    o.createTime().le(o.SQLParameter().valueOf(end).plusMonths(-3));//plusMMonths(-3)表示end时间往前推3个月,并且适配所有数据库
+}).toList();
+
+==> Preparing: SELECT `id`,`stars`,`title`,`topic_type`,`create_time` FROM `t_topic_type` WHERE ? <= `create_time` AND `create_time` <= ? AND  `create_time` <= date_add(?, interval (?) month)
+==> Parameters: 2020-01-01T01:01(LocalDateTime),2022-01-01T01:01(LocalDateTime),2022-01-01T01:01(LocalDateTime),-3(Integer)
+<== Time Elapsed: 4(ms)
+<== Total: 0
+
+
 
 List<SysUser> users = easyEntityQuery.queryable(SysUser.class)
                             .where(o->{

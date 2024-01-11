@@ -30,7 +30,7 @@ export const zhSidebar = sidebar({
         {
           text: "高级",
           prefix: "adv/",
-          children: ["readme.md","value-converter","logic-delete","interceptor","batch","sql-func","column-encryption","column-sql-func-auto","generated-key-sql-column","data-tracking","version","column-func-new","column-func","atomic-update","value-object","jdbc-listener"],
+          children: ["readme.md","value-converter","logic-delete","interceptor","batch","sql-func-v1","sql-func","column-encryption","column-sql-func-auto","generated-key-sql-column","data-tracking","version","column-func-new","column-func","atomic-update","value-object","jdbc-listener"],
         },
         {
           text: "超级",
