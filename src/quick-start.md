@@ -7,6 +7,8 @@ title: 快速开始🔥🔥🔥
 
 ## EntityQuery
 本次我们采用`easyEntityQuery`来实现优雅的crud
+- @EntityProxy 配合`sql-processor`包+插件使用apt，支持`clear`重新`build`生成或者插件生成
+- @EntityFileProxy 配合插件使用apt apt不会被`clear`清除
 
 ## idea 插件安装
 插件的安装可以帮助我们针对自动生成的文件进行快速管理无感.
