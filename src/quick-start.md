@@ -14,6 +14,61 @@ title: 快速开始🔥🔥🔥
 插件的安装可以帮助我们针对自动生成的文件进行快速管理无感.
 <img src="/plugin-search.png">
 
+下面我们分别以两种注解模式来说明如何开发
+
+# EntityProxy
+## 依赖注入
+```xml
+    <dependencies>
+        <!-- 核心包 -->
+        <dependency>
+            <groupId>com.easy-query</groupId>
+            <artifactId>sql-core</artifactId>
+            <version>${easy-query.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <!-- mysql方言 -->
+        <dependency>
+            <groupId>com.easy-query</groupId>
+            <artifactId>sql-mysql</artifactId>
+            <version>${easy-query.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <!-- entity-query的api包 -->
+        <dependency>
+            <groupId>com.easy-query</groupId>
+            <artifactId>sql-api-proxy</artifactId>
+            <version>${easy-query.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <!-- entity-query的apt包 如果你是多模块只需要在生成apt的对象模块处需要引入 -->
+        <dependency>
+            <groupId>com.easy-query</groupId>
+            <artifactId>sql-processor</artifactId>
+            <version>${easy-query.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <!-- mysql驱动 -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.17</version>
+        </dependency>
+        <!-- 数据源 -->
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>3.3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.24</version>
+        </dependency>
+    </dependencies>
+```
+
+# EntityFileProxy
 ## 依赖注入
 ```xml
     <dependencies>
