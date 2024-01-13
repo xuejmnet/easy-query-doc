@@ -51,10 +51,11 @@ EasyQuery官方QQ群: 170029046
 LocalDateTime begin=LocalDateTime.of(2020,1,1,1,1);
 LocalDateTime end=LocalDateTime.of(2022,1,1,1,1);
 
-List<TopicTypeTest1> list = easyEntityQuery.queryable(TopicTypeTest1.class).where(o -> {
-    o.SQLParameter().valueOf(begin).le(o.createTime());
-    o.createTime().le(end);
-    o.createTime().le(o.SQLParameter().valueOf(end).plusMonths(-3));//plusMMonths(-3)表示end时间往前推3个月,并且适配所有数据库
+List<TopicTypeTest1> list = easyEntityQuery.queryable(TopicTypeTest1.class)
+.where(o -> {
+    o.SQLParameter().valueOf(begin).le(o.createTime());//'2020-01-01 01:01:00' <= `create_time`
+    o.createTime().le(end);//`create_time` <= '2022-01-01 01:01:00'
+    o.createTime().le(o.SQLParameter().valueOf(end).plusMonths(-3));//plusMMonths(-3)表示end时间往前推3个月,并且适配所有数据库 `create_time` <= date_add('2022-01-01 01:01:00', interval (-3) month)
 }).toList();
 
 ==> Preparing: SELECT `id`,`stars`,`title`,`topic_type`,`create_time` FROM `t_topic_type` WHERE ? <= `create_time` AND `create_time` <= ? AND  `create_time` <= date_add(?, interval (?) month)
