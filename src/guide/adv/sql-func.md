@@ -21,7 +21,7 @@ utcNow|  当前UTC时间
 
 String sql1 = easyClient.queryable(Topic.class)
         .where(o -> o.eq(Topic::getId, "1"))
-        .select(String.class, o -> o.sqlFunc(o.fx().ifNull(Topic::getId, "1"))).toSQL();
+        .select(String.class, o -> o.sqlFunc(o.fx().nullOrDefault(Topic::getId, "1"))).toSQL();
 Assert.assertEquals("SELECT IFNULL(t.`id`,?) FROM `t_topic` t WHERE t.`id` = ?", sql1);
 ```
 
@@ -29,7 +29,7 @@ Assert.assertEquals("SELECT IFNULL(t.`id`,?) FROM `t_topic` t WHERE t.`id` = ?",
 ```java
 
 String sql = easyQuery.queryable(Topic.class)
-                .where(o -> o.eq(o.fx().ifNull(Topic::getId, "123"), o.fx().ifNull(Topic::getTitle, "456")))
+                .where(o -> o.eq(o.fx().nullOrDefault(Topic::getId, "123"), o.fx().nullOrDefault(Topic::getTitle, "456")))
                 .toSQL();
 Assert.assertEquals("SELECT `id`,`stars`,`title`,`create_time` FROM `t_topic` WHERE IFNULL(`id`,?) = IFNULL(`title`,?)", sql);
 
