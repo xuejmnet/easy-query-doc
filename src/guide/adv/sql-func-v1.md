@@ -8,7 +8,7 @@ title: 数据库函数(新)
 ### 通用函数
 方法  |    描述  
 --- |  --- 
-nullDefault| 如果列为null则返回参数值
+nullOrDefault| 如果列为null则返回参数值
 count| 统计数量返回long
 intCount| 统计数量返回int
 min| 最小值
@@ -17,7 +17,7 @@ max| 最大值
 ### 字符串函数
 方法  |    描述  
 --- |  --- 
-nullEmpty| 如果列为null则返回空值
+nullOrEmpty| 如果列为null则返回空值
 subString| 切割字符串,默认其实0
 concat| 链接多个列或者值
 toLower| 转成小写
