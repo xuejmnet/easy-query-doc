@@ -41,7 +41,7 @@ Topic topic = easyEntityProxy
         .queryable(Topic.class)
         .where(o->{
                 o.id().eq("3");
-                o.title().like("3")
+                o.title().like("3");
         })
         .firstOrNull();
 ==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM t_topic t WHERE t.`id` = ? AND t.`title` like ? LIMIT 1
@@ -179,10 +179,6 @@ Topic topic = easyEntityQuery
 ==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM t_topic t LEFT JOIN t_blog t1 ON t.`id` = t1.`id` WHERE t.`id` = ? LIMIT 1
 ==> Parameters: 3(String)
 <== Total: 1
-
-TopicProxy topicTable = TopicProxy.createTable();
-BlogEntityProxy blogTable = BlogEntityProxy.createTable();
-BlogEntityProxy blogResult = BlogEntityProxy.createTable();
 
 List<BlogEntity> blogEntities = easyEntityQuery
         .queryable(Topic.class)
