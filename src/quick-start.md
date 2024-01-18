@@ -376,7 +376,7 @@ List<Draft3<String, Integer, Integer>> list = easyEntityQuery.queryable(Topic.cl
             r.stars().set(o.intCount());//COUNT(*)返回int 默认返回long类型
         }))
         .selectDraft(o -> Select.draft(
-                o.id().nullDefault("123"),//如果为空就赋值123
+                o.id().nullOrDefault("123"),//如果为空就赋值123
                 o.stars(),
                 o.stars().abs()//取绝对值
         ))

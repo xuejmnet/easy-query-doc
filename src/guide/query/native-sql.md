@@ -98,20 +98,20 @@ long l = easyQuery.sqlExecute("update t_blog set content=? where id=?", Arrays.a
                             o.title().notLike("abc" );
                         });
                         o.createTime().format("yyyy/MM/dd" ).eq("2023/01/01" );
-                        o.id().nullDefault("yyyy/MM/dd" ).eq("xxx" );
+                        o.id().nullOrDefault("yyyy/MM/dd" ).eq("xxx" );
                         o.executeSQL("{0} != {1}" , c -> {
                             c.expression(o.stars()).expression(o.createTime());
                         });
                         o.or(() -> {
                             o.createTime().format("yyyy/MM/dd" ).eq("2023/01/01" );
-                            o.id().nullDefault("yyyy/MM/dd" ).eq("xxx" );
+                            o.id().nullOrDefault("yyyy/MM/dd" ).eq("xxx" );
                             o.executeSQL("{0} != {1}" , c -> {
                                 c.expression(o.stars()).expression(o.createTime());
                             });
                         });
 
                         o.createTime().format("yyyy/MM/dd" ).eq("2023/01/02" );
-                        o.id().nullDefault("yyyy/MM/dd2" ).eq("xxx1" );
+                        o.id().nullOrDefault("yyyy/MM/dd2" ).eq("xxx1" );
                     })
                     .fetcher(o -> o.FETCHER
                             .allFieldsExclude(o.id(), o.title())
@@ -169,7 +169,7 @@ List<Topic> list2 = easyEntityQuery.queryable(Topic.class)
                     .where(o -> o.createTime().format("yyyy/MM/dd" ).eq("2023/01/01" ))
                     .select(o -> new TopicProxy().adapter(r->{
 
-                        r.title().set(o.stars().nullDefault(0).toStr());
+                        r.title().set(o.stars().nullOrDefault(0).toStr());
                         r.alias().setSQL("IFNULL({0},'')" , c -> {
                             c.keepStyle();
                             c.expression(o.id());
