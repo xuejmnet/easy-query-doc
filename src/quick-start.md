@@ -375,7 +375,7 @@ List<Draft3<String, Integer, Integer>> list = easyEntityQuery.queryable(Topic.cl
             r.id().set(o.key1());//key1就是id
             r.stars().set(o.intCount());//COUNT(*)返回int 默认返回long类型
         }))
-        .select(o -> Draft.of(
+        .select(o -> Select.DRAFT.of(
                 o.id().nullOrDefault("123"),//如果为空就赋值123
                 o.stars(),
                 o.stars().abs()//取绝对值
@@ -478,7 +478,7 @@ List<Draft3<Integer, LocalDateTime, String>> list = easyEntityQuery.queryable(To
                     t.id().asc();
                     t1.createTime().desc();
                 })
-                .select((t, t1) -> Draft.of(
+                .select((t, t1) -> Select.DRAFT.of(
                         t.stars(),
                         t.createTime(),
                         t1.title()
