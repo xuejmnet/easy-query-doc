@@ -70,7 +70,7 @@ List<SysUser> users = easyEntityQuery.queryable(SysUser.class)
                                 o.id().eq("1");// t.`id` = 1
                                 o.id().eq(o.createTime().format("yyyy-MM-dd"));// t.`id` = DATE_FORMAT(t.`create_time`,'%Y-%m-%d')
                                 o.createTime().format("yyyy-MM-dd").eq("2023-01-02");//DATE_FORMAT(t.`create_time`,'%Y-%m-%d') = '2023-01-02'
-                                o.name().nullDefault("unknown").like("123");
+                                o.name().nullOrDefault("unknown").like("123");
                                 o.phone().isNotBank();
                             })
                             //可以使用select也可以使用fetcher来实现 fetcher适合返回单个对象的数据获取
@@ -140,7 +140,7 @@ List<SysUser> list = easyProxyQuery.queryable(utable)
                     o.eq(utable.id(), "1")
                             .eq(utable.id(), utable.createTime().format("yyyy-MM-dd"))
                             .eq(utable.createTime().format("yyyy-MM-dd"),"2023-01-01")
-                            .like(utable.name().nullDefault("unknown"),"123")
+                            .like(utable.name().nullOrDefault("unknown"),"123")
                             .isNotBank(utable.phone());
                 })
                 .groupBy(o -> o.column(utable.id()))
