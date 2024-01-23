@@ -16,7 +16,7 @@ title: Java对象数据库值转换
 接口  | 功能  
 ---  | --- 
 ValueConverter  | 将数据库和对象值进行互相转换的接口
-EnumValueAutoConverter  | 支持枚举类型全局作用到没有添加`ValueConverter`注解的属性上(只要对应的apply方法返回true)
+EnumValueAutoConverter  | 支持枚举类型全局作用到没有添加`ValueConverter`注解的属性上(只要对应的apply方法返回true),使用这个接口无需添加`Column(conversion=xxxx.class)`
 \<TProperty>  | 对象属性类型
 \<TProvider>  | 数据库对应的java类型
 
@@ -73,8 +73,7 @@ public class EnumConverter implements ValueConverter<IEnum<?>,Integer> {
 }
 
 //如果你希望当前枚举转换配置到全局可以使用 EnumValueAutoConverter
-
-
+//EnumValueAutoConverter第一个泛型参数 不可以是具体枚举类型除非整个系统就一个枚举类型
 public class EnumConverter implements EnumValueAutoConverter<IEnum<?>,Integer> {
     @Override
     public Integer serialize(IEnum<?> iEnum, ColumnMetadata columnMetadata) {
