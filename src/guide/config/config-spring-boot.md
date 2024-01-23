@@ -197,6 +197,29 @@ public class MyConfiguration {
 
 ```
 
+
+::: warning 说明!!!
+> 创建完拦截器后需要配置到`QueryConfiguration`,如果你是`springboot`并且是默认`easy-query`只需要添加`@Component`如果是`solon`那么可以查看[配置或配置到所有数据源](/easy-query-doc/guide/config/config-solon.html#solon所有配置)
+> 如果您是自行构建的`easy-query`需要自行添加拦截器
+```java
+QueryRuntimeContext runtimeContext = easyQuery.getRuntimeContext();
+QueryConfiguration configuration = runtimeContext.getQueryConfiguration();
+configuration.applyEncryptionStrategy(new DefaultAesEasyEncryptionStrategy());
+configuration.applyLogicDeleteStrategy(new MyLogicDelStrategy());
+configuration.applyInterceptor(new MyEntityInterceptor());
+configuration.applyShardingInitializer(new DataSourceAndTableShardingInitializer());
+configuration.applyValueConverter(new EnumConverter());
+configuration.applyColumnValueSQLConverter(new MySQLAesEncryptColumnValueSQLConverter());
+configuration.applyGeneratedKeySQLColumnGenerator(new MyDatabaseIncrementSQLColumnGenerator());
+TableRouteManager tableRouteManager = runtimeContext.getTableRouteManager();
+tableRouteManager.addRoute(new TopicShardingTableRoute());
+DataSourceRouteManager dataSourceRouteManager = runtimeContext.getDataSourceRouteManager();
+dataSourceRouteManager.addRoute(new TopicShardingDataSourceTimeDataSourceRoute());
+```
+:::
+
+
+
 ```log
 Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'easyQueryInitializeOption' defined in class path resource [com/easy/query/sql/starter/EasyQueryStarterAutoConfiguration.class]: Unsatisfied dependency expressed through method 'easyQueryInitializeOption' parameter 1; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'java.util.Map<java.lang.String, com.easy.query.core.basic.extension.version.VersionStrategy>' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {}
 ```
