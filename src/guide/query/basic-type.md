@@ -15,7 +15,12 @@ title: 基本类型查询
 ```java
 List<String> list2 = easyEntityQuery.queryable(Topic.class)
                 .where(f -> f.id().eq("1"))
-                .select(s -> new StringProxy(table.id()))
+                .select(s -> new StringProxy(s.id()))
+                .toList();
+
+List<String> list2 = easyEntityQuery.queryable(Topic.class)
+                .where(f -> f.id().eq("1"))
+                .selectColumn(s -> s.id())
                 .toList();
 
 ==> Preparing: SELECT t.`id` FROM `t_topic` t WHERE t.`id` = ?
@@ -74,7 +79,12 @@ List<String> list1 = easyQueryClient.queryable(Topic.class)
 ```java
 List<Integer> list2 = easyEntityQuery.queryable(Topic.class)
                 .where(f -> f.id().eq( "1"))
-                .select(s -> new IntegerProxy(table.stars()))
+                .select(s -> new IntegerProxy(s.stars()))
+                .toList();
+
+List<Integer> list2 = easyEntityQuery.queryable(Topic.class)
+                .where(f -> f.id().eq( "1"))
+                .selectColumn(s -> s.stars())
                 .toList();
 
 ==> Preparing: SELECT t.`stars` FROM `t_topic` t WHERE t.`id` = ?
