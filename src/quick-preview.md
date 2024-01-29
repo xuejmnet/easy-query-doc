@@ -74,7 +74,7 @@ List<SysUser> users = easyEntityQuery.queryable(SysUser.class)
                                 o.phone().isNotBank();
                             })
                             //可以使用select也可以使用fetcher来实现 fetcher适合返回单个对象的数据获取
-                            .fetcher(o->o.FETCHER.id().name().phone().departName())
+                            .fetchBy(o->o.FETCHER.id().name().phone().departName())
                             .toList();
 
 ==> Preparing: SELECT t.`id`,t.`name`,t.`phone`,t.`depart_name` FROM `a222` t WHERE t.`id` = ? AND  t.`id` = DATE_FORMAT(t.`create_time`,'%Y-%m-%d') AND DATE_FORMAT(t.`create_time`,'%Y-%m-%d') = ? AND IFNULL(t.`name`,?) LIKE ? AND (t.`phone` IS NOT NULL AND t.`phone` <> '' AND LTRIM(t.`phone`) <> '')

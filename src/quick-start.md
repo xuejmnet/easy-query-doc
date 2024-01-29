@@ -208,12 +208,16 @@ public class Main {
                 })
                 .firstOrNull();
 
-
+        //根据条件返回符合的集合默认ArrayList实现
         List<Topic> list = easyEntityQuery.queryable(Topic.class)
                 .where(o -> {
                     o.id().eq("1");
                 })
                 .toList();
+        //判断小明是否存在
+       boolean exists= easyEntityQuery.queryable(Topic.class).where(o->o.name().like("小明")).any();
+       //断言小明是否存在
+       easyEntityQuery.queryable(Topic.class).where(o->o.name().like("小明")).required("未找到小明");
 
         System.out.println("Hello world!");
     }
@@ -259,6 +263,16 @@ Topic topic3 = easyEntityQuery.queryable(Topic.class)
 ==> Preparing: SELECT `id`,`stars`,`title`,`create_time` FROM `t_topic` WHERE `id` = ? LIMIT 1
 ==> Parameters: 1(String)
 <== Time Elapsed: 7(ms)
+<== Total: 1
+
+
+//根据id查询
+Topic topic2 = easyEntityQuery.queryable(Topic.class)
+        .findOrNull("1");
+
+==> Preparing: SELECT `id`,`stars`,`title`,`create_time` FROM `t_topic` WHERE `id` = ?
+==> Parameters: 1(String)
+<== Time Elapsed: 6(ms)
 <== Total: 1
 ```
 
