@@ -29,7 +29,7 @@ easyEntityQuery.queryable(HelpProvince.class)
         //         province.name().set(o.name());
         //         return province;
         // })
-        //.fetcher(o->o.FETCHER.id().name())//如果返回结果一样可以用fetcher
+        //.fetchBy(o->o.FETCHER.id().name())//如果返回结果一样可以用fetcher
         .toList();
 ```
 
@@ -44,7 +44,7 @@ easyEntityQuery.queryable(HelpProvince.class) //1
                 r.id().set(o.id());
                 r.name().set(o.name());
         }))
-        //.fetcher(o->o.FETCHER.id().name())//如果返回结果一样可以用fetcher
+        //.fetchBy(o->o.FETCHER.id().name())//如果返回结果一样可以用fetcher
         .where(o->o.id().eq("1")) // 5
         .select(o->new HelpProvinceProxy().adapter(r->{
                 r.id().set(o.id());//6

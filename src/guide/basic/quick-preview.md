@@ -311,7 +311,7 @@ Topic topic = easyEntityQuery.queryable(Topic.class)
 
 Topic topic = easyEntityQuery.queryable(Topic.class)
                     .where(o -> o.id().eq("1"))
-                    .fetcher(o->o.FETCHER.id().title().name().content().......)
+                    .fetchBy(o->o.FETCHER.id().title().name().content().......)
                     .firstOrNull();
 
 ==> Preparing: SELECT `id`,`title`  FROM `t_topic` WHERE `id` = ? LIMIT 1
