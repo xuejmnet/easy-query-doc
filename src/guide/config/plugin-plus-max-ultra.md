@@ -40,7 +40,33 @@ title: 解放生产力🔥🔥🔥
 ::: tip 填写说明
 > `o,t1:t2,t1:t2:t3`先按逗号分割,然后按冒号分割,分割结果按逗号分组,如果每组数量和lambda数量一致则使用这边的参数,如果配置了`@EasyAlias`对应的那个还是用`@EasyAlias`
 比如查询单表没有配置`@EasyAlias`但是全局配置了`o,t1:t2,t1:t2:t3`,那么入参一个就会生成`queryable(Topic.class).where(o->)`
-> 如果参数不匹配则会按照每个对象的对象名称获取大写字母组成缩写,但是如果大写字母就一个则采用类名小写模式,比如`queryable(Topic.class).where(topic->)`
+> 如果参数不匹配则会按照每个对象的对象名称获取大写字母组成缩写,但是如果大写字母就一个则采用类名小写模式,比如`queryable(Topic.class).where(t->)`
+```java
+
+    /**
+     * 将对象类型转成lambda入参短名称
+     * @param str Topic || SysUser
+     * @param index 在第几个参数位
+     * @param total 总共有几个参数
+     * @return
+     */
+    public static String lambdaShortName(String str,int index,int total) {
+        char[] chars = str.toCharArray();
+        if(chars.length==0){
+            return "t";
+        }
+        for (int i = 0; i < chars.length; i++) {
+            if (Character.isUpperCase(chars[i])) {
+                String parameter = String.valueOf(chars[i]).toLowerCase();
+                if(total>1){
+                    return parameter+(index+1);
+                }
+                return parameter;
+            }
+        }
+        return str.toLowerCase();
+    }
+```
 :::
 
 
@@ -49,3 +75,35 @@ title: 解放生产力🔥🔥🔥
 前面几个都是直接`.`使用即可
 
 只有`join`比较特殊,`join`需要编写完`.leftJoin(Toplic.class, on )`在第一个join表写完后逗号后面空格填写`on`那么就会有对应的只能提示来填充lambda参数
+
+## 默认错误消息
+`EasyAssertMessage`注解实现默认错误消息
+```java
+@EasyAssertMessage("未找到主题信息")
+@EasyAlias("topic")
+public class Topic{
+    //......
+}
+//默认错误
+// select 1 from topic where id=?
+easyEntityQuery.queryable(Topic.class).whereById("id").required()//抛错 未找到主题信息 
+// select id,name,age.... from topic where id=?
+easyEntityQuery.queryable(Topic.class).findNotNull("id")//抛错 未找到主题信息
+// select id,name,age.... from topic where id=? limit 1
+easyEntityQuery.queryable(Topic.class).whereById("id").firstNotNull()//抛错 未找到主题信息
+// select id,name,age.... from topic where id=? 附加断言仅一条
+easyEntityQuery.queryable(Topic.class).whereById("id").singleNotNull()//抛错 未找到主题信息
+
+
+
+//手动错误
+// select 1 from topic where id=?
+easyEntityQuery.queryable(Topic.class).whereById("id").required("自定义错误")//抛错 未找到主题信息 
+// select id,name,age.... from topic where id=?
+easyEntityQuery.queryable(Topic.class).findNotNull("id","自定义错误")//抛错 未找到主题信息
+// select id,name,age.... from topic where id=? limit 1
+easyEntityQuery.queryable(Topic.class).whereById("id").firstNotNull("自定义错误")//抛错 未找到主题信息
+// select id,name,age.... from topic where id=? 附加断言仅一条
+easyEntityQuery.queryable(Topic.class).whereById("id").singleNotNull("自定义错误")//抛错 未找到主题信息
+```
+
