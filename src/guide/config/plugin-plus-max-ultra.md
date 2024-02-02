@@ -107,3 +107,21 @@ easyEntityQuery.queryable(Topic.class).whereById("id").firstNotNull("自定义�
 easyEntityQuery.queryable(Topic.class).whereById("id").singleNotNull("自定义错误")//抛错 未找到主题信息
 ```
 
+## 快速匿名对象
+
+`anonymous`智能提示
+
+<img src="/plugin-max6.jpg">
+
+
+<img src="/plugin-max7.jpg">
+
+
+
+<img src="/plugin-max8.jpg">
+
+
+<img src="/plugin-max9.jpg">
+
+
+<img src="/plugin-max10.jpg">
