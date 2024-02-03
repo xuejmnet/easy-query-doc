@@ -41,6 +41,7 @@ EasyQuery官方QQ群: 170029046
                             //如果映射属性对应的column name是一样的【！！！不是属性名是属性对应的列名是一样的】
                             //也可以用以下写法
                             // .select(o -> new SysUserProxy().selectExpression(o.id(),o.name(),o.title()))
+                            //.select(SysUserVO.class)//全自动属性匹配映射 SysUserVO可以是SysUser拷贝的属性
                             .toList();
 
 ==> Preparing: SELECT t.`id` AS `id`,CAST(COUNT(*) AS CHAR) AS `phone` FROM `sys_user` t WHERE t.`id` = ? AND t.`id` LIKE ? GROUP BY t.`id`
@@ -63,7 +64,15 @@ List<TopicTypeTest1> list = easyEntityQuery.queryable(TopicTypeTest1.class)
 <== Time Elapsed: 4(ms)
 <== Total: 0
 
+@Data
+public class SysUserVO{
 
+    private String id;
+    private String name;
+    private String phone;
+    //....自己需要的属性
+
+}
 
 List<SysUser> users = easyEntityQuery.queryable(SysUser.class)
                             .where(o->{
@@ -75,6 +84,7 @@ List<SysUser> users = easyEntityQuery.queryable(SysUser.class)
                             })
                             //可以使用select也可以使用fetcher来实现 fetcher适合返回单个对象的数据获取
                             .fetchBy(o->o.FETCHER.id().name().phone().departName())
+                            //.select(SysUserVO.class)//全自动属性匹配映射 SysUserVO可以是SysUser拷贝的属性
                             .toList();
 
 ==> Preparing: SELECT t.`id`,t.`name`,t.`phone`,t.`depart_name` FROM `a222` t WHERE t.`id` = ? AND  t.`id` = DATE_FORMAT(t.`create_time`,'%Y-%m-%d') AND DATE_FORMAT(t.`create_time`,'%Y-%m-%d') = ? AND IFNULL(t.`name`,?) LIKE ? AND (t.`phone` IS NOT NULL AND t.`phone` <> '' AND LTRIM(t.`phone`) <> '')
