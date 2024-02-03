@@ -107,6 +107,28 @@ easyEntityQuery.queryable(Topic.class).whereById("id").firstNotNull("自定义�
 easyEntityQuery.queryable(Topic.class).whereById("id").singleNotNull("自定义错误")//抛错 未找到主题信息
 ```
 
+## 看不懂大于小于记不住
+`easy-query`插件贴心的为大家提供了大于等于小于等于不等于等一系列快捷方式
+
+ 支持`EasyQueryClient`、`EasyQuery`、`EasyKtQuery`、`EasyEntityQuery`
+
+
+::: warning 注意点及说明!!!
+> 如果您不是`EasyEntityQuery`那么写法就是`where(o->o>)`直接在参数后面进行`大于`,`大于等于`,`小于`,`小于等于`.....
+:::
+
+<img src="/plugin-max11.jpg">
+
+<img src="/plugin-max12.jpg">
+
+<img src="/plugin-max13.jpg">
+
+<img src="/plugin-max14.jpg">
+
+<img src="/plugin-max15.jpg">
+
+<img src="/plugin-max16.jpg">
+
 ## 快速匿名对象
 
 `anonymous`智能提示
