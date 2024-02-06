@@ -115,8 +115,40 @@ long rows = easyEntityQuery.updatable(Topic.class)
                 .executeRows();
 //rows为1
 
-==> Preparing: UPDATE t_topic SET `title` = `stars` WHERE `id` = ?
+==> Preparing: UPDATE t_topic SET `stars` = `stars` WHERE `id` = ?
 ==> Parameters: 2(String)
+<== Total: 1
+
+
+long rows =  easyEntityQuery.updatable(Topic.class)
+        .setColumns(o->{
+                //o.title().set(o.stars());编译报错因为starts是Integer类型二title是String类型
+                o.title().set(o.stars().toStr());
+                //o.title.setNull()//设置为null
+                //o.title.set((String)null)//设置为null
+        })
+        .whereById("1")
+        .executeRows();
+//rows为1
+
+==> Preparing: UPDATE t_topic SET `title` = CAST(`stars` AS CHAR) WHERE `id` = ?
+==> Parameters: 1(String)
+<== Total: 1
+
+//如果不想stars转成字符串可以用setPropertyType方法来处理
+
+long rows =  easyEntityQuery.updatable(Topic.class)
+        .setColumns(o->{
+                //先将stars设置propertyType
+                o.title().set(o.stars().setPropertyType(String.class));
+        })
+        .whereById("1")
+        .executeRows();
+
+
+
+==> Preparing: UPDATE t_topic SET `title` = `stars` WHERE `id` = ?
+==> Parameters: 1(String)
 <== Total: 1
         
 ```
