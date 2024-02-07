@@ -160,6 +160,10 @@ create table t_topic
 
 <img src="/topic-plugin-use3.png">
 
+如果你是`@EntityProxy`那么生成路径则在
+
+<img src="/entity-proxy.png">
+
 自动生成的`EntityProxy`类会在用户修改属性字段后同步修改
 
 ## 运行
