@@ -118,6 +118,44 @@ Queryable<Topic> where = easyQuery
         });
 ```
 
+## 查询某一张表的所有字段
+```java
+
+List<Map<String, Object>> list1 = easyEntityQuery.queryable(BlogEntity.class)
+        .leftJoin(Topic.class, (b, t2) -> b.id().eq(t2.id()))
+        .select((b1, t2) -> {
+                MapProxy result = new MapProxy();
+                result.selectAll(b1);
+                result.put("xx",t2.createTime());
+                return result;
+        })
+        .toList();
+
+==> Preparing: SELECT t.`id`,t.`create_time`,t.`update_time`,t.`create_by`,t.`update_by`,t.`deleted`,t.`title`,t.`content`,t.`url`,t.`star`,t.`publish_time`,t.`score`,t.`status`,t.`order`,t.`is_top`,t.`top`,t1.`create_time` AS `xx` FROM `t_blog` t LEFT JOIN `t_topic` t1 ON t.`id` = t1.`id` WHERE t.`deleted` = ?
+==> Parameters: false(Boolean)
+<== Time Elapsed: 6(ms)
+<== Total: 100
+```
+
+## 查询所有字段忽略其中一个
+```java
+
+List<Map<String, Object>> list1 = easyEntityQuery.queryable(BlogEntity.class)
+        .leftJoin(Topic.class, (b, t2) -> b.id().eq(t2.id()))
+        .select((b1, t2) -> {
+                MapProxy result = new MapProxy();
+                result.selectAll(b1);
+                result.put("xx",t2.createTime());
+                return result;
+        })
+        .toList();
+
+==> Preparing: SELECT t.`id`,t.`create_time`,t.`update_time`,t.`create_by`,t.`update_by`,t.`deleted`,t.`title`,t.`content`,t.`url`,t.`star`,t.`publish_time`,t.`score`,t.`status`,t.`order`,t.`is_top`,t.`top`,t1.`create_time` AS `xx` FROM `t_blog` t LEFT JOIN `t_topic` t1 ON t.`id` = t1.`id` WHERE t.`deleted` = ?
+==> Parameters: false(Boolean)
+<== Time Elapsed: 6(ms)
+<== Total: 100
+```
+
 
 ## 一个相对比较全的查询
 ```java

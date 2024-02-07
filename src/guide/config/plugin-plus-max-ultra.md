@@ -129,7 +129,7 @@ easyEntityQuery.queryable(Topic.class).whereById("id").singleNotNull("自定义�
 
 <img src="/plugin-max16.jpg">
 
-## 快速匿名对象
+<!-- ## 快速匿名对象
 
 `anonymous`智能提示
 
@@ -146,4 +146,4 @@ easyEntityQuery.queryable(Topic.class).whereById("id").singleNotNull("自定义�
 <img src="/plugin-max9.jpg">
 
 
-<img src="/plugin-max10.jpg">
+<img src="/plugin-max10.jpg"> -->
