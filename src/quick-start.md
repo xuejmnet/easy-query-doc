@@ -7,8 +7,10 @@ title: 快速开始🔥🔥🔥
 
 ## EntityQuery
 本次我们采用`easyEntityQuery`来实现优雅的crud
-- @EntityProxy 配合`sql-processor`包+插件使用apt，支持`clear`重新`build`生成或者插件生成
-- @EntityFileProxy 配合插件使用apt apt不会被`clear`清除
+- @EntityProxy (推荐🔥🔥🔥) 配合`sql-processor`包+插件使用apt，支持`clear`重新`build`生成或者插件生成
+- @EntityFileProxy 配合插件使用apt apt不会被`clear`清除(不是很推荐因为依赖插件) 
+
+这边建议推荐使用`@EntityProxy`+`sql-processor`包因为这样可以保证在其他`IDE`下也能使用并且不依赖插件
 
 ## idea 插件安装
 插件的安装可以帮助我们针对自动生成的文件进行快速管理无感.
@@ -16,7 +18,7 @@ title: 快速开始🔥🔥🔥
 
 下面我们分别以两种注解模式来说明如何开发
 
-# EntityProxy
+# EntityProxy 推荐🔥🔥🔥
 ## 依赖注入
 ```xml
     <dependencies>
@@ -68,7 +70,9 @@ title: 快速开始🔥🔥🔥
     </dependencies>
 ```
 
-# EntityFileProxy
+# EntityFileProxy 不是很推荐
+
+不是很推荐除非电脑差
 ## 依赖注入
 ```xml
     <dependencies>
