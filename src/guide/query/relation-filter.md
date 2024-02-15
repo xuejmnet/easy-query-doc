@@ -12,10 +12,11 @@ title: 联级筛选查询 Include Filter
                 .where(s -> {
                     //班级和学生是一对多,所以就是筛选学生里面存在名称叫做小明的
                     s.schoolStudents().exists(x -> x.name().like("小明"));
-                    s.schoolStudents().exists(x -> {
-                        x.name().like("小明");
-                        x.classId().like("123");
-                    });
+                    //下面的写法也可以也可以用多个where来支持
+                    // s.schoolStudents().exists(x -> {
+                    //     x.name().like("小明");
+                    //     x.classId().like("123");
+                    // });
                 })
                 .toList();
 
