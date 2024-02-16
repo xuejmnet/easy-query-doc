@@ -1,7 +1,7 @@
 ---
 title: 联级筛选查询 Include Filter
 ---
-`easy-query`在`1.10.1^`版本后支持了联级删选,并不仅仅支持结果查询,譬如
+`easy-query`在`1.10.3^`版本后支持了联级删选,并不仅仅支持结果查询,譬如
 - 一对一：班级和老师支持查询筛选班级表条件是老师名称叫王老师的班级集合
 - 一对多:班级和学生支持查询筛选班级表条件是存在某个学生叫小明的班级集合
 
@@ -11,12 +11,13 @@ title: 联级筛选查询 Include Filter
  List<SchoolClass> hasXiaoMingClass = easyEntityQuery.queryable(SchoolClass.class)
                 .where(s -> {
                     //班级和学生是一对多,所以就是筛选学生里面存在名称叫做小明的
-                    s.schoolStudents().exists(x -> x.name().like("小明"));
+                    //如果要查询学生里面没有小明的就用`none`方法
+                    s.schoolStudents().any(x -> x.name().like("小明"));
                     //下面的写法也可以也可以用多个where来支持
-                    // s.schoolStudents().exists(x -> {
+                    // s.schoolStudents().where(x -> {
                     //     x.name().like("小明");
                     //     x.classId().like("123");
-                    // });
+                    // }).any();
                 })
                 .toList();
 
@@ -39,7 +40,7 @@ title: 联级筛选查询 Include Filter
 筛选班级里面学生家在`xx路`的班级
 ```java
 List<SchoolClass> studentAddressInXXRoadClasses = easyEntityQuery.queryable(SchoolClass.class)
-                .where(s -> s.schoolStudents().exists(
+                .where(s -> s.schoolStudents().any(
                         x -> x.schoolStudentAddress().address().like("xx路")
                 )).toList();
 
@@ -51,7 +52,7 @@ List<SchoolClass> studentAddressInXXRoadClasses = easyEntityQuery.queryable(Scho
 筛选班级里面学生家在`xx路`,学生名称叫`小明`的班级
 ```java
    List<SchoolClass> studentAddressInXXRoadClasses = easyEntityQuery.queryable(SchoolClass.class)
-                .where(s -> s.schoolStudents().exists(
+                .where(s -> s.schoolStudents().any(
                         x -> {
                             x.schoolStudentAddress().address().like("xx路");
                             x.name().like("小明");
@@ -63,7 +64,7 @@ List<SchoolClass> studentAddressInXXRoadClasses = easyEntityQuery.queryable(Scho
     List<SchoolClass> studentAddressInXXRoadClasses = easyEntityQuery.queryable(SchoolClass.class)
             .where(s -> s.schoolStudents()
                     .where(x->x.schoolStudentAddress().address().like("xx路"))
-                    .where(x->x.name().like("小明")).exists()
+                    .where(x->x.name().like("小明")).any()
             ).toList();
 
 ==> Preparing: SELECT t.`id`,t.`name` FROM `school_class` t WHERE EXISTS (SELECT 1 FROM `school_student` t1 LEFT JOIN `school_student_address` t2 ON t1.`id` = t2.`student_id` WHERE t1.`class_id` = t.`id` AND t2.`address` LIKE ? AND t1.`name` LIKE ? LIMIT 1)
@@ -76,7 +77,7 @@ List<SchoolClass> studentAddressInXXRoadClasses = easyEntityQuery.queryable(Scho
 ```java
        List<SchoolClass> x1 = easyEntityQuery.queryable(SchoolClass.class)
                 .where(s -> s.schoolTeachers()
-                        .exists(x -> x.name().like("x"))).toList();
+                        .any(x -> x.name().like("x"))).toList();
 
 ==> Preparing: SELECT t.`id`,t.`name` FROM `school_class` t WHERE EXISTS (SELECT 1 FROM `school_teacher` t1 WHERE t1.`id` = t.`id` AND EXISTS (SELECT 1 FROM `school_class_teacher` t2 WHERE t2.`teacher_id` = t1.`id` AND t2.`class_id` = t.`id` LIMIT 1) AND t1.`name` LIKE ? LIMIT 1)
 ==> Parameters: %x%(String)                  
