@@ -322,6 +322,13 @@ int intCount = easyEntityQuery.queryable(Topic.class)
 ### 返回自定义列
 ```java
 
+@Data
+@EntityProxy
+public class TopicVO{
+    private String id;
+    private String title;
+}
+
 List<Topic> list = easyEntityQuery.queryable(Topic.class)
         .where(o->{
             o.title().like("123");
@@ -331,7 +338,7 @@ List<Topic> list = easyEntityQuery.queryable(Topic.class)
             o.id().asc();
             o.createTime().desc();
         })
-        .select(o->new TopicProxy().adapter(r->{
+        .select(o->new TopicVOProxy().adapter(r->{
             r.id().set(o.id()); //手动指定赋值
             r.title().set(o.title())
         }))
@@ -446,6 +453,14 @@ EasyPageResult<Topic> pageResult = easyEntityQuery.queryable(Topic.class)
 
 ```java
 
+@Data
+@EntityProxy
+public class TopicVO{
+    private String id;
+    private String title;
+    private Integer stars;
+}
+
 List<Topic> list = easyEntityQuery.queryable(Topic.class)
         .leftJoin(Topic.class, (t, t1) -> {//第一个参数t表示第一个表,第二个参数t1表示第二个表
             t.id().eq(t1.id());// ON t.`id` = t1.`id`
@@ -454,7 +469,7 @@ List<Topic> list = easyEntityQuery.queryable(Topic.class)
             t.title().like("11");
             t1.createTime().le(LocalDateTime.of(2021, 1, 1, 1, 1));
         })
-        .select((t, t1) -> new TopicProxy().adapter(r->{
+        .select((t, t1) -> new TopicVOProxy().adapter(r->{
             r.id().set(t.id());
             r.stars().set(t.stars());
             r.title().set(t1.id());
