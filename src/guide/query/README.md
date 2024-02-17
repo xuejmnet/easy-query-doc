@@ -350,6 +350,15 @@ List<BlogEntityTest> list = easyEntityQuery.queryable(BlogEntity.class)
 List<BlogEntityTest> list = easyEntityQuery.queryable(BlogEntity.class)
         .select(o->new BlogEntityTestProxy().selectAll(o)).toList();
 
+//下面的写法和上面的都是等价的区别就是上面写法支持后续继续查询,而下面的写法仅支持结果返回
+
+        //如果你只查询一张表并且是全属性映射那么可以直接使用class查询
+List<BlogEntityTest> list = easyEntityQuery.queryable(BlogEntity.class)
+        .select(BlogEntityTest.class).toList();
+        
+List<BlogEntityTest> list = easyEntityQuery.queryable(BlogEntity.class)
+        .toList(BlogEntityTest.class);
+
 List<BlogEntityTest> list = easyEntityQuery.queryable(BlogEntity.class).toList(BlogEntityTest.class);
 
 ==> Preparing: SELECT t.`title`,t.`content`,t.`url`,t.`star`,t.`publish_time`,t.`score`,t.`status`,t.`order`,t.`is_top`,t.`top` FROM `t_blog` t WHERE t.`deleted` = ?
