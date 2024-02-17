@@ -23,6 +23,11 @@ title: 解放生产力🔥🔥🔥
 直接使用`where`、`select`等支持代码直接生成lambda的箭头符合如果带有`_code_block`并且会生成对应的`{}`大括号一对
 <img src="/plugin-max3.jpg">
 
+join处理
+
+<img src="/plugin-max3_1.png">
+<img src="/plugin-max3_2.png">
+
 
 ::: warning 注意点及说明!!!
 > 如果您没有配置`@EasyAlias`那么可以在`Tools`->`QuickTipSetting`设置
@@ -98,13 +103,13 @@ easyEntityQuery.queryable(Topic.class).whereById("id").singleNotNull()//抛错 �
 
 //手动错误
 // select 1 from topic where id=?
-easyEntityQuery.queryable(Topic.class).whereById("id").required("自定义错误")//抛错 未找到主题信息 
+easyEntityQuery.queryable(Topic.class).whereById("id").required("自定义错误")//抛错 自定义错误 
 // select id,name,age.... from topic where id=?
-easyEntityQuery.queryable(Topic.class).findNotNull("id","自定义错误")//抛错 未找到主题信息
+easyEntityQuery.queryable(Topic.class).findNotNull("id","自定义错误")//抛错 自定义错误
 // select id,name,age.... from topic where id=? limit 1
-easyEntityQuery.queryable(Topic.class).whereById("id").firstNotNull("自定义错误")//抛错 未找到主题信息
+easyEntityQuery.queryable(Topic.class).whereById("id").firstNotNull("自定义错误")//抛错 自定义错误
 // select id,name,age.... from topic where id=? 附加断言仅一条
-easyEntityQuery.queryable(Topic.class).whereById("id").singleNotNull("自定义错误")//抛错 未找到主题信息
+easyEntityQuery.queryable(Topic.class).whereById("id").singleNotNull("自定义错误")//抛错 自定义错误
 ```
 
 ## 看不懂大于小于记不住
