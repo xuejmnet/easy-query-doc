@@ -15,6 +15,16 @@ OneToMany | 一对多 | 班级和学生
 ManyToOne | 多对一  | 学生和班级
 ManyToMany | 多对多  | 班级和老师
 
+```java
+
+List<SchoolClass> classes = easyEntityQuery.queryable(SchoolClass.class)
+                        //查询班级并且连带查询每个班级最先入学的前5位学生
+                        .include(o -> o.schoolStudents(),x->x.orderBy(u->u.createTime().asc()).limit(5))
+                        .toList();
+
+```
+
+
 ::: tip 感谢!!!
 > 以下关系图有网友 [`糊搞`](https://gitee.com/gollyhu) 大佬提供十分感谢
 :::
