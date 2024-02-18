@@ -256,6 +256,10 @@ easyQuery.insertable(blog)
                 .onDuplicateKeyUpdate(t->t.column(BlogEntity::getStar).column(BlogEntity::getContent))
                 .executeRows();//没有需要修改的所以返回1
 
+easyEntityQuery.insertable(blog)
+                .onDuplicateKeyUpdate(t->t.FETCHER.star().content())
+                .executeRows();//没有需要修改的所以返回1
+
 
 ==> Preparing: INSERT INTO `t_blog` (`id`,`create_time`,`update_time`,`create_by`,`update_by`,`deleted`,`title`,`content`,`url`,`star`,`score`,`status`,`order`,`is_top`,`top`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE `star` = VALUES(`star`), `content` = VALUES(`content`)
 ==> Parameters: 200(String),2000-01-02T01:01:01(LocalDateTime),2000-01-02T01:01:01(LocalDateTime),200(String),200(String),false(Boolean),title200(String),content200(String),http://blog.easy-query.com/200(String),1(Integer),1.2(BigDecimal),1(Integer),1.2(BigDecimal),false(Boolean),false(Boolean)
@@ -299,7 +303,22 @@ easyQuery.insertable(topicAuto)
     .onConflictDoUpdate(TopicAuto::getTitle,t->t.column(TopicAuto::getStars).column(TopicAuto::getCreateTime))
     .executeRows();
 
+
+easyEntityQuery.insertable(topicAuto)
+                .onConflictDoUpdate(t->t.title(),t->t.FETCHER.star().createTime())
+                .executeRows();
+//如果需要设定多约束值
+
+
+
 //INSERT INTO "t_topic_auto" ("stars","title","create_time") VALUES (?,?,?) ON CONFLICT ("title") DO UPDATE SET "stars" = EXCLUDED."stars", "create_time" = EXCLUDED."create_time"
+
+
+easyEntityQuery.insertable(topicAuto)
+                .onConflictDoUpdate(t->t.FETCHER.id().title(),t->t.FETCHER.star().createTime())
+                .executeRows();
+
+//INSERT INTO "t_topic_auto" ("stars","title","create_time") VALUES (?,?,?) ON CONFLICT ("id","title") DO UPDATE SET "stars" = EXCLUDED."stars", "create_time" = EXCLUDED."create_time"
 ```
 
 ## Map插入
