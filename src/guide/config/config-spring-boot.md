@@ -40,16 +40,18 @@ easy-query:
 ```
 ```java
 //依赖注入
+
+@Autowired
+private EasyEntityQuery easyEntityQuery;//(强力推荐🔥🔥🔥)
+
 @Autowired
 private EasyQueryClient easyQueryClient;//通过字符串属性方式来实现查询
 
-//推荐
 @Autowired
 private EasyQuery easyQuery;//对EasyQueryClient的增强通过lambda方式实现查询(推荐)
 
-//推荐
 @Autowired
-private EasyProxyQuery easyProxyQuery;//对EasyQueryClient的增强通过apt代理模式实现强类型(推荐)
+private EasyProxyQuery easyProxyQuery;//建议转EasyEntityQuery
 ```
 
 

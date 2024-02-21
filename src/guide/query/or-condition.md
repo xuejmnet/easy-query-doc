@@ -118,13 +118,13 @@ WHERE
 `and`内部使用`or`链接那么可以将`and`视为括号`(....or....or....)`
 ```java
 Topic topic = easyQuery.queryable(Topic.class)
-                .where(o -> o.eq(Topic::getId, "1").and(
-                        () -> o.like(Topic::getTitle, "你好")
+                .where(o -> o.eq(Topic::getId, "1").and(() -> {
+                            o.like(Topic::getTitle, "你好")
                                 .or()
                                 .eq(Topic::getTitle, "我是title")
                                 .or()
-                                .le(Topic::getCreateTime, LocalDateTime.now())
-                )).firstOrNull();
+                                .le(Topic::getCreateTime, LocalDateTime.now());
+                        })).firstOrNull();
 
 ==> Preparing: SELECT `id`,`stars`,`title`,`create_time` FROM `t_topic` WHERE `id` = ? AND (`title` LIKE ? OR `title` = ? OR `create_time` <= ?) LIMIT 1
 ==> Parameters: 1(String),%你好%(String),我是title(String),2023-07-05T06:25:17.356(LocalDateTime)
@@ -149,13 +149,13 @@ List<Topic> topic2 = easyQuery.queryable(Topic.class)
 和逻辑删除等组合
 ```java
 BlogEntity blog = easyQuery.queryable(BlogEntity.class)
-                .where(o -> o.eq(BlogEntity::getId, "1").and(
-                        () -> o.like(BlogEntity::getTitle, "你好")
+                .where(o -> o.eq(BlogEntity::getId, "1").and(() ->{
+                     o.like(BlogEntity::getTitle, "你好")
                                 .or()
                                 .eq(BlogEntity::getTitle, "我是title")
                                 .or()
-                                .le(BlogEntity::getCreateTime, LocalDateTime.now())
-                )).firstOrNull();
+                                .le(BlogEntity::getCreateTime, LocalDateTime.now());
+                })).firstOrNull();
 
 ==> Preparing: SELECT `id`,`create_time`,`update_time`,`create_by`,`update_by`,`deleted`,`title`,`content`,`url`,`star`,`publish_time`,`score`,`status`,`order`,`is_top`,`top` FROM `t_blog` WHERE `deleted` = ? AND `id` = ? AND (`title` LIKE ? OR `title` = ? OR `create_time` <= ?) LIMIT 1
 ==> Parameters: false(Boolean),1(String),%你好%(String),我是title(String),2023-07-05T06:33:07.090(LocalDateTime)
