@@ -92,7 +92,8 @@ public class EnumConverter implements EnumValueAutoConverter<IEnum<?>,Integer> {
     }
     @Override
     public boolean apply(Class<?> entityClass, Class<IEnum<?>> propertyType) {
-        return true; //true表示如果对应的属性没有添加注解或者没有指定ValueConverter,并且是枚举Enum<?>,那么会进入当前方法如果返回true那么会默认将当前转换作用到属性上
+        return IEnum.class.isAssignableFrom(propertyType); //true表示如果对应的属性没有添加注解或者没有指定ValueConverter,并且是枚举Enum<?>,那么会进入当前方法如果返回true那么会默认将当前转换作用到属性上
+        //return true; //true表示如果对应的属性没有添加注解或者没有指定ValueConverter,并且是枚举Enum<?>,那么会进入当前方法如果返回true那么会默认将当前转换作用到属性上
     }
 }
 
