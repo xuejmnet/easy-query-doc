@@ -4,7 +4,12 @@ export const zhSidebar = sidebar({
   "/": [
     "",
     "quick-preview",
-    "quick-start",
+    {
+      text: "起步",
+      prefix: "startup/",
+      children: ["readme.md","quick-start","quick-plugin","dsl","nodsl"],
+    },
+    // "quick-start",
     "question",
     "db_support",
     {
