@@ -110,6 +110,7 @@ public class SchoolStudent implements ProxyEntityAvailable<SchoolStudent, School
     private String id;
     private String classId;
     private String name;
+    private String age;
 
     @Navigate(value = RelationTypeEnum.ManyToOne, selfProperty = "classId")
     private SchoolClass schoolClass;
