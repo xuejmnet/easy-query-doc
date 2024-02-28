@@ -407,7 +407,7 @@ public class JsonConverter implements ValueConverter<Object, String> {
         }
         //采用复杂类型支持对象json和array集合
         ComplexPropType complexType = columnMetadata.getComplexPropType();
-        return JSON.parseObject(s, complexType.getComplexType());
+        return JSON.parseObject(s, complexType.complexType());
     }
 }
 
