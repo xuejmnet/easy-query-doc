@@ -214,12 +214,20 @@ List<SchoolClass> list = easyEntityQuery.queryable(SchoolClass.class)
         }).toList();
 ```
 ## 案例4
-查询班级下面存在学生平均年龄大于12岁的班级(可以用户获取班级语文平均分不足60的同理)
+查询班级下面存在学生平均年龄小于等于12岁的班级(可以用户获取班级语文平均分不足60的同理)
 ```java
 
 List<SchoolClass> list = easyEntityQuery.queryable(SchoolClass.class)
         .where(s -> {
             s.schoolStudents().avg(stu->stu.age()).le(BigDecimal.valueOf(12));
+        }).toList();
+```
+查询班级下面存在学生为男生的平均年龄小于等于12岁的班级
+```java
+
+List<SchoolClass> list = easyEntityQuery.queryable(SchoolClass.class)
+        .where(s -> {
+            s.schoolStudents().where(o->o.sex().eq(SexEnum.Male)).avg(stu->stu.age()).le(BigDecimal.valueOf(12));
         }).toList();
 ```
 

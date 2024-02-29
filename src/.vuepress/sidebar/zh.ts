@@ -7,7 +7,7 @@ export const zhSidebar = sidebar({
     {
       text: "起步",
       prefix: "startup/",
-      children: ["readme.md","quick-start","quick-plugin","nodsl","dsl"],
+      children: ["readme.md","quick-start","quick-plugin","nodsl","dsl","framework-springboot","multi-module"],
     },
     // "quick-start",
     "question",
