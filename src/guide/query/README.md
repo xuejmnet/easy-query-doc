@@ -386,7 +386,7 @@ public class BlogEntityTest2 {
      */
     private Boolean top;
 }
-``
+```
 
 ::: code-tabs
 @tab 对象模式
