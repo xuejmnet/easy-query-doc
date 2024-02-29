@@ -333,11 +333,12 @@ public class SchoolTeacherVO {
 
 ::: 
 
-自动筛选返回结构化数据
+
+自动筛选返回结构化数据,要求对应的导航属性是一样的才可以比如数据库实体关联学生属性叫做`shoolStudents`那么VO也必须是这个名称
 ```java
 //查询班级叫做一班的并且返回对应的VO并且会自动根据VO会拉取相应的数据
 List<SchoolClassVO> listx= easyEntityQuery.queryable(SchoolClass.class)
                         .where(s -> s.name().like("一班"))
                         .selectAutoInclude(SchoolClassVO.class)
                         .toList();
-```
+``` 
