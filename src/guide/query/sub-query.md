@@ -14,7 +14,7 @@ EntityQueryable<BlogEntityProxy, BlogEntity> subQueryable = easyEntityQuery.quer
         .where(o -> o.id().eq("1" ));
 
 List<Topic> list = easyEntityQuery.queryable(Topic.class)
-        .where(o -> o.exists(() -> {
+        .where(o -> o.expression().exists(() -> {
                 return subQueryable.where(q -> q.id().eq(o.id()));
         })).toList();
 
@@ -33,7 +33,7 @@ List<Topic> list = easyEntityQuery.queryable(Topic.class)
 
 
 List<Topic> x = easyQuery
-        .queryable(Topic.class).where(o -> o.exists(subQueryable.where(q -> q.eq(o, BlogEntity::getId, Topic::getId)))).toList();
+        .queryable(Topic.class).where(o -> o.expression().exists(subQueryable.where(q -> q.eq(o, BlogEntity::getId, Topic::getId)))).toList();
 
 
 ==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM `t_topic` t WHERE EXISTS (SELECT 1 FROM `t_blog` t1 WHERE t1.`deleted` = ? AND t1.`id` = ? AND t1.`id` = t.`id`)
