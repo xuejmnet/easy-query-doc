@@ -6,6 +6,19 @@ order: 10
 # 介绍
 `easy-query`的逻辑删除可以帮助用户在`select`的时候过滤逻辑删除字段，`update`的时候也可以，`delete`的时候也可以转换对应的`update`,并且系统提供了大量的默认逻辑删除策略,并且用户也可以自定义实现更多的逻辑删除
 
+方法 | 默认 | 描述  
+--- | --- | --- 
+disableLogicDelete | 禁用逻辑删除  | 不具有跨表达式的传递性也就是子查询逻辑删除独立计算
+enableLogicDelete | 启用逻辑删除  | 不具有跨表达式的传递性也就是子查询逻辑删除独立计算
+useLogicDelete | 传入是否启用值  | 不具有跨表达式的传递性也就是子查询逻辑删除独立计算
+tableLogicDelete | 禁用最近的一张表  | 不具有跨表达式的传递性也就是子查询逻辑删除独立计算,会和全局`disableLogicDelete`、`enableLogicDelete`、`useLogicDelete`互相作用`and`
+relationLogicDelete | 禁用启用关联关系表  | 不具有传递性也会和全局作用
+
+
+::: warning 说明!!!
+> 判断顺序:都启用的情况下才会去判断是否禁用,如果全局设置禁用那么不会去判断是否启用
+:::
+
 ## demo数据
 ::: code-tabs
 @tab LogicDelTopic
