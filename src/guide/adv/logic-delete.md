@@ -205,10 +205,10 @@ public class MyLogicDelStrategy extends AbstractLogicDeleteStrategy {
     @Override
     protected SQLExpression1<ColumnSetter<Object>> getDeletedSQLExpression(LogicDeleteBuilder builder, String propertyName) {
 //        LocalDateTime now = LocalDateTime.now();
-//        return o->o.set(propertyName,now);
+//        return o->o.set("createTime",now);
         //上面的是错误用法,将now值获取后那么这个now就是个固定值而不是动态值
-        return o->o.set(propertyName,LocalDateTime.now())
-                .set("deletedUser",CurrentUserHelper.getUserId());
+        return o->o.set(propertyName,CurrentUserHelper.getUserId())
+                .set("createTime",LocalDateTime.now());
     }
 
     @Override

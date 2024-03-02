@@ -146,7 +146,7 @@ public class DefaultEntityInterceptor implements EntityInterceptor, UpdateSetInt
 
     @Override
     public String name() {
-        return CommonConstant.Interceptor.DEFAULT_INTERCEPTOR;
+        return "DEFAULT_INTERCEPTOR";//后续禁用拦截器或者启用拦截器使用这个名称代表当前拦截器
     }
 
     @Override
