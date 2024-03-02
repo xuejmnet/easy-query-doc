@@ -39,8 +39,10 @@ public abstract class BaseEntity implements Serializable, Cloneable {
     private String updateBy;
     /**
      * 是否删除;是否删除
+     * 其中[strategyName = "DELETE_WITH_USER_TIME"]表示逻辑删除策略使用名称叫做[DELETE_WITH_USER_TIME]的
+     * 所以你自定义的时候必须注册一个名称[DELETE_WITH_USER_TIME]的逻辑删除
      */
-    @LogicDelete(strategy = LogicDeleteStrategyEnum.CUSTOM,strategyName = CommonConstant.DeleteStrategy.DELETE_WITH_USER_TIME)
+    @LogicDelete(strategy = LogicDeleteStrategyEnum.CUSTOM,strategyName = "DELETE_WITH_USER_TIME")
     @UpdateIgnore
     private Boolean deleted;
 
@@ -165,7 +167,7 @@ public class MyBooleanLogicDeleteStrategy extends AbstractLogicDeleteStrategy {
     private static final Set<Class<?>> allowedPropertyTypes =new HashSet<>(Arrays.asList(Boolean.class,boolean.class));
     @Override
     public String getStrategy() {
-        return CommonConstant.DeleteStrategy.DELETE_WITH_USER_TIME;
+        return "DELETE_WITH_USER_TIME";//后续用户指定逻辑删除名称就是用这个名称即可
     }
 
     @Override
