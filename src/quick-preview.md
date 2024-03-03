@@ -51,6 +51,18 @@ EasyQuery官方QQ群: 170029046
 ==> Preparing: SELECT t.`id` AS `id`,CAST(COUNT(*) AS CHAR) AS `phone` FROM `sys_user` t WHERE t.`id` = ? AND t.`id` LIKE ? GROUP BY t.`id`
 ==> Parameters: 1(String),%123%(String)
 
+//vo无需使用代理模式也可以映射
+    List<TopicTypeVO> vo = easyEntityQuery.queryable(BlogEntity.class)
+            .leftJoin(SysUser.class, (b, s2) -> b.id().eq(s2.id()))
+            .select(TopicTypeVO.class, (b1, s2) -> Select.of(
+                    b1.FETCHER.id().content().createTime().as("createTime2"),
+                    s2.FETCHER.address().idCard()
+            )).toList();
+
+==> Preparing: SELECT t.`id`,t.`content`,t.`create_time` AS `create_time2`,t1.`address`,t1.`id_card` FROM `t_blog` t LEFT JOIN `easy-query-test`.`t_sys_user` t1 ON t.`id` = t1.`id` WHERE t.`deleted` = ?
+==> Parameters: false(Boolean)
+
+
 //左右结构转换,大部分orm只支持左列右值但是easy-query还支持右值左列或者右值左值
 
 LocalDateTime begin=LocalDateTime.of(2020,1,1,1,1);
