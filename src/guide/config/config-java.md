@@ -252,7 +252,7 @@ Topic topic =  easyQueryClient.queryable(Topic.class)
 //强类型api
  EasyProxyuery easyProxyQuery = new DefaultEasyProxyQuery(easyQueryClient);
 //使用新版本api对象查询
-EntityQuery entityQuery = new DefaultEntityQuery(easyQueryClient);
+EasyEntityQuery easyEntityQuery = new DefaultEasyEntityQuery(easyQueryClient);
 ```
 
 <!-- ## 演示数据
