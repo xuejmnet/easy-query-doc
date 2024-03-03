@@ -103,9 +103,21 @@ public class DefaultEntityInterceptor implements EntityInterceptor, UpdateSetInt
         if (baseEntity.getDeleted() == null) {
             baseEntity.setDeleted(false);
         }
+        
         if (baseEntity.getId() == null) {
             baseEntity.setId(IdHelper.nextId());
         }
+        //如果你部分对象需要使用雪花id,那么你可以定义一个雪花id的空接口
+        //然后让对象继承这个空接口
+        // if(雪花ID.class.isAssignableFrom(entity.getClass())){
+        //     if (baseEntity.getId() == null) {
+        //         baseEntity.setId(//赋值雪花id);
+        //     }
+        // }else{
+        //     if (baseEntity.getId() == null) {
+        //         baseEntity.setId(IdHelper.nextId());
+        //     }
+        // }
     }
 
     /**
