@@ -2,9 +2,9 @@
 title: 对象关系查询 ✨
 ---
 
-为什么我们需要对象关系查询,为什么对象关系查询叫做`nodsl`一个好的orm的方向肯定是不仅仅是dsl语句,毕竟`dsl`语句只是强类型拼接`sql`,对象关系才是`orm`的精髓，但是如果一个`orm`只有对象关系查询那么这个`orm`也不是一个好的`orm`,一个好的`orm`应该是`dsl+nodsl`
+为什么我们需要对象关系查询,为什么对象关系查询叫做`nodsl`一个好的 orm 的方向肯定是不仅仅是 dsl 语句,毕竟`dsl`语句只是强类型拼接`sql`,对象关系才是`orm`的精髓，但是如果一个`orm`只有对象关系查询那么这个`orm`也不是一个好的`orm`,一个好的`orm`应该是`dsl+nodsl`
 
-默认不使用include那么是不会自动查询导航属性,如果select返回导航属性那么自动会进行include,如果是VO对象映射那么include也需要手动调用.
+默认不使用 include 那么是不会自动查询导航属性,如果 select 返回导航属性那么自动会进行 include,如果是 VO 对象映射那么 include 也需要手动调用.
 
 以下情况不需要调用`include`或者`includes`
 
@@ -13,30 +13,28 @@ title: 对象关系查询 ✨
 - 返回导航属性的列比如`.selectColumn(o->o.parent().id())`
 - 返回对多的导航属性比如`.select(o->o.roles().toList())`
 
-
-
 ::: danger 说明!!!
-> 如果您的对象关系涉及到多对多请使用 `1.10.29+`的版本,在之前版本会有一个失误导致关系会提前在`where`中体现导致结果不正确.再次感谢用户`←X→↑Y↓`大佬的测试指出问题所在
-:::
 
+> 如果您的对象关系涉及到多对多请使用 `1.10.29+`的版本,在之前版本会有一个失误导致关系会提前在`where`中体现导致结果不正确.再次感谢用户`←X→↑Y↓`大佬的测试指出问题所在
+> :::
 
 ## 关系对象
+
 接下来我将演示学校的关系信息,也就是
 
 `班级`,`老师`,`学生`,`学生家庭地址`
 
 其中一个班级有多个学生,一个班级有多个老师,一个老师也可以教多个班级,每个学生都有自己的家庭地址
 
-
-
 ::: code-tabs
 @tab 班级
+
 ```java
 
 @Table("school_class")
 @Data
 @ToString
-@EntityFileProxy
+@EntityProxy
 public class SchoolClass implements ProxyEntityAvailable<SchoolClass , SchoolClassProxy> {
     @Column(primaryKey = true)//主键
     private String id;
@@ -64,7 +62,7 @@ public class SchoolClass implements ProxyEntityAvailable<SchoolClass , SchoolCla
 @Table("school_class_teacher")
 @Data
 @ToString
-@EntityFileProxy
+@EntityProxy
 public class SchoolClassTeacher implements ProxyEntityAvailable<SchoolClassTeacher , SchoolClassTeacherProxy> {
     @Column(primaryKey = true)
     private String classId;
@@ -79,17 +77,18 @@ public class SchoolClassTeacher implements ProxyEntityAvailable<SchoolClassTeach
 ```
 
 @tab 老师
+
 ```java
 
 @Table("school_teacher")
 @Data
 @ToString
-@EntityFileProxy
+@EntityProxy
 public class SchoolTeacher implements ProxyEntityAvailable<SchoolTeacher , SchoolTeacherProxy> {
     @Column(primaryKey = true)
     private String id;
     private String name;
-    
+
     //导航属性如果您不需要根据老师来处理班级那么可以不加
     @Navigate(value = RelationTypeEnum.ManyToMany
             , mappingClass = SchoolClassTeacher.class
@@ -105,13 +104,15 @@ public class SchoolTeacher implements ProxyEntityAvailable<SchoolTeacher , Schoo
     }
 }
 ```
+
 @tab 学生
+
 ```java
 
 @Table("school_student")
 @Data
 @ToString
-@EntityFileProxy
+@EntityProxy
 public class SchoolStudent implements ProxyEntityAvailable<SchoolStudent, SchoolStudentProxy> {
     @Column(primaryKey = true)
     private String id;
@@ -131,13 +132,15 @@ public class SchoolStudent implements ProxyEntityAvailable<SchoolStudent, School
     }
 }
 ```
+
 @tab 学生家庭地址
+
 ```java
 
 @Table("school_student_address")
 @Data
 @ToString
-@EntityFileProxy
+@EntityProxy
 public class SchoolStudentAddress implements ProxyEntityAvailable<SchoolStudentAddress , SchoolStudentAddressProxy> {
     private String id;
     private String studentId;
@@ -152,9 +155,12 @@ public class SchoolStudentAddress implements ProxyEntityAvailable<SchoolStudentA
 }
 ```
 
-::: 
-## 案例1
+:::
+
+## 案例 1
+
 查询班级下面存在学生姓金的班级
+
 ```java
 List<SchoolClass> list = easyEntityQuery.queryable(SchoolClass.class)
                 .where(s -> {
@@ -178,6 +184,7 @@ List<SchoolClass> list = easyEntityQuery.queryable(SchoolClass.class)
                     }).any();
                 }).toList();
 ```
+
 查询班级下面不存在学生姓金的班级
 
 ```java
@@ -197,8 +204,10 @@ List<SchoolClass> list = easyEntityQuery.queryable(SchoolClass.class)
                 }).toList();
 ```
 
-## 案例2
+## 案例 2
+
 查询班级下面存在学生家地址是绍兴市的班级有哪些
+
 ```java
 
 List<SchoolClass> list = easyEntityQuery.queryable(SchoolClass.class)
@@ -209,8 +218,10 @@ List<SchoolClass> list = easyEntityQuery.queryable(SchoolClass.class)
         }).toList();
 ```
 
-## 案例3
-查询班级下面存在学生姓金的有且只有5位的班级
+## 案例 3
+
+查询班级下面存在学生姓金的有且只有 5 位的班级
+
 ```java
 
 List<SchoolClass> list = easyEntityQuery.queryable(SchoolClass.class)
@@ -220,8 +231,11 @@ List<SchoolClass> list = easyEntityQuery.queryable(SchoolClass.class)
             }).count().eq(5L);
         }).toList();
 ```
-## 案例4
-查询班级下面存在学生平均年龄小于等于12岁的班级(可以用户获取班级语文平均分不足60的同理)
+
+## 案例 4
+
+查询班级下面存在学生平均年龄小于等于 12 岁的班级(可以用户获取班级语文平均分不足 60 的同理)
+
 ```java
 
 List<SchoolClass> list = easyEntityQuery.queryable(SchoolClass.class)
@@ -229,7 +243,9 @@ List<SchoolClass> list = easyEntityQuery.queryable(SchoolClass.class)
             s.schoolStudents().avg(stu->stu.age()).le(BigDecimal.valueOf(12));
         }).toList();
 ```
-查询班级下面存在学生为男生的平均年龄小于等于12岁的班级
+
+查询班级下面存在学生为男生的平均年龄小于等于 12 岁的班级
+
 ```java
 
 List<SchoolClass> list = easyEntityQuery.queryable(SchoolClass.class)
@@ -238,11 +254,12 @@ List<SchoolClass> list = easyEntityQuery.queryable(SchoolClass.class)
         }).toList();
 ```
 
+## 案例 5
 
-## 案例5
 假设班级和学生没有直接关系
 
 查询班级下面老师的有姓金的并且获取班级和老师
+
 ```java
 
 List<SchoolClass> list = easyEntityQuery.queryable(SchoolClass.class)
@@ -259,8 +276,10 @@ List<SchoolClass> list = easyEntityQuery.queryable(SchoolClass.class)
         }).toList();
 ```
 
-## 案例6
+## 案例 6
+
 查询学生叫做小明的并且获取小明的所在班级和家庭地址
+
 ```java
 List<SchoolStudent> list = easyEntityQuery.queryable(SchoolStudent.class)
                 .include(s -> s.schoolStudentAddress())
@@ -270,9 +289,10 @@ List<SchoolStudent> list = easyEntityQuery.queryable(SchoolStudent.class)
                 }).toList();
 ```
 
+## 案例 7
 
-## 案例7
 查询班级叫做`一班`的和班级下面的学生并且返回学生的家庭地址包括班级下的老师
+
 ```java
      List<SchoolClass> list = easyEntityQuery.queryable(SchoolClass.class)
                 .includes(s -> s.schoolTeachers())
@@ -284,11 +304,13 @@ List<SchoolStudent> list = easyEntityQuery.queryable(SchoolStudent.class)
                 }).toList();
 ```
 
-## 案例8
-返回VO对象自动include返回层级对象
+## 案例 8
+
+返回 VO 对象自动 include 返回层级对象
 
 ::: code-tabs
-@tab 班级VO
+@tab 班级 VO
+
 ```java
 
 @Data
@@ -303,7 +325,8 @@ public class SchoolClassVO {
 }
 ```
 
-@tab 学生VO
+@tab 学生 VO
+
 ```java
 
 @Data
@@ -312,13 +335,15 @@ public class SchoolStudentVO {
     private String id;
     private String classId;
     private String name;
-    
+
     @Navigate(RelationTypeEnum.OneToOne)
     private SchoolStudentAddressVO schoolStudentAddress;
 
 }
 ```
-@tab 学生地址VO
+
+@tab 学生地址 VO
+
 ```java
 
 @Data
@@ -332,7 +357,9 @@ public class SchoolStudentAddressVO {
 }
 
 ```
-@tab 老师VO
+
+@tab 老师 VO
+
 ```java
 
 @Data
@@ -346,14 +373,147 @@ public class SchoolTeacherVO {
 
 ```
 
-::: 
+:::
 
+自动筛选返回结构化数据,要求对应的导航属性是一样的才可以比如数据库实体关联学生属性叫做`shoolStudents`那么 VO 也必须是这个名称
 
-自动筛选返回结构化数据,要求对应的导航属性是一样的才可以比如数据库实体关联学生属性叫做`shoolStudents`那么VO也必须是这个名称
 ```java
 //查询班级叫做一班的并且返回对应的VO并且会自动根据VO会拉取相应的数据
 List<SchoolClassVO> listx= easyEntityQuery.queryable(SchoolClass.class)
                         .where(s -> s.name().like("一班"))
                         .selectAutoInclude(SchoolClassVO.class)
                         .toList();
-``` 
+```
+
+## 高级扩展
+
+额外过滤条件支持比如
+
+用户和书本的关系
+
+```java
+@Table("relation_user")
+@EntityProxy
+@Data
+public class RelationUser implements ProxyEntityAvailable<RelationUser , com.easy.query.test.entity.relation.proxy.RelationUserProxy> {
+    @Column(primaryKey = true)
+    private String id;
+
+    private String name;
+
+    /**
+     * book type=1
+     */
+    @Navigate(value = RelationTypeEnum.OneToMany,targetProperty ="userId", extraFilter = BookNavigateExtraFilterStrategy.class)
+    private List<RelationBook> books;
+    /**
+     * 时间2022年以前的
+     */
+    @Navigate(value = RelationTypeEnum.OneToMany,targetProperty ="userId", extraFilter = BookNavigateExtraFilterStrategy.class)
+    private List<RelationBook> historyBooks;
+
+
+    @Override
+    public Class<com.easy.query.test.entity.relation.proxy.RelationUserProxy> proxyTableClass() {
+        return com.easy.query.test.entity.relation.proxy.RelationUserProxy.class;
+    }
+}
+
+@Table("relation_teacher")
+@EntityProxy
+@Data
+public class RelationTeacher implements ProxyEntityAvailable<RelationTeacher , RelationTeacherProxy> {
+    @Column(primaryKey = true)
+    private String id;
+
+    private String name;
+
+    /**
+     * book type=2
+     */
+    @Navigate(value = RelationTypeEnum.OneToMany,targetProperty ="userId", extraFilter = BookNavigateExtraFilterStrategy.class)
+    private List<RelationBook> books;
+
+    @Override
+    public Class<RelationTeacherProxy> proxyTableClass() {
+        return RelationTeacherProxy.class;
+    }
+}
+
+```
+
+用户里面有两个书本导航属性,分别是用户有多本书和用户所拥有的历史书籍,其中因为书本分为学生版和老师版本所以在书本里面和当前用户关联的书籍只有`type=1`的才是，`type=2`的书籍是老师的书籍
+
+`BookNavigateExtraFilterStrategy`用来添加导航属性额外条件
+
+```java
+//@Component
+public class BookNavigateExtraFilterStrategy implements NavigateExtraFilterStrategy {
+    @Override
+    public SQLExpression1<WherePredicate<?>> getPredicateFilterExpression(NavigateBuilder builder) {
+        //parentType
+        EntityMetadata entityMetadata = builder.getNavigateOption().getEntityMetadata();
+        //导航属性类型
+        Class<?> navigatePropertyType = builder.getNavigateOption().getNavigatePropertyType();
+        //导航属性名称
+        String propertyName = builder.getNavigateOption().getPropertyName();
+        //因为这个策略是他通用的所以可以在这边判断当然你也可以选择定义多个策略不通用
+        if(Objects.equals(RelationUser.class,entityMetadata.getEntityClass())){
+            //如果是历史书籍那么应该是2022年以前的书籍
+            if(Objects.equals("historyBooks",propertyName)){
+                LocalDateTime histroy = LocalDateTime.of(2022, 1, 1, 0, 0);
+                return o->o.le("createTime",histroy);
+            }
+            //否则就是用户的
+            return o->o.eq("bookType",1);
+        } else  if(Objects.equals(RelationTeacher.class,entityMetadata.getEntityClass())){
+            //老师的责应该是type=2的
+            return o->o.eq("bookType",2);
+        }
+        throw new RuntimeTimeException();
+    }
+}
+
+```
+查询用户的书籍是否包含小学
+```java
+
+List<RelationUser> users = easyEntityQuery.queryable(RelationUser.class)
+                    .where(r -> r.books().any(book -> {
+                        book.name().like("小学");
+                    }))
+                    .toList();
+
+
+==> Preparing: SELECT t.`id`,t.`name` FROM `relation_user` t WHERE EXISTS (SELECT 1 FROM `relation_book` t1 WHERE (t1.`user_id` = t.`id` AND t1.`book_type` = ?) AND t1.`name` LIKE ? LIMIT 1)
+==> Parameters: 1(Integer),%小学%(String)
+```
+
+查询老师的书籍是否包含老师字样的书籍
+```java
+
+List<RelationTeacher> teacher = easyEntityQuery.queryable(RelationTeacher.class)
+        .where(r -> r.books().any(book -> {
+            book.name().like("老师");
+        }))
+        .toList();
+
+
+==> Preparing: SELECT t.`id`,t.`name` FROM `relation_teacher` t WHERE EXISTS (SELECT 1 FROM `relation_book` t1 WHERE (t1.`user_id` = t.`id` AND t1.`book_type` = ?) AND t1.`name` LIKE ? LIMIT 1)
+==> Parameters: 2(Integer),%老师%(String)
+```
+
+查询历史书籍
+
+```java
+//查询用户的历史书籍里面是否有一本名称包含小学的书
+List<RelationUser> users = easyEntityQuery.queryable(RelationUser.class)
+                    .where(r -> r.historyBooks().any(book -> {
+                        book.name().like("小学");
+                    }))
+                    .toList();
+
+//默认会添加2022年以前因为你查询的是历史书籍
+==> Preparing: SELECT t.`id`,t.`name` FROM `relation_user` t WHERE EXISTS (SELECT 1 FROM `relation_book` t1 WHERE (t1.`user_id` = t.`id` AND t1.`create_time` <= ?) AND t1.`name` LIKE ? LIMIT 1)
+==> Parameters: 2022-01-01T00:00(LocalDateTime),%小学%(String)
+```
