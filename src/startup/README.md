@@ -5,16 +5,15 @@ title: easy-query简介目录
 如果您是`c#`转过来的开发，如果您不想使用复杂恶心的xml来编写sql,如果您是一个有追求的喜欢强类型的技术开发,如果您是一个刚入行java的新人，那么easy-query将是非常适合您的一个框架，没有`mybatis`的繁琐,可以快速的编写crud代码和复杂代码。
 
 ## 目录指引
-- 软删除，软删除部分禁用启用非常方便
-- 枚举和数据库映射,数据脱敏
-- 数据填充,自动赋值创建人创建时间,修改人修改时间
-- 软删除记录删除时间,删除人
-- 慢sql监听拦截
-- 数据库列的加密和加密后的模糊查询企业级解决方案
-- 分库分表，读写分离
+- 软删除，软删除部分禁用启用非常方便，软删除记录删除时间,删除人  [LogicDelete](/easy-query-doc/guide/adv/logic-delete)
+- 枚举和数据库映射,数据脱敏 [ValueConverter](/easy-query-doc/guide/adv/value-converter)
+- 数据填充,自动赋值创建人创建时间,修改人修改时间 [拦截器](/easy-query-doc/guide/adv/interceptor)、 [对象实战](/easy-query-doc/practice/entity/)
+- 慢sql监听拦截,自动上报预警 [jdbc执行监听器](/easy-query-doc/guide/adv/jdbc-listener)
+- 数据库列的加密和加密后的模糊查询企业级解决方案 [数据库列加密](/easy-query-doc/guide/adv/column-encryption)
+- 分库分表，读写分离 [分库分表，读写分离](/easy-query-doc/guide/super/) (敬请期待已经完成功能文档还在完善中)
 - VO对象直接返回
-- 数据库对象模型关联查询：一对多、一对一、多对多、多对一
-- 对象关系关联查询`nodsl`不仅仅是`dsl`联级筛选,支持额外条件过滤比如公用中间表,多对多关联+type区分
+- 数据库对象模型关联查询：一对多、一对一、多对多、多对一 [对象关系查询](/easy-query-doc/startup/nodsl)
+- 对象关系关联查询`nodsl`不仅仅是`dsl`联级筛选,支持额外条件过滤比如公用中间表,多对多关联+type区分 [联级筛选Include Filter](/easy-query-doc/guide/query/relation-filter)
 - 直白的dsl查询语法
 - 智能的差异识别更新
 - 自带分页方法和无依赖分页链式返回
