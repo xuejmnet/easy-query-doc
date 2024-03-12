@@ -422,6 +422,17 @@ List<Topic> list = easyEntityQuery.queryable(Topic.class)
 ==> Parameters: %11%(String),2021-01-01T01:01(LocalDateTime)
 <== Time Elapsed: 12(ms)
 <== Total: 0
+
+
+List<TopicTypeVO> vo = easyEntityQuery.queryable(BlogEntity.class)
+        .leftJoin(SysUser.class, (b, s2) -> b.id().eq(s2.id()))
+        .select(TopicTypeVO.class, (b1, s2) -> Select.of(
+                b1.FETCHER.id().content().createTime().as("createTime"),
+                s2.FETCHER.address().idCard()
+        )).toList();
+
+==> Preparing: SELECT t.`id`,t.`content`,t.`create_time` AS `create_time`,t1.`address`,t1.`id_card` FROM `t_blog` t LEFT JOIN `easy-query-test`.`t_sys_user` t1 ON t.`id` = t1.`id` WHERE t.`deleted` = ?
+==> Parameters: false(Boolean)
 ```
 
 ### 排序
