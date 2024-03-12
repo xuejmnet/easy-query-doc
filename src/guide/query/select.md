@@ -260,7 +260,6 @@ public class BlogEntityVO2 {
     private Boolean isTop;
     /**
      * 是否置顶
-     */
     private Boolean top;
 }
 
@@ -279,7 +278,16 @@ BlogEntityVO2 blogEntityVO1 = easyQuery.queryable(Topic.class)
 <== Total: 1
 BlogEntityVO2(id=2, title=title2, content=content2, url=http://blog.easy-query.com/2, star=2, publishTime=null, score=1.20, status=1, order=2.40, isTop=true, top=true)
 
+//entity query 模式
+List<TopicTypeVO> vo = easyEntityQuery.queryable(BlogEntity.class)
+        .leftJoin(SysUser.class, (b, s2) -> b.id().eq(s2.id()))
+        .select(TopicTypeVO.class, (b1, s2) -> Select.of(
+                b1.FETCHER.id().content().createTime().as("createTime"),
+                s2.FETCHER.address().idCard()
+        )).toList();
 
+==> Preparing: SELECT t.`id`,t.`content`,t.`create_time` AS `create_time`,t1.`address`,t1.`id_card` FROM `t_blog` t LEFT JOIN `easy-query-test`.`t_sys_user` t1 ON t.`id` = t1.`id` WHERE t.`deleted` = ?
+==> Parameters: false(Boolean)
 
 
 BlogEntityVO2 blogEntityVO1 = easyQuery.queryable(Topic.class)
