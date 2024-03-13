@@ -14,6 +14,27 @@ title: 快速开始🔥🔥🔥
 
 这边建议推荐使用`@EntityProxy`+`sql-processor`包因为这样可以保证在其他`IDE`下也能使用并且不依赖插件
 
+如果是多模块那么可以再每个需要生成`proxy`的`module`处的`pom.xm`l引入`sql-processor`包或者在项目`maven`插件处进行配置
+
+以下配置那么在各个独立`module`处不需要在引入`sql-processor`
+```xml
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-compiler-plugin</artifactId>
+    <version>3.8.1</version>
+    <configuration>
+        <annotationProcessorPaths>
+            <path>
+                <groupId>com.easy-query</groupId>
+                <artifactId>sql-processor</artifactId>
+                <version>${easy-query.version}</version>
+            </path>
+        </annotationProcessorPaths>
+    </configuration>
+</plugin>
+
+```
+
 具体的easy-query包版本可以在文档首页进行查看当前是  
 <a target="_blank" href="https://central.sonatype.com/search?q=easy-query">
         <img src="https://img.shields.io/maven-central/v/com.easy-query/easy-query-all?label=Maven%20Central" alt="Maven" />
