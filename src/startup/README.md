@@ -12,7 +12,7 @@ title: easy-query简介目录
 - 慢sql监听拦截,自动上报预警 [jdbc执行监听器](/easy-query-doc/guide/adv/jdbc-listener)
 - 数据库列的加密和加密后的模糊查询企业级解决方案 [数据库列加密](/easy-query-doc/guide/adv/column-encryption)
 - 分库分表，读写分离 [分库分表，读写分离](/easy-query-doc/guide/super/) (敬请期待已经完成功能文档还在完善中)
-- VO对象直接返回
+- VO对象直接返回 [自定义vo列返回](/easy-query-doc/guide/query/select)
 - 数据库对象模型关联查询：一对多、一对一、多对多、多对一 [对象关系查询](/easy-query-doc/startup/nodsl)
 - 对象关系关联查询`nodsl`不仅仅是`dsl`联级筛选,支持额外条件过滤比如公用中间表,多对多关联+type区分 [联级筛选Include Filter](/easy-query-doc/guide/query/relation-filter)
 - 直白的dsl查询语法
