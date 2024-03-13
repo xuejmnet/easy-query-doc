@@ -324,6 +324,22 @@ public class MyController {
     public Object test2(@RequestBody MyRequest request){
         return easyMultiEntityQuery.queryable(Topic.class).toList();
     }
+    @RequestMapping("/test3")
+    public Object test3(){
+        List<Topic> ds2 = easyMultiEntityQuery.executeScope("ds2", eq -> {
+            return eq.queryable(Topic.class).toList();
+        });
+        return ds2;
+    }
+    @RequestMapping("/test4")
+    public Object test4(){
+        try {
+            easyMultiEntityQuery.setCurrent("ds2");
+            return easyMultiEntityQuery.queryable(Topic.class).toList();
+        }finally {
+            easyMultiEntityQuery.clear();
+        }
+    }
 }
 
 
