@@ -235,7 +235,7 @@ List<SchoolClass> list = easyEntityQuery.queryable(SchoolClass.class)
 
 ## 案例 4
 
-查询班级下面存在学生平均年龄小于等于 12 岁的班级(可以用户获取班级语文平均分不足 60 的同理)
+查询班级下面存在学生平均年龄小于等于 12 岁的班级(可以筛选如获取班级语文平均分不足 60 的同理)
 
 ```java
 
@@ -304,8 +304,24 @@ List<SchoolStudent> list = easyEntityQuery.queryable(SchoolStudent.class)
                     s.name().eq("一班");
                 }).toList();
 ```
-
 ## 案例 8
+
+查询班级叫做`一班`的和班级下面的年龄最大的前三位学生并且返回学生的家庭地址包括班级下的老师
+
+```java
+     List<SchoolClass> list = easyEntityQuery.queryable(SchoolClass.class)
+                .includes(s -> s.schoolTeachers())
+                .includes(s -> s.schoolStudents(),x->{
+                    x.include(y->y.schoolStudentAddress())
+                    .orderBy(y->y.age().desc())
+                    .limit(3);
+                })
+                .where(s -> {
+                    s.name().eq("一班");
+                }).toList();
+```
+
+## 案例 9
 
 返回 VO 对象自动 include 返回层级对象
 
