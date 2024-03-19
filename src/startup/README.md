@@ -5,6 +5,7 @@ title: easy-query简介目录
 如果您是`c#`转过来的开发，如果您不想使用复杂恶心的xml来编写sql,如果您是一个有追求的喜欢强类型的技术开发,如果您是一个刚入行java的新人，那么easy-query将是非常适合您的一个框架，没有`mybatis`的繁琐,可以快速的编写crud代码和复杂代码。
 
 ## 目录指引
+- 无实体查询,无实体更新,无实体新增,无实体删除等操作
 - 对象关系结构化VO自动组装返回,支持一对多一对一结果筛选,排序,limit
 - 多数据源,动态多数据源，支持`SpringEL`，使用场景多租户(一个租户一个库) [DynamicDataSource](/easy-query-doc/guide/config/muti-datasource) 
 - 表单动态条件查询分页,表单动态排序处理 [DynamicWhere](/easy-query-doc/guide/query/dynamic-where)、[DynamicOrderBy](/easy-query-doc/guide/query/dynamic-sort)
