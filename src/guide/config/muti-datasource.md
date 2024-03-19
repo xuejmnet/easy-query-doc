@@ -193,6 +193,18 @@ public class MultiDataSourceConfiguration {
         extra.put("ds2",easyEntityQuery2);
         return new DefaultEasyMultiEntityQuery(easyEntityQuery,extra);
     }
+
+    /**
+     * 不是spring接管的datasource那么事务将不会生效
+     * @return
+     */
+    @Bean("xxx")
+    public DataSource dataSource2(){
+        return DataSourceBuilder.create().driverClassName("")
+                .url("")
+                .username("")
+                .password("").build();
+    }
     @Bean("ds2")
     public EasyEntityQuery easyQuery(/*注入您自己的多数据源datasource*/@Qualifier("xxx")DataSource dataSource) {
         EasyQueryClient easyQueryClient = EasyQueryBootstrapper.defaultBuilderConfiguration()
