@@ -17,8 +17,8 @@ title: easy-query简介目录
 - 分库分表，读写分离 [分库分表，读写分离](/easy-query-doc/guide/super/) (敬请期待已经完成功能文档还在完善中)
 - VO对象直接返回 [自定义vo列返回](/easy-query-doc/guide/query/select)
 - 数据库对象模型关联查询：一对多、一对一、多对多、多对一 [对象关系查询](/easy-query-doc/startup/nodsl)
-- 对象关系关联查询`nodsl`不仅仅是`dsl`联级筛选,支持额外条件过滤比如公用中间表,多对多关联+type区分 [联级筛选Include Filter](/easy-query-doc/guide/query/relation-filter)
-- 直白的dsl查询语法
+- 对象关系关联查询`nosql`不仅仅是`sql`联级筛选,支持额外条件过滤比如公用中间表,多对多关联+type区分 [联级筛选Include Filter](/easy-query-doc/guide/query/relation-filter)
+- 直白的sql查询语法
 - 智能的差异识别更新
 - 自带分页方法和无依赖分页链式返回
 - Embeddable、ValueObject对象
@@ -27,7 +27,7 @@ title: easy-query简介目录
 - java函数数据库封装支持各个数据库
 - group感知,在众多orm中极少数orm才会支持的group感知
 - 无任何依赖的框架,不会有任何冲突
-- dsl多表查询支持join、in、exists等子查询
+- sql多表查询支持join、in、exists等子查询
 - idea插件提供更加高效快速的开发效率和开发体验
 - sql上下文泛型限制
 - 大数据流式查询防止oom
