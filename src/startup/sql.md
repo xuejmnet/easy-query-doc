@@ -49,7 +49,14 @@ List<BlogEntity> blogs = easyEntityQuery.queryable(BlogEntity.class)
             b.star().gt(1);
         }).toList();
 ```
-
+## 判断结果是否存在
+```java
+boolean any = easyEntityQuery.queryable(BlogEntity.class)
+        .where(b -> {
+            b.title().like("123");
+            b.star().gt(1);
+        }).any();
+```
 
 ## 聚合结果
 ```java
