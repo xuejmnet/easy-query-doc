@@ -280,6 +280,11 @@ List<Draft3<String, Integer, LocalDateTime>> list = easyEntityQuery.queryable(Sy
 List<BlogEntity> list = easyEntityQuery.queryable(BlogEntity.class)
                 .fetchBy(b -> b.FETCHER.id().content().createTime())
                 .toList();
+
+//映射到VO
+List<BlogEntityVO1> list1 = easyEntityQuery.queryable(BlogEntity.class)
+                .select(BlogEntityVO1.class).toList();
+
 //映射到VO返回设置为查询id，content，createTime
 List<BlogEntityVO1> list1 = easyEntityQuery.queryable(BlogEntity.class)
                 .select(BlogEntityVO1.class, b -> Select.of(
