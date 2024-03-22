@@ -275,24 +275,10 @@ public class DynamicDataSourceAspectConfiguration {
         MethodSignature signature = (MethodSignature) pjp.getSignature();
         Method method = signature.getMethod();
         DynamicDataSource dynamicDataSource = method.getAnnotation(DynamicDataSource.class); //通过反射拿到注解对象
-        Object[] arguments = pjp.getArgs();
-        String[] paramNames = getParamterNames(method);
-        ExpressionParser parser = new SpelExpressionParser();
-        EvaluationContext context = new StandardEvaluationContext();
-        for (int i = 0; i < arguments.length; i++) {
-            context.setVariable(paramNames[i], arguments[i]);
-        }
-
-        String setDataSource = null;
-        if(EasyStringUtil.isNotBlank(dynamicDataSource.value())){
-            Expression expression = parser.parseExpression(dynamicDataSource.value());
-            String value = expression.getValue(context, String.class);
-            if(EasyStringUtil.isNotBlank(value)){
-                setDataSource=value;
-            }
-        }
         try {
-            easyMultiEntityQuery.setCurrent(setDataSource);
+            if(EasyStringUtil.isNotBlank(dynamicDataSource.value())){
+                easyMultiEntityQuery.setCurrent(dynamicDataSource.value());
+            }
             return pjp.proceed();
         }finally {
             easyMultiEntityQuery.clear();
