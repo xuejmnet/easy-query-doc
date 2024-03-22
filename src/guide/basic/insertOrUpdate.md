@@ -93,3 +93,7 @@ long l = defaultEasyEntityQuery.insertable(topicAuto)
 
 MERGE INTO "t_topic_auto" t1 USING (SELECT ? AS "stars",? AS "title",? AS "create_time" FROM DUAL ) t2 ON (t1."id" = t2."id") WHEN MATCHED THEN UPDATE SET t1."stars" = t2."stars",t1."title" = t2."title",t1."create_time" = t2."create_time" WHEN NOT MATCHED THEN INSERT ("stars","title","create_time") VALUES (t2."stars",t2."title",t2."create_time")
 ```
+
+
+## 相关搜索
+`存在更新` `存在忽略` `MERGE INTO` `onDuplicateKeyIgnore` `onDuplicateKeyUpdate` `onConflictDoNothing` `onConflictDoUpdate`
