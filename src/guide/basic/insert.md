@@ -191,6 +191,12 @@ long l = easyQuery.insertable(queryLargeColumnTestEntity).setSQLStrategy(SQLExec
 
 
 ## 6.MySQL方言
+
+
+::: warning 说明!!!
+> EntityQuery新版本请跳转 [InsertOrUpdate](/easy-query-doc/guide/basic/insertOrUpdate)
+:::
+
 ## onDuplicateKeyIgnore
 插入时如果主键或者唯一索引存在就忽略插入
 ```java
@@ -278,6 +284,11 @@ easyQuery.insertable(blog)
 ```
 
 ## 7.PgSQL方言
+
+
+::: warning 说明!!!
+> EntityQuery新版本请跳转 [InsertOrUpdate](/easy-query-doc/guide/basic/insertOrUpdate)
+:::
 
 ## onConflictDoNothing
 
