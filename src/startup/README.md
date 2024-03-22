@@ -6,6 +6,7 @@ title: easy-query简介目录
 
 ## 目录指引
 - 无实体查询,无实体更新,无实体新增,无实体删除等操作
+- insert or update语法方言
 - 对象关系结构化VO自动组装返回,支持一对多一对一结果筛选,排序,limit
 - 多数据源,动态多数据源，支持`SpringEL`，使用场景多租户(一个租户一个库) [DynamicDataSource](/easy-query-doc/guide/config/muti-datasource) 
 - 表单动态条件查询分页,表单动态排序处理 [DynamicWhere](/easy-query-doc/guide/query/dynamic-where)、[DynamicOrderBy](/easy-query-doc/guide/query/dynamic-sort)
