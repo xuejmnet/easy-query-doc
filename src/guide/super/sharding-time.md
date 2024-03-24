@@ -146,6 +146,7 @@ public class TopicShardingTimeTableRoute extends AbstractMonthTableRoute<TopicSh
                     op.setThrowIfRouteNotMatch(false);
                     op.setMaxShardingRouteCount(512);
                     op.setDefaultDataSourceMergePoolSize(20);
+                    //开启定时任务 不然明天的表或者下个月的表不会在内存中存在
                     op.setStartTimeJob(true);
                     op.setReverseOffsetThreshold(10);
                 })
