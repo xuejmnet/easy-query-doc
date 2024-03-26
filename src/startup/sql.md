@@ -166,6 +166,23 @@ List<Draft2<String, Long>> list = easyEntityQuery.queryable(BlogEntity.class)
                 group.key1(),
                 group.count()
         )).toList();
+
+
+//返回max或者min
+
+List<Draft2<String, String>> list = easyEntityQuery.queryable(BlogEntity.class)
+            .where(b -> {
+                b.title().like("123");
+                b.star().gt(1);
+            })
+            .groupBy(b -> GroupKeys.TABLE1.of(b.title()))
+            .having(group -> group.count().gt(1L))//having count(*) > 1
+            .select(group -> Select.DRAFT.of(
+                    group.key1(),
+                    group.groupTable().id().max()
+                    //group.max(group.groupTable().id())//上下都行
+            )).toList();
+
 ```
 
 ## 自定义返回结果
