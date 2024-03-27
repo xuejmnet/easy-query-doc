@@ -14,7 +14,7 @@ title: 替换框架行为❗️❗️❗️
 
     private void defaultConfiguration() {
         
-       replaceService(EasyQueryDataSource.class, DefaultEasyQueryDataSource.class)
+        replaceService(EasyQueryDataSource.class, DefaultEasyQueryDataSource.class)
                 .replaceService(Dialect.class, DefaultDialect.class)
                 .replaceService(NameConversion.class, UnderlinedNameConversion.class)
                 .replaceService(QueryConfiguration.class)
@@ -57,6 +57,7 @@ title: 替换框架行为❗️❗️❗️
                 .replaceService(ObjectSortQueryExecutor.class, DefaultObjectSortQueryExecutor.class)
                 .replaceService(JdbcExecutorListener.class, EmptyJdbcExecutorListener.class)
                 .replaceService(AssertExceptionFactory.class, DefaultAssertExceptionFactory.class)
+                .replaceService(SQLParameterPrintFormat.class, DefaultSQLParameterPrintFormat.class)
                 .replaceService(SQLFunc.class, SQLFuncImpl.class)
                 .replaceService(EasyQueryClient.class, DefaultEasyQueryClient.class);
     }
