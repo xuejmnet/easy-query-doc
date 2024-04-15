@@ -178,12 +178,6 @@ List<SchoolClass> list = easyEntityQuery.queryable(SchoolClass.class)
                 }).toList();
 
 //上下两种都可以表示查询班级表过滤班级关联的学生并且存在学生姓金的
-List<SchoolClass> list = easyEntityQuery.queryable(SchoolClass.class)
-                .where(s -> {
-                    s.schoolStudents().where(stu -> {
-                        stu.name().likeMatchLeft("金");
-                    }).any();
-                }).toList();
 ```
 
 查询班级下面不存在学生姓金的班级
@@ -401,6 +395,18 @@ List<SchoolClassVO> listx= easyEntityQuery.queryable(SchoolClass.class)
                         .selectAutoInclude(SchoolClassVO.class)
                         .toList();
 ```
+
+
+## 案例9进阶
+手动创建VO是很复杂的一件事情,可以再`easy-query:1.10.59^`+`插件0.0.48^`快速生成嵌套结构化对象模型,
+
+<img src="/EQDTO1.jpg">
+<img src="/EQDTO2.jpg">
+<img src="/EQDTO3.jpg">
+<img src="/EQDTO4.jpg">
+<img src="/EQDTO5.jpg">
+<img src="/EQDTO6.jpg">
+
 
 ## 高级扩展
 

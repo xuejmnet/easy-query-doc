@@ -54,9 +54,9 @@ public class EnumDeserializer {
     }
 }
 //枚举转换器
-public class EnumConverter implements ValueConverter<IEnum<?>,Integer> {
+public class EnumConverter implements ValueConverter<IEnum<?>,Number> {
     @Override
-    public Integer serialize(IEnum<?> iEnum, ColumnMetadata columnMetadata) {
+    public Number serialize(IEnum<?> iEnum, ColumnMetadata columnMetadata) {
         if(iEnum=null){
             return null;
         }
@@ -64,19 +64,19 @@ public class EnumConverter implements ValueConverter<IEnum<?>,Integer> {
     }
 
     @Override
-    public IEnum<?> deserialize(Integer integer, ColumnMetadata columnMetadata) {
-        if(integer=null){
+    public IEnum<?> deserialize(Number code, ColumnMetadata columnMetadata) {
+        if(code=null){
             return null;
         }
-        return EnumDeserializer.deserialize(EasyObjectUtil.typeCast(columnMetadata.getPropertyType()),integer);
+        return EnumDeserializer.deserialize(EasyObjectUtil.typeCast(columnMetadata.getPropertyType()),code.intValue());
     }
 }
 
 //如果你希望当前枚举转换配置到全局可以使用 EnumValueAutoConverter
 //EnumValueAutoConverter第一个泛型参数 不可以是具体枚举类型除非整个系统就一个枚举类型
-public class EnumConverter implements EnumValueAutoConverter<IEnum<?>,Integer> {
+public class EnumConverter implements EnumValueAutoConverter<IEnum<?>,Number> {
     @Override
-    public Integer serialize(IEnum<?> iEnum, ColumnMetadata columnMetadata) {
+    public Number serialize(IEnum<?> iEnum, ColumnMetadata columnMetadata) {
         if(iEnum == null){
             return null;
         }
@@ -84,11 +84,11 @@ public class EnumConverter implements EnumValueAutoConverter<IEnum<?>,Integer> {
     }
 
     @Override
-    public IEnum<?> deserialize(Integer integer, ColumnMetadata columnMetadata) {
-        if(integer == null){
+    public IEnum<?> deserialize(Number code, ColumnMetadata columnMetadata) {
+        if(code == null){
             return null;
         }
-        return EnumDeserializer.deserialize(EasyObjectUtil.typeCast(columnMetadata.getPropertyType()),integer);
+        return EnumDeserializer.deserialize(EasyObjectUtil.typeCast(columnMetadata.getPropertyType()),code.intValue());
     }
     @Override
     public boolean apply(Class<?> entityClass, Class<IEnum<?>> propertyType) {
@@ -292,21 +292,21 @@ public class EnumValueDeserializer {
 }
 
 //转换器
-public class EnumValueConverter implements ValueConverter<Enum<?>,Integer> {
+public class EnumValueConverter implements ValueConverter<Enum<?>,Number> {
     @Override
-    public Integer serialize(Enum<?> enumValue, ColumnMetadata columnMetadata) {
+    public Number serialize(Enum<?> enumValue, ColumnMetadata columnMetadata) {
         if(enumValue == null){
             return null;
         }
-        return (Integer) EnumValueDeserializer.serialize(enumValue);
+        return (Number) EnumValueDeserializer.serialize(enumValue);
     }
 
     @Override
-    public Enum<?> deserialize(Integer integer, ColumnMetadata columnMetadata) {
-        if(integer == null){
+    public Enum<?> deserialize(Number code, ColumnMetadata columnMetadata) {
+        if(code == null){
             return null;
         }
-        return EnumValueDeserializer.deserialize(EasyObjectUtil.typeCast(columnMetadata.getPropertyType()),integer);
+        return EnumValueDeserializer.deserialize(EasyObjectUtil.typeCast(columnMetadata.getPropertyType()),code.intValue());
     }
 }
 
