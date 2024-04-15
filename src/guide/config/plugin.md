@@ -16,6 +16,9 @@ title: 插件助手
 - IntelliJ IDEA Ultimate 2023.1.5Compatible
 - IntelliJ IDEA Ultimate 2022.3.3Compatible
 - IntelliJ IDEA Ultimate 2022.2.5Compatible
+
+不支持以下版本如果需要支持可以加qq群联系群主
+
 - IntelliJ IDEA Ultimate 2022.1.4Compatible
 - IntelliJ IDEA Ultimate 2021.3.3Compatible
 - IntelliJ IDEA Ultimate 2021.2.4Compatible
