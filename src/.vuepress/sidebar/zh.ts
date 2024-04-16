@@ -33,6 +33,11 @@ export const zhSidebar = sidebar({
           children: ["readme.md","basic-type","anonymous-type","or-condition","paging","multi-query","group","order","select","native-sql","dynamic-table","stream-query","to-map","select-column","union","select-sub","sub-query","relation","relation-filter","fill","where","reuse","case-when","dynamic-where","dynamic-sort"],
         },
         {
+          text: "复杂属性",
+          prefix: "prop/",
+          children: ["readme.md","json-prop","collection-prop","enum-prop","sql-column-prop","combine-prop","aggregate-prop"],
+        },
+        {
           text: "高级",
           prefix: "adv/",
           children: ["readme.md","value-converter","logic-delete","interceptor","batch","sql-func-v1","sql-func","column-encryption","column-sql-func-auto","generated-key-sql-column","data-tracking","version","column-func-new","column-func","atomic-update","value-object","jdbc-listener"],
