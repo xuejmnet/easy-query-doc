@@ -398,7 +398,7 @@ List<SchoolClassVO> listx= easyEntityQuery.queryable(SchoolClass.class)
 
 
 ## 案例9进阶
-手动创建VO是很复杂的一件事情,可以再`easy-query:1.10.59^`+`插件0.0.48^`快速生成嵌套结构化对象模型,
+手动创建VO是很复杂的一件事情,可以再`easy-query:1.10.60^`+`插件0.0.48^`快速生成嵌套结构化对象模型,
 
 <img src="/EQDTO1.jpg">
 <img src="/EQDTO2.jpg">
