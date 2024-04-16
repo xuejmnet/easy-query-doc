@@ -35,12 +35,12 @@ export const zhSidebar = sidebar({
         {
           text: "复杂属性",
           prefix: "prop/",
-          children: ["readme.md","json-prop","collection-prop","enum-prop","sql-column-prop","combine-prop","aggregate-prop"],
+          children: ["readme.md","json-prop","collection-prop","enum-prop","sql-column-prop","combine-prop","aggregate-prop","sql-column-generate-prop"],
         },
         {
           text: "高级",
           prefix: "adv/",
-          children: ["readme.md","value-converter","logic-delete","interceptor","batch","sql-func-v1","sql-func","column-encryption","column-sql-func-auto","generated-key-sql-column","data-tracking","version","column-func-new","column-func","atomic-update","value-object","jdbc-listener"],
+          children: ["readme.md","logic-delete","interceptor","batch","sql-func-v1","sql-func","column-encryption","column-sql-func-auto","data-tracking","version","column-func-new","column-func","atomic-update","value-object","jdbc-listener"],
         },
         {
           text: "超级",
