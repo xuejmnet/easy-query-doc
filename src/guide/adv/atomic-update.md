@@ -1,5 +1,5 @@
 ---
-title: 列值原子更新
+title: 列值原子更新(废弃❌)
 ---
 `easy-query`提供了原子列更新,主要是针对当前数据的库存或者金额等数据进行原子更新,需要配合track更新,无法单独使用,譬如我有一个库存冗余字段,那么在更新的时候如果是对象更新那么将会生成原子sql(可以自定义)比如`update set column=column+1 where id=xxx and column>=xxx`
 ::: warning 说明!!!
