@@ -301,12 +301,28 @@ List<Topic> list = easyEntityQuery.queryable(Topic.class)
             o.id().asc();
             o.createTime().desc();
         })
-        .select(o->new TopicVOProxy().adapter(r->{
+        .select(o->{
+            TopicVOProxy r = new TopicVOProxy();
             r.id().set(o.id()); //手动指定赋值
             r.title().set(o.title())
-        }))
+            return r;
+        })
         .toList();
 
+
+//上下两种映射都行
+
+List<Topic> list = easyEntityQuery.queryable(Topic.class)
+        .where(o->{
+            o.title().like("123");
+            o.createTime().ge(LocalDateTime.of(2022,2,1,3,4));
+        })
+        .orderBy(o -> {
+            o.id().asc();
+            o.createTime().desc();
+        })
+        .select(TopicVO.class) //自动映射VO有的属性
+        .toList();
 
 
 ==> Preparing: SELECT t.`id` as `id`,t.`title` as `title` FROM `t_topic` t WHERE t.`title` LIKE ? AND t.`create_time` >= ? ORDER BY t.`id` ASC,t.`create_time` DESC
@@ -324,10 +340,29 @@ List<Topic> list = easyEntityQuery.queryable(Topic.class)
             o.id().asc();
             o.createTime().desc();
         })
-        .select(o->new TopicProxy().adapter(r->{
+        .select(o->{
+            TopicProxy r = new TopicProxy();
             r.selectAll(o);//查询所有
             r.selectIgnores(o.id());//忽略id
-        }))
+            return r;
+        })
+        .toList();
+
+
+//上下两种映射都行
+
+List<Topic> list = easyEntityQuery.queryable(Topic.class)
+        .where(o->{
+            o.title().like("123");
+            o.createTime().ge(LocalDateTime.of(2022,2,1,3,4));
+        })
+        .orderBy(o -> {
+            o.id().asc();
+            o.createTime().desc();
+        })
+        .select(Topic.class,o->Select.of(
+                o.FETCHER.allFieldsExclude(o.id())
+        ))
         .toList();
 
 ==> Preparing: SELECT t.`stars`,t.`title`,t.`create_time` FROM `t_topic` t WHERE t.`title` LIKE ? AND t.`create_time` >= ? ORDER BY t.`id` ASC,t.`create_time` DESC
@@ -346,11 +381,46 @@ List<Topic> list = easyEntityQuery.queryable(Topic.class)
                 //会生成{key1:x,key2:x.... group:{t1:xx,t2:xx}}其中key1...keyn表示key默认支持10个 t1...tn表示前面的表
                 //无论join了多少张表group后全部只有一个入参参数其余参数在group属性里面
                 .groupBy(o-> GroupKeys.TABLE1.of(o.id()))
-                .select(o->new TopicProxy().adapter(r->{
+                .select(o->{
+                    TopicProxy r = new TopicProxy();
                     r.id().set(o.key1());//key1就是id
                     r.stars().set(o.intCount());//COUNT(*)返回int 默认返回long类型
-                }))
+                    return r;
+                })
                 .toList();
+
+
+ List<Topic> list = easyEntityQuery.queryable(Topic.class)
+                .where(o->{
+                    o.title().like("123");
+                    o.createTime().ge(LocalDateTime.of(2022,2,1,3,4));
+                })
+                //会生成{key1:x,key2:x.... group:{t1:xx,t2:xx}}其中key1...keyn表示key默认支持10个 t1...tn表示前面的表
+                //无论join了多少张表group后全部只有一个入参参数其余参数在group属性里面
+                .groupBy(o-> GroupKeys.TABLE1.of(o.id()))
+                .select(Topic.class,o->{
+                    TopicProxy r = new TopicProxy();
+                    r.id().set(o.key1());//key1就是id
+                    r.stars().set(o.intCount());//COUNT(*)返回int 默认返回long类型
+                    return r;
+                })
+                .toList();
+
+//上下两种映射都行
+
+List<Topic> list = easyEntityQuery.queryable(Topic.class)
+        .where(o->{
+            o.title().like("123");
+            o.createTime().ge(LocalDateTime.of(2022,2,1,3,4));
+        })
+        //会生成{key1:x,key2:x.... group:{t1:xx,t2:xx}}其中key1...keyn表示key默认支持10个 t1...tn表示前面的表
+        //无论join了多少张表group后全部只有一个入参参数其余参数在group属性里面
+        .groupBy(o-> GroupKeys.TABLE1.of(o.id()))
+        .select(Topic.class,o->Select.of(
+                o.key1(),
+                o.intCount().as(Topic::getStars)
+        ))
+        .toList();
 
 ==> Preparing: SELECT t.`id` AS `id`,COUNT(*) AS `stars` FROM `t_topic` t WHERE t.`title` LIKE ? AND t.`create_time` >= ? GROUP BY t.`id`
 ==> Parameters: %123%(String),2022-02-01T03:04(LocalDateTime)
@@ -363,10 +433,12 @@ List<Draft3<String, Integer, Integer>> list = easyEntityQuery.queryable(Topic.cl
             o.createTime().ge(LocalDateTime.of(2022, 2, 1, 3, 4));
         })
         .groupBy(o -> GroupKeys.TABLE1.of(o.id()))
-        .select(o -> new TopicProxy().adapter(r->{
+        .select(o -> {
+            TopicProxy r = new TopicProxy();
             r.id().set(o.key1());//key1就是id
             r.stars().set(o.intCount());//COUNT(*)返回int 默认返回long类型
-        }))
+            return r;
+        })
         .select(o -> Select.DRAFT.of(
                 o.id().nullOrDefault("123"),//如果为空就赋值123
                 o.stars(),
@@ -391,13 +463,7 @@ EasyPageResult<Topic> pageResult = easyEntityQuery.queryable(Topic.class)
             o.id().asc();
             o.createTime().desc();
         })
-        .select(o -> new TopicProxy().adapter(r->{
-            r.selectExpression(o.id(),o.title());//表达式仅查询id和title
-            //下面的和上面的一致 下面的是手动指定返回结果
-            //如果查询列名和VO结果一致那么可以不需要手动指定
-            //r.id().set(o.id());
-            //r.title().set(o.title());
-        }))
+        .select(o -> new TopicProxy().selectExpression(o.id(),o.title()))
         //.select(o->new TopicProxy())//全属性映射等于selectAll(o)
         .toPageResult(1, 20);
 
@@ -432,11 +498,13 @@ List<Topic> list = easyEntityQuery.queryable(Topic.class)
             t.title().like("11");
             t1.createTime().le(LocalDateTime.of(2021, 1, 1, 1, 1));
         })
-        .select((t, t1) -> new TopicVOProxy().adapter(r->{
+        .select((t, t1) -> {
+            TopicVOProxy r = new TopicVOProxy()
             r.id().set(t.id());
             r.stars().set(t.stars());
             r.title().set(t1.id());
-        })).toList();
+            return r;
+        }).toList();
 
 
 ==> Preparing: SELECT t.`id` AS `id`,t.`stars` AS `stars`,t1.`id` AS `title` FROM `t_topic` t LEFT JOIN `t_topic` t1 ON t.`id` = t1.`id` WHERE t.`title` LIKE ? AND t1.`create_time` <= ?
@@ -469,11 +537,13 @@ List<Topic> list = easyEntityQuery.queryable(Topic.class)
             t1.createTime().desc();
         })
         //查询t表的所有除了id和title,并且返回t1的title取别名为content
-        .select((t,t1)->new TopicProxy().adapter(r->{
+        .select((t,t1)->{
+            TopicProxy r = new TopicProxy();
             r.selectAll(t);
             r.selectIgnores(t.id(),t.title());
             r.id().set(t1.title());
-        }))
+            return r;
+        })
         .toList();
 
 ==> Preparing: SELECT t.`stars`,t.`create_time`,t1.`title` AS `id` FROM `t_topic` t LEFT JOIN `t_topic` t1 ON t.`id` = t1.`id` ORDER BY t.`id` ASC,t1.`create_time` DESC
