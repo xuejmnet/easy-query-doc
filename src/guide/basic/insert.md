@@ -68,7 +68,7 @@ long rows = easyQuery.insertable(topics.get(0)).executeRows();
 ==> Parameters: 0(String),100(Integer),标题0(String),2023-03-16T21:34:13.287(LocalDateTime)
 <== Total: 1
 ```
-如果当前数据表为自增id那么会回填对应的数据到id主键里面(后续会支持)
+如果当前数据表为自增id那么会回填对应的数据到id主键里面使用`executeRows(true)`
 
 ## 2.多条插入
 批量插入需要jdbc链接字符串开启`&allowMultiQueries=true&rewriteBatchedStatements=true`开启后性能将会大幅提升,并且默认需要使`InsertStrategy`用`ALL_COULMNS`策略,不然还是单条执行,当然可以使用batch或者到了插入批处理阈值也是可以的
