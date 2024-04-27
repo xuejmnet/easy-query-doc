@@ -20,7 +20,8 @@ List<String> list2 = easyEntityQuery.queryable(Topic.class)
 
 List<String> list2 = easyEntityQuery.queryable(Topic.class)
                 .where(f -> f.id().eq("1"))
-                .selectColumn(s -> s.id())
+                .select(s -> s.id())//eq 2.x.x^
+                //.selectColumn(s -> s.id())
                 .toList();
 
 ==> Preparing: SELECT t.`id` FROM `t_topic` t WHERE t.`id` = ?
@@ -84,7 +85,8 @@ List<Integer> list2 = easyEntityQuery.queryable(Topic.class)
 
 List<Integer> list2 = easyEntityQuery.queryable(Topic.class)
                 .where(f -> f.id().eq( "1"))
-                .selectColumn(s -> s.stars())
+                .select(s -> s.stars())//eq 2.x.x^
+                //.selectColumn(s -> s.stars())
                 .toList();
 
 ==> Preparing: SELECT t.`stars` FROM `t_topic` t WHERE t.`id` = ?

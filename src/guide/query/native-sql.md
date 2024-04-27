@@ -113,10 +113,10 @@ long l = easyQuery.sqlExecute("update t_blog set content=? where id=?", Arrays.a
                         o.createTime().format("yyyy/MM/dd" ).eq("2023/01/02" );
                         o.id().nullOrDefault("yyyy/MM/dd2" ).eq("xxx1" );
                     })
-                    .fetchBy(o -> o.FETCHER
+                    .select(o -> o.FETCHER
                             .allFieldsExclude(o.id(), o.title())
                             .id().as(o.title())
-                            .id())
+                            .id().fetchProxy())
                     .toList();
 
 

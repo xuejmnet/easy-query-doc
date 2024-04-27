@@ -99,7 +99,7 @@ List<SysUser> users = easyEntityQuery.queryable(SysUser.class)
                                 o.phone().isNotBank();
                             })
                             //可以使用select也可以使用fetcher来实现 fetcher适合返回单个对象的数据获取
-                            .fetchBy(o->o.FETCHER.id().name().phone().departName())
+                            .select(o->o.FETCHER.id().name().phone().departName().fetchProxy())
                             //.select(SysUserVO.class)//全自动属性匹配映射 SysUserVO可以是SysUser拷贝的属性
                             .toList();
 

@@ -213,6 +213,14 @@ Topic topic1 = easyEntityQuery.queryable(Topic.class)
 <== Time Elapsed: 10(ms)
 <== Total: 1
 
+//根据id查询返回自定义列
+Topic topic1 = easyEntityQuery.queryable(Topic.class)
+        .whereById("1").select(t->t.FETCHER.id().stars().fetchProxy()).firstOrNull();
+==> Preparing: SELECT `id`,`stars` FROM `t_topic` WHERE `id` = ? LIMIT 1
+==> Parameters: 1(String)
+<== Time Elapsed: 10(ms)
+<== Total: 1
+
 
 //根据id查询并且断言仅一条
 Topic topic2 = easyEntityQuery.queryable(Topic.class)
