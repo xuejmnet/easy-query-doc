@@ -302,7 +302,7 @@ List<Draft3<String, Integer, LocalDateTime>> list = easyEntityQuery.queryable(Sy
 ```java
 //返回当前对象只查询id，content，createTime
 List<BlogEntity> list = easyEntityQuery.queryable(BlogEntity.class)
-                .fetchBy(b -> b.FETCHER.id().content().createTime())
+                .select(b -> b.FETCHER.id().content().createTime().fetchProxy())
                 .toList();
 
 //映射到VO

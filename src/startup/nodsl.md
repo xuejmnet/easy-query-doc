@@ -10,7 +10,7 @@ title: 对象关系查询 ✨
 
 - 返回`对一导航属性`而不是`对多`包括相关列,其中`对一`包括`多对一`,`一对一`
 - 返回导航属性本身`.select(o->o.parent())`
-- 返回导航属性的列比如`.selectColumn(o->o.parent().id())`
+- 返回导航属性的列比如`.select(o->o.parent().id())`
 - 返回对多的导航属性比如`.select(o->o.roles().toList())`
 
 ::: danger 说明!!!

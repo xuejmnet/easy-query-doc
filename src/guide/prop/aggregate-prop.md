@@ -90,13 +90,13 @@ List<SchoolClassAggregateProp> list = easyEntityQuery.queryable(SchoolClassAggre
 SELECT t.`id`,t.`name` FROM `school_class` t
 
 //查询allFields任然不会查询必须要手动指定查询
-List<SchoolClassAggregateProp> list = easyEntityQuery.queryable(SchoolClassAggregateProp.class).fetchBy(s -> s.FETCHER.allFields()).toList();
+List<SchoolClassAggregateProp> list = easyEntityQuery.queryable(SchoolClassAggregateProp.class).select(s -> s.FETCHER.allFields().fetchProxy()).toList();
 
 
 SELECT t.`id`,t.`name` FROM `school_class` t
 
 //手动指定查询那么将会查询出来
-List<SchoolClassAggregateProp> list = easyEntityQuery.queryable(SchoolClassAggregateProp.class).fetchBy(s -> s.FETCHER.allFields().studentSize()).toList();
+List<SchoolClassAggregateProp> list = easyEntityQuery.queryable(SchoolClassAggregateProp.class).select(s -> s.FETCHER.allFields().studentSize().fetchProxy()).toList();
 
 SELECT t.`id`,t.`name`,(SELECT COUNT(t2.`id`) AS `id` FROM `school_student` t2 WHERE t2.`class_id` = t.`id`) AS `student_size` FROM `school_class` t
 
