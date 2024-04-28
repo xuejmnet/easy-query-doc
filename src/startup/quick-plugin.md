@@ -18,6 +18,11 @@ title: 安装插件提高开发体验
 
 <img src="/startup5.png">
 
+
+::: warning 说明!!!
+> 如果EasyQueryImplement没有效果请检查类是否添加了`@EntityProxy`或者`@EntityFileProxy`
+:::
+
 <img src="/startup6.png">
 
 ::: tip 说明!!!
