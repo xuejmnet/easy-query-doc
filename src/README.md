@@ -4,7 +4,7 @@ icon: home
 title: 项目主页
 heroImage: /logo.svg
 heroText: easy-query
-tagline: 🚀 一款Java/Kotlin 语言下无依赖、高性能、轻量级、强类型的ORM框架支持分库分表读写分离
+tagline: 🚀 java下唯一一款同时支持强类型OLTP和强类型OLAP语法的ORM,拥有对象模型筛选、隐式子查询、隐式join、显式子查询、显式join,支持Java/Kotlin
 actions:
   - text: 开始使用 →
     link: /startup
