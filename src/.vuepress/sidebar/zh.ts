@@ -33,7 +33,7 @@ export const zhSidebar = sidebar({
           children: ["readme.md","basic-type","anonymous-type","or-condition","paging","multi-query","group","order","select","native-sql","dynamic-table","stream-query","to-map","select-column","union","select-sub","sub-query","relation","relation-filter","fill","where","reuse","case-when","dynamic-where","dynamic-sort"],
         },
         {
-          text: "复杂属性",
+          text: "计算属性",
           prefix: "prop/",
           children: ["readme.md","json-prop","collection-prop","enum-prop","sql-column-prop","combine-prop","aggregate-prop","sql-column-generate-prop"],
         },
