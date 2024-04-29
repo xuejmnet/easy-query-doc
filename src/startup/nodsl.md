@@ -1,5 +1,5 @@
 ---
-title: 对象关系查询 ✨
+title: OLTP查询 ✨
 ---
 
 为什么我们需要对象关系查询,为什么对象关系查询叫做`nodsl`一个好的 orm 的方向肯定是不仅仅是 dsl 语句,毕竟`dsl`语句只是强类型拼接`sql`,对象关系才是`orm`的精髓，但是如果一个`orm`只有对象关系查询那么这个`orm`也不是一个好的`orm`,一个好的`orm`应该是`dsl+nodsl`
@@ -25,7 +25,7 @@ title: 对象关系查询 ✨
 
 `班级`,`老师`,`学生`,`学生家庭地址`
 
-其中一个班级有多个学生,一个班级有多个老师,一个老师也可以教多个班级,每个学生都有自己的家庭地址
+其中一个班级有多个学生,一个班级有多个老师,一个老师也可以教多个班级,每个学生都有自己的家庭地址,每个学生都有多门自己选择的课程
 
 ::: code-tabs
 @tab 班级
@@ -127,6 +127,9 @@ public class SchoolStudent implements ProxyEntityAvailable<SchoolStudent, School
     @Navigate(value = RelationTypeEnum.OneToOne, targetProperty = "studentId")
     private SchoolStudentAddress schoolStudentAddress;
 
+    @Navigate(value = RelationTypeEnum.OneToMany,targetProperty = "studentId")
+    private List<SchoolCourse> schoolCourses;
+
     @Override
     public Class<SchoolStudentProxy> proxyTableClass() {
         return SchoolStudentProxy.class;
@@ -134,24 +137,26 @@ public class SchoolStudent implements ProxyEntityAvailable<SchoolStudent, School
 }
 ```
 
-@tab 学生家庭地址
+@tab 学生课程
 
 ```java
 
-@Table("school_student_address")
+
+@Table("school_course")
 @Data
 @ToString
-@EntityProxy
-public class SchoolStudentAddress implements ProxyEntityAvailable<SchoolStudentAddress , SchoolStudentAddressProxy> {
+@EntityFileProxy
+public class SchoolCourse implements ProxyEntityAvailable<SchoolCourse , SchoolCourseProxy> {
+    @Column(primaryKey = true)//主键
     private String id;
     private String studentId;
-    private String address;
-    @Navigate(value = RelationTypeEnum.ManyToOne,selfProperty = "studentId",targetProperty = "id")
+    private String name;
+    @Navigate(value = RelationTypeEnum.ManyToOne,selfProperty = "studentId")
     private SchoolStudent schoolStudent;
 
     @Override
-    public Class<SchoolStudentAddressProxy> proxyTableClass() {
-        return SchoolStudentAddressProxy.class;
+    public Class<SchoolCourseProxy> proxyTableClass() {
+        return SchoolCourseProxy.class;
     }
 }
 ```
@@ -316,6 +321,27 @@ List<SchoolStudent> list = easyEntityQuery.queryable(SchoolStudent.class)
 ```
 
 ## 案例 9
+查询课程这个课程是一班的,因为课程目前没有直接和班级设置关系所以只能通过学生来实现
+```java
+//实现方式1 直接查询课程筛选出关联的班级是一班的 一次sql查询
+List<SchoolCourse> courses = easyEntityQuery.queryable(SchoolCourse.class)
+        .where(s -> {
+            s.schoolStudent().schoolClass().name().like("一班");
+        }).toList();
+
+//easy-query版本2.0.3+
+
+//实现方式2 直接查询一班然后拉取的时候额外查出所需要的学生下的课程 分多次sql查询
+List<SchoolCourse> courses = easyEntityQuery.queryable(SchoolClass.class)
+        .where(s -> {
+            s.name().like("一班");
+        })
+        //注意如果返回结果是对多的集合需要调用flatElement来展开结果,如果是单个对象则不需要
+        //返回结果意思查询学生并且展开查询下面的课程然后展开
+        .toList(x -> x.schoolStudents().flatElement().schoolCourses().flatElement());
+//方式2适合多对多情况下比如查询小明所拥有的菜单,因为小明和角色是多对多,角色和菜单也是多对多可以通过方式2当前也可以通过方式1
+```
+## 案例 10
 
 返回 VO 对象自动 include 返回层级对象
 

@@ -19,7 +19,7 @@ title: easy-query简介目录
 - VO对象直接返回 [自定义vo列返回](/easy-query-doc/guide/query/select)
 - 数据库对象模型关联查询：一对多、一对一、多对多、多对一 [对象关系查询](/easy-query-doc/startup/nodsl)
 - 对象关系关联查询`nosql`不仅仅是`sql`联级筛选,支持额外条件过滤比如公用中间表,多对多关联+type区分 [联级筛选Include Filter](/easy-query-doc/guide/query/relation-filter)
-- OLTP、OLAP强类型语法的sql查询语法 [DSL查询](/easy-query-doc/startup/sql)
+- [OLTP](/easy-query-doc/startup/nodsl)、[OLAP](/easy-query-doc/startup/sql)强类型语法的sql查询语法
 - 智能的差异识别更新、并发更新 [更新、追踪](/easy-query-doc/guide/basic/update)
 - 自带分页方法和无依赖分页链式返回 [分页](/easy-query-doc/guide/query/paging)
 - Embeddable、ValueObject对象 [值对象](/easy-query-doc/guide/adv/value-object)
