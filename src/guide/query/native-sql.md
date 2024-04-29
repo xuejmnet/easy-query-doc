@@ -84,40 +84,42 @@ long l = easyQuery.sqlExecute("update t_blog set content=? where id=?", Arrays.a
 - `where`、`join on`、`order`、`having`的sqlNativeSegment是具体表的`executeSQL`方法
 - 如果需要返回expression则为表点sql比如`o.sql(....)` 
 - `select`别名和`update set`为`setSQL`
+- `o.expression()`来获取表达式其中`expression().sql()`来执行sql用于`join、where、orderBy`,`expression().sqlType()`用来返回片段类型用于`select、groupBy`等
 
 ```java
 //where
 
-            List<Topic> list2 = easyEntityQuery.queryable(Topic.class)
-                    .where(o -> {
-
-                        o.createTime().format("yyyy/MM/dd" ).eq("2023/01/01" );
-                        o.or(() -> {
-                            o.stars().ne(1);
-                            o.createTime().le(LocalDateTime.of(2024, 1, 1, 1, 1));
-                            o.title().notLike("abc" );
-                        });
+           
+        List<Topic> list2 = easyEntityQuery.queryable(Topic.class)
+                .where(o -> {
+                    Expression expression = o.expression();
+                    o.createTime().format("yyyy/MM/dd" ).eq("2023/01/01" );
+                    o.or(() -> {
+                        o.stars().ne(1);
+                        o.createTime().le(LocalDateTime.of(2024, 1, 1, 1, 1));
+                        o.title().notLike("abc" );
+                    });
+                    o.createTime().format("yyyy/MM/dd" ).eq("2023/01/01" );
+                    o.id().nullOrDefault("yyyy/MM/dd" ).eq("xxx" );
+                    expression.sql("{0} != {1}" , c -> {
+                        c.expression(o.stars()).expression(o.createTime());
+                    });
+                    o.or(() -> {
                         o.createTime().format("yyyy/MM/dd" ).eq("2023/01/01" );
                         o.id().nullOrDefault("yyyy/MM/dd" ).eq("xxx" );
-                        o.executeSQL("{0} != {1}" , c -> {
+                        expression.sql("{0} != {1}" , c -> {
                             c.expression(o.stars()).expression(o.createTime());
                         });
-                        o.or(() -> {
-                            o.createTime().format("yyyy/MM/dd" ).eq("2023/01/01" );
-                            o.id().nullOrDefault("yyyy/MM/dd" ).eq("xxx" );
-                            o.executeSQL("{0} != {1}" , c -> {
-                                c.expression(o.stars()).expression(o.createTime());
-                            });
-                        });
+                    });
 
-                        o.createTime().format("yyyy/MM/dd" ).eq("2023/01/02" );
-                        o.id().nullOrDefault("yyyy/MM/dd2" ).eq("xxx1" );
-                    })
-                    .select(o -> o.FETCHER
-                            .allFieldsExclude(o.id(), o.title())
-                            .id().as(o.title())
-                            .id().fetchProxy())
-                    .toList();
+                    o.createTime().format("yyyy/MM/dd" ).eq("2023/01/02" );
+                    o.id().nullOrDefault("yyyy/MM/dd2" ).eq("xxx1" );
+                })
+                .select(o -> o.FETCHER
+                        .allFieldsExclude(o.id(), o.title())
+                        .id().as(o.title())
+                        .id().fetchProxy())
+                .toList();
 
 
 -- 第1条sql数据
@@ -154,7 +156,7 @@ List<Topic> list3 = easyEntityQuery.queryable(Topic.class)
                     })
                     .orderBy(o -> {
                         o.createTime().format("yyyy-MM-dd HH:mm:ss" ).desc();
-                        o.executeSQL("IFNULL({0},'') ASC" , c -> {
+                        o.expression().sql("IFNULL({0},'') ASC" , c -> {
                             c.keepStyle().expression(o.stars());
                         });
                     })
@@ -176,6 +178,23 @@ List<Topic> list2 = easyEntityQuery.queryable(Topic.class)
                         });
                     }))
                     .toList();
+
+
+//上下凉鞋发一样通过expression来构建sql片段并且指定类型是String
+List<Topic> list4 = easyEntityQuery.queryable(Topic.class)
+        .where(o -> o.createTime().format("yyyy/MM/dd" ).eq("2023/01/01" ))
+        .select(o -> new TopicProxy().adapter(r->{
+
+            r.title().set(o.stars().nullOrDefault(0).toStr());
+            
+            PropTypeColumn<String> nullProperty = o.expression().sqlType("IFNULL({0},'')", c -> {
+                c.keepStyle();
+                c.expression(o.id());
+            }).setPropertyType(String.class);
+            
+            r.alias().set(nullProperty);
+        }))
+        .toList();
 
 SELECT CAST(IFNULL(t.`stars`,?) AS CHAR) AS `title`,IFNULL(t.`id`,'') AS `alias` FROM `t_topic` t WHERE DATE_FORMAT(t.`create_time`,'%Y/%m/%d') = ?
 
@@ -215,8 +234,6 @@ setAlias | 别名  | 用于设置列别名一般用户查询较多
 
 ## 案例二
 `OVER(Partition By ... Order By ...)` 采用pgsql语法来实现
-
-案例来自 [jimmer](https://github.com/babyfish-ct/jimmer)
 
 - 获取书本价格在所有书籍中的名次
 - 获取数据的价格在所属书店中的名次

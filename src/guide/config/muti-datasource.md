@@ -276,6 +276,7 @@ public class DynamicDataSourceAspectConfiguration {
         Method method = signature.getMethod();
         DynamicDataSource dynamicDataSource = method.getAnnotation(DynamicDataSource.class); //通过反射拿到注解对象
         try {
+            //如果需要动态设置可以通过springEL来实现
             if(EasyStringUtil.isNotBlank(dynamicDataSource.value())){
                 easyMultiEntityQuery.setCurrent(dynamicDataSource.value());
             }
@@ -283,11 +284,6 @@ public class DynamicDataSourceAspectConfiguration {
         }finally {
             easyMultiEntityQuery.clear();
         }
-    }
-    private String[] getParamterNames(Method method) {
-        LocalVariableTableParameterNameDiscoverer u =
-                new LocalVariableTableParameterNameDiscoverer();
-        return u.getParameterNames(method);
     }
 }
 ```
@@ -317,11 +313,11 @@ public class MyController {
     public Object test1(){
         return easyMultiEntityQuery.queryable(Topic.class).toList();
     }
-    @RequestMapping("/test2")
-    @DynamicDataSource("#request.ds")
-    public Object test2(@RequestBody MyRequest request){
-        return easyMultiEntityQuery.queryable(Topic.class).toList();
-    }
+    // @RequestMapping("/test2")
+    // @DynamicDataSource("#request.ds")//需要springEL自行实现
+    // public Object test2(@RequestBody MyRequest request){
+    //     return easyMultiEntityQuery.queryable(Topic.class).toList();
+    // }
     @RequestMapping("/test3")
     public Object test3(){
         List<Topic> ds2 = easyMultiEntityQuery.executeScope("ds2", eq -> {
