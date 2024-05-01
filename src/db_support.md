@@ -17,3 +17,4 @@ H2 | sql-h2  | h2| h2
 人大金仓KingbaseES | sql-kingbase-es  | kingbase_es| kingbase_es
 Oracle | sql-oracle  | oracle| oracle
 SQLite | sql-sqlite  | sqlite| sqlite
+ClickHouse | sql-clickhouse  | clickhouse| clickhouse
