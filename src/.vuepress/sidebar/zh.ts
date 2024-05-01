@@ -35,7 +35,7 @@ export const zhSidebar = sidebar({
         {
           text: "计算属性",
           prefix: "prop/",
-          children: ["readme.md","json-prop","collection-prop","enum-prop","sql-column-prop","combine-prop","aggregate-prop","sql-column-generate-prop"],
+          children: ["readme.md","json-prop","collection-prop","enum-prop","sql-column-prop","status-prop","combine-prop","aggregate-prop","sql-column-generate-prop"],
         },
         {
           text: "高级",
