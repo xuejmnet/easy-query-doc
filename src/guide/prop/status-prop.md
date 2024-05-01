@@ -91,7 +91,7 @@ public class CertStatusColumnValueSQLConverter  implements ColumnValueSQLConvert
     @Override
     public void selectColumnConvert(TableAvailable table, ColumnMetadata columnMetadata, SQLPropertyConverter sqlPropertyConverter, QueryRuntimeContext runtimeContext) {
         SQLFunc fx = runtimeContext.fx();
-        //计算出两者天数差值 前面是小的时间后面是大的时间
+        //计算出两者天数差值 前面是大的时间后面是小的时间
         SQLFunction durationDay = fx.duration(x->x.column(table,"invalidTime").sqlFunc(fx.now()), DateTimeDurationEnum.Days);
         //计算出来的时间如果大于30天表示是正常的,大于等于0表示临期的小于0表示过期的
         SQLFunction sqlFunction = fx.anySQLFunction("(CASE WHEN {0}>30 THEN 1 WHEN {0}>=0 THEN 2 ELSE 3 END)", c -> {
