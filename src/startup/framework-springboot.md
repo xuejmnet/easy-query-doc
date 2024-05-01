@@ -194,13 +194,13 @@ Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Err
 		<dependency>
 			<groupId>com.easy-query</groupId>
 			<artifactId>sql-core</artifactId>
-			<version>1.7.10</version>
+			<version>${easy-query.version}</version>
 		</dependency>
 <!--		自己选择对应的驱动-->
 		<dependency>
 			<groupId>com.easy-query</groupId>
 			<artifactId>sql-mysql</artifactId>
-			<version>1.7.10</version>
+			<version>${easy-query.version}</version>
 		</dependency>
 		<!-- mysql驱动 -->
 		<dependency>
@@ -230,25 +230,25 @@ Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Err
 		<dependency>
 			<groupId>com.easy-query</groupId>
 			<artifactId>sql-core</artifactId>
-			<version>1.7.10</version>
+			<version>${easy-query.version}</version>
 		</dependency>
 <!--		代理模式-->
 		<dependency>
 			<groupId>com.easy-query</groupId>
 			<artifactId>sql-api-proxy</artifactId>
-			<version>1.7.10</version>
+			<version>${easy-query.version}</version>
 		</dependency>
 <!--		自己选择对应的驱动-->
 		<dependency>
 			<groupId>com.easy-query</groupId>
 			<artifactId>sql-mysql</artifactId>
-			<version>1.7.10</version>
+			<version>${easy-query.version}</version>
 		</dependency>
 <!--		用来生成代理对象-->
 		<dependency>
 			<groupId>com.easy-query</groupId>
 			<artifactId>sql-processor</artifactId>
-			<version>1.7.10</version>
+			<version>${easy-query.version}</version>
 		</dependency>
 		<!-- mysql驱动 -->
 		<dependency>
