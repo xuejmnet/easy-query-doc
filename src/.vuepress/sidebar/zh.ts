@@ -56,10 +56,10 @@ export const zhSidebar = sidebar({
       prefix: "practice/",
       children: [
         {
-          text: "对象",
-          prefix: "entity/",
+          text: "基础配置",
+          prefix: "configuration/",
           collapsible:true,
-          children: ["readme.md"],
+          children: ["readme.md","entity.md"],
         }
       ],
     },

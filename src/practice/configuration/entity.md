@@ -160,7 +160,9 @@ public class DefaultEntityInterceptor implements EntityInterceptor, UpdateSetInt
     public String name() {
         return "DEFAULT_INTERCEPTOR";//后续禁用拦截器或者启用拦截器使用这个名称代表当前拦截器
     }
-
+    /**
+     * 那些对象需要用到这个拦截器(这边设置继承BaseEntity的对象)
+     */
     @Override
     public boolean apply(Class<?> entityClass) {
         return BaseEntity.class.isAssignableFrom(entityClass);
