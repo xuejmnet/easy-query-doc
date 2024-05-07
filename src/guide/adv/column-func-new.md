@@ -7,7 +7,7 @@ title: 自定义数据库函数(新)
 ```sql
 SELECT t.`id` FROM `t_topic` t WHERE t.`id` = ? AND FIND_IN_SET(?,t.`id`)
 ```
-加入我们要实现这么一个数据库语句,那么我们应该如何实现,接下来我们将使用`easy-query`的`sqlNativeSegment`封装和`sqlFunc`和`sqlFuncAs`能力实现单列的数据库函数
+假如我们要实现这么一个数据库语句,那么我们应该如何实现,接下来我们将使用`easy-query`的`sqlNativeSegment`封装和`sqlFunc`和`sqlFuncAs`能力实现单列的数据库函数
 
 ## FIND_IN_SET编写
 
