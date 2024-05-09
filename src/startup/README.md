@@ -11,6 +11,7 @@ title: easy-query简介目录
 - 对象关系结构化VO自动组装返回,支持一对多一对一结果筛选,排序,limit
 - 多数据源,动态多数据源，支持`SpringEL`，使用场景多租户(一个租户一个库) [DynamicDataSource](/easy-query-doc/guide/config/muti-datasource) 
 - 软删除，软删除部分禁用启用非常方便，软删除记录删除时间,删除人  [LogicDelete](/easy-query-doc/guide/adv/logic-delete)
+- 自定义错误异常快速针对`firstNotNull`、`singleNotNull`、`required`  [Exception](/easy-query-doc/practice/configuration/exception)
 - 枚举和数据库映射,数据脱敏,数据编码存储解码获取,枚举属性,json或者数组,计算属性等 [ValueConverter,ColumnValueSQLConverter](/easy-query-doc/guide/prop/)
 - 数据填充,自动赋值创建人创建时间,修改人修改时间 [拦截器](/easy-query-doc/guide/adv/interceptor)、 [对象实战](/easy-query-doc/practice/entity/)
 - 慢sql监听拦截,自动上报预警 [jdbc执行监听器](/easy-query-doc/guide/adv/jdbc-listener)

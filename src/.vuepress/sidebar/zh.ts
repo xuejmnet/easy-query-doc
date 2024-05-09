@@ -59,7 +59,7 @@ export const zhSidebar = sidebar({
           text: "基础配置",
           prefix: "configuration/",
           collapsible:true,
-          children: ["readme.md","entity.md"],
+          children: ["readme.md","entity.md","exception.md"],
         }
       ],
     },

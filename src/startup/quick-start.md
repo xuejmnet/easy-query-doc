@@ -3,7 +3,7 @@ title: 快速开始🔥🔥🔥
 ---
 
 ## 简介
-在使用前您需要知晓目前1.8.0+版本的`easy-query`提供了4中api机制分别是`lambda`、`property`、`proxy`、`entity`其中每个api都有自己的特点,其中`easyEntityQuery`是最新开发的api,使用起来非常顺畅流畅,非常推荐,4种模式可以在一个应用里面共存
+在使用前您需要知晓目前1.8.0+版本的`easy-query`提供了3中api机制分别是`lambda`、`property`、`entity`其中每个api都有自己的特点,其中`easyEntityQuery`是最新开发的api,使用起来非常顺畅流畅,非常推荐,3种模式可以在一个应用里面共存
 
 ## EntityQuery
 `EasyEntityQuery`接口为`EntityQuery`暴露给用户的`crud`api接口,我们的主要操作处理都是通过该接口实现的,要实现这个功能有以下两种方式
@@ -16,6 +16,7 @@ title: 快速开始🔥🔥🔥
 
 如果是多模块那么可以再每个需要生成`proxy`的`module`处的`pom.xm`l引入`sql-processor`包或者在项目`maven`插件处进行配置
 
+如果您之前已经存在`annotationProcessorPaths`那么你可以在里面添加`eq`的`apt`处理，如果未使用过那么还是建议需要apt的模块单独引入`sql-processor`
 以下配置那么在各个独立`module`处不需要在引入`sql-processor`
 ```xml
 <plugin>
@@ -43,7 +44,7 @@ title: 快速开始🔥🔥🔥
 
 
 # EntityProxy 推荐🔥🔥🔥
-新建一个`java8`以上的任意项目我们创建maven的空项目即可然后引入对应的包
+新建一个`java8`以上的任意项目我们创建maven的空项目即可然后引入对应的包,`sql-core`提供了`property`的api模式,`sql-api-proxy`则是真正的针对`property`的模式增加的强类型`entity`模式的包
 ## 依赖注入
 ```xml
     <dependencies>
