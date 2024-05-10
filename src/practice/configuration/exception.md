@@ -39,6 +39,8 @@ SysUser u=query(SysUser.class).whereById("123").firstOrNull();
 if(u==null){
     throw new BusinessException("未找到对应的用户信息");
 }
+//下面这种方式也可以
+SysUser u=query(SysUser.class).whereById("123").firstNotNull(()->new BusinessException("未找到对应的用户信息"));
 ```
 
 ## 进阶
