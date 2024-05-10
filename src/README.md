@@ -7,7 +7,7 @@ heroText: easy-query
 tagline: 🚀 java下唯一一款同时支持强类型对象关系查询和强类型SQL语法查询的ORM,拥有对象模型筛选、隐式子查询、隐式join、显式子查询、显式join,支持Java/Kotlin
 actions:
   - text: 开始使用 →
-    link: /startup
+    link: /startup/dir
     type: primary
 
   - text: 爱心支持💡

@@ -48,3 +48,34 @@ easy-query-track:
 如果idea报错`Slow operations are prohibited on EDT. See SlowOperations.assertSlowOperationsAreAllowed javadoc`
 
 那么就双击`shift`输入`Registry...`然后在弹出的地方搜索`slow` 将`ide.slow.operations.assertion`的`value`勾去掉
+
+## 阿里镜像找不到依赖？
+
+```text
+Could not find artifact xxxxx:pom:xxxx
+in alimaven (http://maven.aliyun.com/nexus/content/groups/public/)
+```
+
+这个是因为目前阿里云镜像正在维护，可以替换为腾讯云或者华为云的镜像源，更改 Maven 安装目录下的 settings.xml 文件， 添加如下配置：
+
+腾讯云：
+
+```xml
+<mirror>
+    <id>tencent-cloud</id>
+    <mirrorOf>*</mirrorOf>
+    <name>tencent-cloud</name>
+    <url>https://mirrors.cloud.tencent.com/nexus/repository/maven-public/</url>
+</mirror>
+```
+
+华为云：
+
+```xml
+<mirror>
+    <id>huawei-cloud</id>
+    <mirrorOf>*</mirrorOf>
+    <name>huawei-cloud</name>
+    <url>https://mirrors.huaweicloud.com/repository/maven/</url>
+</mirror>
+```
