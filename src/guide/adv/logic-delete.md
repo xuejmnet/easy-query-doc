@@ -129,6 +129,32 @@ long l = easyQuery.updatable(LogicDelTopic.class)
 <== Total: 1
 ```
 
+## 禁用部分逻辑删除
+```java
+//同一个表达式内from的表然后加join的表所以最近的一张表是join的表
+//正常的sql不进行部分禁用
+List<BlogEntity> list2 = easyEntityQuery.queryable(BlogEntity.class)
+        .leftJoin(BlogEntity.class, (b, b2) -> b.id().eq(b2.id()))
+        .where((b1, b2) -> b1.title().like("123"))
+        .toList();
+
+==> Preparing: SELECT t.`id`,t.`create_time`,t.`update_time`,t.`create_by`,t.`update_by`,t.`deleted`,t.`title`,t.`content`,t.`url`,t.`star`,t.`publish_time`,t.`score`,t.`status`,t.`order`,t.`is_top`,t.`top` FROM `t_blog` t LEFT JOIN `t_blog` t1 ON t1.`deleted` = ? AND t.`id` = t1.`id` WHERE t.`deleted` = ? AND t.`title` LIKE ?
+==> Parameters: false(Boolean),false(Boolean),%123%(String)
+
+
+
+//禁用部分逻辑删除join的表禁用from的表不禁用
+List<BlogEntity> list1 = easyEntityQuery.queryable(BlogEntity.class)
+        .leftJoin(BlogEntity.class, (b, b2) -> b.id().eq(b2.id()))
+        .tableLogicDelete(() -> false)
+        .where((b1, b2) -> b1.title().like("123"))
+        .toList();
+
+
+==> Preparing: SELECT t.`id`,t.`create_time`,t.`update_time`,t.`create_by`,t.`update_by`,t.`deleted`,t.`title`,t.`content`,t.`url`,t.`star`,t.`publish_time`,t.`score`,t.`status`,t.`order`,t.`is_top`,t.`top` FROM `t_blog` t LEFT JOIN `t_blog` t1 ON t.`id` = t1.`id` WHERE t.`deleted` = ? AND t.`title` LIKE ?
+==> Parameters: false(Boolean),%123%(String)
+```
+
 ## 自定义逻辑删除
 很多用户可能对现有的很多系统拥有的逻辑删除都表示非常弱鸡,甚至只支持单字段的逻辑删除,`easy-query`提供了高级抽象可以让用户自行实现逻辑删除
 
@@ -196,9 +222,11 @@ public class MyLogicDelStrategy extends AbstractLogicDeleteStrategy {
     /**
      * 允许datetime类型的属性
      */
-    private final Set<Class<?>> allowTypes=new HashSet<>(Arrays.asList(LocalDateTime.class));
+    private static final Set<Class<?>> allowTypes=new HashSet<>(Arrays.asList(LocalDateTime.class));
     @Override
     protected SQLExpression1<WherePredicate<Object>> getPredicateFilterExpression(LogicDeleteBuilder builder,String propertyName) {
+        //如果需要唯一索引请自行选择数据库是否支持null的唯一索引
+        //如果不支持可以选择小于1900年或者一个固定年份来作为被删除
         return o->o.isNull(propertyName);
     }
 
