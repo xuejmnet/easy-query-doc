@@ -111,17 +111,23 @@ List<Draft3<String, LocalDateTime, String>> userInfo = easyEntityQuery.queryable
             user.name().like("小明");
             addr.city().eq("杭州");
         })
-        .select((s1, s2) -> Select.DRAFT.of(
-                s1.id(),
-                s1.createTime(),
-                s2.area()
+        .select((user, addr) -> Select.DRAFT.of(
+                user.id(),
+                user.createTime(),
+                addr.area()
         )).toList();
 
-//映射到VO返回设置为查询id，content，createTime
-List<BlogEntityVO1> list1 = easyEntityQuery.queryable(BlogEntity.class)
-                .select(BlogEntityVO1.class, b -> Select.of(
-                        b.FETCHER.id().content().createTime()
-                )).toList();
+
+List<UserDTO> userInfo = easyEntityQuery.queryable(SysUser.class)
+        .leftJoin(SysUserAddress.class, (user, addr) -> user.id().eq(addr.userId()))
+        .where((user, addr) -> {
+            user.name().like("小明");
+            addr.city().eq("杭州");
+        })
+        .select(UserDTO.class,(user, addr) -> Select.DRAFT.of(
+                user.FETCHER.id().createTime(),
+                addr.area()
+        )).toList();
 ```
 @tab 隐式join筛选
 ```java
@@ -146,6 +152,60 @@ List<SysUser> adminUsers = easyEntityQuery.queryable(SysUser.class)
                     role.name().eq("管理员");
                 }).any();
             }).toList();
+
+//匿名返回用户id和用户所拥有的角色数量
+List<Draft2<String, Long>> userIdAndRoleCount = easyEntityQuery.queryable(SysUser.class)
+        .where(user -> user.name().like("小明"))
+        .select(user -> Select.DRAFT.of(
+                user.id(),
+                user.roles().count()
+        )).toList();
+```
+
+@tab 显示子查询
+```java
+
+List<SysUser> userIn = easyEntityQuery.queryable(SysUser.class)
+        .where(user -> {
+            user.id().in(
+                    easyEntityQuery.queryable(SysRole.class)
+                            .select(s -> s.id())
+            );
+        }).toList();
+
+
+List<SysUser> userExists = easyEntityQuery.queryable(SysUser.class)
+        .where(user -> {
+            
+            user.expression().exists(()->{
+                return easyEntityQuery.queryable(SysRole.class)
+                        .where(role -> {
+                            role.name().eq("管理员");
+                            role.id().eq(user.id());
+                        });
+                    });
+        }).toList();
+
+  
+//匿名返回用户id和用户所拥有的角色数量
+List<Draft2<String, Long>> userIdAndRoleCount1 = easyEntityQuery.queryable(SysUser.class)
+        .where(user -> user.name().like("小明"))
+        .select(user -> Select.DRAFT.of(
+                user.id(),
+                user.expression().subQuery(() -> {
+                    return easyEntityQuery.queryable(SysRole.class)
+                            .where(r -> {
+                                r.expression().exists(()->{
+                                    return easyEntityQuery.queryable(UserRole.class)
+                                            .where(u -> {
+                                                u.roleId().eq(r.id());
+                                                u.userId().eq(user.id());
+                                            });
+                                });
+                            })
+                            .selectCount();
+                })
+        )).toList();
 ```
 @tab 结构化数据返回
 ```java
