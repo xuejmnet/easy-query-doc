@@ -131,11 +131,13 @@ List<UserDTO> userInfo = easyEntityQuery.queryable(SysUser.class)
 ```
 @tab 隐式join筛选
 ```java
+//user和address一对一
 //查询杭州或绍兴的用户
 List<SysUser> userInHz = easyEntityQuery.queryable(SysUser.class)
                 .where(s -> {
                     //隐式子查询会自动join用户表和地址表
                     s.or(()->{
+                      //
                         s.address().city().eq("杭州市");
                         s.address().city().eq("绍兴市");
                     });
@@ -144,6 +146,7 @@ List<SysUser> userInHz = easyEntityQuery.queryable(SysUser.class)
 
 @tab 隐式子查询
 ```java
+//user和role多对多
 //筛选用户角色是管理员的
 List<SysUser> adminUsers = easyEntityQuery.queryable(SysUser.class)
             .where(s -> {
