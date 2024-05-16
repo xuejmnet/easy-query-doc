@@ -497,8 +497,8 @@ public class EasyQueryConfiguration {
     }
     
     @Bean
-    public EasyProxyQuery easyProxyQuery(EasyQueryClient easyQueryClient){
-        return new DefaultEasyProxyQuery(easyQueryClient);
+    public EasyEntityQuery easyEntityQuery(EasyQueryClient easyQueryClient){
+        return new DefaultEasyEntityQuery(easyQueryClient);
     }
 }
 ```
@@ -523,7 +523,7 @@ spring:
 @RequestMapping("/my")
 public class MyController {
     @Autowired
-    private EasyProxyQuery easyProxyQuery;
+    private EasyEntityQuery easyEntityQuery;
     @GetMapping("/test")
     public Object test() {
         return "hello world";
