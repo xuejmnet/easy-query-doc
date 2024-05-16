@@ -312,6 +312,29 @@ public class SysUserFlatDTO {
 
 
 ```
+@tab 原生sql
+```java
+//原生sql执行
+
+List<SysUser> filterTime = easyEntityQuery.queryable(SysUser.class)
+        .where(user -> {
+            user.expression().sql("{0} > {1}", c -> {
+                c.value(LocalDateTime.now()).expression(user.createTime());
+            });
+        }).toList();
+
+//原生sql片段
+
+
+List<Draft2<String, String>> idAndName = easyEntityQuery.queryable(SysUser.class)
+        .where(user -> {
+            user.createTime().gt(LocalDateTime.now());
+        }).select(user -> Select.DRAFT.of(
+                user.id(),
+                user.expression().sqlType("IFNULL({0},'')", c -> c.expression(user.name())).setPropertyType(String.class)
+        )).toList();
+
+```
 
 ::: 
 
