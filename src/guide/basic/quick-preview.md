@@ -79,16 +79,6 @@ Topic topic = easyQuery.queryable(Topic.class)
 ==> Preparing: SELECT `id`,`stars`,`title`,`create_time` FROM `t_topic` WHERE `id` = ? LIMIT 1
 ==> Parameters: 123(String)
 ```
-@tab proxy模式
-```java
-TopicProxy topic=TopicProxy.createTable()
-Topic topic = easyProxyQuery.queryable(topic)
-                    .where(o -> o.eq(topic.id(),"123"))
-                    .firstOrNull();
-
-==> Preparing: SELECT `id`,`stars`,`title`,`create_time` FROM `t_topic` WHERE `id` = ? LIMIT 1
-==> Parameters: 123(String)
-```
 @tab 属性模式
 
 ```java
@@ -119,16 +109,6 @@ Topic topic = easyEntityQuery.queryable(Topic.class)
 ```java
 Topic topic = easyQuery.queryable(Topic.class)
                     .where(o -> o.eq(Topic::getId, "123"))
-                    .singleOrNull();
-
-==> Preparing: SELECT `id`,`stars`,`title`,`create_time` FROM `t_topic` WHERE `id` = ?
-==> Parameters: 123(String)
-```
-@tab proxy模式
-```java
-TopicProxy topic=TopicProxy.createTable()
-Topic topic = easyProxyQuery.queryable(topic)
-                    .where(o -> o.eq(topic.id(),"123"))
                     .singleOrNull();
 
 ==> Preparing: SELECT `id`,`stars`,`title`,`create_time` FROM `t_topic` WHERE `id` = ?
@@ -169,16 +149,6 @@ Topic topic = easyQuery.queryable(Topic.class)
 ==> Preparing: SELECT `id`,`stars`,`title`,`create_time` FROM `t_topic` WHERE `id` = ? LIMIT 1
 ==> Parameters: 123(String)
 ```
-@tab proxy模式
-```java
-TopicProxy topic=TopicProxy.createTable();
-Topic topic = easyProxyQuery.queryable(Topic.class)
-        .where(o -> o.eq(topic.id(),"123"))
-        .firstNotNull("未找到对应的数据");
-
-==> Preparing: SELECT `id`,`stars`,`title`,`create_time` FROM `t_topic` WHERE `id` = ? LIMIT 1
-==> Parameters: 123(String)
-```
 @tab 属性模式
 ```java
 
@@ -209,16 +179,6 @@ Topic topic = easyEntityQuery.queryable(Topic.class)
 
 Topic topic = easyQuery.queryable(Topic.class)
         .where(o -> o.eq(Topic::getId, "123"))
-        .singleNotNull("未找到对应的数据");
-
-==> Preparing: SELECT `id`,`stars`,`title`,`create_time` FROM `t_topic` WHERE `id` = ?
-==> Parameters: 123(String)
-```
-@tab proxy模式
-```java
-TopicProxy topic=TopicProxy.createTable();
-Topic topic = easyProxyQuery.queryable(Topic.class)
-        .where(o -> o.eq(topic.id(),"123"))
         .singleNotNull("未找到对应的数据");
 
 ==> Preparing: SELECT `id`,`stars`,`title`,`create_time` FROM `t_topic` WHERE `id` = ?
@@ -259,16 +219,6 @@ List<Topic> topics = easyEntityQuery.queryable(Topic.class)
 ```java
 List<Topic> topics = easyQuery.queryable(Topic.class)
                     .where(o -> o.eq(Topic::getId, "123"))
-                    .toList();
-
-==> Preparing: SELECT `id`,`stars`,`title`,`create_time` FROM `t_topic` WHERE `id` = ?
-==> Parameters: 123(String)
-```
-@tab proxy模式
-```java
-TopicProxy topic=TopicProxy.createTable();
-List<Topic> topics = easyProxyQuery.queryable(Topic.class)
-                    .where(o -> o.eq(topic.id(), "123"))
                     .toList();
 
 ==> Preparing: SELECT `id`,`stars`,`title`,`create_time` FROM `t_topic` WHERE `id` = ?
@@ -337,17 +287,6 @@ Topic topic = easyEntityQuery.queryable(Topic.class)
 Topic topic = easyQuery.queryable(Topic.class)
                     .where(o -> o.eq(Topic::getId, "1"))
                     .select(o->o.column(Topic::getId).column(Topic::getTitle))
-                    .firstOrNull();
-
-==> Preparing: SELECT `id`,`title` FROM `t_topic` WHERE `id` = ? LIMIT 1
-==> Parameters: 1(String)
-```
-@tab proxy模式
-```java
-TopicProxy topic=TopicProxy.createTable();
-Topic topic = easyProxyQuery.queryable(Topic.class)
-                    .where(o -> o.eq(topic.id(), "1"))
-                    .select(o->o.column(topic.id()).column(topic.title()))
                     .firstOrNull();
 
 ==> Preparing: SELECT `id`,`title` FROM `t_topic` WHERE `id` = ? LIMIT 1

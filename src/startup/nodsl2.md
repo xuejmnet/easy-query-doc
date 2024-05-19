@@ -291,6 +291,7 @@ WHERE
 ```
 
 ## 案例3
+
 查询用户下面存在角色是`XX员`,并且存在个数大于5个的用户,就是说需要满足用户下面的角色是`xx员`的起码有5个及以上的
 ```java
 
@@ -369,6 +370,11 @@ WHERE
 ```
 
 ## 案例5
+
+::: warning 说明!!!
+> 如果你需要返回数据库表对象而不是自定义StructDTO那么需要自行`include/includes`否则框架不会返回对多的那一方
+:::
+
 查询每个用户和前3个最早创建的角色(支持分页)适用于评论和评论子表前N个
 ```java
 
@@ -410,7 +416,7 @@ WHERE
                 .where(s -> {
                     //判断菜单下的角色存在角色的用户叫做小明的
                     //s.roles().flatElement().users().flatElement().name().eq("小明");//如果只有一个条件name可以这么写
-                    
+
                     //flatElement表示放弃当前表的查询比如roles表因为没有条件所以不需要直接展开即可对roles下的users进行筛选
                     s.roles().flatElement().users().any(user -> {
                         user.name().eq("小明");
