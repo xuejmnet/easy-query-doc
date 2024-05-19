@@ -135,9 +135,10 @@ create table t_topic
 
 ::: warning 说明!!!
 > 如果您有洁癖不想实现这个接口也是可以的,就是在使用的时候使用`easyProxyQuery`而不是`easyEntityQuery`
-> [点击查看两者的区别](/easy-query-doc/startup/diff-proxy)
-> [点击查看两者的区别](/easy-query-doc/startup/diff-proxy)
-> [点击查看两者的区别](/easy-query-doc/startup/diff-proxy)
+> 只是有些框架是一套试题的情况下那么不需要实现接口也可以用entityQuery的api仅此而已正常使用还是推荐大家实现`ProxyEntityAvailable`接口
+> 不是很推荐使用起来会稍微麻烦一点[点击查看两者的区别](/easy-query-doc/startup/diff-proxy)
+> 不是很推荐使用起来会稍微麻烦一点[点击查看两者的区别](/easy-query-doc/startup/diff-proxy)
+> 不是很推荐使用起来会稍微麻烦一点[点击查看两者的区别](/easy-query-doc/startup/diff-proxy)
 ```java
 //easyEntityQuery.queryable(SysUser.class)
 //easyProxyQuery.queryable(SysUserProxy.createTable())

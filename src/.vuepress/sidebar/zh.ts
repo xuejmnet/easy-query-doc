@@ -60,6 +60,12 @@ export const zhSidebar = sidebar({
           prefix: "configuration/",
           collapsible:true,
           children: ["readme.md","entity.md","exception.md"],
+        },
+        {
+          text: "注解处理器",
+          prefix: "apt/",
+          collapsible:true,
+          children: ["readme.md","compile-repo.md"],
         }
       ],
     },
