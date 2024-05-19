@@ -47,6 +47,9 @@ easy-query:
 //强类型api
 @Autowired
 private EasyEntityQuery easyEntityQuery;//(强力推荐🔥🔥🔥)
+//强类型api
+@Autowired
+private EasyProxyQuery easyProxyQuery;//(强力推荐🔥🔥🔥)
 
 //动态类型api
 @Autowired

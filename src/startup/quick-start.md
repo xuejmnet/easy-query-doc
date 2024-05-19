@@ -131,7 +131,22 @@ create table t_topic
 <img src="/startup4.png">
 
 ## 添加数据库对象接口
+
+
+::: warning 说明!!!
+> 如果您有洁癖不想实现这个接口也是可以的,就是在使用的时候使用`easyProxyQuery`而不是`easyEntityQuery`
+> [点击查看两者的区别](/easy-query-doc/startup/diff-proxy)
+> [点击查看两者的区别](/easy-query-doc/startup/diff-proxy)
+> [点击查看两者的区别](/easy-query-doc/startup/diff-proxy)
+```java
+//easyEntityQuery.queryable(SysUser.class)
+//easyProxyQuery.queryable(SysUserProxy.createTable())
+```
+:::
+
 实现接口即可
+
+
 <img src="/startup3.png">
 
 
@@ -165,6 +180,8 @@ public class Main {
                 .build();
                 
         EasyEntityQuery easyEntityQuery = new DefaultEasyEntityQuery(easyQueryClient);
+        //不需要实现接口但是使用方式有点区别
+        EasyProxyQuery easyProxyQuery = new DefaultEasyProxyQuery(easyQueryClient);
 
         //根据id查询第一条
         Topic topic1 = easyEntityQuery.queryable(Topic.class)
