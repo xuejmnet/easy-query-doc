@@ -21,9 +21,9 @@ easyEntityQuery.queryable(SysUser.class)
 .leftJoin(Topic.class,(user,topic)->user.id().eq(topic.id()))
 
 //proxy
-easyEntityQuery.queryable(SysUserProxy.createTable()).where(o->o.id().eq("123"));
+easyProxyQuery.queryable(SysUserProxy.createTable()).where(o->o.id().eq("123"));
 
-easyEntityQuery.queryable(SysUserProxy.createTable())
+easyProxyQuery.queryable(SysUserProxy.createTable())
 .leftJoin(TopicProxy.createTable(),(user,topic)->user.id().eq(topic.id()))
 ```
 
@@ -33,7 +33,7 @@ easyEntityQuery.queryable(SysUserProxy.createTable())
 easyEntityQuery.insertable(new SysUser())....
 
 //proxy
-easyEntityQuery.insertable(new SysUser()).useProxy(SysUserProxy.createTable())....
+easyProxyQuery.insertable(new SysUser()).useProxy(SysUserProxy.createTable())....
 
 ```
 
@@ -47,11 +47,11 @@ easyEntityQuery.updateable(SysUser.class)....
 
 //proxy
 //对象更新包括对象集合如果后续不需要处理column信息那么不需要useProxy
-easyEntityQuery.updateable(new SysUser())).useProxy(SysUserProxy.createTable())....
+easyProxyQuery.updateable(new SysUser())).useProxy(SysUserProxy.createTable())....
 
 
 //自定义更新
-easyEntityQuery.updateable(SysUserProxy.createTable())....
+easyProxyQuery.updateable(SysUserProxy.createTable())....
 
 ```
 
@@ -67,8 +67,8 @@ easyEntityQuery.upddeletableteable(SysUser.class)....
 
 //proxy
 //对象更新包括对象集合如果后续不需要处理column信息那么不需要useProxy
-easyEntityQuery.updateable(new SysUser())).useProxy(SysUserProxy.createTable())....
+easyProxyQuery.updateable(new SysUser())).useProxy(SysUserProxy.createTable())....
 
 
-//自定义更新
-easyEntityQuery.deletable(SysUserProxy.createTable())....
+//自定义删除
+easyProxyQuery.deletable(SysUserProxy.createTable())....
