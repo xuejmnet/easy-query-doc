@@ -53,10 +53,6 @@ public class SchoolClass implements ProxyEntityAvailable<SchoolClass , SchoolCla
 
     private List<SchoolTeacher> schoolTeachers;
 
-    @Override
-    public Class<SchoolClassProxy> proxyTableClass() {
-        return SchoolClassProxy.class;
-    }
 }
 
 //班级和老师的映射表
@@ -70,10 +66,6 @@ public class SchoolClassTeacher implements ProxyEntityAvailable<SchoolClassTeach
     @Column(primaryKey = true)
     private String teacherId;
 
-    @Override
-    public Class<SchoolClassTeacherProxy> proxyTableClass() {
-        return SchoolClassTeacherProxy.class;
-    }
 }
 ```
 
@@ -99,10 +91,6 @@ public class SchoolTeacher implements ProxyEntityAvailable<SchoolTeacher , Schoo
             , targetMappingProperty = "classId")
     private List<SchoolClass> schoolClasses;
 
-    @Override
-    public Class<SchoolTeacherProxy> proxyTableClass() {
-        return SchoolTeacherProxy.class;
-    }
 }
 ```
 
@@ -130,10 +118,6 @@ public class SchoolStudent implements ProxyEntityAvailable<SchoolStudent, School
     @Navigate(value = RelationTypeEnum.OneToMany,targetProperty = "studentId")
     private List<SchoolCourse> schoolCourses;
 
-    @Override
-    public Class<SchoolStudentProxy> proxyTableClass() {
-        return SchoolStudentProxy.class;
-    }
 }
 ```
 
@@ -154,10 +138,6 @@ public class SchoolCourse implements ProxyEntityAvailable<SchoolCourse , SchoolC
     @Navigate(value = RelationTypeEnum.ManyToOne,selfProperty = "studentId")
     private SchoolStudent schoolStudent;
 
-    @Override
-    public Class<SchoolCourseProxy> proxyTableClass() {
-        return SchoolCourseProxy.class;
-    }
 }
 ```
 
@@ -470,11 +450,6 @@ public class RelationUser implements ProxyEntityAvailable<RelationUser , com.eas
     @Navigate(value = RelationTypeEnum.OneToMany,targetProperty ="userId", extraFilter = BookNavigateExtraFilterStrategy.class)
     private List<RelationBook> historyBooks;
 
-
-    @Override
-    public Class<com.easy.query.test.entity.relation.proxy.RelationUserProxy> proxyTableClass() {
-        return com.easy.query.test.entity.relation.proxy.RelationUserProxy.class;
-    }
 }
 
 @Table("relation_teacher")
@@ -492,10 +467,6 @@ public class RelationTeacher implements ProxyEntityAvailable<RelationTeacher , R
     @Navigate(value = RelationTypeEnum.OneToMany,targetProperty ="userId", extraFilter = BookNavigateExtraFilterStrategy.class)
     private List<RelationBook> books;
 
-    @Override
-    public Class<RelationTeacherProxy> proxyTableClass() {
-        return RelationTeacherProxy.class;
-    }
 }
 
 ```

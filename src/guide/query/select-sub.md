@@ -25,10 +25,6 @@ public class TopicSubQueryBlog implements ProxyEntityAvailable<TopicSubQueryBlog
     private LocalDateTime createTime;
     private Long blogCount;
 
-    @Override
-    public Class<TopicSubQueryBlogProxy> proxyTableClass() {
-        return TopicSubQueryBlogProxy.class;
-    }
 }
 
 @tab lambda模式

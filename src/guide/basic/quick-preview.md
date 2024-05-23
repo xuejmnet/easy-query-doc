@@ -49,10 +49,6 @@ public class Topic implements ProxyEntityAvailable<Topic , TopicProxy>{
     private String title;
     private LocalDateTime createTime;
 
-    @Override
-    public Class<TopicProxy> proxyTableClass() {
-        return TopicProxy.class;
-    }
 }
 ```
 

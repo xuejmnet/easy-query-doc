@@ -475,11 +475,6 @@ public class  QueryVO implements ProxyEntityAvailable<QueryVO , QueryVOProxy> {
     private String id;
     private String field1;
     private String field2;
-
-    @Override
-    public Class<QueryVOProxy> proxyTableClass() {
-        return QueryVOProxy.class;
-    }
 }
 
 List<QueryVO> list = easyEntityQuery.queryable(Topic.class)

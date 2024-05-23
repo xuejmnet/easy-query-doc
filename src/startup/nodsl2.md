@@ -32,10 +32,6 @@ public class SysUser implements ProxyEntityAvailable<SysUser , SysUserProxy> {
     @Navigate(value = RelationTypeEnum.OneToOne,targetProperty = "userId")
     private SysUserAddress address;
 
-    @Override
-    public Class<SysUserProxy> proxyTableClass() {
-        return SysUserProxy.class;
-    }
 }
 ```
 
@@ -65,10 +61,6 @@ public class SysRole implements ProxyEntityAvailable<SysRole, SysRoleProxy> {
             targetMappingProperty = "menuId")
     private List<SysMenu> menus;
 
-    @Override
-    public Class<SysRoleProxy> proxyTableClass() {
-        return SysRoleProxy.class;
-    }
 }
 ```
 @tab 用户角色
@@ -82,11 +74,6 @@ public class UserRole implements ProxyEntityAvailable<UserRole , UserRoleProxy> 
     private String id;
     private String userId;
     private String roleId;
-
-    @Override
-    public Class<UserRoleProxy> proxyTableClass() {
-        return UserRoleProxy.class;
-    }
 }
 ```
 
@@ -109,10 +96,6 @@ public class SysMenu implements ProxyEntityAvailable<SysMenu , SysMenuProxy> {
             targetMappingProperty = "roleId")
     private List<SysRole> roles;
 
-    @Override
-    public Class<SysMenuProxy> proxyTableClass() {
-        return SysMenuProxy.class;
-    }
 }
 ```
 
@@ -129,10 +112,6 @@ public class RoleMenu implements ProxyEntityAvailable<RoleMenu , RoleMenuProxy> 
     private String roleId;
     private String menuId;
 
-    @Override
-    public Class<RoleMenuProxy> proxyTableClass() {
-        return RoleMenuProxy.class;
-    }
 }
 ```
 
@@ -152,10 +131,6 @@ public class SysUserAddress implements ProxyEntityAvailable<SysUserAddress , Sys
     private String area;
     private String addr;
 
-    @Override
-    public Class<SysUserAddressProxy> proxyTableClass() {
-        return SysUserAddressProxy.class;
-    }
 }
 ```
 

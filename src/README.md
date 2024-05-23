@@ -82,25 +82,25 @@ footer: 使用 <a href="https://theme-hope.vuejs.press/" target="_blank">VuePres
 ```java
 //筛选用户名称包含小明的
 List<SysUser> users = easyEntityQuery.queryable(SysUser.class)
-    .where(s->s.name().like("小明"))
-    .toList()
+    .where(s -> s.name().like("小明"))
+    .toList();
 //筛选用户名称包含小明并且是2020年以前创建的
 List<SysUser> users = easyEntityQuery.queryable(SysUser.class)
-.where(s->{
+.where(s -> {
         s.name().like("小明");
-        s.createTime().lt(LocalDateTime.of(2020,1,1,0,0))
+        s.createTime().lt(LocalDateTime.of(2020,1,1,0,0));
 })
-.toList()
+.toList();
 //筛选用户名称包含小明的或者名称包含小红的
 List<SysUser> users = easyEntityQuery.queryable(SysUser.class)
-    .where(s->{
-        s.or(()->{
+    .where(s -> {
+        s.or(() -> {
             s.name().like("小明");
             s.name().like("小红");
-        })
+        });
 
     })
-    .toList()
+    .toList();
 ```
 @tab join多表
 ```java
