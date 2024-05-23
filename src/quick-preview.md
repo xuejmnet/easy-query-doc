@@ -175,10 +175,6 @@ public class SysUser implements ProxyEntityAvailable<SysUser , SysUserProxy> {
     private String phone;
     private LocalDateTime createTime;
 
-    @Override
-    public Class<SysUserProxy> proxyTableClass() {
-        return SysUserProxy.class;
-    }
 }
 ```
 其中`ProxyEntityAvailable<SysUser , SysUserProxy>`接口和`SysUserProxy`全部由插件自动生成,如果你不想用插件那么可以将注解`@EntityFileProxy`换成`@EntityProxy`

@@ -31,10 +31,6 @@ public class UserExtra implements ProxyEntityAvailable<UserExtra , UserExtraProx
     @Column(sqlConversion = UserAgeColumnValueSQLConverter.class)//如果您不想默认查询这个字段可以设置autoSelect=false,需要时手动指定或者VO里面有也会自动映射
     private Integer age;
 
-    @Override
-    public Class<UserExtraProxy> proxyTableClass() {
-        return UserExtraProxy.class;
-    }
 }
 ```
 

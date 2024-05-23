@@ -16,7 +16,7 @@ title: 自定义数据库函数(旧)
 ```sql
 SELECT IFNULL(t.`url`,'') AS `url` FROM `t_blog` t WHERE t.`deleted` = ?
 ```
-加入我们要实现这么一个数据库语句,那么我们应该如何实现,接下来我们将使用`easy-query`的`column-func`能力实现单列的数据库函数
+假如我们要实现这么一个数据库语句,那么我们应该如何实现,接下来我们将使用`easy-query`的`column-func`能力实现单列的数据库函数
 
 ## IFNULL编写
 

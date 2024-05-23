@@ -29,10 +29,6 @@ public class Topic implements ProxyEntityAvailable<Topic , TopicProxy>{
     private String title;
     private LocalDateTime createTime;
 
-    @Override
-    public Class<TopicProxy> proxyTableClass() {
-        return TopicProxy.class;
-    }
 }
 
 List<Topic> topics = new ArrayList<>();
@@ -137,10 +133,6 @@ public class TopicAuto implements ProxyEntityAvailable<TopicAuto , TopicAutoProx
     private String title;
     private LocalDateTime createTime;
 
-    @Override
-    public Class<TopicAutoProxy> proxyTableClass() {
-        return TopicAutoProxy.class;
-    }
 }
 
 

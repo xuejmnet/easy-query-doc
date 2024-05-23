@@ -274,11 +274,6 @@ public class User implements ProxyEntityAvailable<User , UserProxy> {
     public void setName(String name) {
         this.name = name;
     }
-
-    @Override
-    public Class<UserProxy> proxyTableClass() {
-        return UserProxy.class;
-    }
 }
 
 

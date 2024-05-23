@@ -108,11 +108,6 @@ public class Topic implements ProxyEntityAvailable<Topic , TopicProxy>{//impleme
     private Integer stars;
     private String title;
     private LocalDateTime createTime;
-    //方法也由插件生成
-    @Override
-    public Class<TopicProxy> proxyTableClass() {
-        return TopicProxy.class;
-    }
 }
 
 Topic topic = entityQuery.queryable(Topic.class)

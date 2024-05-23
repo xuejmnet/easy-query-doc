@@ -36,10 +36,6 @@ public class RelationUser implements ProxyEntityAvailable<RelationUser , com.eas
     extraFilter = BookNavigateExtraFilterStrategy.class)
     private List<RelationTeacher> teachers;
 
-    @Override
-    public Class<com.easy.query.test.entity.relation.proxy.RelationUserProxy> proxyTableClass() {
-        return com.easy.query.test.entity.relation.proxy.RelationUserProxy.class;
-    }
 }
 
 ```
@@ -59,10 +55,6 @@ public class RelationBook implements ProxyEntityAvailable<RelationBook , Relatio
     private Integer bookType;
     private LocalDateTime createTime;
 
-    @Override
-    public Class<RelationBookProxy> proxyTableClass() {
-        return RelationBookProxy.class;
-    }
 }
 
 ```
@@ -84,10 +76,6 @@ public class RelationTeacher implements ProxyEntityAvailable<RelationTeacher , R
     @Navigate(value = RelationTypeEnum.OneToMany,targetProperty ="userId", extraFilter = BookNavigateExtraFilterStrategy.class)
     private List<RelationBook> books;
 
-    @Override
-    public Class<RelationTeacherProxy> proxyTableClass() {
-        return RelationTeacherProxy.class;
-    }
 }
 
 ```

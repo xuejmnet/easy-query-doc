@@ -17,10 +17,6 @@ public class SysUser implements ProxyEntityAvailable<SysUser , SysUserProxy> {
     private String name;
     private LocalDateTime createTime;
 
-    @Override
-    public Class<SysUserProxy> proxyTableClass() {
-        return SysUserProxy.class;
-    }
 }
 ```
 
@@ -65,10 +61,6 @@ public class SysUserAddress implements ProxyEntityAvailable<SysUserAddress , Sys
     private String area;
     private String addr;
 
-    @Override
-    public Class<SysUserAddressProxy> proxyTableClass() {
-        return SysUserAddressProxy.class;
-    }
 }
 ```
 筛选用户叫做小明并且地址是绍兴的
@@ -100,10 +92,6 @@ public class SysUser implements ProxyEntityAvailable<SysUser , SysUserProxy> {
     @Navigate(value = RelationTypeEnum.OneToOne,targetProperty = "userId")
     private SysUserAddress address;
 
-    @Override
-    public Class<SysUserProxy> proxyTableClass() {
-        return SysUserProxy.class;
-    }
 }
 ```
 接下来我们再次来筛选用户叫做小明并且地址是绍兴的

@@ -35,10 +35,6 @@ public class Certificate implements ProxyEntityAvailable<Certificate , Certifica
     @UpdateIgnore
     private CertStatusEnum status;
 
-    @Override
-    public Class<CertificateProxy> proxyTableClass() {
-        return CertificateProxy.class;
-    }
 }
 
 
