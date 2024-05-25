@@ -58,6 +58,66 @@ public class BlogQuery1Request {
 
 ## 动态条件
 
+
+::: code-tabs
+@tab 对象模式
+
+```java
+
+BlogQuery1Request query = new BlogQuery1Request();
+query.setOrder(BigDecimal.valueOf(1));
+query.setContent("标题");
+query.setPublishTimeBegin(LocalDateTime.now());
+query.setPublishTimeEnd(LocalDateTime.now());
+query.setStatusList(Arrays.asList(1,2));
+
+List<BlogEntity> result = easyEntityQuery.queryable(BlogEntity.class)
+    .where(o -> {
+        
+            //当query.getContext不为空是添加查询条件 content like query.getContext
+            o.content().like(EasyStringUtil.isNotBlank(query.getContent()), query.getContent());
+            //当query.getOrder不为null是添加查询条件 content = query.getContext
+            o.order().eq(query.getOrder() != null, query.getOrder());
+            //当query.getPublishTimeBegin()不为null添加左闭区间,右侧同理 publishTimeBegin <= publishTime <= publishTimeEnd
+            o.publishTime().rangeClosed(query.getPublishTimeBegin() != null, query.getPublishTimeBegin(), query.getPublishTimeEnd() != null, query.getPublishTimeEnd());
+            //添加in条件
+            o.status().in(EasyCollectionUtil.isNotEmpty(query.getStatusList()), query.getStatusList());
+    }).toList();
+
+==> Preparing: SELECT `id`,`create_time`,`update_time`,`create_by`,`update_by`,`deleted`,`title`,`content`,`url`,`star`,`publish_time`,`score`,`status`,`order`,`is_top`,`top` FROM `t_blog` WHERE `deleted` = ? AND `content` LIKE ? AND `order` = ? AND `publish_time` >= ? AND `publish_time` <= ? AND `status` IN (?,?)
+==> Parameters: false(Boolean),%标题%(String),1(BigDecimal),2023-07-14T22:05:24.971(LocalDateTime),2023-07-14T22:05:24.971(LocalDateTime),1(Integer),2(Integer)
+<== Time Elapsed: 5(ms)
+<== Total: 0
+
+
+
+BlogQuery1Request query = new BlogQuery1Request();
+query.setContent("标题");
+query.setPublishTimeBegin(LocalDateTime.now());
+query.setPublishTimeEnd(LocalDateTime.now());
+query.setStatusList(Arrays.asList(1,2));
+
+List<BlogEntity> result = easyQuery.queryable(BlogEntity.class)
+    .where(o -> {
+        
+            //当query.getContext不为空是添加查询条件 content like query.getContext
+            o.content().like(EasyStringUtil.isNotBlank(query.getContent()), query.getContent());
+            //当query.getOrder不为null是添加查询条件 content = query.getContext
+            o.order().eq(query.getOrder() != null, query.getOrder());//不生效
+            //当query.getPublishTimeBegin()不为null添加左闭区间,右侧同理 publishTimeBegin <= publishTime <= publishTimeEnd
+            o.publishTime().rangeClosed(query.getPublishTimeBegin() != null, query.getPublishTimeBegin(), query.getPublishTimeEnd() != null, query.getPublishTimeEnd());
+            //添加in条件
+            o.status().in(EasyCollectionUtil.isNotEmpty(query.getStatusList()), query.getStatusList());
+    
+    }).toList();
+
+==> Preparing: SELECT `id`,`create_time`,`update_time`,`create_by`,`update_by`,`deleted`,`title`,`content`,`url`,`star`,`publish_time`,`score`,`status`,`order`,`is_top`,`top` FROM `t_blog` WHERE `deleted` = ? AND `content` LIKE ? AND `publish_time` >= ? AND `publish_time` <= ? AND `status` IN (?,?)
+==> Parameters: false(Boolean),%标题%(String),1(BigDecimal),2023-07-14T22:05:24.971(LocalDateTime),2023-07-14T22:05:24.971(LocalDateTime),1(Integer),2(Integer)
+<== Time Elapsed: 5(ms)
+<== Total: 0
+```
+@tab lambda模式
+
 ```java
 
 BlogQuery1Request query = new BlogQuery1Request();
@@ -109,6 +169,62 @@ List<BlogEntity> result = easyQuery.queryable(BlogEntity.class)
 <== Time Elapsed: 5(ms)
 <== Total: 0
 ```
+@tab 属性模式
+
+```java
+
+BlogQuery1Request query = new BlogQuery1Request();
+query.setOrder(BigDecimal.valueOf(1));
+query.setContent("标题");
+query.setPublishTimeBegin(LocalDateTime.now());
+query.setPublishTimeEnd(LocalDateTime.now());
+query.setStatusList(Arrays.asList(1,2));
+
+List<BlogEntity> result = easyQueryClient.queryable(BlogEntity.class)
+    .where(o -> o
+            //当query.getContext不为空是添加查询条件 content like query.getContext
+            .like(EasyStringUtil.isNotBlank(query.getContent()), "content", query.getContent())
+            //当query.getOrder不为null是添加查询条件 content = query.getContext
+            .eq(query.getOrder() != null, "order", query.getOrder())
+            //当query.getPublishTimeBegin()不为null添加左闭区间,右侧同理 publishTimeBegin <= publishTime <= publishTimeEnd
+            .rangeClosed("publishTime", query.getPublishTimeBegin() != null, query.getPublishTimeBegin(), query.getPublishTimeEnd() != null, query.getPublishTimeEnd())
+            //添加in条件
+            .in(EasyCollectionUtil.isNotEmpty(query.getStatusList()), "status", query.getStatusList())
+    ).toList();
+
+==> Preparing: SELECT `id`,`create_time`,`update_time`,`create_by`,`update_by`,`deleted`,`title`,`content`,`url`,`star`,`publish_time`,`score`,`status`,`order`,`is_top`,`top` FROM `t_blog` WHERE `deleted` = ? AND `content` LIKE ? AND `order` = ? AND `publish_time` >= ? AND `publish_time` <= ? AND `status` IN (?,?)
+==> Parameters: false(Boolean),%标题%(String),1(BigDecimal),2023-07-14T22:05:24.971(LocalDateTime),2023-07-14T22:05:24.971(LocalDateTime),1(Integer),2(Integer)
+<== Time Elapsed: 5(ms)
+<== Total: 0
+
+
+
+BlogQuery1Request query = new BlogQuery1Request();
+query.setContent("标题");
+query.setPublishTimeBegin(LocalDateTime.now());
+query.setPublishTimeEnd(LocalDateTime.now());
+query.setStatusList(Arrays.asList(1,2));
+
+List<BlogEntity> result = easyQueryClient.queryable(BlogEntity.class)
+    .where(o -> o
+            //当query.getContext不为空是添加查询条件 content like query.getContext
+            .like(EasyStringUtil.isNotBlank(query.getContent()), "content", query.getContent())
+            //当query.getOrder不为null是添加查询条件 content = query.getContext
+            .eq(query.getOrder() != null, "order", query.getOrder())//不生效
+            //当query.getPublishTimeBegin()不为null添加左闭区间,右侧同理 publishTimeBegin <= publishTime <= publishTimeEnd
+            .rangeClosed("publishTime", query.getPublishTimeBegin() != null, query.getPublishTimeBegin(), query.getPublishTimeEnd() != null, query.getPublishTimeEnd())
+            //添加in条件
+            .in(EasyCollectionUtil.isNotEmpty(query.getStatusList()), "status", query.getStatusList())
+    ).toList();
+
+==> Preparing: SELECT `id`,`create_time`,`update_time`,`create_by`,`update_by`,`deleted`,`title`,`content`,`url`,`star`,`publish_time`,`score`,`status`,`order`,`is_top`,`top` FROM `t_blog` WHERE `deleted` = ? AND `content` LIKE ? AND `publish_time` >= ? AND `publish_time` <= ? AND `status` IN (?,?)
+==> Parameters: false(Boolean),%标题%(String),1(BigDecimal),2023-07-14T22:05:24.971(LocalDateTime),2023-07-14T22:05:24.971(LocalDateTime),1(Integer),2(Integer)
+<== Time Elapsed: 5(ms)
+<== Total: 0
+```
+
+:::
+
 
 ## 条件接受
 `1.4.31^`以上版本支持`ValueFilter` 条件接收器,`Queryable`默认行为`AnyValueFilter.DEFAULT`所有的条件都接受,框架提供了一个可选`NotNullOrEmptyValueFilter.DEFAULT`当传入的条件参数值非null且字符串的情况下非空那么才会增加到条件里面,仅where条件生效。并且只有左侧是属性而非属性函数时才会生效如果左侧为函数那么将不会生效
