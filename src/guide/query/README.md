@@ -13,7 +13,7 @@ order: 20
 @tab 对象模式
 ```java
 //根据条件查询表中的第一条记录
-List<Topic> topics = easyEntityProxy
+List<Topic> topics = easyEntityQuery
                 .queryable(Topic.class)
                 .limit(1)
                 .toList();
@@ -21,14 +21,14 @@ List<Topic> topics = easyEntityProxy
 <== Total: 1
 
 //根据条件查询表中的第一条记录
-Topic topic = easyEntityProxy
+Topic topic = easyEntityQuery
                 .queryable(Topic.class)
                 .firstOrNull();
 ==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM t_topic t LIMIT 1
 <== Total: 1 
 
 //根据条件查询id为3的记录
-Topic topic = easyEntityProxy
+Topic topic = easyEntityQuery
         .queryable(Topic.class)
         .where(o->o.id().eq("3"))
         .firstOrNull();
@@ -37,7 +37,7 @@ Topic topic = easyEntityProxy
 <== Total: 1
 
 
-Topic topic = easyEntityProxy
+Topic topic = easyEntityQuery
         .queryable(Topic.class)
         .where(o->{
                 o.id().eq("3");
