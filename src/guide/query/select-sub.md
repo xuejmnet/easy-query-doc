@@ -1,18 +1,138 @@
 ---
-title: 连表统计 Select (Count...)
+title: select子查询
 order: 90
 ---
 
-# 连表统计
-`easy-query`可以实现连表统计,方便用户针对连表统计时进行操作而不需要手写sql,并且支持分片
+# select子查询
+`easy-query`可以轻松的实现`select 子查询`,并且有手动和自动两种方式具体sql如下
 
 实现sql
 ```sql
 select a,b,c,(select count(t1.id) from a t1) as xx from b
 ```
 
-## count连表统计
+## 数据库对象模型
+::: code-tabs
+@tab 企业表
+```java
+@Table("t_company")
+@Data
+@EntityProxy
+@FieldNameConstants
+@EasyAlias("com")
+public class Company implements ProxyEntityAvailable<Company , CompanyProxy> {
+    @Column(primaryKey = true)
+    private String id;
+    private String name;
+    private LocalDateTime createTime;
 
+    @Navigate(value = RelationTypeEnum.OneToMany,targetProperty = SysUser.Fields.companyId)
+    private List<SysUser> users;
+}
+```
+
+@tab 用户表
+```java
+@Table("t_user")
+@Data
+@EntityProxy
+@FieldNameConstants
+@EasyAlias("user")
+public class SysUser implements ProxyEntityAvailable<SysUser , SysUserProxy> {
+    @Column(primaryKey = true)
+    private String id;
+    private String companyId;
+    private String name;
+    private Integer age;
+    private LocalDateTime createTime;
+
+
+    @Navigate(value = RelationTypeEnum.ManyToOne,selfProperty = Fields.companyId)
+    private Company company;
+}
+```
+::: 
+
+## 自动模式
+查询企业id和企业下有多少个用户
+```java
+
+List<Draft2<String, Long>> list = easyEntityQuery.queryable(Company.class)
+        .where(com -> com.name().like("xx公司"))
+        .select(com -> Select.DRAFT.of(
+                com.id(),
+                com.users().count()
+        )).toList();
+
+SELECT
+    t.`id` AS `value1`,
+    (SELECT
+        COUNT(*) 
+    FROM
+        `t_user` t2 
+    WHERE
+        t2.`company_id` = t.`id`) AS `value2` 
+FROM
+    `t_company` t 
+WHERE
+    t.`name` LIKE '%xx公司%'
+```
+
+
+查询企业id和企业下有多少个姓李的用户数
+
+```java
+
+List<Draft2<String, Long>> list = easyEntityQuery.queryable(Company.class)
+        .where(com -> com.name().like("xx公司"))
+        .select(com -> Select.DRAFT.of(
+                com.id(),
+                com.users().where(user->user.name().likeMatchLeft("李")).count()
+        )).toList();
+        
+
+SELECT
+    t.`id` AS `value1`,
+    (SELECT
+        COUNT(*) 
+    FROM
+        `t_user` t2 
+    WHERE
+        t2.`company_id` = t.`id` 
+        AND t2.`name` LIKE '李%') AS `value2` 
+FROM
+    `t_company` t 
+WHERE
+    t.`name` LIKE '%xx公司%'
+```
+
+查询企业id和企业下有多少个姓李的用户年龄总和
+```java
+
+List<Draft2<String, Integer>> list = easyEntityQuery.queryable(Company.class)
+        .where(com -> com.name().like("xx公司"))
+        .select(com -> Select.DRAFT.of(
+                com.id(),
+                com.users().where(user->user.name().likeMatchLeft("李")).sum(x->x.age())
+        )).toList();
+
+
+SELECT
+    t.`id` AS `value1`,
+    IFNULL((SELECT
+        SUM(t2.`age`) 
+    FROM
+        `t_user` t2 
+    WHERE
+        t2.`company_id` = t.`id` 
+        AND t2.`name` LIKE '李%'),
+    0) AS `value2` 
+FROM
+    `t_company` t 
+WHERE
+    t.`name` LIKE '%xx公司%'
+```
+## 手动模式
 ::: code-tabs
 @tab 对象模式
 ```java

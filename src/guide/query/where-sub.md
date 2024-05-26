@@ -1,8 +1,115 @@
 ---
-title: 子查询 In/Exists
+title: where 子查询
 ---
 # 子查询
-`easy-qeury`提供支持子查询包括`exists`、`not exists`、`in`、`not in`
+`easy-qeury`提供支持子查询包括`exists`、`not exists`、`in`、`not in`,并且有手动和自动两种方式
+
+
+## 自动子查询
+
+## 数据库对象模型
+::: code-tabs
+@tab 企业表
+```java
+@Table("t_company")
+@Data
+@EntityProxy
+@FieldNameConstants
+@EasyAlias("com")
+public class Company implements ProxyEntityAvailable<Company , CompanyProxy> {
+    @Column(primaryKey = true)
+    private String id;
+    private String name;
+    private LocalDateTime createTime;
+
+    @Navigate(value = RelationTypeEnum.OneToMany,targetProperty = SysUser.Fields.companyId)
+    private List<SysUser> users;
+}
+```
+
+@tab 用户表
+```java
+@Table("t_user")
+@Data
+@EntityProxy
+@FieldNameConstants
+@EasyAlias("user")
+public class SysUser implements ProxyEntityAvailable<SysUser , SysUserProxy> {
+    @Column(primaryKey = true)
+    private String id;
+    private String companyId;
+    private String name;
+    private Integer age;
+    private LocalDateTime createTime;
+
+
+    @Navigate(value = RelationTypeEnum.ManyToOne,selfProperty = Fields.companyId)
+    private Company company;
+}
+```
+::: 
+
+### 查询企业存在用户成年的
+```java
+List<Company> list = easyEntityQuery.queryable(Company.class)
+        .where(com -> {
+                com.users().where(u -> {
+                        u.age().gt(18);
+                }).any();
+        }).toList();
+//当上述子查询有且只有一个条件比如age>18有且只有一个条件时,并且是用来断言当前条件的,那么可以使用flatElement来展开如下写法和上述写法一样
+
+List<Company> list = easyEntityQuery.queryable(Company.class)
+        .where(com -> {
+                com.users().flatElement().age().gt(18);
+        }).toList();
+
+SELECT
+    t.`id`,
+    t.`name`,
+    t.`create_time` 
+FROM
+    `t_company` t 
+WHERE
+    EXISTS (
+        SELECT
+            1 
+        FROM
+            `t_user` t1 
+        WHERE
+            t1.`company_id` = t.`id` 
+            AND t1.`age` > 18 LIMIT 1
+    )
+```
+
+
+### 查询企业存条件是企业所有用户平均年龄大于18
+```java
+List<Company> list = easyEntityQuery.queryable(Company.class)
+        .where(com -> {
+                com.users().avg(u->u.age()).gt(BigDecimal.valueOf(18));
+        }).toList();
+
+
+
+SELECT
+    t.`id`,
+    t.`name`,
+    t.`create_time` 
+FROM
+    `t_company` t 
+WHERE
+    IFNULL((SELECT
+        AVG(t1.`age`) 
+    FROM
+        `t_user` t1 
+    WHERE
+        t1.`company_id` = t.`id`),0) > '18'
+```
+
+
+
+
 
 ## EXISTS
 
