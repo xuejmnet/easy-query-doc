@@ -79,3 +79,14 @@ in alimaven (http://maven.aliyun.com/nexus/content/groups/public/)
     <url>https://mirrors.huaweicloud.com/repository/maven/</url>
 </mirror>
 ```
+
+## 删除错误
+'DELETE' statement without 'WHERE' clears all data in the table
+
+这个错误是因为eq默认不允许删除不显式指定where,您可以进行如下操作
+```java
+//随便添加一个条件即可
+easyEntityQuery.deletable(User.class).disableLogicDelete()allowDeleteStatement(true).where(u->u.id().isNotNull()).executeRows();
+
+easyEntityQuery.deletable(User.class).disableLogicDelete()allowDeleteStatement(true).where(u->u.expression().sql("1=1")).executeRows();
+```

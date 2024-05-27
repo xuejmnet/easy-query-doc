@@ -36,7 +36,7 @@ title: 快速开始🔥🔥🔥
 
 ```
 
-具体的easy-query包版本可以在文档首页进行查看当前是  
+具体的easy-query包版本可以在文档首页进行查看当前是  最新版本`easy-query`
 <a target="_blank" href="https://central.sonatype.com/search?q=easy-query">
         <img src="https://img.shields.io/maven-central/v/com.easy-query/easy-query-all?label=Maven%20Central" alt="Maven" />
     </a>
