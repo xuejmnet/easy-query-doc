@@ -61,7 +61,7 @@ easy-trans.is-enable-global=true,默认`toPageResult`是`final`的结果,如果�
     <dependency>
         <groupId>com.easy-query</groupId>
         <artifactId>sql-springboot-starter</artifactId>
-        <version>1.4.27</version>
+        <version>${easy-query.version}</version>
     </dependency>
     <dependency>
         <groupId>org.projectlombok</groupId>
@@ -274,11 +274,11 @@ public class EasyTransRunner implements ApplicationRunner {
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class MyController {
 
-    private final EasyQuery easyQuery;
+    private final EasyEntityQuery easyEntityQuery;
 
     @GetMapping("/query")
     public Object query() {
-        List<SysUser> list = easyQuery.queryable(SysUser.class)
+        List<SysUser> list = easyEntityQuery.queryable(SysUser.class)
                 .toList();
         return list;
     }
