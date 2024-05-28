@@ -165,6 +165,10 @@ create table t_topic
 > 如果您的项目是多模块那么只需要在需要使用@EntityProxy注解的模块下使用`sql-processor`即可
 :::
 
+::: warning 说明!!!
+> 如果出现no primary key或者not found [id] mapping column name之类的错误请排查lombok是否生效,是否存在get set方法
+:::
+
 
 ## 运行
 ```java
