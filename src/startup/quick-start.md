@@ -67,22 +67,25 @@ title: 快速开始🔥🔥🔥
             <version>${easy-query.version}</version>
         </dependency>
         <!-- mysql驱动 -->
+        <!-- 选择自己的合适版本 -->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>8.0.17</version>
         </dependency>
         <!-- 数据源 -->
+        <!-- 选择自己的合适版本 -->
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
             <version>3.3.1</version>
         </dependency>
-        <dependency>
+        <!-- 选择自己的合适版本 -->
+        <!-- <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.24</version>
-        </dependency>
+        </dependency> -->
     </dependencies>
 ```
 
@@ -92,16 +95,20 @@ title: 快速开始🔥🔥🔥
 ::: code-tabs
 @tab 数据库对象
 ```java
-@Data
-@Table("t_topic")
+//import com.easy.query.core.annotation.Table;
+//import com.easy.query.core.annotation.Column;
+//@Data //如果您有lombok
+@Table("t_topic")//注意必须使用easy-query的注解
 @EntityProxy
 public class Topic{
 
-    @Column(primaryKey = true)
+    @Column(primaryKey = true)//注意必须使用easy-query的注解
     private String id;
     private Integer stars;
     private String title;
     private LocalDateTime createTime;
+
+    //get set方法...
 }
 ```
 @tab 数据库脚本
