@@ -81,10 +81,315 @@ long l = easyQuery.sqlExecute("update t_blog set content=? where id=?", Arrays.a
 ## entityQuery
 因为entityQuery的特殊性原生sql片段有如下特殊规则
 
-- `where`、`join on`、`order`、`having`的sqlNativeSegment是具体表的`executeSQL`方法
-- 如果需要返回expression则为表点sql比如`o.sql(....)` 
-- `select`别名和`update set`为`setSQL`
-- `o.expression()`来获取表达式其中`expression().sql()`来执行sql用于`join、where、orderBy`,`expression().sqlType()`用来返回片段类型用于`select、groupBy`等
+- `where`、`join on`、`order`、`having`的原生sql片段是具体表的`o.expression().sql(......)`方法
+- `select`别名和`update set`为`setSQL`,`o.expression().sqlType(....)` 
+- `o.expression()`来获取表达式其中`expression().sql()`来执行sql用于`join、where、orderBy`,其中`expression().sqlType()`用来返回片段类型用于`select、groupBy`等
+
+## 随机排序
+
+::: code-tabs
+@tab 对象模式
+```java
+
+List<Topic> list = easyEntityQuery.queryable(Topic.class)
+        .where(b -> {
+            b.id().eq("123");
+        }).orderBy(t -> {
+            t.expression().sql("RAND()");
+        }).toList();
+
+
+
+SELECT
+    `id`,
+    `stars`,
+    `title`,
+    `create_time` 
+FROM
+    `t_topic` 
+WHERE
+    `id` = '123' 
+ORDER BY
+    RAND()
+```
+
+@tab lambda模式
+```java
+
+List<Topic> list = easyQuery.queryable(Topic.class)
+        .where(b -> {
+            b.eq(Topic::getId,"123");
+        }).orderByAsc(t -> {
+            t.sqlNativeSegment("RAND()");
+        }).toList();
+
+
+SELECT
+    `id`,
+    `stars`,
+    `title`,
+    `create_time` 
+FROM
+    `t_topic` 
+WHERE
+    `id` = '123' 
+ORDER BY
+    RAND()
+```
+@tab 属性模式
+```java
+
+List<Topic> list = easyQueryClient.queryable(Topic.class)
+        .where(b -> {
+            b.eq("id","123");
+        }).orderByAsc(t -> {
+            t.sqlNativeSegment("RAND()");
+        }).toList();
+
+
+SELECT
+    `id`,
+    `stars`,
+    `title`,
+    `create_time` 
+FROM
+    `t_topic` 
+WHERE
+    `id` = '123' 
+ORDER BY
+    RAND()
+```
+
+:::
+
+## 随机排序带参数
+
+::: code-tabs
+@tab 对象模式
+```java
+
+List<Topic> list = easyEntityQuery.queryable(Topic.class)
+        .where(b -> {
+            b.id().eq("123");
+        }).orderBy(t -> {
+            t.expression().sql("IFNULL({0},{1}) DESC",c->{
+                c.expression(t.stars()).value(1);
+            });
+            t.expression().sql("RAND()");
+        }).toList();
+
+
+SELECT
+    `id`,
+    `stars`,
+    `title`,
+    `create_time` 
+FROM
+    `t_topic` 
+WHERE
+    `id` = '123' 
+ORDER BY
+    IFNULL(`stars`,1) DESC,RAND()
+
+
+
+
+List<Topic> list = easyEntityQuery.queryable(Topic.class)
+        .where(b -> {
+            b.id().eq("123");
+            b.expression().sql("{0}!={1}",c->{
+                c.expression(b.stars()).expression(b.createTime());
+            });
+        }).orderBy(t -> {
+            t.expression().sql("IFNULL({0},{1}) DESC",c->{
+                c.expression(t.stars()).value(1);
+            });
+            t.expression().sql("RAND()");
+        }).toList();
+
+SELECT
+    `id`,
+    `stars`,
+    `title`,
+    `create_time` 
+FROM
+    `t_topic` 
+WHERE
+    `id` = '123' 
+    AND `stars`!=`create_time` 
+ORDER BY
+    IFNULL(`stars`,1) DESC,RAND()
+```
+
+@tab lambda模式
+```java
+
+List<Topic> list = easyQuery.queryable(Topic.class)
+        .where(b -> {
+            b.eq(Topic::getId,"123");
+        }).orderByAsc(t -> {
+            t.sqlNativeSegment("IFNULL({0},{1}) DESC",c->{
+                c.expression(Topic::getStars).value(1);
+            });
+            t.sqlNativeSegment("RAND()");
+        }).toList();
+
+
+SELECT
+    `id`,
+    `stars`,
+    `title`,
+    `create_time` 
+FROM
+    `t_topic` 
+WHERE
+    `id` = '123' 
+ORDER BY
+    IFNULL(`stars`,1) DESC,RAND()
+
+
+List<Topic> list = easyQuery.queryable(Topic.class)
+                .where(b -> {
+                    b.eq(Topic::getId,"123");
+                    b.sqlNativeSegment("{0}!={1}",c->{
+                        c.expression(Topic::getStars).expression(Topic::getCreateTime);
+                    });
+                }).orderByAsc(t -> {
+                    t.sqlNativeSegment("IFNULL({0},{1}) DESC",c->{
+                        c.expression(Topic::getStars).value(1);
+                    });
+                    t.sqlNativeSegment("RAND()");
+                }).toList();
+
+
+
+SELECT
+    `id`,
+    `stars`,
+    `title`,
+    `create_time` 
+FROM
+    `t_topic` 
+WHERE
+    `id` = '123' 
+    AND `stars`!=`create_time` 
+ORDER BY
+    IFNULL(`stars`,1) DESC,RAND()
+```
+@tab 属性模式
+```java
+
+
+List<Topic> list = easyQueryClient.queryable(Topic.class)
+        .where(b -> {
+            b.eq("id","123");
+        }).orderByAsc(t -> {
+            t.sqlNativeSegment("IFNULL({0},{1}) DESC",c->{
+                c.expression("stars").value(1);
+            });
+            t.sqlNativeSegment("RAND()");
+        }).toList();
+
+
+SELECT
+    `id`,
+    `stars`,
+    `title`,
+    `create_time` 
+FROM
+    `t_topic` 
+WHERE
+    `id` = '123' 
+ORDER BY
+    IFNULL(`stars`,1) DESC,RAND()
+
+
+
+
+List<Topic> list = easyQueryClient.queryable(Topic.class)
+        .where(b -> {
+            b.eq("id","123");
+            b.sqlNativeSegment("{0}!={1}",c->{
+                c.expression("stars").expression("createTime");
+            });
+        }).orderByAsc(t -> {
+            t.sqlNativeSegment("IFNULL({0},{1}) DESC",c->{
+                c.expression("stars").value(1);
+            });
+            t.sqlNativeSegment("RAND()");
+        }).toList();
+
+
+
+
+SELECT
+    `id`,
+    `stars`,
+    `title`,
+    `create_time` 
+FROM
+    `t_topic` 
+WHERE
+    `id` = '123' 
+    AND `stars`!=`create_time` 
+ORDER BY
+    IFNULL(`stars`,1) DESC,RAND()
+```
+
+::: 
+
+## 返回结果
+`entityQuery`使用`expression().sqlType(....)`其余几个`api`任然是`sqlNativeSegment`
+```java
+//因为默认原生sql片段式Object类型所以无法精确指定类型可以通过setPropertyType来指定返回接受的类型
+List<Draft2<Double, Integer>> list = easyEntityQuery.queryable(Topic.class)
+        .where(b -> {
+            b.id().eq("123");
+        }).select(t -> Select.DRAFT.of(
+                t.expression().sqlType("RAND()").setPropertyType(Double.class),
+                t.expression().sqlType("IFNULL({0},{1})", c -> {
+                    c.expression(t.stars()).value(1);
+                }).setPropertyType(Integer.class)
+        )).toList();
+
+
+SELECT
+    RAND() AS `value1`,
+    IFNULL(t.`stars`,1) AS `value2` 
+FROM
+    `t_topic` t 
+WHERE
+    t.`id` = '123'       
+```
+返回片段设置别名
+```java
+
+
+List<Topic> list = easyEntityQuery.queryable(Topic.class)
+        .where(b -> {
+            b.id().eq("123");
+        }).select(Topic.class,t -> Select.of(
+                t.expression().sqlType("RAND()",c->{
+                    c.setAlias(t.stars());
+                }).setPropertyType(Double.class),
+                t.expression().sqlType("IFNULL({0},{1})", c -> {
+                    c.expression(t.stars());
+                    c.value(1);
+                    c.setAlias(t.createTime());
+                }).setPropertyType(Integer.class)
+        )).toList();
+
+
+SELECT
+    RAND() AS `stars`,
+    IFNULL(t.`stars`,1) AS `createTime` 
+FROM
+    `t_topic` t 
+WHERE
+    t.`id` = '123'
+```
+
+
 
 ```java
 //where
