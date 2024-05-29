@@ -14,7 +14,7 @@ H2 | sql-h2  | ✅
 达梦dameng | sql-dameng  | ✅
 人大金仓KingbaseES | sql-kingbase-es  | ✅
 Oracle | sql-oracle  | ✅
-SQLite | sql-sqlite  | ❌
+SQLite | sql-sqlite  | ✅
 
 ## onConflictThen
 - 第一个参数表示要更新的列,如果传入null则表示存在就忽略
