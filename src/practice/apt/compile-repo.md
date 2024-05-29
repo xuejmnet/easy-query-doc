@@ -206,9 +206,9 @@ public class AptConstant {
 ## 新建apt处理器
 ```java
 
-//支持的注解全路径
-@SupportedAnnotationTypes({"com.eq.apt.repo.processor.annotations.ProxyRepository"})
-@SupportedSourceVersion(SourceVersion.RELEASE_8)
+//支持的注解全路径 使用方法来实现这两个保证在高版本上的java中不会出现警告
+// @SupportedAnnotationTypes({"com.eq.apt.repo.processor.annotations.ProxyRepository"})
+// @SupportedSourceVersion(SourceVersion.RELEASE_8)
 public class ProxyRepositoryProcessor extends AbstractProcessor {
     private Filer filer;
     private Elements elementUtils;
@@ -219,6 +219,17 @@ public class ProxyRepositoryProcessor extends AbstractProcessor {
         this.filer = processingEnv.getFiler();
         this.elementUtils = processingEnv.getElementUtils();
         this.typeUtils = processingEnv.getTypeUtils();
+    }
+    @Override
+    public Set<String> getSupportedAnnotationTypes() {
+        Set<String> supportedAnnotationTypes = new HashSet<>();
+        supportedAnnotationTypes.add(ProxyRepository.class.getCanonicalName());
+        return supportedAnnotationTypes;
+    }
+
+    @Override
+    public SourceVersion getSupportedSourceVersion() {
+        return SourceVersion.latestSupported();
     }
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
