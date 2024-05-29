@@ -5,6 +5,10 @@ title: 快速开始🔥🔥🔥
 ## 简介
 在使用前您需要知晓目前1.8.0+版本的`easy-query`提供了3中api机制分别是`lambda`、`property`、`entity`其中每个api都有自己的特点,其中`easyEntityQuery`是最新开发的api,使用起来非常顺畅流畅,非常推荐,3种模式可以在一个应用里面共存
 
+- [EntityQuery](#EntityQuery)
+- [LambdaQuery](#LambdaQuery)
+- [PropertyQuery](#PropertyQuery)
+
 ## EntityQuery
 `EasyEntityQuery`接口为`EntityQuery`暴露给用户的`crud`api接口,我们的主要操作处理都是通过该接口实现的,要实现这个功能有以下两种方式
 
@@ -608,4 +612,279 @@ List<Draft3<Integer, LocalDateTime, String>> list = easyEntityQuery.queryable(To
                 .toList();
 
 ==> Preparing: SELECT t.`stars` AS `value1`,t.`create_time` AS `value2`,t1.`title` AS `value3` FROM `t_topic` t LEFT JOIN `t_topic` t1 ON t.`id` = t1.`id` ORDER BY t.`id` ASC,t1.`create_time` DESC
+```
+
+
+
+## LambdaQuery
+如果您习惯了mybatis-plus的模式,那么lambda查询可以让你回到mp的写法并且更加符合逻辑
+
+新建一个`java8`以上的任意项目我们创建maven的空项目即可然后引入对应的包,`sql-core`提供了`property`的api模式,`sql-api-proxy`则是真正的针对`property`的模式增加的强类型`entity`模式的包
+## 依赖注入
+```xml
+    <dependencies>
+        <!-- mysql方言 -->
+        <dependency>
+            <groupId>com.easy-query</groupId>
+            <artifactId>sql-mysql</artifactId>
+            <version>${easy-query.version}</version>
+        </dependency>
+        <!-- lambda-query的api包 -->
+        <dependency>
+            <groupId>com.easy-query</groupId>
+            <artifactId>sql-api4j</artifactId>
+            <version>${easy-query.version}</version>
+        </dependency>
+        <!-- mysql驱动 -->
+        <!-- 选择自己的合适版本 -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.17</version>
+        </dependency>
+        <!-- 数据源 -->
+        <!-- 选择自己的合适版本 -->
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>3.3.1</version>
+        </dependency>
+        <!-- 选择自己的合适版本 -->
+        <!-- <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.24</version>
+        </dependency> -->
+    </dependencies>
+```
+
+
+### 数据库表对象
+
+::: code-tabs
+@tab 数据库对象
+```java
+//import com.easy.query.core.annotation.Table;
+//import com.easy.query.core.annotation.Column;
+//@Data //如果您有lombok
+@Table("t_topic")//注意必须使用easy-query的注解
+public class Topic{
+
+    @Column(primaryKey = true)//注意必须使用easy-query的注解
+    private String id;
+    private Integer stars;
+    private String title;
+    private LocalDateTime createTime;
+
+    //get set方法...
+}
+```
+@tab 数据库脚本
+```sql
+create table t_topic
+(
+    id varchar(32) not null comment '主键ID'primary key,
+    stars int not null comment '点赞数',
+    title varchar(50) null comment '标题',
+    create_time datetime not null comment '创建时间'
+)comment '主题表';
+```
+:::
+
+### 运行
+```java
+
+public class Main {
+    public static void main(String[] args) {
+
+        HikariDataSource dataSource = new HikariDataSource();
+        dataSource.setJdbcUrl("jdbc:mysql://127.0.0.1:3306/easy-query-test?serverTimezone=GMT%2B8&characterEncoding=utf-8&useSSL=false&allowMultiQueries=true&rewriteBatchedStatements=true");
+        dataSource.setUsername("root");
+        dataSource.setPassword("root");
+        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        dataSource.setMaximumPoolSize(20);
+        //采用控制台输出打印sql
+        LogFactory.useStdOutLogging();
+        //property的api
+        EasyQueryClient easyQueryClient = EasyQueryBootstrapper.defaultBuilderConfiguration()
+                .setDefaultDataSource(dataSource)
+                .optionConfigure(op -> {
+                    op.setPrintSql(true);
+                    op.setKeepNativeStyle(true);
+                })
+                .useDatabaseConfigure(new MySQLDatabaseConfiguration())
+                .build();
+        //lambda模式
+        EasyQuery easyQuery = new DefaultEntityQuery(easyQueryClient);
+
+        //根据id查询第一条
+        Topic topic1 = easyQuery.queryable(Topic.class)
+                .whereById("1").firstOrNull();
+
+        //根据id查询并且断言仅一条
+        Topic topic2 = easyQuery.queryable(Topic.class)
+                .whereById("1").singleOrNull();
+        //根据id查询自定义条件返回第一条
+        Topic topic3 = easyQuery.queryable(Topic.class)
+                .where(o -> {
+                    o.eq(Topic::getId,"1");
+                })
+                .firstOrNull();
+
+        //根据条件返回符合的集合默认ArrayList实现
+        List<Topic> list = easyQuery.queryable(Topic.class)
+                .where(o -> {
+                    o.eq(Topic::getId,"1");
+                })
+                .toList();
+        //判断小明是否存在
+       boolean exists= easyQuery.queryable(Topic.class).where(o->o.like(Topic::getName,"小明")).any();
+       //断言小明是否存在
+       easyQuery.queryable(Topic.class).where(o->o.like(Topic::getName,"小明")).required("未找到小明");
+
+       System.out.println("Hello world!");
+    }
+}
+
+//打印的sql
+==> Preparing: SELECT `id`,`stars`,`title`,`create_time` FROM `t_topic` WHERE `id` = ? LIMIT 1
+==> Parameters: 1(String)
+<== Time Elapsed: 14(ms)
+<== Total: 1
+```
+
+
+## PropertyQuery
+具有完全的动态性的orm客户端,可以做低代码自行配置等一系列处理
+
+新建一个`java8`以上的任意项目我们创建maven的空项目即可然后引入对应的包,`sql-core`提供了`property`的api模式,`sql-api-proxy`则是真正的针对`property`的模式增加的强类型`entity`模式的包
+## 依赖注入
+```xml
+    <dependencies>
+        <!-- mysql方言 -->
+        <dependency>
+            <groupId>com.easy-query</groupId>
+            <artifactId>sql-mysql</artifactId>
+            <version>${easy-query.version}</version>
+        </dependency>
+        <!-- property-query的api包(可以不需要引入因为sql-mysql已经自带了) -->
+        <dependency>
+            <groupId>com.easy-query</groupId>
+            <artifactId>sql-core</artifactId>
+            <version>${easy-query.version}</version>
+        </dependency>
+        <!-- mysql驱动 -->
+        <!-- 选择自己的合适版本 -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.17</version>
+        </dependency>
+        <!-- 数据源 -->
+        <!-- 选择自己的合适版本 -->
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>3.3.1</version>
+        </dependency>
+        <!-- 选择自己的合适版本 -->
+        <!-- <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.24</version>
+        </dependency> -->
+    </dependencies>
+```
+
+
+### 数据库表对象
+
+::: code-tabs
+@tab 数据库对象
+```java
+//import com.easy.query.core.annotation.Table;
+//import com.easy.query.core.annotation.Column;
+//@Data //如果您有lombok
+@Table("t_topic")//注意必须使用easy-query的注解
+public class Topic{
+
+    @Column(primaryKey = true)//注意必须使用easy-query的注解
+    private String id;
+    private Integer stars;
+    private String title;
+    private LocalDateTime createTime;
+
+    //get set方法...
+}
+```
+@tab 数据库脚本
+```sql
+create table t_topic
+(
+    id varchar(32) not null comment '主键ID'primary key,
+    stars int not null comment '点赞数',
+    title varchar(50) null comment '标题',
+    create_time datetime not null comment '创建时间'
+)comment '主题表';
+```
+:::
+
+### 运行
+```java
+
+public class Main {
+    public static void main(String[] args) {
+
+        HikariDataSource dataSource = new HikariDataSource();
+        dataSource.setJdbcUrl("jdbc:mysql://127.0.0.1:3306/easy-query-test?serverTimezone=GMT%2B8&characterEncoding=utf-8&useSSL=false&allowMultiQueries=true&rewriteBatchedStatements=true");
+        dataSource.setUsername("root");
+        dataSource.setPassword("root");
+        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        dataSource.setMaximumPoolSize(20);
+        //采用控制台输出打印sql
+        LogFactory.useStdOutLogging();
+        //property的api
+        EasyQueryClient easyQueryClient = EasyQueryBootstrapper.defaultBuilderConfiguration()
+                .setDefaultDataSource(dataSource)
+                .optionConfigure(op -> {
+                    op.setPrintSql(true);
+                    op.setKeepNativeStyle(true);
+                })
+                .useDatabaseConfigure(new MySQLDatabaseConfiguration())
+                .build();
+
+        //根据id查询第一条
+        Topic topic1 = easyQueryClient.queryable(Topic.class)
+                .whereById("1").firstOrNull();
+
+        //根据id查询并且断言仅一条
+        Topic topic2 = easyQueryClient.queryable(Topic.class)
+                .whereById("1").singleOrNull();
+        //根据id查询自定义条件返回第一条
+        Topic topic3 = easyQueryClient.queryable(Topic.class)
+                .where(o -> {
+                    o.eq("id","1");
+                })
+                .firstOrNull();
+
+        //根据条件返回符合的集合默认ArrayList实现
+        List<Topic> list = easyQueryClient.queryable(Topic.class)
+                .where(o -> {
+                    o.eq("id","1");
+                })
+                .toList();
+        //判断小明是否存在
+       boolean exists= easyQueryClient.queryable(Topic.class).where(o->o.like("name","小明")).any();
+       //断言小明是否存在
+       easyQueryClient.queryable(Topic.class).where(o->o.like("name","小明")).required("未找到小明");
+
+       System.out.println("Hello world!");
+    }
+}
+
+//打印的sql
+==> Preparing: SELECT `id`,`stars`,`title`,`create_time` FROM `t_topic` WHERE `id` = ? LIMIT 1
+==> Parameters: 1(String)
+<== Time Elapsed: 14(ms)
+<== Total: 1
 ```
