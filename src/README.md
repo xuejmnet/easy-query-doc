@@ -86,11 +86,11 @@ List<SysUser> users = easyEntityQuery.queryable(SysUser.class)
     .toList();
 //筛选用户名称包含小明并且是2020年以前创建的
 List<SysUser> users = easyEntityQuery.queryable(SysUser.class)
-.where(s -> {
-        s.name().like("小明");
-        s.createTime().lt(LocalDateTime.of(2020,1,1,0,0));
-})
-.toList();
+    .where(s -> {
+            s.name().like("小明");
+            s.createTime().lt(LocalDateTime.of(2020,1,1,0,0));
+    })
+    .toList();
 //筛选用户名称包含小明的或者名称包含小红的
 List<SysUser> users = easyEntityQuery.queryable(SysUser.class)
     .where(s -> {
@@ -134,13 +134,22 @@ List<UserDTO> userInfo = easyEntityQuery.queryable(SysUser.class)
 //user和address一对一
 //查询杭州或绍兴的用户
 List<SysUser> userInHz = easyEntityQuery.queryable(SysUser.class)
-                .where(s -> {
+                .where(u -> {
                     //隐式子查询会自动join用户表和地址表
-                    s.or(()->{
+                    u.or(()->{
                       //
-                        s.address().city().eq("杭州市");
-                        s.address().city().eq("绍兴市");
+                        u.address().city().eq("杭州市");
+                        u.address().city().eq("绍兴市");
                     });
+                }).toList();
+
+
+//查询用户名叫小明并且家住杭州的
+List<SysUser> userInHz = easyEntityQuery.queryable(SysUser.class)
+                .where(u -> {
+                    u.name().eq("小明");
+                    //隐式子查询会自动join用户表和地址表
+                    u.address().city().eq("杭州市");
                 }).toList();
 ```
 
@@ -165,7 +174,7 @@ List<Draft2<String, Long>> userIdAndRoleCount = easyEntityQuery.queryable(SysUse
         )).toList();
 ```
 
-@tab 显示子查询
+@tab 显式子查询
 ```java
 
 List<SysUser> userIn = easyEntityQuery.queryable(SysUser.class)
