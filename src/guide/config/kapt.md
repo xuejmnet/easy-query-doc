@@ -107,6 +107,7 @@ fun main(args: Array<String>) {
         .setDefaultDataSource(hikariDataSource)
         .useDatabaseConfigure(MySQLDatabaseConfiguration())
         .build()
+        //如果实现了ProxyEntityAvailable(可用插件生成则可以使用EasyEntityQuery,本质和EasyProxyQuery一样)
     var easyProxyQuery = DefaultEasyProxyQuery(easyQueryClient)
 
     var topic = TopicProxy.createTable()
