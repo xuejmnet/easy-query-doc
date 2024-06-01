@@ -513,5 +513,11 @@ UPDATE `t_topic` SET `stars` = ifnull(`stars`,0)+? WHERE `id` = ?
 ## 7.注意
 更新优先级顺序
 
-手动指定 > 策略 > 追踪 > 全量更新
+手动指定更新 > 手动指定策略 > 自动追踪 > 全局配置策略
+
+- 手动指定更新 eq.update(Topic.class).setColumns().where().executeRows()
+- 手动指定策略 eq.update(topics).setSQLStrategy(SQLExecuteStrategyEnum.ONLY_NULL_COLUMNS).executeRows()
+- 自动追踪 track{ update setColumns whereColumns}
+- 全局配置策略 全局配置的更新策略
+
 

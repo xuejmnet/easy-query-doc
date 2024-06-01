@@ -29,6 +29,13 @@ title: 快速开始🔥🔥🔥
     <version>3.8.1</version>
     <configuration>
         <annotationProcessorPaths>
+        <!-- 注意顺序 -->
+            <path>
+            <!-- lombok... -->
+            </path>
+            <path>
+            <!-- mapstruct... -->
+            </path>
             <path>
                 <groupId>com.easy-query</groupId>
                 <artifactId>sql-processor</artifactId>
@@ -48,6 +55,10 @@ title: 快速开始🔥🔥🔥
 
 
 # EntityProxy 推荐🔥🔥🔥
+## 安装插件(可选)
+可以提高用户体验
+<img src="/plugin-search.png">
+
 新建一个`java8`以上的任意项目我们创建maven的空项目即可然后引入对应的包,`sql-core`提供了`property`的api模式,`sql-api-proxy`则是真正的针对`property`的模式增加的强类型`entity`模式的包
 ## 依赖注入
 ```xml
@@ -110,6 +121,7 @@ public class Topic{
     private String id;
     private Integer stars;
     private String title;
+    private String name;
     private LocalDateTime createTime;
 
     //get set方法...
@@ -141,6 +153,11 @@ create table t_topic
 
 <img src="/startup4.png">
 
+::: tip 说明!!!
+> 如果您第一步安装了插件那么在你鼠标移出当前entity的编辑区域那么就会自动生成`Proxy类`或者呼出`get set`的界面点击`CompileCurrentFile`
+:::
+
+
 ## 添加数据库对象接口
 
 
@@ -161,6 +178,9 @@ create table t_topic
 
 <img src="/startup3.png">
 
+::: tip 说明!!!
+> 如果您第一步安装了插件那么可以在呼出`get set`的目录点击`EasyQueryImplements`自动实现接口
+:::
 
 ::: warning 说明!!!
 > 2.0.15+版本框架不需要实现`proxyTableClass`方法，idea-plugin插件在0.0.57后也将不会生成该方法
