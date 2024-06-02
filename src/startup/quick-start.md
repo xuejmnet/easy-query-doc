@@ -9,6 +9,10 @@ title: 快速开始🔥🔥🔥
 - [LambdaQuery](#LambdaQuery)
 - [PropertyQuery](#PropertyQuery)
 
+如果您希望直接快速体验可以下载对应代码jdk17+springboot3.1.0
+
+[demo地址](https://github.com/xuejmnet/eq-multi-module) https://github.com/xuejmnet/eq-multi-module
+
 ## EntityQuery
 `EasyEntityQuery`接口为`EntityQuery`暴露给用户的`crud`api接口,我们的主要操作处理都是通过该接口实现的,要实现这个功能有以下两种方式
 
