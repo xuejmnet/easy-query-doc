@@ -1,1 +1,0 @@
-import{_ as o}from"./plugin-vue_export-helper-c27b6911.js";import{o as r,c,b as e,d as t}from"./app-a610b9a0.js";const s={},n=e("p",null,[t("一般我们创建springboot项目有两种一种是单模块,一种是多模块,接下来我会分别实现这两种模块下"),e("code",null,"easy-query"),t("应该如何集成")],-1),a=[n];function _(i,l){return r(),c("div",null,a)}const p=o(s,[["render",_],["__file","quick-start-springboot.html.vue"]]);export{p as default};
