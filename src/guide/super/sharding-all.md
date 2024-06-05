@@ -11,69 +11,6 @@ order: 30
 
 
 ::: code-tabs
-@tab sql脚本
-
-```sql
-
-CREATE DATABASE IF NOT EXISTS easy_sample CHARACTER SET 'utf8mb4';
-USE easy_sample;
-create table t_ds_order_00
-(
-    id varchar(32) not null comment '主键ID'primary key,
-    uid varchar(50) not null comment '用户id',
-    order_no int not null comment '订单号',
-    status int not null comment '订单状态',
-    create_time datetime not null comment '创建时间'
-)comment '订单表';
-create table t_ds_order_01
-(
-    id varchar(32) not null comment '主键ID'primary key,
-    uid varchar(50) not null comment '用户id',
-    order_no int not null comment '订单号',
-    status int not null comment '订单状态',
-    create_time datetime not null comment '创建时间'
-)comment '订单表';
-
-
-CREATE DATABASE IF NOT EXISTS easy_sample1 CHARACTER SET 'utf8mb4';
-USE easy_sample1;
-create table t_ds_order_00
-(
-    id varchar(32) not null comment '主键ID'primary key,
-    uid varchar(50) not null comment '用户id',
-    order_no int not null comment '订单号',
-    status int not null comment '订单状态',
-    create_time datetime not null comment '创建时间'
-)comment '订单表';
-create table t_ds_order_01
-(
-    id varchar(32) not null comment '主键ID'primary key,
-    uid varchar(50) not null comment '用户id',
-    order_no int not null comment '订单号',
-    status int not null comment '订单状态',
-    create_time datetime not null comment '创建时间'
-)comment '订单表';
-
-
-CREATE DATABASE IF NOT EXISTS easy_sample2 CHARACTER SET 'utf8mb4';
-USE easy_sample2;
-create table t_ds_order_00
-(
-    id varchar(32) not null comment '主键ID'primary key,
-    uid varchar(50) not null comment '用户id',
-    order_no int not null comment '订单号',
-    status int not null comment '订单状态',
-    create_time datetime not null comment '创建时间'
-)comment '订单表';
-create table t_ds_order_01
-(
-    id varchar(32) not null comment '主键ID'primary key,
-    uid varchar(50) not null comment '用户id',
-    order_no int not null comment '订单号',
-    status int not null comment '订单状态',
-    create_time datetime not null comment '创建时间'
-)comment '订单表';
-```
 @tab 数据库对象
 ```java
 //数据库对象
@@ -147,6 +84,69 @@ public class TDsOrderTableRoute extends AbstractModTableRoute<TDsOrderEntity> {
         return 2;
     }
 }
+```
+@tab sql脚本
+
+```sql
+
+CREATE DATABASE IF NOT EXISTS easy_sample CHARACTER SET 'utf8mb4';
+USE easy_sample;
+create table t_ds_order_00
+(
+    id varchar(32) not null comment '主键ID'primary key,
+    uid varchar(50) not null comment '用户id',
+    order_no int not null comment '订单号',
+    status int not null comment '订单状态',
+    create_time datetime not null comment '创建时间'
+)comment '订单表';
+create table t_ds_order_01
+(
+    id varchar(32) not null comment '主键ID'primary key,
+    uid varchar(50) not null comment '用户id',
+    order_no int not null comment '订单号',
+    status int not null comment '订单状态',
+    create_time datetime not null comment '创建时间'
+)comment '订单表';
+
+
+CREATE DATABASE IF NOT EXISTS easy_sample1 CHARACTER SET 'utf8mb4';
+USE easy_sample1;
+create table t_ds_order_00
+(
+    id varchar(32) not null comment '主键ID'primary key,
+    uid varchar(50) not null comment '用户id',
+    order_no int not null comment '订单号',
+    status int not null comment '订单状态',
+    create_time datetime not null comment '创建时间'
+)comment '订单表';
+create table t_ds_order_01
+(
+    id varchar(32) not null comment '主键ID'primary key,
+    uid varchar(50) not null comment '用户id',
+    order_no int not null comment '订单号',
+    status int not null comment '订单状态',
+    create_time datetime not null comment '创建时间'
+)comment '订单表';
+
+
+CREATE DATABASE IF NOT EXISTS easy_sample2 CHARACTER SET 'utf8mb4';
+USE easy_sample2;
+create table t_ds_order_00
+(
+    id varchar(32) not null comment '主键ID'primary key,
+    uid varchar(50) not null comment '用户id',
+    order_no int not null comment '订单号',
+    status int not null comment '订单状态',
+    create_time datetime not null comment '创建时间'
+)comment '订单表';
+create table t_ds_order_01
+(
+    id varchar(32) not null comment '主键ID'primary key,
+    uid varchar(50) not null comment '用户id',
+    order_no int not null comment '订单号',
+    status int not null comment '订单状态',
+    create_time datetime not null comment '创建时间'
+)comment '订单表';
 ```
 :::
 

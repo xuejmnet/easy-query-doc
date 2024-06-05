@@ -31,10 +31,10 @@ EasyQuery官方QQ群: 170029046
                                 user.id().like(false, "123");
                             })
                             .groupBy(user->GroupKeys.TABLE1.of(user.id()))//创建group by
-                            .select(group -> new SysUserProxy().adapter(r->{//创建user代理
-                                r.id().set(group.key1());//对当前id进行赋值
-                                r.phone().set(group.count().toStr());//对当前phone进行赋值因为phone是string类型所以goup后的count需要强转成string也就是cast
-                            }))
+                            .select(group -> new SysUserProxy()
+                                    .id().set(group.key1())//对当前id进行赋值
+                                    .phone().set(group.count().toStr())//对当前phone进行赋值因为phone是string类型所以goup后的count需要强转成string也就是
+                           )
                             //下面是平替写法其实是一样的
                             // .select(o -> {
                             //     SysUserProxy sysUserProxy = new SysUserProxy();
