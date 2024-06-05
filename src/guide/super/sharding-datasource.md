@@ -8,6 +8,59 @@ order: 20
 我们以订单表为例来实现订单的简单取模分库,将订单表按5取模进行分库分为ds0,ds1,ds2,ds3,ds4一共5个数据源
 
 ::: code-tabs
+@tab 数据库对象
+```java
+//数据库对象
+
+@Data
+@Table(value = "ds_order",shardingInitializer = DsOrderShardingInitializer.class)
+public class DsOrderEntity {
+    @Column(primaryKey = true)
+    @ShardingDataSourceKey
+    @UpdateIgnore
+    private String id;
+    private String uid;
+    private Integer orderNo;
+    private Integer status;
+    private LocalDateTime createTime;
+}
+
+//分片初始化器,和5进行取模,获取ds0-ds4一共5个数据源每个数据源都只有一张表
+@Component
+public class DsOrderShardingInitializer implements EntityShardingInitializer<DsOrderEntity> {
+    @Override
+    public void configure(ShardingEntityBuilder<DsOrderEntity> builder) {
+        EntityMetadata entityMetadata = builder.getEntityMetadata();
+        String tableName = entityMetadata.getTableName();
+        List<String> tables = Collections.singletonList(tableName);
+        LinkedHashMap<String, Collection<String>> initTables = new LinkedHashMap<String, Collection<String>>();
+        initTables.put("ds0", tables);
+        initTables.put("ds1", tables);
+        initTables.put("ds2", tables);
+        initTables.put("ds3", tables);
+        initTables.put("ds4", tables);
+        builder.actualTableNameInit(initTables);
+    }
+}
+
+//分片的路由,路由使用默认抽象的分库路由AbstractDataSourceRoute,编写RouteFunction
+@Component
+public class DsOrderDataSourceRoute extends AbstractDataSourceRoute<DsOrderEntity> {
+
+    @Override
+    protected RouteFunction<String> getRouteFilter(TableAvailable table, Object shardingValue, ShardingOperatorEnum shardingOperator, boolean withEntity) {
+        int i = shardingValue.toString().hashCode();
+        int dsNumber = Math.abs(i % 5); //0-5
+        String dataSource = "ds" + dsNumber;
+        switch (shardingOperator) {
+            case EQUAL: //仅支持==操作
+                return ds -> dataSource.compareToIgnoreCase(ds) == 0;
+            default:
+                return t -> true;
+        }
+    }
+}
+```
 @tab sql脚本
 
 ```sql
@@ -70,59 +123,6 @@ create table ds_order
     status int not null comment '订单状态',
     create_time datetime not null comment '创建时间'
 )comment '订单表';
-```
-@tab 数据库对象
-```java
-//数据库对象
-
-@Data
-@Table(value = "ds_order",shardingInitializer = DsOrderShardingInitializer.class)
-public class DsOrderEntity {
-    @Column(primaryKey = true)
-    @ShardingDataSourceKey
-    @UpdateIgnore
-    private String id;
-    private String uid;
-    private Integer orderNo;
-    private Integer status;
-    private LocalDateTime createTime;
-}
-
-//分片初始化器,和5进行取模,获取ds0-ds4一共5个数据源每个数据源都只有一张表
-@Component
-public class DsOrderShardingInitializer implements EntityShardingInitializer<DsOrderEntity> {
-    @Override
-    public void configure(ShardingEntityBuilder<DsOrderEntity> builder) {
-        EntityMetadata entityMetadata = builder.getEntityMetadata();
-        String tableName = entityMetadata.getTableName();
-        List<String> tables = Collections.singletonList(tableName);
-        LinkedHashMap<String, Collection<String>> initTables = new LinkedHashMap<String, Collection<String>>();
-        initTables.put("ds0", tables);
-        initTables.put("ds1", tables);
-        initTables.put("ds2", tables);
-        initTables.put("ds3", tables);
-        initTables.put("ds4", tables);
-        builder.actualTableNameInit(initTables);
-    }
-}
-
-//分片的路由,路由使用默认抽象的分库路由AbstractDataSourceRoute,编写RouteFunction
-@Component
-public class DsOrderDataSourceRoute extends AbstractDataSourceRoute<DsOrderEntity> {
-
-    @Override
-    protected RouteFunction<String> getRouteFilter(TableAvailable table, Object shardingValue, ShardingOperatorEnum shardingOperator, boolean withEntity) {
-        int i = shardingValue.toString().hashCode();
-        int dsNumber = Math.abs(i % 5); //0-5
-        String dataSource = "ds" + dsNumber;
-        switch (shardingOperator) {
-            case EQUAL: //仅支持==操作
-                return ds -> dataSource.compareToIgnoreCase(ds) == 0;
-            default:
-                return t -> true;
-        }
-    }
-}
 ```
 :::
 
