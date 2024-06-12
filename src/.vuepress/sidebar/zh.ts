@@ -4,13 +4,13 @@ export const zhSidebar = sidebar({
   "/": [
     "",
     "quick-preview",
+    "question",
     {
       text: "起步",
       prefix: "startup/",
-      children: ["dir.md","quick-start","quick-plugin","quick-api","nodsl","nodsl2","dto","sql","framework-springboot","multi-module","diff-proxy"],
+      children: ["dir.md","quick-start","quick-start-springboot","quick-api","nodsl","nodsl2","dto","sql","framework-springboot","quick-plugin","diff-proxy"],
     },
     // "quick-start",
-    "question",
     "db_support",
     {
       text: "文档",
@@ -49,6 +49,11 @@ export const zhSidebar = sidebar({
           "sharding-all-time.md","sharding-multi.md","sharding-sequence.md"],
         }
       ],
+    },
+    {
+      text: "插件",
+      prefix: "plugin/",
+      children: ["dir.md"],
     },
     {
       text: "实战",
