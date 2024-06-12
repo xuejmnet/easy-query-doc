@@ -90,3 +90,9 @@ easyEntityQuery.deletable(User.class).disableLogicDelete()allowDeleteStatement(t
 
 easyEntityQuery.deletable(User.class).disableLogicDelete()allowDeleteStatement(true).where(u->u.expression().sql("1=1")).executeRows();
 ```
+
+## proxy不存在
+如果遇到build后报错java:程序包xxxxxxxx.proxy不存在
+
+- 查看是否引入sql-processor包
+- 设置idea的注解处理器 Build,Execution,Deployment,Compiler,Annotation Processors 选择Enable annotation processing 并且选择Obtain processors from project classpath
