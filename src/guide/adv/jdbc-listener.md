@@ -92,6 +92,62 @@ easyQueryClient = EasyQueryBootstrapper.defaultBuilderConfiguration()
 ```
 当然这种情况只适合无需外部参数传入的情况下,如果我们需要传递外部`bean`到框架内部可以直接注册
 
+## 循环监听
+很多时候我们可能会将监听到的超时sql进行mq的发送然后来存入到自己的数据库,但是因为存入数据库也会触发`jdbcListener`所以`eq`贴心的给用户添加了忽略jdbcListener的功能,保证插入到数据库不会出现循环监听
+```java
+
+//查询数据移除JDBC_LISTEN行为
+List<Topic> list = easyEntityQuery.queryable(Topic.class)
+        .behaviorConfigure(config -> {
+            config.removeBehavior(EasyBehaviorEnum.JDBC_LISTEN);
+        }).toList();
+
+//插入数据移除JDBC_LISTEN行为
+Topic topic = new Topic();
+easyEntityQuery.insertable(topic)
+        .behaviorConfigure(config->{
+            config.removeBehavior(EasyBehaviorEnum.JDBC_LISTEN);
+        }).executeRows();
+
+
+//更新数据移除JDBC_LISTEN行为
+Topic topic = new Topic();
+easyEntityQuery.updatable(topic)
+        .behaviorConfigure(config->{
+            config.removeBehavior(EasyBehaviorEnum.JDBC_LISTEN);
+        }).executeRows();
+
+easyEntityQuery.updatable(Topic.class)
+        .behaviorConfigure(config->{
+            config.removeBehavior(EasyBehaviorEnum.JDBC_LISTEN);
+        })
+        .setColumns(t -> {
+            t.title().set("123");
+        })
+        .where(t -> {
+            t.id().eq("123");
+        })
+        .executeRows();
+
+
+//删除数据移除JDBC_LISTEN行为
+Topic topic = new Topic();
+easyEntityQuery.deletable(topic)
+        .behaviorConfigure(config->{
+            config.removeBehavior(EasyBehaviorEnum.JDBC_LISTEN);
+        }).executeRows();
+
+
+easyEntityQuery.deletable(Topic.class)
+        .behaviorConfigure(config->{
+            config.removeBehavior(EasyBehaviorEnum.JDBC_LISTEN);
+        })
+        .where(t -> {
+            t.id().eq("123");
+        })
+        .executeRows();
+```
+
 ## springboot为例
 假设我们有这个一个日志请求`bean`通过`@Component`注册到了`springboot`中
 ```java
