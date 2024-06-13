@@ -340,3 +340,9 @@ ASALocalRun/
 
 # Vuepress temp build
 .temp
+src/practice/.DS_Store
+src/guide/.DS_Store
+src/zh/.DS_Store
+src/.vuepress/.DS_Store
+src/.vuepress/public/.DS_Store
+src/guide/.DS_Store

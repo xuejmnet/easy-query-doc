@@ -230,6 +230,43 @@ public class Main {
 ```
 
 
+
+::: warning 报错!!!
+如果遇到build后报错java:程序包xxxxxxxx.proxy不存在
+
+
+- 查看是否引入sql-processor包
+- 设置idea的注解处理器 Build,Execution,Deployment,Compiler,Annotation Processors 选择Enable annotation processing 并且选择Obtain processors from project classpath
+
+- 如果您之前已经存在`annotationProcessorPaths`那么你可以在里面添加`eq`的`apt`处理，如果未使用过那么还是建议需要apt的模块单独引入`sql-processor`
+以下配置那么在各个独立`module`处不需要在引入`sql-processor`
+```xml
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-compiler-plugin</artifactId>
+    <version>3.8.1</version>
+    <configuration>
+        <annotationProcessorPaths>
+        <!-- 注意顺序 -->
+            <path>
+            <!-- lombok... -->
+            </path>
+            <path>
+            <!-- mapstruct... -->
+            </path>
+            <path>
+                <groupId>com.easy-query</groupId>
+                <artifactId>sql-processor</artifactId>
+                <version>${easy-query.version}</version>
+            </path>
+        </annotationProcessorPaths>
+    </configuration>
+</plugin>
+```
+:::
+
+
+
 ### 单个查询
 ```java
 
