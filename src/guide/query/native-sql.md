@@ -72,18 +72,24 @@ long l = easyQuery.sqlExecute("update t_blog set content=? where id=?", Arrays.a
 `easy-query`默认提供了数据库自定义`SQL`片段,其中 [《CaseWhen》](/easy-query-doc/guide/query/case-when) 就是有数据库自定义片段来自行实现api
 
 如何设计api完全可以看用户自行实现。
-
+<!-- 
 ## sqlSegmentAs
 最好是封装自行实现,譬如case-when的实现就是扩展实现,如果没有这个封装的必要可以用sqlNativeSegment,支持属性和参数化
 
-**建议参考 case when,如果临时使用建议使用 sqlNativeSegment**
+**建议参考 case when,如果临时使用建议使用 sqlNativeSegment** -->
 
 ## entityQuery
 因为entityQuery的特殊性原生sql片段有如下特殊规则
 
-- `where`、`join on`、`order`、`having`的原生sql片段是具体表的`o.expression().sql(......)`方法
-- `select`别名和`update set`为`setSQL`,`o.expression().sqlType(....)` 
-- `o.expression()`来获取表达式其中`expression().sql()`来执行sql用于`join、where、orderBy`,其中`expression().sqlType()`用来返回片段类型用于`select、groupBy`等
+- `where`、`join on`、`order`、`having`的原生sql片段是具体表的`o.expression().sqlSegment(......).executeSQL()`方法
+- `select`别名和`update set`为`setSQL`,`o.expression().sqlSegment(....)` 
+- `o.expression()`来获取表达式其中`expression().sqlSegment()`来执行sql用于`join、where、orderBy`需调用`executeSQL`,其中`expression().sqlSegment()`用来返回片段类型用于`select、groupBy`等
+
+
+
+::: tip 说明!!!
+> `o.expression().sqlSegment(....)`表示返回一个sql片段如果您是在`join、where、orderBy`方法内部这个片段不会生效需要调用`executeSQL`也就是`o.expression().sqlSegment(....).executeSQL()`,如果您闲这个太麻烦可以使用`o.expression().sql(....)`内部自动调用`executeSQL`,如果您是在`select、groupBy`等方法中使用那么是返回当做一个片段使用无需调用执行sql方法
+:::
 
 ## 随机排序
 
@@ -95,10 +101,16 @@ List<Topic> list = easyEntityQuery.queryable(Topic.class)
         .where(b -> {
             b.id().eq("123");
         }).orderBy(t -> {
-            t.expression().sql("RAND()");
+            t.expression().sqlSegment("RAND()").executeSQL();
         }).toList();
 
-
+//上下一样
+List<Topic> list = easyEntityQuery.queryable(Topic.class)
+        .where(b -> {
+            b.id().eq("123");
+        }).orderBy(t -> {
+            t.expression().sql("RAND()");
+        }).toList();
 
 SELECT
     `id`,
@@ -111,6 +123,7 @@ WHERE
     `id` = '123' 
 ORDER BY
     RAND()
+
 ```
 
 @tab lambda模式
@@ -339,17 +352,17 @@ ORDER BY
 ::: 
 
 ## 返回结果
-`entityQuery`使用`expression().sqlType(....)`其余几个`api`任然是`sqlNativeSegment`
+`entityQuery`使用`expression().sqlSegment(....)`其余几个`api`任然是`sqlNativeSegment`
 ```java
 //因为默认原生sql片段式Object类型所以无法精确指定类型可以通过setPropertyType来指定返回接受的类型
 List<Draft2<Double, Integer>> list = easyEntityQuery.queryable(Topic.class)
         .where(b -> {
             b.id().eq("123");
         }).select(t -> Select.DRAFT.of(
-                t.expression().sqlType("RAND()").setPropertyType(Double.class),
-                t.expression().sqlType("IFNULL({0},{1})", c -> {
+                t.expression().sqlSegment("RAND()").setPropertyType(Double.class),
+                t.expression().sqlSegment("IFNULL({0},{1})", c -> {
                     c.expression(t.stars()).value(1);
-                }).setPropertyType(Integer.class)
+                },Integer.class)
         )).toList();
 
 
@@ -369,10 +382,10 @@ List<Topic> list = easyEntityQuery.queryable(Topic.class)
         .where(b -> {
             b.id().eq("123");
         }).select(Topic.class,t -> Select.of(
-                t.expression().sqlType("RAND()",c->{
+                t.expression().sqlSegement("RAND()",c->{
                     c.setAlias(t.stars());
-                }).setPropertyType(Double.class),
-                t.expression().sqlType("IFNULL({0},{1})", c -> {
+                },Double.class),
+                t.expression().sqlSegement("IFNULL({0},{1})", c -> {
                     c.expression(t.stars());
                     c.value(1);
                     c.setAlias(t.createTime());
@@ -492,7 +505,7 @@ List<Topic> list4 = easyEntityQuery.queryable(Topic.class)
 
             r.title().set(o.stars().nullOrDefault(0).toStr());
             
-            PropTypeColumn<String> nullProperty = o.expression().sqlType("IFNULL({0},'')", c -> {
+            PropTypeColumn<String> nullProperty = o.expression().sqlSegement("IFNULL({0},'')", c -> {
                 c.keepStyle();
                 c.expression(o.id());
             }).setPropertyType(String.class);
