@@ -244,10 +244,12 @@ List<Topic> topics = easyQueryClient.queryable(Topic.class)
 ```java
 Topic topic = easyEntityQuery.queryable(Topic.class)
                     .where(o -> o.id().eq("1"))
-                    .select(o->new TopicProxy().adapter(r->{
+                    .select(o->{
+                        TopicProxy r = new TopicProxy();
                         r.id().set(o.id());
                         r.title().set(o.title());
-                    }))
+                        return r;
+                    })
                     .firstOrNull();
 
 ==> Preparing: SELECT `id` AS `id`,`title` AS `title` FROM `t_topic` WHERE `id` = ? LIMIT 1
@@ -309,9 +311,9 @@ Topic topic = easyQueryClient.queryable(Topic.class)
 
 EntityQueryable<TopicProxy, Topic> query = easyEntityQuery.queryable(Topic.class)
         .where(o -> o.id().eq("1"))
-        .select(o -> new TopicProxy().adapter(r->{
-            r.selectExpression(o.id(), o.title());
-        }));
+        .select(o -> new TopicProxy()
+                .selectExpression(o.id(), o.title())
+        );
 
 List<Topic> list = query.leftJoin(Topic.class, (t, t1) -> t.id().eq(t1.id()))
         .where((t, t1) -> {

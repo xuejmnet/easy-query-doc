@@ -11,17 +11,26 @@ title: api使用 ❗️❗️❗️
 ## api说明
 
 简单的查询编写顺序
+
+<img src="/sql-executor.png" width="500">
+
+
+::: tip 注意点及说明!!!
+> 其中6和7可以互相调换,如果先`select`后`order`那么将会对匿名表进行排序,如果先`order`后`select`那么会先排序后生成匿名表但是因为匿名表后续没有操作所以会展开
+:::
+
+
 <img src="/simple-query.jpg">
 
 我们以这个简单的例子为例可以看到我们应该编写的顺序是select在最后
 ```java
 easyEntityQuery.queryable(HelpProvince.class)
-        .where(o->o.id().eq("1"))
-        .orderBy(o->o.id().asc())
-        .select(o->new HelpProvinceProxy().adapter(r->{
-                r.id().set(o.id());
-                r.name().set(o.name());
-        }))
+        .where(o -> o.id().eq("1"))
+        .orderBy(o -> o.id().asc())
+        .select(o -> new HelpProvinceProxy()
+                .id().set(o.id())
+                .name().set(o.name())
+        )
         //本质就是如下写法 不建议使用双括号的初始化可能会造成内存泄露
         // .select(o->{
         //        HelpProvinceProxy province= new HelpProvinceProxy();
@@ -40,15 +49,15 @@ easyEntityQuery.queryable(HelpProvince.class)
 easyEntityQuery.queryable(HelpProvince.class) //1
         .where(o->o.id().eq("1")) //2
         .orderBy(o->o.id().asc()) //3
-        .select(o->new HelpProvinceProxy().adapter(r->{//4 
-                r.id().set(o.id());
-                r.name().set(o.name());
-        }))
+        .select(o->new HelpProvinceProxy()//4 
+                .id().set(o.id())
+                .name().set(o.name())
+        )
         //.select(o->o.FETCHER.id().name().fetchProxy())//如果返回结果一样可以用fetcher
         .where(o->o.id().eq("1")) // 5
-        .select(o->new HelpProvinceProxy().adapter(r->{
-                r.id().set(o.id());//6
-        }))
+        .select(o->new HelpProvinceProxy()
+                .id().set(o.id())//6
+        )
         .toList();
 ```
 
@@ -79,10 +88,13 @@ sql:select * from help_province where id='1' order by id asc
 ```
 ### 4
 ```java
-表达式:easyEntityQuery.queryable(HelpProvince.class).where(o->o.id().eq("1")).orderBy(o->o.id().asc()).select(o->new HelpProvinceProxy().adapter(r->{
-        r.id().set(o.id());
-        r.name().set(o.name());
-}))
+表达式:          easyEntityQuery.queryable(HelpProvince.class)
+                        .where(o -> o.id().eq("1"))
+                        .orderBy(o -> o.id().asc())
+                        .select(o -> new HelpProvinceProxy()
+                                .id().set(o.id())
+                                .name().set(o.name())
+                        )
 
 sql:select id,name from help_province where id='1' order by id asc
 ```
@@ -90,24 +102,31 @@ sql:select id,name from help_province where id='1' order by id asc
 
 ### 5
 ```java
-表达式:easyEntityQuery.queryable(HelpProvince.class).where(o->o.id().eq("1")).orderBy(o->o.id().asc()).select(o->new HelpProvinceProxy().adapter(r->{
-        r.id().set(o.id());
-        r.name().set(o.name());
-}))//转成匿名表sql
-.where(o->o.id().eq("1")) 
+表达式:easyEntityQuery.queryable(HelpProvince.class)
+                .where(o->o.id().eq("1"))
+                .orderBy(o->o.id().asc())
+                .select(o->new HelpProvinceProxy()
+                        .id().set(o.id())
+                        .name().set(o.name())
+                )//转成匿名表sql
+                .where(o->o.id().eq("1")) 
 
 sql:select * from (select id,name from help_province where id='1' order by id asc) t where t.id='1'
 ```
 
 ### 6
 ```java
-表达式:easyEntityQuery.queryable(HelpProvince.class).where(o->o.id().eq("1")).orderBy(o->o.id().asc()).select(o->new HelpProvinceProxy().adapter(r->{
-        r.id().set(o.id());
-        r.name().set(o.name());
-}))//转成匿名表sql
-.where(o->o.id().eq("1")).select(o->new HelpProvinceProxy().adapter(r->{
-        r.id().set(o.id());
-})) 
+表达式:easyEntityQuery.queryable(HelpProvince.class)
+                .where(o->o.id().eq("1"))
+                .orderBy(o->o.id().asc())
+                .select(o->new HelpProvinceProxy()
+                        .id().set(o.id())
+                        .name().set(o.name())
+                )//转成匿名表sql
+                .where(o->o.id().eq("1"))
+                .select(o->new HelpProvinceProxy()
+                        .id().set(o.id())
+                ) 
 
 sql:select id from (select id,name from help_province where id='1' order by id asc) t where t.id='1'
 ```
@@ -167,10 +186,10 @@ SysUser sysUser1 = entityQuery.queryable(SysUser.class)
         .where(o -> o.idCard().like("123"))
         .orderBy(o->o.createTime().desc())
         .orderBy(o->o.id().asc())
-        .select(o->new SysUserProxy().adapter(r->{
-                r.id().set(o.id());
-                r.createTime().set(o.createTime());
-        }))
+        .select(o->new SysUserProxy()
+                .id().set(o.id())
+                .createTime().set(o.createTime())
+        )
         .firstOrNull();
         
 ```
@@ -489,11 +508,11 @@ List<QueryVO> list = easyEntityQuery.queryable(Topic.class)
                 t1.title().like("456");
                 t2.createTime().eq(LocalDateTime.of(2021, 1, 1, 1, 1));
         })
-        .select((t, t1, t2)->new QueryVOProxy().adapter(r->{
-                r.id().set(t.id());
-                r.field1().set(t1.title());//将第二张表的title字段映射到VO的field1字段上
-                r.field2().set(t2.id());//将第三张表的id字段映射到VO的field2字段上
-        })).toList();
+        .select((t, t1, t2)->new QueryVOProxy()
+                .id().set(t.id())
+                .field1().set(t1.title())//将第二张表的title字段映射到VO的field1字段上
+                .field2().set(t2.id())//将第三张表的id字段映射到VO的field2字段上
+        ).toList();
 
 ==> Preparing: SELECT t.`id`,t1.`title` AS `field1`,t2.`id` AS `field2` FROM `t_topic` t LEFT JOIN `t_blog` t1 ON t1.`deleted` = ? AND t.`id` = t1.`id` LEFT JOIN `easy-query-test`.`t_sys_user` t2 ON t.`id` = t2.`id` WHERE t.`id` = ? AND t.`id` = ? AND t1.`title` LIKE ? AND t2.`create_time` = ?
 ==> Parameters: false(Boolean),123(String),123(String),%456%(String),2021-01-01T01:01(LocalDateTime)

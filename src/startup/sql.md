@@ -355,10 +355,10 @@ List<SysUser> users = easyEntityQuery.queryable(SysUser.class)
                                 user.id().like(false, "123");
                             })
                             .groupBy(user->GroupKeys.TABLE1.of(user.id()))//创建group by
-                            .select(group -> new SysUserProxy().adapter(r->{//创建user代理
-                                r.id().set(group.key1());//对当前id进行赋值
-                                r.phone().set(group.count().toStr());//对当前phone进行赋值因为phone是string类型所以goup后的count需要强转成string也就是cast
-                            }))
+                            .select(group -> new SysUserProxy()//创建user代理
+                                        .id().set(group.key1())//对当前id进行赋值
+                                        .phone().set(group.count().toStr());//对当前phone进行赋值因为phone是string类型所以goup后的count需要强转成string也就是cast
+                           )
                             //下面是平替写法其实是一样的
                             // .select(o -> {
                             //     SysUserProxy sysUserProxy = new SysUserProxy();
@@ -408,10 +408,10 @@ List<Draft4<String, String, Integer, LocalDateTime>> list = easyEntityQuery.quer
                     user.id().like(false, "123");
                 })
                 .groupBy(user -> GroupKeys.TABLE1.of(user.id()))//创建group by
-                .select(group -> new SysUserProxy().adapter(r -> {//创建user代理
-                    r.id().set(group.key1());//对当前id进行赋值
-                    r.phone().set(group.count().toStr());//对当前phone进行赋值因为phone是string类型所以goup后的count需要强转成string也就是cast
-                }))
+                .select(group -> new SysUserProxy()//创建user代理
+                        .id().set(group.key1())//对当前id进行赋值
+                        .phone().set(group.count().toStr())//对当前phone进行赋值因为phone是string类型所以goup后的count需要强转成string也就是cast
+                )
                 .leftJoin(BlogEntity.class, (s, b2) -> s.phone().eq(b2.title()))
                 .where((s1, b2) -> s1.phone().likeMatchLeft("188"))
                 .orderBy((s1, b2) -> b2.createTime().desc())
@@ -440,10 +440,10 @@ EntityQueryable<SysUserProxy, SysUser> selectGroup = easyEntityQuery.queryable(S
             user.id().like(false, "123");
         })
         .groupBy(user -> GroupKeys.TABLE1.of(user.id()))//创建group by
-        .select(group -> new SysUserProxy().adapter(r -> {//创建user代理
-            r.id().set(group.key1());//对当前id进行赋值
-            r.phone().set(group.count().toStr());//对当前phone进行赋值因为phone是string类型所以goup后的count需要强转成string也就是cast
-        }));
+        .select(group -> new SysUserProxy()//创建user代理
+                .id().set(group.key1())//对当前id进行赋值
+                .phone().set(group.count().toStr())//对当前phone进行赋值因为phone是string类型所以goup后的count需要强转成string也就是cast
+        );
 
 
   

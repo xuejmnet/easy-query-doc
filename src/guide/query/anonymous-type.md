@@ -108,7 +108,6 @@ List<BlogEntity> list = easyEntityQuery.queryable(BlogEntity.class)
                         o.sum(o.group().star()).ge(10);
                     })
                     .select(o -> new BlogEntityProxy().adapter(r->{
-
                         r.id().set(o.key1());
                         r.star().set(o.count(o.group().id()).setPropertyType(Integer.class));
                         r.title().set(o.max(o.group().id()));

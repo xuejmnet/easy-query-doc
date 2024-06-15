@@ -417,19 +417,19 @@ List<BlogEntityTest> list = easyEntityQuery.queryable(BlogEntity.class).toList(B
 //如果遇到无法对应的可以通过手动set来实现映射
 String sql = easyEntityQuery.queryable(BlogEntity.class)
                 .where(o -> o.id().eq( "2"))
-                .select(o->new BlogEntityVO1Proxy().adapter(r->{
-                        r.score().set(o.order());//将查询的order映射到vo对象的score上
-                }))
+                .select(o->new BlogEntityVO1Proxy()
+                        .score().set(o.order())//将查询的order映射到vo对象的score上
+                )
                 .limit(1).toSQL();
 Assert.assertEquals("SELECT t.`order` AS `score` FROM `t_blog` t WHERE t.`deleted` = ? AND t.`id` = ? LIMIT 1", sql);
 
 
 EntityQueryable<BlogEntityTest2Proxy, BlogEntityTest2> queryable = easyEntityQuery.queryable(BlogEntity.class)
-                .select(o -> new BlogEntityTest2Proxy().adapter(r->{
-                    r.selectAll(o);//等于*但是不会用*这种暴力的语法会将字段列出
-                    r.selectIgnores(o.title());//忽略前面的selectAll里面的title列
-                    r.url().set(o.url());//并且将url映射到my_url上
-                }));
+                .select(o -> new BlogEntityTest2Proxy()
+                        .selectAll(o)//等于*但是不会用*这种暴力的语法会将字段列出
+                        .selectIgnores(o.title())//忽略前面的selectAll里面的title列
+                        .url().set(o.url())//并且将url映射到my_url上
+                );
             String sql = queryable.toSQL();
             Assert.assertEquals("SELECT t.`content`,t.`star`,t.`publish_time`,t.`score`,t.`status`,t.`order`,t.`is_top`,t.`top`,t.`url` AS `my_url` FROM `t_blog` t WHERE t.`deleted` = ?", sql);
            
