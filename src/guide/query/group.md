@@ -91,10 +91,10 @@ List<BlogGroupIdAndName> list = easyEntityQuery.queryable(Topic.class)
                     t.createTime().le(LocalDateTime.of(2021, 3, 4, 5, 6));
                 })
                 .groupBy((t1, b2) -> GroupKeys.TABLE2.of(t1.id(), b2.star()))
-                .select(group -> new BlogGroupIdAndNameProxy().adapter(r -> {
-                    r.id().set(group.key1());
-                    r.idCount().set(group.groupTable().t2.id().count());
-                })).toList();
+                .select(group -> new BlogGroupIdAndNameProxy()
+                    .id().set(group.key1())
+                    .idCount().set(group.groupTable().t2.id().count())
+                ).toList();
 
 ==> Preparing: SELECT t.`id` AS `id`,COUNT(t1.`id`) AS `id_count` FROM `t_topic` t LEFT JOIN `t_blog` t1 ON t1.`deleted` = ? AND t.`id` = t1.`id` WHERE t.`title` IS NOT NULL AND t.`create_time` <= ? GROUP BY t.`id`,t1.`star`
 ==> Parameters: false(Boolean),2021-03-04T05:06(LocalDateTime)

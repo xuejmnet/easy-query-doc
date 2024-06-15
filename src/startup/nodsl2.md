@@ -10,6 +10,7 @@ title: 对象关系查询案例2 ✨
 - 用户、角色、菜单典型的多对多关联关系(隐式子查询)
 - 其中用户和用户所在地址为一对一关系(隐式join)
 
+
 ::: code-tabs
 @tab 用户
 
@@ -33,6 +34,7 @@ public class SysUser implements ProxyEntityAvailable<SysUser , SysUserProxy> {
     private SysUserAddress address;
 
 }
+
 ```
 
 @tab 角色
@@ -135,6 +137,10 @@ public class SysUserAddress implements ProxyEntityAvailable<SysUserAddress , Sys
 ```
 
 :::
+
+## 多对多说明
+
+<img src="/NaviagetRelationManyToMany.jpg"  width="500">
 
 ## 案例1
 查询杭州或绍兴的用户

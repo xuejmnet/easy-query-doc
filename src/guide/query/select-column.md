@@ -123,9 +123,9 @@ public class BlogEntityTest2 {
 ```java
 //BlogEntityTest2Proxy 由代理对象BlogEntityTest2+@EntityProxy生成
 List<BlogEntityTest2> blogEntityTest2s = easyEntityQuery.queryable(BlogEntity.class)
-                    .select(o -> new BlogEntityTest2Proxy().adapter(r->{
-                        r.url().set(o.url())
-                    })).toList();
+                    .select(o -> new BlogEntityTest2Proxy()
+                            .url().set(o.url())
+                    ).toList();
 
 
 ==> Preparing: SELECT t.`url` AS `my_url` FROM t_blog t WHERE t.`deleted` = ?
@@ -266,10 +266,10 @@ List<BlogEntityTest2> blogEntityTest2s = easyQuery.queryable(BlogEntity.class)
 ```java
 //BlogEntityTest2Proxy 由代理对象BlogEntityTest2+@EntityProxy生成
 List<BlogEntityTest2> blogEntityTest2s = easyEntityQuery.queryable(BlogEntity.class)
-                    .select(o->new BlogEntityTest2Proxy().adapter(r->{
-                        r.selectAll(o).selectIgnores(o.title());
-                        r.url().set(o.url());
-                    })).toList();
+                    .select(o->new BlogEntityTest2Proxy()
+                            .selectAll(o).selectIgnores(o.title())
+                             .url().set(o.url())
+                    ).toList();
 
 
 ==> Preparing: SELECT t.`content`,t.`star`,t.`publish_time`,t.`score`,t.`status`,t.`order`,t.`is_top`,t.`top`,t.`url` AS `my_url` FROM t_blog t WHERE t.`deleted` = ?

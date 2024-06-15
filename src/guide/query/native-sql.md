@@ -486,32 +486,32 @@ SELECT t.`title`,t.`id`,DATE_FORMAT(t.`create_time`,'%Y-%m-%d %H:%i:%s') FROM `t
 
 //select
 List<Topic> list2 = easyEntityQuery.queryable(Topic.class)
-                    .where(o -> o.createTime().format("yyyy/MM/dd" ).eq("2023/01/01" ))
-                    .select(o -> new TopicProxy().adapter(r->{
-
-                        r.title().set(o.stars().nullOrDefault(0).toStr());
-                        r.alias().setSQL("IFNULL({0},'')" , c -> {
-                            c.keepStyle();
-                            c.expression(o.id());
-                        });
-                    }))
-                    .toList();
+        .where(o -> o.createTime().format("yyyy/MM/dd").eq("2023/01/01"))
+        .select(o -> {
+            TopicProxy r = new TopicProxy();
+            r.title().set(o.stars().nullOrDefault(0).toStr());
+            r.alias().setSQL("IFNULL({0},'')", c -> {
+                c.keepStyle();
+                c.expression(o.id());
+            });
+            return r;
+        })
+        .toList();
 
 
 //上下凉鞋发一样通过expression来构建sql片段并且指定类型是String
-List<Topic> list4 = easyEntityQuery.queryable(Topic.class)
-        .where(o -> o.createTime().format("yyyy/MM/dd" ).eq("2023/01/01" ))
-        .select(o -> new TopicProxy().adapter(r->{
 
+List<Topic> list4 = easyEntityQuery.queryable(Topic.class)
+        .where(o -> o.createTime().format("yyyy/MM/dd").eq("2023/01/01"))
+        .select(o -> {
+            TopicProxy r = new TopicProxy();
             r.title().set(o.stars().nullOrDefault(0).toStr());
-            
-            PropTypeColumn<String> nullProperty = o.expression().sqlSegement("IFNULL({0},'')", c -> {
-                c.keepStyle();
+            ColumnFunctionComparableAnyChainExpression<String> nullProperty = o.expression().sqlSegment("IFNULL({0},'')", c -> {
                 c.expression(o.id());
-            }).setPropertyType(String.class);
-            
+            }, String.class);
             r.alias().set(nullProperty);
-        }))
+            return r;
+        })
         .toList();
 
 SELECT CAST(IFNULL(t.`stars`,?) AS CHAR) AS `title`,IFNULL(t.`id`,'') AS `alias` FROM `t_topic` t WHERE DATE_FORMAT(t.`create_time`,'%Y/%m/%d') = ?
