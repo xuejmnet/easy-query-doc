@@ -194,7 +194,7 @@ Topic topic3 = elq
         .queryable(Topic.class)
         .where(o -> o.getId() == "3" && o.getTitle().contains("3"))
         .firstOrNull();
-==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM t_topic t WHERE t.`id` = ? AND t.`title` like ? LIMIT 1
+==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM t_topic t WHERE t.`id` = ? AND t.`title` LIKE ? LIMIT 1
 ==> Parameters: 3(String),%3%(String)
 <== Total: 1
 
