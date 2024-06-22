@@ -156,7 +156,7 @@ List<Integer> list2 = elq.queryable(Topic.class)
         .select(s -> s.getStars())
         .toList();
 
-==> Preparing: SELECT t.`id` FROM `t_topic` t WHERE t.`id` = ?
+==> Preparing: SELECT t.`stars` FROM `t_topic` t WHERE t.`id` = ?
 ==> Parameters: 1(String)
 <== Time Elapsed: 2(ms)
 <== Total: 1
