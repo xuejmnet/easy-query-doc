@@ -77,7 +77,47 @@ List<TopicGroupTestDTO> topicGroupTestDTOS = easyQuery.queryable(Topic.class)
 `select`第二个参数表示需要映射的关系,`columnAs`方法和`column`如果两者对象在数据库列上映射是一样的那么可以用`column`也是一样的,`columnCount`表示需要对id列进行`count`聚合并且映射到`TopicGroupTestDTO::getIdCount`
 ```
 
+@tab lambda表达式树模式
+```java
+// groupBy单个字段
 
+
+// groupBy多个字段
+List<TopicGroupTestDTO> topicGroupTestDTOS = elq.queryable(Topic.class)
+                .where(o -> o.getId() == "3")
+                // 这里相当于声明了一个有一个元素(id)的组(group)
+                // 支持声明多个元素
+                .groupBy(o -> new Grouper()
+                {
+                    String id = o.getId();
+                    //int num = o.getStars();
+                })
+                // 出于安全考虑，groupBy之后想要tolist就必须显示的select字段
+                .select(g ->
+                {
+                    TopicGroupTestDTO result = new TopicGroupTestDTO();
+                    // 选择了Topic表的id字段
+                    result.setId(g.key.id);
+                    // 选择了Topic表的id字段,并且套了一层count聚合函数
+                    result.setIdCount((int) g.count(s -> s.getId()));
+                    // 选择了Topic表的id字段,并且套了一层min聚合函数
+                    result.setIdMin(g.min(s -> s.getId()));
+                    return result;
+                })
+                // 显然你可以使用匿名类，上下相等
+                //.select(g -> new TempResult()
+                //{
+                //    String id = g.key.id;
+                //    long idCount = g.count(s -> s.getId());
+                //    String idMin = g.min(s -> s.getId());
+                //})
+                .toList();
+
+==> Preparing: SELECT t.`id` AS `id`,COUNT(t.`id`) AS `idCount`,MIN(t.`id`) AS `idMin` FROM t_topic t WHERE t.`id` = ? GROUP BY t.`id`
+==> Parameters: 3(String)
+<== Total: 1
+
+```
 ::: 
 
 
