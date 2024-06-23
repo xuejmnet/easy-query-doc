@@ -10,12 +10,14 @@ order: 40
 和原生SQL不同，在`easy-query`提供的DSL中，`select`语句出现在`where`，`orderBy`，`groupBy`，`having`等之后,如果表达式调用了`select`那么这个sql就是确定了的如果再次调用`where`那么前面的表达式将被视为别名表
 
 ## API
-方法  | 参数 | 返回  | 描述
---- | --- | --- | --- 
+方法  | 参数 | 返回   | 描述
+--- | --- |------| --- 
 `select(SqlExpression selectExpression)` | 列选择器  | this | <font color="red">**不会生成匿名表**</font>,返回当前`Queryable`对象指定的列,用于按需查询
 `select(Class<TR> resultClass)` | 列选择器返回对象  | this | <font color="red">**生成匿名表**</font>,返回当前`Queryable`对象属性映射所对应的列名和返回结果属性列名一样的列,即两者属性名可以不一致但是只要两者属性名都是映射为相同`columnName`即可互相映射，如果返回结果属性类型不包容原属性类型，比如`String->Integer` 那么可能会出现转换失败,
 `select(Class<TR> resultClass, SqlExpression selectExpression)` | 列选择器返回对象,列选择器  | this | <font color="red">**生成匿名表**</font>,返回当前`Queryable`对象属性映射所对应的列名和返回结果属性列名一样的列,即两者属性名可以不一致但是只要两者属性名都是映射为相同`columnName`即可互相映射，如果返回结果属性类型不包容原属性类型，比如`String->Integer` 那么可能会出现转换失败,区别就是可以自己手动指定列,<font color="red">**！！！该方法默认不查询任何列需要手动在第二个参数表达式指定！！！**</font>
-
+**lambda表达式树模式下**：`select(Class<TR> resultClass)`|列选择器返回对象| this | 同上面的`select(Class<TR> resultClass)`
+**lambda表达式树模式下**：`select()`|列选择器返回对象| this |等同于`select(SqlExpression selectExpression)`下的`select(s -> s.columnAll())`
+**lambda表达式树模式下**：`select(Func<T... ,R> expr)`|列选择器返回对象| this |接受一个lambda表达式为参数,根据在lambda表达式里声明的对象的setter或是声明的匿名对象的类成员字段声明，与lambda入参的getter，以此完成数据库字段与类字段的映射
 ::: tip 说明!!!
 > 代理模式下`select`的第一个参数是`selector`选择器,第二个参数开始才是真正的表,生成匿名表表示`select * from table`如果后续有新的`where | order | group ....`会把这个条件当成匿名表来处理 `select * from (select * from table) t`每个`select`都是带`class`的都是将起变成匿名表
 :::
@@ -122,6 +124,35 @@ easyEntityQuery.queryable(BlogEntity.class)
         .select(BlogEntityVO1.class,s->s.columnAll().columnIgnore(BlogEntity::getId).columnIgnore(BlogEntity::getTitle)).firstOrNull();
 ```
 
+@tab lambda表达式树模式
+```java
+//直接映射到BlogEntityVO1.class
+elq.queryable(BlogEntity.class)
+        .where(o -> o.getId() == "2")
+        .select(BlogEntityVO1.class).firstOrNull();
+
+//只查询id和title,映射到logEntityVO2.class
+elq.queryable(BlogEntity.class)
+        .where(o -> o.getId() == "2")
+        .select(s ->
+        {
+            BlogEntityVO2 vo2 = new BlogEntityVO2();
+            vo2.setId(s.getId());
+            vo2.setTitle(s.getTitle());
+            return vo2;
+        })
+        .firstOrNull();
+
+//只查询id和title,映射到匿名类
+elq.queryable(BlogEntity.class)
+        .where(o -> o.getId() == "2")
+        .select(s -> new TempResult()
+        {
+            String id = s.getId();
+            String tt = s.getTitle();
+        })
+        .firstOrNull();
+```
 ::: 
 
 
@@ -271,6 +302,9 @@ WHERE
     t1.`blogCount` <= 123
 ```
 具体表达式代码为如下
+
+::: code-tabs
+@tab 对象模式
 ```java
 //首先我们定义两个key用来后续操作
 MapKey<String> blogId = MapKeys.stringKey("blogId");
@@ -335,6 +369,30 @@ MapKey<String> blogId = MapKeys.stringKey("blogId");
 
 
 ```
+
+@tab lambda表达式树模式
+```java
+List<Topic> list = elq.queryable(BlogEntity.class)
+        .where(b -> b.getStar() > 1)
+        //对其group by
+        .groupBy(b -> b.getId())
+        //生成中间对象并且变成匿名表(每次select都是生成匿名表,后续如果没有别的操作那么匿名表会被展开)
+        // select * from (select blogId,blogCount from xxx group by id) t
+        //如果select后续没有非终结操作那么会被展开为 select blogId,blogCount from xxx group by id
+        .select(g -> new TempResult()
+        {
+            String blogId = g.key;
+            long blogCount = g.count();
+        })
+        //对匿名表进行join
+        .leftJoin(Topic.class, (g, topic) -> g.blogId == topic.getId())
+        .where((g, topic) -> g.blogCount <= 123)
+        //再次生成匿名表
+        .select((g, topic) -> topic)
+        //后续无操作了所以会被展开
+        .toList();
+```
+:::
 
 ### 匿名表案例2
 对一张表进行开窗函数处理并且进行筛选

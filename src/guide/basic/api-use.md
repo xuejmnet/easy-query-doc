@@ -310,6 +310,88 @@ SysUser sysUser1 = easyQuery.queryable(SysUser.class)
         //.select(o->o.columnAll().columnIgnore(SysUser::getCreateTime))//获取user表的所有字段除了createTime字段
         .firstOrNull();
 ```
+@tab lambda表达式树模式
+```java
+
+// 创建一个可查询SysUser的表达式
+LQuery<SysUser> queryable = elq.queryable(SysUser.class);
+
+// 单个条件链式查询
+List<SysUser> sysUsers1 = elq.queryable(SysUser.class)
+        // sql: id = "123xxx"
+        .where(o -> o.getId() == "123xxx")
+        .toList();// toList表示查询结果集
+
+
+// == 运算符会被翻译成sql中的 = 运算符，&& 运算符会被翻译成sql中的 AND 运算符 ，字符串的contains方法翻译成sql中的 LIKE 运算符
+List<SysUser> sysUsers2 = elq.queryable(SysUser.class)
+        // sql: id = "123xxx" AND idCard LIKE "%123%"
+        .where(o -> o.getId() == "123xxx" && o.getIdCard().contains("123"))
+        .toList();
+
+
+// 多个where之间默认进行 AND 连接
+List<SysUser> sysUsers3 = elq.queryable(SysUser.class)
+        // sql: id = "123xxx"
+        .where(o -> o.getId() == "123xxx")
+        // AND
+        // sql: idCard LIKE "%123%"
+        .where(o -> o.getIdCard().contains("123"))
+        .toList();
+
+
+//返回单个对象没有查询到就返回null
+SysUser sysUser1 = elq.queryable(SysUser.class)
+        .where(o -> o.getId() == "123xxx")
+        .where(o -> o.getIdCard().contains("123"))
+        .firstOrNull();
+
+
+//采用创建时间倒序和id正序查询返回第一个
+SysUser sysUser2 = elq.queryable(SysUser.class)
+        // sql: id = "123xxx" AND idCard LIKE "%123%" ORDER BY createTime,id
+        .where(o -> o.getId() == "123xxx")
+        .where(o -> o.getIdCard().contains("123"))
+        .orderBy(o -> o.getCreateTime())
+        .orderBy(o -> o.getId())
+        .firstOrNull();
+
+//仅查询id和createTime两列，支持多种自由返回，请往下看
+LQuery<SysUser> sysUserLQuery = elq.queryable(SysUser.class)
+        .where(o -> o.getId() == "123xxx")
+        .where(o -> o.getIdCard().contains("123"))
+        .orderBy(o -> o.getCreateTime())
+        .orderBy(o -> o.getId());
+
+// 匿名类形式返回
+List<? extends TempResult> list = sysUserLQuery
+        // sql: select id AS tid,createTime AS ct
+        .select(s -> new TempResult()
+        {
+            String tid = s.getId();
+            LocalDateTime ct = s.getCreateTime();
+        })
+        .toList();
+
+// 指定类型返回，自动与类字段映射，支持dto
+// 此时会select全字段
+SysUser sysUser3 = sysUserLQuery.select(SysUser.class).firstOrNull();
+
+// select无参时等同于条件为queryable时填入的class
+SysUser sysUser4 = sysUserLQuery.select().firstOrNull();
+
+
+// 指定类型同时限制sql选择的字段
+SysUser sysUser5 = sysUserLQuery
+        .select(s ->
+        {
+            // sql: select id,createTime
+            SysUser temp = new SysUser();
+            temp.setId(s.getId());
+            temp.setCreateTime(s.getCreateTime());
+            return temp;
+        }).firstOrNull();
+```
 :::
 
 ## 多表查询api
@@ -361,6 +443,30 @@ List<Topic> list = easyQuery
         })
         //toList默认只查询主表数据
         .toList();
+```
+@tab lambda表达式树模式
+```java
+// 创建一个可查询SysUser的表达式
+LQuery<SysUser> queryable = elq.queryable(SysUser.class);
+
+
+List<Topic> list = elq
+        .queryable(Topic.class)
+        //第一个join采用双参数,参数1表示第一张表Topic 参数2表示第二张表 BlogEntity
+        // sql: LEFT JOIN BlogEntity ON t.id = t1.id
+        .leftJoin(BlogEntity.class, (t, t1) -> t.getId() == t1.getId())
+        //第二个join采用三参数,参数1表示第一张表Topic 参数2表示第二张表 BlogEntity 第三个参数表示第三张表 SysUser
+        // sql: LEFT JOIN SysUser ON t.id = t2.id
+        .leftJoin(SysUser.class, (t, t1, t2) -> t.getId() == t2.getId())
+        // && 运算符会被翻译成sql中的 AND 运算符，同理 || 运算符等同于 OR 运算符
+        // sql: WHERE t.id = "123" AND t1.title LIKE "%456%" AND t2.createTime = NOW()
+        .where((t, t1, t2) -> t.getId() == "123"
+                && t1.getTitle().contains("456")
+                && t2.getCreateTime().isEqual(SqlFunctions.now())
+        )
+        //toList默认只查询主表数据
+        .toList();
+
 ```
 :::
 
@@ -476,6 +582,44 @@ Queryable<Topic> where = easyQuery
             t1.like(BlogEntity::getTitle, "456");
             t1.eq(BaseEntity::getCreateTime, LocalDateTime.now());
         });
+```
+@tab lambda表达式树模式
+```java
+// 创建一个可查询SysUser的表达式
+LQuery<SysUser> queryable = elq.queryable(SysUser.class);
+
+
+LQuery3<Topic, BlogEntity, SysUser> topicBlogEntitySysUserLQuery = elq
+        .queryable(Topic.class)
+        .leftJoin(BlogEntity.class, (t, t1) -> t.getId() == t1.getId())
+        .leftJoin(SysUser.class, (t, t1, t2) -> t.getId() == t2.getId());
+
+// 可以使用代码控制条件
+if (true)
+{
+    topicBlogEntitySysUserLQuery
+            .where((t, t1, t2) -> t.getId() == "123"
+                    && t1.getTitle().contains("456")
+            );
+}
+
+// 多条件下默认and连接
+if (true)
+{
+    topicBlogEntitySysUserLQuery.where((t, t1, t2) -> t2.getCreateTime().isEqual(SqlFunctions.now()));
+}
+
+// 此时的sql中的where条件应该是：WHERE t.id = "123" AND t1.title LIKE "%456%" AND t2.createTime = NOW()
+
+// 支持多种选择模式，请往下看多表自定义结果api
+topicBlogEntitySysUserLQuery.select((t, t1, t2) ->
+{
+    TopicType type = new TopicType();
+    type.setId(t.getId());// 选择t表的id字段，映射到java对象的type的id字段
+    type.setTitle(t1.getTitle());// 选择t1表的title字段，映射到java对象的type的title字段
+    type.setStars(t1.getStar());// 选择t2表的star字段，映射到java对象的type的star字段
+    return type;
+});
 ```
 :::
 
@@ -614,5 +758,60 @@ List<QueryVO> list = easyEntityQuery.queryable(Topic.class)
                                 //将第三张表的id字段映射到VO的field2字段上
                                 .columnAs(SysUser::getId, QueryVO::getField2)
                 ).toList();
+```
+@tab lambda表达式树模式
+```java
+
+// 任意java类型均可，不喜欢lombok的也可以自己写getter和setter
+@Data
+public class AnyYouWant
+{
+    private String f1;
+    private String f2;
+    private String f3;
+}
+
+// 创建一个可查询SysUser的表达式
+LQuery<SysUser> queryable = elq.queryable(SysUser.class);
+
+
+LQuery3<Topic, BlogEntity, SysUser> topicBlogEntitySysUserLQuery = elq
+        .queryable(Topic.class)
+        .leftJoin(BlogEntity.class, (t, t1) -> t.getId() == t1.getId())
+        .leftJoin(SysUser.class, (t, t1, t2) -> t.getId() == t2.getId())
+        .where((t, t1, t2) -> t.getId() == "123"
+                && t1.getTitle().contains("456")
+                &&t2.getCreateTime().isEqual(SqlFunctions.now())
+        );
+
+
+// 1. 声明对象并且调用setter进行赋值的写法，支持所有对象，包括各种vo，dto
+LQuery<AnyYouWant> select1 = topicBlogEntitySysUserLQuery.select((t, t1, t2) ->
+{
+    AnyYouWant want = new AnyYouWant();
+    want.setF1(t.getId());// 选择t表的id字段，映射到java对象的f1字段
+    want.setF2(t1.getTitle());// 选择t1表的title字段，映射到java对象的f2字段
+    want.setF3(SqlFunctions.cast(t2.getCreateTime(), SqlTypes.varChar()));// 选择t2表的star字段，映射到java对象的f3字段,因为类型不同，所有调用了sql的cast函数进行了类型转换
+    return want;
+});
+// 注意这个时候的返回类型是AnyYouWant，具体的返回类型由你的代码决定
+List<AnyYouWant> list = select1.toList();
+
+
+// 2. （推荐）当无需对查询结果进行后续操作时，推荐使用匿名对象，可以直接返回给前端使用
+LQuery<? extends TempResult> select2 = topicBlogEntitySysUserLQuery.select((t, t1, t2) -> new TempResult()
+{
+    String f1 = t.getId();// 选择t表的id字段，映射到匿名对象的f1字段
+    String f2 = t1.getTitle();// 选择t1表的title字段，映射到匿名对象的f2字段
+    LocalDateTime f3 = t2.getCreateTime();// 选择t3表的createTime字段，映射到匿名对象的f3字段
+});
+// 注意这个时候的返回类型是匿名TempResult类，具体的返回类型由你的代码决定
+List<? extends TempResult> list1 = select2.toList();
+
+// 3. 直接传入类对象，此时会自动进行sql字段与java对象字段的映射
+LQuery<TopicType> select3 = topicBlogEntitySysUserLQuery.select(TopicType.class);
+// 注意这个时候的返回类型是TopicType类，具体的返回类型由你的代码决定
+List<TopicType> list2 = select3.toList();
+
 ```
 :::
