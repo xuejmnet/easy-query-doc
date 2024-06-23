@@ -38,3 +38,4 @@ title: easy-query简介目录
 - 配合`easy-cache`实现缓存的便捷使用并且是一个企业级别的延迟双删
 - insert or update语法方言 [InsertOrUpdate](/easy-query-doc/guide/basic/insertOrUpdate)
 - 计算属性,额外计算列比如年龄是动态的而不是固定的,所以年龄应该是`(当前时间-出生日期)`,复杂计算属性比如班级表存在学生数量这个属性这个属性应该是`select count(*) from student where class_id=?`
+- 自定义主键,支持雪花id,uuid等其他一系列id的自定义生成,支持多主键模式[PrimaryKeyGenerator](/easy-query-doc/guide/adv/auto-key)
