@@ -89,6 +89,50 @@ order: 10
     <version>${easy-query.version}</version>
 </dependency>
 ```
+@tab lambda表达式树（新）
+```xml
+<properties>
+    <easy-query.version>latest-version</easy-query.version>
+</properties>
+<!-- 纯lambda表达式模式 -->
+<dependency>
+    <groupId>com.easy-query</groupId>
+    <artifactId>sql-api-lambda</artifactId>
+    <version>${easy-query.version}</version>
+</dependency>
+<!--  这边以mysql为例 其实不需要添加下面的包也可以运行,指示默认的个别数据库行为语句没办法生成 -->
+<dependency>
+    <groupId>com.easy-query</groupId>
+    <artifactId>sql-mysql</artifactId>
+    <version>${easy-query.version}</version>
+</dependency>
+
+<!-- 启动必要的配置 -->
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>${你的版本}</version>
+            <configuration>
+                <!--必要参数，用于注册编译器插件-->
+                <compilerArgs>
+                    <arg>-Xplugin:ExpressionTree</arg>
+                </compilerArgs>
+                <annotationProcessorPaths>
+                    <!--必要参数，用于注册编译器插件-->
+                    <path>
+                        <groupId>com.easy-query</groupId>
+                        <artifactId>sql-api-lambda</artifactId>
+                        <version>${project.version}</version>
+                    </path>
+                </annotationProcessorPaths>
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
+
+```
 :::
 
 ## 使用示例
@@ -194,6 +238,29 @@ Topic topic =  easyQueryClient.queryable(Topic.class)
 <== Time Elapsed: 2(ms)
 <== Total: 1
 ```
+@tab lambda表达式树
+```java
+@Data
+@Table("t_topic")
+public class Topic{
+
+    @Column(primaryKey = true)
+    private String id;
+    private Integer stars;
+    private String title;
+    private LocalDateTime createTime;
+}
+
+Topic topic = entityQuery.queryable(Topic.class)
+                .where(o -> o.getId() == "3" || o.getTitle().contains("你好"))
+                .firstOrNull();
+
+
+==> Preparing: SELECT `id`,`stars`,`title`,`create_time` FROM `t_topic` WHERE `id` = ? OR `title` LIKE ? LIMIT 1
+==> Parameters: 3(String),%你好%(String)
+<== Time Elapsed: 3(ms)
+<== Total: 1
+```
 :::
 
 语义上面来讲代理模式最好,更符合sql语法
@@ -229,6 +296,12 @@ Topic topic =  easyQueryClient.queryable(Topic.class)
     <artifactId>sql-api4j</artifactId>
     <version>${easy-query.version}</version>
 </dependency>
+<!--  纯lambda表达式模式  -->
+<dependency>
+    <groupId>com.easy-query</groupId>
+    <artifactId>sql-api-lambda</artifactId>
+    <version>${easy-query.version}</version>
+</dependency>
 <!--  这边以mysql为例 其实不需要添加下面的包也可以运行,指示默认的个别数据库行为语句没办法生成 -->
 <dependency>
     <groupId>com.easy-query</groupId>
@@ -247,7 +320,9 @@ Topic topic =  easyQueryClient.queryable(Topic.class)
 //强类型api
  EasyProxyuery easyProxyQuery = new DefaultEasyProxyQuery(easyQueryClient);
 //使用新版本api对象查询
-EasyEntityQuery easyEntityQuery = new DefaultEasyEntityQuery(easyQueryClient);
+ EasyEntityQuery easyEntityQuery = new DefaultEasyEntityQuery(easyQueryClient);
+//最新最热
+ EasyLambdaQueryClient easyLambdaQueryClient = new EasyLambdaQueryClient(easyQueryClient, MethodHandles.lookup());
 ```
 
 <!-- ## 演示数据
