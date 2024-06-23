@@ -2,21 +2,22 @@
 title: api模式❗️❗️❗️
 ---
 
-## 四种模式
-`easy-query`提供了四种模式的api查询
+## 五种模式
+`easy-query`提供了五种模式的api查询
 - `对象`模式
 - `属性`模式
 - `代理`模式
 - `lambda`模式
+- `lambda表达式树`模式（新）
 
 
-api  | 开发方便性 | 可维护性 | 性能| 缺点
---- | --- | ---  | --- | --- 
-对象 | 非常好配合插件几乎无敌流畅 | 易维护 | 非常好 | 配合插件能非常流畅,使用apt来生成除了build也很流畅
-属性 | 一般主要没有智能提示  | 难维护 | 非常好 | 难维护,重构无法找到属性对应的引用
-代理 | 好,配合插件非常好,拥有完善的智能提示,书写非常方便  | 易维护 | 非常好 | 重构无法通过对象的属性对应的引用,需要额外通过代理对象找引用(插件可以解决)
-lambda | 非常好无需插件配合就有完善的智能提示,书写一般Class::Method  | 易维护 | 较好 | 解析表达式性能会稍稍低于`属性模式`和`代理模式`,需要将`lambda转成属性`
-
+api  | 开发方便性                                | 可维护性 | 性能| 缺点
+--- |--------------------------------------| ---  | --- | --- 
+对象 | 非常好配合插件几乎无敌流畅                        | 易维护 | 非常好 | 配合插件能非常流畅,使用apt来生成除了build也很流畅
+属性 | 一般主要没有智能提示                           | 难维护 | 非常好 | 难维护,重构无法找到属性对应的引用
+代理 | 好,配合插件非常好,拥有完善的智能提示,书写非常方便           | 易维护 | 非常好 | 重构无法通过对象的属性对应的引用,需要额外通过代理对象找引用(插件可以解决)
+lambda | 非常好无需插件配合就有完善的智能提示,书写一般Class::Method | 易维护 | 较好 | 解析表达式性能会稍稍低于`属性模式`和`代理模式`,需要将`lambda转成属性`
+lambda表达式树（新） | 使用纯lambda表达式，可与宇宙最强orm efcore匹敌      | 易维护 | 较好 | 暂不支持分库分表注解
 
 ## 单表查询
 
@@ -241,6 +242,81 @@ SysUser sysUser1 = easyQuery.queryable(SysUser.class)
         //.select(o->o.columnAll().columnIgnore("createTime"))//获取user表的所有字段除了createTime字段
         .firstOrNull();
 ```
+@tab lambda表达式树模式（新）
+```java
+// 创建一个可查询SysUser的表达式
+LQuery<SysUser> queryable = elq.queryable(SysUser.class);
+
+// 单个条件链式查询
+List<SysUser> sysUsers1 = elq.queryable(SysUser.class)
+        .where(o -> o.getId() == "123xxx")
+        .toList();// toList表示查询结果集
+
+
+// == 运算符会被翻译成sql中的 = 运算符，&& 运算符会被翻译成sql中的 AND 运算符 ，字符串的contains方法翻译成sql中的 LIKE 运算符
+List<SysUser> sysUsers2 = elq.queryable(SysUser.class)
+        .where(o -> o.getId() == "123xxx" && o.getIdCard().contains("123"))
+        .toList();
+
+
+// 多个where之间默认进行 AND 连接
+List<SysUser> sysUsers3 = elq.queryable(SysUser.class)
+        .where(o -> o.getId() == "123xxx")
+        // AND
+        .where(o -> o.getIdCard().contains("123"))
+        .toList();
+
+
+//返回单个对象没有查询到就返回null
+SysUser sysUser1 = elq.queryable(SysUser.class)
+        .where(o -> o.getId() == "123xxx")
+        .where(o -> o.getIdCard().contains("123"))
+        .firstOrNull();
+
+
+//采用创建时间倒序和id正序查询返回第一个
+SysUser sysUser2 = elq.queryable(SysUser.class)
+        .where(o -> o.getId() == "123xxx")
+        .where(o -> o.getIdCard().contains("123"))
+        .orderBy(o -> o.getCreateTime())
+        .orderBy(o -> o.getId())
+        .firstOrNull();
+
+//仅查询id和createTime两列
+LQuery<SysUser> sysUserLQuery = elq.queryable(SysUser.class)
+        .where(o -> o.getId() == "123xxx")
+        .where(o -> o.getIdCard().contains("123"))
+        .orderBy(o -> o.getCreateTime())
+        .orderBy(o -> o.getId());
+
+// 匿名类形式返回
+List<? extends TempResult> list = sysUserLQuery
+        .select(s -> new TempResult()
+        {
+            String tid = s.getId();
+            LocalDateTime ct = s.getCreateTime();
+        })
+        .toList();
+
+// 指定类型返回，自动与类字段映射，支持dto
+// 此时会select全字段
+SysUser sysUser3 = sysUserLQuery.select(SysUser.class).firstOrNull();
+
+// select无参时等同于条件为queryable时填入的class
+SysUser sysUser4 = sysUserLQuery.select().firstOrNull();
+
+
+// 指定类型同时限制sql选择的字段
+SysUser sysUser5 = sysUserLQuery
+        .select(s ->
+        {
+            SysUser temp = new SysUser();
+            temp.setId(s.getId());
+            temp.setCreateTime(s.getCreateTime());
+            //此时选择了SysUser的id和createTime字段
+            return temp;
+        }).firstOrNull();
+```
 :::
 
 ## proxy模式
@@ -275,3 +351,65 @@ SysUser sysUser1 = easyQuery.queryable(SysUser.class)
 ::: warning 说明!!!
 > 如果您的项目是多模块,请在对应模块需要生成代理对象的类处都添加`sql-processor`,对应的模块是指当前模块有`@EntityProxy`注解
 :::
+
+
+## lambda表达式树模式
+
+lambda表达式树模式无需进行额外的构建，同时也不需要来自apt生成的代理类的支持，只需要在正确配置后进行打包后即可食用
+
+### 依赖安装
+
+在你需要的模块下引入sql-api-lambda依赖后写好配置即可（只需要普通的maven打包即可，不用构建，再说一遍，不用构建！）
+
+```xml
+<project>
+
+    <properties>
+        <easy-query.version>latest-version</easy-query.version>
+    </properties>
+    <dependencies>
+        
+        <!-- 你的其他依赖包 -->
+
+        <!-- sql-api-lambda依赖 -->
+        <dependency>
+            <groupId>com.easy-query</groupId>
+            <artifactId>sql-api-lambda</artifactId>
+            <version>${easy-query.version}</version>
+        </dependency>
+        
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${你的版本}</version>
+                <configuration>
+                    <!--必要参数，用于注册编译器插件-->
+                    <compilerArgs>
+                        <arg>-Xplugin:ExpressionTree</arg>
+                    </compilerArgs>
+                    <annotationProcessorPaths>
+                        <!--必要参数，用于注册编译器插件-->
+                        <path>
+                            <groupId>com.easy-query</groupId>
+                            <artifactId>sql-api-lambda</artifactId>
+                            <version>${project.version}</version>
+                        </path>
+                        <!-- 你的其他注解处理器 -->
+<!--                        假设你还引入了lombok-->
+<!--                        <path>-->
+<!--                            <groupId>org.projectlombok</groupId>-->
+<!--                            <artifactId>lombok</artifactId>-->
+<!--                            <version>1.18.24</version>-->
+<!--                        </path>-->
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+```
+
