@@ -31,6 +31,20 @@ public class UUIDPrimaryKeyGenerator implements PrimaryKeyGenerator {
     public Serializable getPrimaryKey() {
         return UUID.randomUUID().toString().replaceAll("-","");
     }
+//    /**
+//     * 如果需要判断之前是否有值
+//     * @param entity
+//     * @param columnMetadata
+//     */
+//    @Override
+//    public void setPrimaryKey(Object entity, ColumnMetadata columnMetadata) {
+//        Serializable primaryKey = getPrimaryKey();
+//        Object oldValue = columnMetadata.getGetterCaller().apply(entity);
+//        if(oldValue!=null)
+//        {
+//            columnMetadata.getSetterCaller().call(entity, primaryKey);
+//        }
+//    }
 }
 
 @Data
@@ -54,6 +68,20 @@ public class SnowflakePrimaryKeyGenerator implements PrimaryKeyGenerator {
     public Serializable getPrimaryKey() {
         return String.valueOf(snowflake.nextId());//因为long类型在js中会出现精度丢失
     }
+//    /**
+//     * 如果需要判断之前是否有值
+//     * @param entity
+//     * @param columnMetadata
+//     */
+//    @Override
+//    public void setPrimaryKey(Object entity, ColumnMetadata columnMetadata) {
+//        Serializable primaryKey = getPrimaryKey();
+//        Object oldValue = columnMetadata.getGetterCaller().apply(entity);
+//        if(oldValue!=null)
+//        {
+//            columnMetadata.getSetterCaller().call(entity, primaryKey);
+//        }
+//    }
 }
 
 @Data
@@ -64,3 +92,6 @@ public class SnowflakePrimaryKey {
 }
 
 ```
+
+## 相关搜索
+`自定义主键` `雪花id` `自定义id`
