@@ -98,28 +98,28 @@ easyQueryClient = EasyQueryBootstrapper.defaultBuilderConfiguration()
 
 //查询数据移除JDBC_LISTEN行为
 List<Topic> list = easyEntityQuery.queryable(Topic.class)
-        .behaviorConfigure(config -> {
-            config.removeBehavior(EasyBehaviorEnum.JDBC_LISTEN);
+        .configure(config -> {
+            config.getBehavior().removeBehavior(EasyBehaviorEnum.JDBC_LISTEN);
         }).toList();
 
 //插入数据移除JDBC_LISTEN行为
 Topic topic = new Topic();
 easyEntityQuery.insertable(topic)
-        .behaviorConfigure(config->{
-            config.removeBehavior(EasyBehaviorEnum.JDBC_LISTEN);
+        .configure(config->{
+            config.getBehavior().removeBehavior(EasyBehaviorEnum.JDBC_LISTEN);
         }).executeRows();
 
 
 //更新数据移除JDBC_LISTEN行为
 Topic topic = new Topic();
 easyEntityQuery.updatable(topic)
-        .behaviorConfigure(config->{
-            config.removeBehavior(EasyBehaviorEnum.JDBC_LISTEN);
+        .configure(config->{
+            config.getBehavior().removeBehavior(EasyBehaviorEnum.JDBC_LISTEN);
         }).executeRows();
 
 easyEntityQuery.updatable(Topic.class)
-        .behaviorConfigure(config->{
-            config.removeBehavior(EasyBehaviorEnum.JDBC_LISTEN);
+        .configure(config->{
+            config.getBehavior().removeBehavior(EasyBehaviorEnum.JDBC_LISTEN);
         })
         .setColumns(t -> {
             t.title().set("123");
@@ -133,14 +133,14 @@ easyEntityQuery.updatable(Topic.class)
 //删除数据移除JDBC_LISTEN行为
 Topic topic = new Topic();
 easyEntityQuery.deletable(topic)
-        .behaviorConfigure(config->{
-            config.removeBehavior(EasyBehaviorEnum.JDBC_LISTEN);
+        .configure(config->{
+            config.getBehavior().removeBehavior(EasyBehaviorEnum.JDBC_LISTEN);
         }).executeRows();
 
 
 easyEntityQuery.deletable(Topic.class)
-        .behaviorConfigure(config->{
-            config.removeBehavior(EasyBehaviorEnum.JDBC_LISTEN);
+        .configure(config->{
+            config.getBehavior().removeBehavior(EasyBehaviorEnum.JDBC_LISTEN);
         })
         .where(t -> {
             t.id().eq("123");
