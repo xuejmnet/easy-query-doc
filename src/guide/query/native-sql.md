@@ -531,6 +531,68 @@ long rows = easyEntityQuery.updatable(Topic.class)
 UPDATE `t_topic` SET `stars` = ifnull(`stars`,0)+? WHERE `id` = ?
 ```
 
+## 自定义原生sql查询
+
+通用查询但是需要支持所有数据库?
+```java
+EasyPageResult<Topic> pageResult1 = easyEntityQuery.queryable("select * from t_topic where id != ? ", Topic.class, Arrays.asList("123"))
+        .where(t -> t.id().ne("456"))
+        .toPageResult(1, 2);
+
+==> Preparing: SELECT COUNT(*) FROM (select * from t_topic where id != ? ) t WHERE t.`id` <> ?
+==> Parameters: 123(String),456(String)
+<== Time Elapsed: 6(ms)
+<== Total: 1
+==> Preparing: SELECT * FROM (select * from t_topic where id != ? ) t WHERE t.`id` <> ? LIMIT 2
+==> Parameters: 123(String),456(String)
+<== Time Elapsed: 3(ms)
+<== Total: 2
+
+
+
+```
+
+join自定义sql表
+```java
+EntityQueryable<TopicProxy, Topic> joinTable = easyEntityQuery.queryable("select * from t_topic where id != ? ", Topic.class, Arrays.asList("123"));
+List<Draft2<String, String>> list = easyEntityQuery.queryable(BlogEntity.class)
+        .leftJoin(joinTable, (b, t2) -> b.id().eq(t2.id()))
+        .where((b1, t2) -> {
+            b1.createTime().gt(LocalDateTime.now());
+            t2.createTime().format("yyyy").eq("2014");
+        }).select((b1, t2) -> Select.DRAFT.of(
+                b1.id(),
+                t2.id()
+        )).toList();
+
+==> Preparing: SELECT t.`id` AS `value1`,t2.`id` AS `value2` FROM `t_blog` t LEFT JOIN (SELECT * FROM (select * from t_topic where id != ? ) t1) t2 ON t.`id` = t2.`id` WHERE t.`deleted` = ? AND t.`create_time` > ? AND DATE_FORMAT(t2.`create_time`,'%Y') = ?
+==> Parameters: 123(String),false(Boolean),2024-07-16T12:12:35.343(LocalDateTime),2014(String)
+ 
+-- 第1条sql数据
+SELECT
+    t.`id` AS `value1`,
+    t2.`id` AS `value2` 
+FROM
+    `t_blog` t 
+LEFT JOIN
+    (
+        SELECT
+            * 
+        FROM
+            (select
+                * 
+            from
+                t_topic 
+            where
+                id != '123' ) t1) t2 
+                ON t.`id` = t2.`id` 
+        WHERE
+            t.`deleted` = false 
+            AND t.`create_time` > '2024-07-16 12:12:35.343' 
+            AND DATE_FORMAT(t2.`create_time`,'%Y') = '2014'       
+```
+
+
 ## sqlNativeSegment
 无需编写复杂封装代码
 
