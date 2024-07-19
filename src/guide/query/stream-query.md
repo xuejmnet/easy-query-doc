@@ -96,7 +96,7 @@ Set<Topic> traceId1 = easyProxyQuery.queryable(TopicProxy.createTable())
 ```
 
 ## 分批消费
-`2.0.5^`版本支持
+`2.0.54^`版本支持
 ```java
 
 try(JdbcStreamResult<BlogEntity> streamResult = easyEntityQuery.queryable(BlogEntity.class).toStreamResult(1000)){
