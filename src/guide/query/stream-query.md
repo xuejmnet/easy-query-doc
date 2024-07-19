@@ -95,6 +95,35 @@ Set<Topic> traceId1 = easyProxyQuery.queryable(TopicProxy.createTable())
 
 ```
 
+## 分批消费
+`2.0.5^`版本支持
+```java
+
+try(JdbcStreamResult<BlogEntity> streamResult = easyEntityQuery.queryable(BlogEntity.class).toStreamResult(1000)){
+    //每20个一组消费
+    streamResult.toChunk(20, blogs -> {
+        Assert.assertTrue(blogs.size()<=20);
+        //处理 blogs
+    });
+}catch (SQLException e){
+    throw new RuntimeException(e);
+}
+```
+//自定义中断
+```java
+
+try(JdbcStreamResult<BlogEntity> streamResult = easyEntityQuery.queryable(BlogEntity.class).toStreamResult(1000)){
+    //每20个一组消费
+    streamResult.toChunk(20, blogs -> {
+        Assert.assertTrue(blogs.size()<=20);
+        //处理 blogs
+        return false;//如果需要中断
+    });
+}catch (SQLException e){
+    throw new RuntimeException(e);
+}
+```
+
 # 问题
 
 ## mysql不生效
@@ -105,3 +134,37 @@ https://blog.csdn.net/dkz97/article/details/115643516
 
 ## 相关搜索
 `流式结果` `流式查询` `迭代返回` `游标查询`
+
+## chunk分批处理
+`2.0.5^`版本支持
+
+`toChunk`支持include处理
+
+处理所有数据
+```java
+
+easyEntityQuery.queryable(BlogEntity.class)
+        .orderBy(b -> {//注意排序不要出现重复即可
+            b.createTime().asc();
+            b.id().asc();
+        })
+        .toChunk(20, blogs -> {//每次消费20个
+            Assert.assertTrue(blogs.size()<=20);
+            //处理业务 blogs
+        });
+```
+自定义中断
+```java
+
+easyEntityQuery.queryable(BlogEntity.class)
+        .orderBy(b -> {//注意排序不要出现重复即可
+            b.createTime().asc();
+            b.id().asc();
+        })
+        .toChunk(20, blogs -> {//每次消费20个
+            Assert.assertTrue(blogs.size()<=20);
+            //处理业务 blogs
+
+            return false;//如果返回false那么就不在后续处理了
+        });
+```
