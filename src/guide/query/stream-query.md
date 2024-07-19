@@ -136,7 +136,7 @@ https://blog.csdn.net/dkz97/article/details/115643516
 `流式结果` `流式查询` `迭代返回` `游标查询`
 
 ## chunk分批处理
-`2.0.5^`版本支持
+`2.0.54^`版本支持
 
 `toChunk`支持include处理
 
