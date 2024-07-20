@@ -305,7 +305,32 @@ long l = easyQuery.deletable(logicDelTopic).executeRows();
 
 到这里为止我们就完全实现了逻辑删除自定义并且支持更新多字段
 
+### 关联对象逻辑删除
+`ToOne`
+```java
+        List<SysUser> userInHz = easyEntityQuery.queryable(SysUser.class)
+                .where(s -> {
+                    s.address().relationLogicDelete(()->false);//false表示不使用逻辑删除
+                    //隐式子查询会自动join用户表和地址表
+                    s.or(() -> {
+                        s.address().city().eq("杭州市");
+                        s.address().city().eq("绍兴市");
+                    });
+                }).toList();
+```
 
+`ToMany`
+```java
+List<SysMenu> menus = easyEntityQuery.queryable(SysMenu.class)
+        .where(s -> {
+            //判断菜单下的角色存在角色的用户叫做小明的
+            s.roles().configure(x->x.disableLogicDelete()).any(role -> {
+                role.users().any(user -> {
+                    user.name().eq("小明");
+                });
+            });
+        }).toList();
+```
 
 ## 相关搜索
 `逻辑删除` `软删除` `soft delete` `logic delete`

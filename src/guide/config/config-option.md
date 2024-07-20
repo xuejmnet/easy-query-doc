@@ -25,6 +25,7 @@ warningColumnMiss| `true` | 当jdbc的resultSet对应的coluName无法映射到e
 sqlParameterPrint| DEFAULT | sql参数打印可选MYBATIS模式多一个逗号后的空格
 mapToBeanStrict| true | jdbc结果集映射到bean是否使用属性严格模式
 defaultSchema| null | 当entity的schema为空时切defaultSchema不为空时采用defaultSchema
+resultSizeLimit| -1 | 限制全局拉取数据至多多少条,小于等于0时不生效,如果设置100后续有查询需要放大可以单独在`.configure(o->o.setResultSizeLimit(100000))`处设置
 ## 分表分库特有配置
 
 配置名称  | 默认值 | 描述  

@@ -396,6 +396,8 @@ return testUserMysql;
 
 Topic topic = easyEntityQuery.queryable(Topic.class).whereById("15").firstOrNull();
 Assert.assertNotNull(topic);
+//修改部分属性比如
+//topic.setCreateTime(LocalDateTime.now());
 long rows4 = easyEntityQuery.updatable(topic)
         .setColumns(o->o.createTime())//多个字段使用FETCHER.setColumns(o->o.FETCHER.createTime().title().name())
         .whereColumns(o->o.stars()).executeRows();//多个字段使用FETCHER.whereColumns(o->o.FETCHER.createTime().title().name())
