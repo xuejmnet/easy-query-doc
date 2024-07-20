@@ -16,9 +16,12 @@ registerListener(TransactionListener transactionBehavior)| | 设置当前事务�
 close |   | 关闭事务,如果事务未提交则自动调用回滚
 
 ## 如何开启
-`springboot`如果当前方法没有添加`@Transactional`注解,内部调用`this.method()`的非代理对象方法调用事务,哪怕`this.method()`有注解`@Transactional`也会让事务失效,有时候你可能需要这个方法那么可以在`springboot`中通过beginTransaction来开启事务,默认不支持和springboot的嵌套事务,不可以在`@Transactional`内开启`easy-query`的事务
-```java
 
+支持`spring`的`@Transactional`包括嵌套事务,也支持eq手动开事务管理,不可以在`@Transactional`内开启`easy-query`的事务
+
+总结如果用了spring的事务不要手动开启eq的事务两者2选一
+```java
+//手动事务
 public void test(){
         try(Transaction transaction = easyQuery.beginTransaction()){
 
@@ -27,7 +30,6 @@ public void test(){
             testUserMysql1.setAge(1);
             testUserMysql1.setName("xxx");
             easyQuery.insertable(testUserMysql1).executeRows();
-            test1();
             if(true){
                 throw new RuntimeException("错误了");
             }
@@ -35,12 +37,4 @@ public void test(){
         }
 
 }
-    public void test1(){
-
-        TestUserMysql0 testUserMysql1 = new TestUserMysql0();
-        testUserMysql1.setId("123321123321xxx1");
-        testUserMysql1.setAge(1);
-        testUserMysql1.setName("xxx");
-        easyQuery.insertable(testUserMysql1).executeRows();
-    }
 ```
