@@ -1,4 +1,6 @@
-## 简介
+---
+title: easy-query简介目录
+---
 
 Easy Query是新一代的ORM框架，它不需要像Mybatis那样，每创建一个实体类，就需要创建对应的`Mapper`类和xml文件，它可以直接传入实体类作为参数进行增删改查操作，在Mybatis中，写动态条件查询，总是要书写重复的判空和拼接SQL操作，使用Easy Query的条件过滤器可以简化这些操作。相比Spring Data JPA的`EntityManager`，它没有`EntityManager`的对象状态管理等繁琐的处理，它比`EntityManager`更细粒度，更灵活，可以选择查询的字段，支持简单类型的字段，以及有关联关系的字段。
 
