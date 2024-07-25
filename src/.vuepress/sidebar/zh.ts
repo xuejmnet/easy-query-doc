@@ -11,7 +11,6 @@ export const zhSidebar = sidebar({
       children: ["dir.md","quick-start","quick-start-springboot","quick-api","nodsl","nodsl2","dto","sql","framework-springboot","quick-plugin","diff-proxy"],
     },
     // "quick-start",
-    "db_support",
     {
       text: "文档",
       icon: "note",
