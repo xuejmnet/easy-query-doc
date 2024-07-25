@@ -1078,7 +1078,40 @@ public class UserGroup {
 
 ### 子查询
 
-因为用户表里面已经声明了关联关系，可以直接使用关联的表条件进行查询，如下：
+#### 显式子查询
+在调用方法时将用户和公司通过in或者exists进行关联查询称为显式子查询
+```java
+    @Test
+    public void testExplicitSubQuery(){
+        //查询存在张三用户的公司
+        List<Company> companyList = easyEntityQuery.queryable(Company.class)
+                .where(c -> {
+                    c.id().in(
+                            easyEntityQuery.queryable(User.class)
+                                    .where(u -> u.name().eq("张三"))
+                                    .select(u -> u.companyId())
+                    );
+                }).toList();
+        Assertions.assertTrue(companyList.size() > 0);
+
+        //查询存在张三用户的公司
+        companyList = easyEntityQuery.queryable(Company.class)
+                .where(c -> {
+                    c.expression().exists(() ->
+                            easyEntityQuery.queryable(User.class)
+                                    .where(u -> {
+                                        u.companyId().eq(c.id());
+                                        u.name().eq("张三");
+                                    })
+                    );
+                }).toList();
+        Assertions.assertTrue(companyList.size() > 0);
+    }
+```
+
+#### 隐式子查询
+先在实体类声明有关联关系的实体类，调用方法时直接根据有关联关系的实体类来进行查询成为隐式子查询，
+它不需要在每次查询时声明关联关系。
 
 ```java
 @Test
@@ -1316,7 +1349,11 @@ public class UserNavigateExtraFilterStrategy implements NavigateExtraFilterStrat
 
 ### 显式关联查询
 
-前面章节中，我们是在查询时，查询选择的自动或者条件使用到有关联关系的字段都是在类中声明好的，Easy Query除了支持在类级别中声明查询的关联关系，我们也可以在方法级别中进行显式关联其它表进行条件查询。
+在前面的章节中，[](#一对一查询)，[](#一对多查询)和[](#多对多查询)直接使用关联的实体类进行查询的都是隐式关联查询，因为查询的实体类中已经声明了有关联关系的实体类。
+Easy Query支持使用`leftJoin`方法进行查询，也就是在方法中声明关联其它实体类的关联条件，这就是显式关联查询。
+使用`leftJoin`方法实现的显式关联查询并不能推断实体类之间是一对一，一对多还是多对多关系，因为它就是像直接使用SQL进行LEFT JOIN查询那样进行设计的，
+比如查询`Company`关联`User`，如果关联关系是一对一，那么查询的数据数量就是`Company`的行数，
+如果关联关系是一对对，那么查询的数据数量就是`User`的行数。
 
 ```java
     @Test
