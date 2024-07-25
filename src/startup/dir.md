@@ -1,17 +1,23 @@
 ---
-title: easy-query简介目录
+title: 简介
 ---
 
-Easy Query是新一代的ORM框架，它不需要像Mybatis那样，每创建一个实体类，就需要创建对应的`Mapper`类和xml文件，它可以直接传入实体类作为参数进行增删改查操作，在Mybatis中，写动态条件查询，总是要书写重复的判空和拼接SQL操作，使用Easy Query的条件过滤器可以简化这些操作。相比Spring Data JPA的`EntityManager`，它没有`EntityManager`的对象状态管理等繁琐的处理，它比`EntityManager`更细粒度，更灵活，可以选择查询的字段，支持简单类型的字段，以及有关联关系的字段。
+## 简介
 
-## 作者
-本章节共同作者
-- Hoysion [github](https://github.com/Hoysion) [gitee](https://gitee.com/Hoysing)
+Easy Query是新一代的轻量级ORM框架，它没有任何第三方依赖。
+
+我们只需要建好表，就可以使用Easy Query的Idea插件生成对应的实体类和查询类，直接可以进行单表进行增删改查操作，包括批量操作了。
+
+Easy Query提供了许多有泛型约束的方法，加上Idea插件的把持，因此对表别名，列名，列类型都提供了友好的提示，使得使用这些方法就像在SQL客户端写SQL那样简单。
+
+Easy Query不但可以在实体类中声明实体类之间的关系，也可以在查询方法中声明，简化多表关联操作，自动处理关联数据的查询。
+
+相比Spring Data JPA的`EntityManager`，它没有`EntityManager`的对象状态管理等繁琐的处理，它比`EntityManager`更细粒度，更灵活。
 
 ### 特性
 
 - 无实体查询,无实体更新,无实体新增,无实体删除等操作
-- 动态条件,form表单查询,有值就添加到条件,没值就忽略 [DynamicWhere](http://www.easy-query.com/easy-query-doc/guide/query/dynamic-where)
+- 使用Easy Query的[动态条件](http://www.easy-query.com/easy-query-doc/guide/query/dynamic-where)可以自动将有值的条件拼接到SQL中，省掉重复的判空和拼接SQL操作，
 - 动态排序,form表单排序,前端指定排序 [DynamicOrderBy](http://www.easy-query.com/easy-query-doc/guide/query/dynamic-sort)
 - 对象关系结构化VO自动组装返回,支持一对多一对一结果筛选,排序,limit
 - 多数据源,动态多数据源，支持`SpringEL`，使用场景多租户(一个租户一个库) [DynamicDataSource](http://www.easy-query.com/easy-query-doc/guide/config/muti-datasource)
@@ -36,7 +42,6 @@ Easy Query是新一代的ORM框架，它不需要像Mybatis那样，每创建一
 - 无任何依赖的框架,不会有任何冲突
 - sql多表查询支持join、in、exists等子查询
 - idea插件提供更加高效快速的开发效率和开发体验
-- sql上下文泛型限制
 - 大数据流式查询防止oom
 - 自带便捷的`batch`批处理
 - 动态报名支持对查询的表名进行动态设置可以再非分库分表模式下直接操作对应表
@@ -45,10 +50,11 @@ Easy Query是新一代的ORM框架，它不需要像Mybatis那样，每创建一
 - 计算属性,额外计算列比如年龄是动态的而不是固定的,所以年龄应该是`(当前时间-出生日期)`,复杂计算属性比如班级表存在学生数量这个属性这个属性应该是`select count(*) from student where class_id=?`
 
 
+本章节共同作者
+- Hoysing [github](https://github.com/Hoysing) [gitee](https://gitee.com/Hoysing)
 
-### 支持的数据库
+### 数据库支持
 
-`easy-query`目前已经抽象了表达式,所以原则上支持所有数据库,只需要自定义实现对应数据库的增删改查接口即可,也就是[`sql-db-support`open in new window](https://github.com/xuejmnet/easy-query/tree/main/sql-db-support) 所以如果不支持对应的sql那么你可以自行扩展或者提交相应的issue
 
 | 数据库名称          | 包名            | springboot配置   | solon配置        |
 | ------------------- | --------------- | ---------------- | ---------------- |
@@ -63,6 +69,8 @@ Easy Query是新一代的ORM框架，它不需要像Mybatis那样，每创建一
 | SQLite              | sql-sqlite      | sqlite           | sqlite           |
 | ClickHouse          | sql-clickhouse  | clickhouse       | clickhouse       |
 
+
+Easy Query目前已经抽象了表达式,所以原则上支持所有数据库,只需要自定义实现对应数据库的增删改查接口即可,也就是[`sql-db-support`open in new window](https://github.com/xuejmnet/easy-query/tree/main/sql-db-support) 。所以如果不支持对应的sql那么你可以自行扩展或者提交相应的issue
 
 
 ## 环境准备
@@ -142,11 +150,7 @@ Easy Query是新一代的ORM框架，它不需要像Mybatis那样，每创建一
     </dependencies>
 ```
 
-
-
 #### SpringBoot环境
-
-
 
 ```xml
     <dependencies>
@@ -207,8 +211,6 @@ Easy Query是新一代的ORM框架，它不需要像Mybatis那样，每创建一
     </dependencies>
 ```
 
-
-
 配置`application.yml`：
 
 ```yaml
@@ -245,10 +247,6 @@ easy-query:
 
 ```
 
-
-
-
-
 ### 数据准备
 
 我们以经典的用户管理的相关数据作为测试用例，执行SQL如下：
@@ -272,8 +270,6 @@ CREATE TABLE IF NOT EXISTS company_detail (
     address VARCHAR(255),
     company_id INT
 );
-
-
 
 -- 删除权限表
 DROP TABLE IF EXISTS permission CASCADE;
@@ -384,15 +380,11 @@ INSERT INTO user_role (user_id, role_id) VALUES (3, 3);
 
 ```
 
-
-
 ### 安装插件
 
 在使用Easy Query前，推荐安装框架插件，它可以提高Easy Query的使用开发效率，如下：
 
 ![img](http://www.easy-query.com/easy-query-doc/plugin-search.png)
-
-
 
 ### 实体类准备
 
@@ -551,8 +543,6 @@ public class User implements ProxyEntityAvailable<User, UserProxy> {
     private List<Role> roles;
 }
 
-
-
 @Table
 @EntityProxy
 @Data
@@ -575,8 +565,6 @@ public class UserRole implements ProxyEntityAvailable<UserRole, UserRoleProxy> {
     Integer roleId;
 }
 
-
-
 @EntityProxy
 @Data
 public class UserRole implements ProxyEntityAvailable<UserRole, UserRoleProxy> {
@@ -594,19 +582,13 @@ public class UserRole implements ProxyEntityAvailable<UserRole, UserRoleProxy> {
 
 ![img](http://www.easy-query.com/easy-query-doc/startup1.png)
 
-
-
 如果存在如下情况无法解析代理类的情况，那么就将目录标记为生成目录，如下：
 
 ![img](http://www.easy-query.com/easy-query-doc/startup2.png)
 
-
-
 如果依然还是不行，可以尝试点击idea右侧的maven刷新按钮进行刷新即可
 
 ![img](http://www.easy-query.com/easy-query-doc/startup4.png)
-
-
 
 ### 实例化查询对象
 
@@ -641,8 +623,6 @@ public class EasyQueryTest {
 }
 ```
 
-
-
 #### SpringBoot环境
 
 在SpringBoot环境中，启动Spring容器后，eq已经实例化了对象，直接注入即可，如下：
@@ -651,8 +631,6 @@ public class EasyQueryTest {
 @Autowired
 private EasyEntityQuery easyEntityQuery;
 ```
-
-
 
 ## 单表查询
 
@@ -668,8 +646,6 @@ private EasyEntityQuery easyEntityQuery;
         Assertions.assertTrue(users.size() > 0);
     }
 ```
-
-
 
 查询指定的列。
 
@@ -708,8 +684,6 @@ private EasyEntityQuery easyEntityQuery;
         }
     }
 ```
-
-
 
 ### 条件查询
 
@@ -801,8 +775,6 @@ Easy Query默认在最外层使用`AND`作为逻辑运算符进行拼接查询�
 }))
 ```
 
-
-
 `WHERE u.name LIKE ? OR (u.name LIKE ? AND u.name LIKE ?)`的写法如下：
 
 ```java
@@ -814,8 +786,6 @@ Easy Query默认在最外层使用`AND`作为逻辑运算符进行拼接查询�
     })
 }))
 ```
-
-
 
 根据运算符运算顺序，建议对于优先运算的`AND`加上括号，一是方便理解，二是方便写代码。
 
@@ -840,10 +810,6 @@ Easy Query默认在最外层使用`AND`作为逻辑运算符进行拼接查询�
     });
 }))
 ```
-
-
-
-
 
 ### 排序
 
@@ -870,11 +836,7 @@ Easy Query默认在最外层使用`AND`作为逻辑运算符进行拼接查询�
     }
 ```
 
-
-
 ### 分页
-
-
 
 ```java
     @Test
@@ -885,8 +847,6 @@ Easy Query默认在最外层使用`AND`作为逻辑运算符进行拼接查询�
         Assertions.assertTrue(pageResult.getTotal() > 0);
     }
 ```
-
-
 
 如果要自定义查询的分页信息，我们可以声明如下：
 
@@ -948,8 +908,6 @@ public class CustomPager<TEntity> implements Pager<TEntity,PageResult<TEntity>> 
 }
 ```
 
-
-
 在分页查询时使用`CustomPager`。
 
 ```java
@@ -965,8 +923,6 @@ public class CustomPager<TEntity> implements Pager<TEntity,PageResult<TEntity>> 
         Assertions.assertTrue(customerPageResult.getTotalCount() > 0);
     }
 ```
-
-
 
 ### 单条查询
 
@@ -1020,8 +976,6 @@ public class CustomPager<TEntity> implements Pager<TEntity,PageResult<TEntity>> 
 
 ```
 
-
-
 查询单条记录，根据条件查询：
 
 ```java
@@ -1042,11 +996,7 @@ public class CustomPager<TEntity> implements Pager<TEntity,PageResult<TEntity>> 
     }
 ```
 
-
-
 ### 聚合查询
-
-
 
 ```java
     @Test
@@ -1077,8 +1027,6 @@ public class CustomPager<TEntity> implements Pager<TEntity,PageResult<TEntity>> 
     }
 ```
 
-
-
 ### 分组查询
 
 声明分组结果。
@@ -1091,8 +1039,6 @@ public class UserGroup {
     Integer count;
 }
 ```
-
-
 
 分组查询默认使用`Draft1`，`Draft2`类型接收接收结果
 
@@ -1127,8 +1073,6 @@ public class UserGroup {
         }
     }
 ```
-
-
 
 ## 多表查询
 
@@ -1178,10 +1122,6 @@ public class UserGroup {
     }
 ```
 
-
-
-
-
 ### 一对一查询
 
 默认情况下，eq查询实体类中匹配表的所有字段，也就是说，对于声明了关联关系的字段，eq是不会去查询的，我们可以使用`include`来查询一对一关系的关联对象，如下：
@@ -1222,8 +1162,6 @@ public class UserGroup {
 ```
 
 一般情况下，不会在实体类声明有关联关系的字段，一般在VO类中声明，可以参考[](查询结果类型转换)章节
-
-
 
 ### 一对多查询
 
@@ -1269,8 +1207,6 @@ public class UserGroup {
     }
 ```
 
-
-
 Easy Query支持实体类级别上添加额外的查询条件，比如查询`Company`时，除了查询关联用户外，可以查询关联的已启用的用户，
 
 在`Company`加上如下属性：
@@ -1279,8 +1215,6 @@ Easy Query支持实体类级别上添加额外的查询条件，比如查询`Com
 	@Navigate(value = RelationTypeEnum.OneToMany, selfProperty = "id", targetProperty = "companyId", extraFilter = UserNavigateExtraFilterStrategy.class)
     private List<User> enabledUsers;
 ```
-
-
 
 `NavigateExtraFilterStrategy`用于添加额外的关联查询条件，其中`UserNavigateExtraFilterStrategy`实现了`NavigateExtraFilterStrategy`，添加了`enabledUsers`的关联查询条件，如下：
 
@@ -1305,8 +1239,6 @@ public class UserNavigateExtraFilterStrategy implements NavigateExtraFilterStrat
 }
 ```
 
-
-
 如果是简单环境，需要注册`UserNavigateExtraFilterStrategy`实例到Easy Query实例，如下：
 
 ```java
@@ -1314,8 +1246,6 @@ public class UserNavigateExtraFilterStrategy implements NavigateExtraFilterStrat
 	runtimeContext.getQueryConfiguration().applyNavigateExtraFilterStrategy(new UserNavigateExtraFilterStrategy());
 
 ```
-
-
 
 如果是SpringBoot环境，将`UserNavigateExtraFilterStrategy`注册到Spring容器即可,Easy Query会自动获取所有Spring容器的`NavigateExtraFilterStrategy`进行注册。
 
@@ -1340,10 +1270,6 @@ public class UserNavigateExtraFilterStrategy implements NavigateExtraFilterStrat
         }
     }
 ```
-
-
-
-
 
 ### 多对多查询
 
@@ -1388,8 +1314,6 @@ public class UserNavigateExtraFilterStrategy implements NavigateExtraFilterStrat
     }
 ```
 
-
-
 ### 显式关联查询
 
 前面章节中，我们是在查询时，查询选择的自动或者条件使用到有关联关系的字段都是在类中声明好的，Easy Query除了支持在类级别中声明查询的关联关系，我们也可以在方法级别中进行显式关联其它表进行条件查询。
@@ -1419,8 +1343,6 @@ public class UserNavigateExtraFilterStrategy implements NavigateExtraFilterStrat
     }
 ```
 
-
-
 ### 查询结果类型转换
 
 在[](#分组查询)章节中有用到此功能，它在关联查询时也比较常用，一般情况，我们不会在实体类中声明有关联关系的字段，而是在VO中声明。
@@ -1433,6 +1355,8 @@ public class UserVo {
     Integer id;
 
     private String name;
+
+    private String companyName;
 
     @Navigate(value = RelationTypeEnum.OneToOne, selfProperty = "id", targetProperty = "userId")
     private UserDetail userDetail;
@@ -1458,12 +1382,9 @@ public class UserDetailVo {
 }
 ```
 
-
-
 在查询时，我们可以选择自定义需要转换的列。
 
 ```java
-
     @Test
     public void testQueryReturnType() {
         List<UserDetailVo> userDetailVos = easyEntityQuery.queryable(User.class)
@@ -1480,13 +1401,28 @@ public class UserDetailVo {
         //如果想要为每个字段设值，可以使用Proxy，注意不需要指定UserDetailVo.class
         userDetailVos = easyEntityQuery.queryable(User.class)
                 .where(s -> s.name().eq("张三"))
+                .select(s ->
+                        // userDetailVoProxy.selectAll(s); //如果字段一样可以这么写直接映射
+                        new UserDetailVoProxy()
+                                .id().set(s.id())
+                                .name().set(s.name())
+                                .signature().set(s.userDetail().signature())
+                )
+                .toList();
+        for (UserDetailVo userDetailVo : userDetailVos) {
+            Assertions.assertNotNull(userDetailVo.getName());
+            Assertions.assertNotNull(userDetailVo.getSignature());
+        }
+
+        //写法同上
+        userDetailVos = easyEntityQuery.queryable(User.class)
+                .where(s -> s.name().eq("张三"))
                 .select(s -> {
                     UserDetailVoProxy userDetailVoProxy = new UserDetailVoProxy();
                     // userDetailVoProxy.selectAll(s); //如果字段一样可以这么写直接映射
                     userDetailVoProxy.id().set(s.id());
                     userDetailVoProxy.name().set(s.name());
                     userDetailVoProxy.signature().set(s.userDetail().signature());
-
                     return userDetailVoProxy;
                 })
                 .toList();
@@ -1508,15 +1444,13 @@ public class UserDetailVo {
                 .where(u -> u.name().eq("张三"))
                 .selectAutoInclude(UserDetailVo.class, (u, ud) -> Select.of(
                         //u.FETCHER.allFields(),请注意,调用select需要加此行,调用selectAutoInclude不需要加此行，因为selectAutoInclude会自动执行allFields
+                        //暂不支持直接使用userDetail()引用类型来进行设值
                         u.userDetail().signature().as(UserDetailVo::getSignature)
                 ))
                 .toList();
         Assertions.assertTrue(userDetailVoList.size() > 0);
     }
-
 ```
-
-
 
 ## 写操作
 
@@ -1540,8 +1474,6 @@ public class UserDetailVo {
 
 ```
 
-
-
 #### 插入策略
 
 Easy Query默认采用`SQLExecuteStrategyEnum.ONLY_NOT_NULL_COLUMNS`策略进行插入，也就是默认只插入有值的列，可以使用`setSQLStrategy`方法设置执行策略，设置`SQLExecuteStrategyEnum.ALL_COLUMNS`可以插入全部列。
@@ -1557,8 +1489,6 @@ Easy Query默认采用`SQLExecuteStrategyEnum.ONLY_NOT_NULL_COLUMNS`策略进行
         Assertions.assertNotNull(user.getId());
     }
 ```
-
-
 
 #### 插入Map
 
@@ -1576,8 +1506,6 @@ Easy Query也支持插入Map对象，注意，key是列名，不是实体类的�
         Assertions.assertNull(userMap.get("id"));
     }
 ```
-
-
 
 ### 更新
 
@@ -1599,8 +1527,6 @@ Easy Query也支持插入Map对象，注意，key是列名，不是实体类的�
     }
 ```
 
-
-
 #### 更新策略
 
 Easy Query默认采用`SQLExecuteStrategyEnum.ONLY_NOT_NULL_COLUMNS`策略进行更新，也就是默认只更新有值的列，可以使用`setSQLStrategy`方法设置执行策略，设置`SQLExecuteStrategyEnum.ALL_COLUMNS`可以更新全部列。
@@ -1617,8 +1543,6 @@ Easy Query默认采用`SQLExecuteStrategyEnum.ONLY_NOT_NULL_COLUMNS`策略进行
         Assertions.assertNotNull(user.getId());
     }
 ```
-
-
 
 #### 更新指定列
 
@@ -1659,8 +1583,6 @@ Easy Query默认采用`SQLExecuteStrategyEnum.ONLY_NOT_NULL_COLUMNS`策略进行
 
 ```
 
-
-
 #### 更新类型转换的列
 
 Easy Query支持更新的值类型转换。
@@ -1681,8 +1603,6 @@ Easy Query支持更新的值类型转换。
     }
 ```
 
-
-
 ### 更新自增值
 
 Easy Query支持调用`increment`方法自增值， 默认自增1，可以传入指定的参数值进行自增，另外可以使用`decrement`方法自减。
@@ -1700,8 +1620,6 @@ Easy Query支持调用`increment`方法自增值， 默认自增1，可以传入
     }
 
 ```
-
-
 
 #### 差异更新
 
@@ -1738,8 +1656,6 @@ Easy Query支持差异更新，它可以监听被追踪的对象,并且生成差
 
 ```
 
-
-
 前面追踪的是查询结果，Easy Query提供了`addTracking`方法，可以用于追踪指定的对象，比如当查询出来的数据过多时，可以只追踪某条数据。
 
 ```java
@@ -1765,8 +1681,6 @@ Easy Query支持差异更新，它可以监听被追踪的对象,并且生成差
     }
 ```
 
-
-
 在SpringBoot环境下，Easy Query支持使用`@EasyQueryTrack`进行简化操作，就像开启事务那样。
 
 ```java
@@ -1787,10 +1701,6 @@ Easy Query支持差异更新，它可以监听被追踪的对象,并且生成差
     }
 ```
 
-
-
-
-
 #### 更新Map
 
 Easy Query也支持更新Map对象，注意，key是列名，不是实体类的属性名。
@@ -1810,10 +1720,6 @@ Easy Query也支持更新Map对象，注意，key是列名，不是实体类的�
     }
 ```
 
-
-
-
-
 #### 更新自定义sql
 
 ```java
@@ -1831,10 +1737,6 @@ Easy Query也支持更新Map对象，注意，key是列名，不是实体类的�
         Assertions.assertTrue(rows > 0);
     }
 ```
-
-
-
-
 
 ### 删除
 
@@ -1876,8 +1778,6 @@ private Boolean deleted;
 
 注意`deleted`不能为`null`，因为查询时不会判断null
 
-
-
 #### 物理删除
 
 Easy Query也支持物理删除，需要在全局配置或者当前方法配置允许执行DELETE语句，否则执行DELETE将会抛出异常。
@@ -1902,17 +1802,113 @@ Easy Query也支持物理删除，需要在全局配置或者当前方法配置�
     }
 ```
 
-
-
 #### 禁用部分逻辑删除
 
-//待测
+```java
+    @Test
+    public void testQueryDisableLogicDelete() {
+        //删除所有公司
+        easyEntityQuery.deletable(Company.class).where(c -> c.id().isNotNull()).executeRows();
+        //查询用户关联未删除的公司
+        List<UserVo> userVos = easyEntityQuery.queryable(User.class)
+                .leftJoin(Company.class, (u, c) -> u.companyId().eq(c.id()))
+                .select(UserVo.class, (u, c) -> Select.of(
+                        c.name().as(UserVo::getCompanyName)
+                ))
+                .toList();
+        for (UserVo userVo : userVos) {
+            Assertions.assertNull(userVo.getCompanyName());
+        }
+
+        //部分禁用逻辑删除，查询用户关联全部公司
+        userVos = easyEntityQuery.queryable(User.class)
+                .leftJoin(Company.class, (u, c) -> u.companyId().eq(c.id()))
+                .tableLogicDelete(() -> false)
+                .select(UserVo.class, (u, c) -> Select.of(
+                        c.name().as(UserVo::getCompanyName)
+                ))
+                .toList();
+        for (UserVo userVo : userVos) {
+            Assertions.assertNotNull(userVo.getCompanyName());
+        }
+        //查询全部数据，包括已删除的
+        List<Company> companyList = easyEntityQuery.queryable(Company.class).disableLogicDelete().toList();
+        for (Company company : companyList) {
+            company.setDeleted(false);
+        }
+        //恢复全部数据，包括已删除的
+        long size = easyEntityQuery.updatable(companyList).disableLogicDelete().executeRows();
+        Assertions.assertEquals(companyList.size(), size);
+    }
+```
 
 #### 自定义逻辑删除策略
 
-//待测
+Easy Query除了支持简单的逻辑删除字段，还支持自定义逻辑删除策略
+
+在类中声明策略：
+```java
+@EntityProxy
+@Table
+@Data
+public class Product implements ProxyEntityAvailable<Product, ProductProxy> {
+    @Column(primaryKey = true, generatedKey = true)
+    Integer id;
+
+    String name;
+
+    @LogicDelete(strategy = LogicDeleteStrategyEnum.CUSTOM, strategyName = "MyLogicDelStrategy")
+    LocalDateTime deletedTime;
+
+    Integer deletedUserId;
+}
+```
+
+自定义策略：
+```java
+public class CustomLogicDelStrategy extends AbstractLogicDeleteStrategy {
+    @Override
+    protected SQLExpression1<WherePredicate<Object>> getPredicateFilterExpression(LogicDeleteBuilder builder, String propertyName) {
+        return o -> o.isNull(propertyName);
+    }
+
+    @Override
+    protected SQLExpression1<ColumnSetter<Object>> getDeletedSQLExpression(LogicDeleteBuilder builder, String propertyName) {
+        return o -> o.set(propertyName, LocalDateTime.now())
+                .set("deletedUserId", 1);
+    }
+
+    @Override
+    public String getStrategy() {
+        return "CustomLogicDelStrategy";
+    }
+
+    @Override
+    public Set<Class<?>> allowedPropertyTypes() {
+        return new HashSet<>(Arrays.asList(LocalDateTime.class));
+    }
+}
+```
+注意，调用多次使用了`CustomLogicDelStrategy`的删除方法时，只会调用一次`CustomLogicDelStrategy`实例的接口方法，
 
 
+注册策略：
+```java
+        QueryRuntimeContext runtimeContext = easyEntityQuery.getRuntimeContext();
+        QueryConfiguration queryConfiguration = runtimeContext.getQueryConfiguration();
+        queryConfiguration.applyLogicDeleteStrategy(new CustomLogicDelStrategy());
+```
+
+```java
+    @Test
+    public void testCustomLogicDelete() {
+        Product product = new Product();
+        product.setName("香蕉");
+        easyEntityQuery.insertable(product).executeRows(true);
+        easyEntityQuery.deletable(product).executeRows();
+        easyEntityQuery.deletable(product).executeRows();
+    }
+```
 
 ### 更新或插入
 
@@ -1922,100 +1918,52 @@ Easy Query提供了`conflictThen`方法，它用于插入或更新操作
 
 下面将测试已存在匹配项，Easy Query进行更新的情况。
 
-//待测
-
 ```java
     @Test
     public void testOnConflictThenUpdate() {
-        //根据id字段判断是否存在匹配项，如果存在则更新指定的列
-        User user = new User();
-        user.setId(1);
-        user.setName("新用户");
-        user.setVersion(1);
-        user.setEnabled(true);
+        //根据id字段判断是否存在匹配项，此处存在，更新全部列
+        User user = easyEntityQuery.queryable(User.class).findNotNull(1);
+        Date updateTime = new Date();
+        user.setUpdateTime(updateTime);
         long rows = easyEntityQuery.insertable(user)
-                //如果存在则更新指定的列,否则插入
-                .onConflictThen(o -> o.FETCHER.name().enabled())
-                .executeRows();
-        Assertions.assertEquals(rows, 0);
-
-        //根据id字段判断是否存在匹配项，如果存在则更新全部的列，除了主键和指定约束键
-        user = new User();
-        user.setId(1);
-        user.setName("新用户");
-        user.setVersion(1);
-        user.setEnabled(true);
-        rows = easyEntityQuery.insertable(user)
-                //如果存在则更新指定的列,否则插入
                 .onConflictThen(o -> o.FETCHER.allFields())
                 .executeRows();
-        Assertions.assertEquals(rows, 0);
+        Assertions.assertTrue(rows > 0);
+
+        //根据id字段判断是否存在匹配项，此处存在，更新指定列
+        user = easyEntityQuery.queryable(User.class).findNotNull(1);
+        updateTime = new Date();
+        user.setUpdateTime(updateTime);
+        rows = easyEntityQuery.insertable(user)
+                .onConflictThen(o -> o.FETCHER.updateTime())
+                .executeRows();
+        Assertions.assertTrue(rows > 0);
     }
 ```
-
-
 
 下面将测试不存在匹配项，Easy Query进行插入的情况。
 
 ```java
     @Test
     public void testOnConflictThenInsert() {
-        //根据id字段判断是否存在匹配项，如果存在则更新指定的列
+        //根据id字段判断是否存在匹配项，此处不存在，插入全部列
         User user = new User();
-        user.setId(1);
+        Date createTime = new Date();
         user.setName("新用户");
+        user.setCreateTime(createTime);
         user.setVersion(1);
         user.setEnabled(true);
         long rows = easyEntityQuery.insertable(user)
-                //如果存在则更新指定的列,否则插入
-                .onConflictThen(o -> o.FETCHER.name().enabled())
+                //mysql不支持使用多列进行判断是否存在匹配项
+                .onConflictThen(null, o -> o.FETCHER.id())
                 .executeRows();
-        Assertions.assertEquals(rows, 0);
-
-        //根据id字段判断是否存在匹配项，如果存在则更新全部的列，除了主键和指定约束键
-        user = new User();
-        user.setId(1);
-        user.setName("新用户");
-        user.setVersion(1);
-        user.setEnabled(true);
-        rows = easyEntityQuery.insertable(user)
-                //如果存在则更新指定的列,否则插入
-                .onConflictThen(o -> o.FETCHER.allFields())
-                .executeRows();
-        Assertions.assertEquals(rows, 0);
-
-
-        //根据id字段判断是否存在匹配项，并且在无匹配时插入完整的name,version,enable字段
-        user = new User();
-        user.setName("新用户");
-        user.setVersion(1);
-        user.setEnabled(true);
-        rows = easyEntityQuery.insertable(user)
-                //传null如果存在则不更新,否则插入
-                .onConflictThen(null)
-                .executeRows();
-        Assertions.assertEquals(rows, 0);
-
-        //根据id字段和version字段判断是否存在匹配项，并且在无匹配时插入完整的name,enable字段
-        user = new User();
-        user.setName("新用户");
-        user.setVersion(1);
-        user.setEnabled(true);
-        rows = easyEntityQuery.insertable(user)
-                //传null如果存在则不更新,否则插入
-                .onConflictThen(null, o -> o.FETCHER.name().enabled())
-                .executeRows();
-        Assertions.assertEquals(rows, 0);
+        Assertions.assertTrue(rows > 0);
     }
 ```
 
-
-
-
-
 ### 事务
 
-`easy-query`默认提供手动开启事务的功能,并且在springboot下可以跨非代理方法生效,唯一限制就是当前线程内的
+Easy Query默认提供手动开启事务的功能,并且在springboot下可以跨非代理方法生效,唯一限制就是当前线程内的
 
 事务相关方法如下：
 
@@ -2049,8 +1997,6 @@ Easy Query提供了`conflictThen`方法，它用于插入或更新操作
         }
     }
 ```
-
-
 
 #### SpringBoot环境
 
