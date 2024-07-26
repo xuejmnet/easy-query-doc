@@ -18,6 +18,7 @@ order: 20
 EntityInterceptor | 对象拦截器  | 用于对象插入前和修改前进行对象拦截
 PredicateFilterInterceptor | 条件拦截器  | 用户在查询,修改,删除的时候可以通过条件拦截来动态构建添加条件如:`租户id`
 UpdateSetInterceptor | 更新列拦截器  | 用户在更新update表达式的时候可以通过当前拦截器自动追加`set`列操作
+UpdateEntityColumnInterceptor | 对象列的更新拦截器  | `EntityInterceptor`主要作用是给对象赋值,但是给对象赋值的的时候比如`updateTime`在更新的时候不一定会更新这个字段,这个时候这个拦截器就会在最后可以进行处理添加对`updateTime`进行设置
 
 ## Interceptor Api
 
@@ -182,11 +183,6 @@ public class MyTenantInterceptor implements EntityInterceptor,PredicateFilterInt
             topicInterceptor.setTenantId(CurrentUserHelper.getTenantId());
         }
     }
-
-    @Override
-    public void configureUpdate(Class<?> entityClass, EntityUpdateExpressionBuilder entityUpdateExpressionBuilder, Object entity) {
-
-    }
 }
 ```
 测试代码
@@ -248,7 +244,7 @@ configure | 无  | 配置表达式更新set列自动填充
  *
  * @author xuejiaming
  */
-public class MyEntityInterceptor implements EntityInterceptor, UpdateSetInterceptor {
+public class MyEntityInterceptor implements EntityInterceptor, UpdateSetInterceptor, UpdateEntityColumnInterceptor {
     @Override
     public void configureInsert(Class<?> entityClass, EntityInsertExpressionBuilder entityInsertExpressionBuilder, Object entity) {
         TopicInterceptor topicInterceptor = (TopicInterceptor) entity;
@@ -286,15 +282,39 @@ public class MyEntityInterceptor implements EntityInterceptor, UpdateSetIntercep
 
     @Override
     public void configure(Class<?> entityClass, EntityUpdateExpressionBuilder entityUpdateExpressionBuilder, ColumnSetter<Object> columnSetter) {
-        String updateBy = "updateBy";//属性名用来动态创建lambda
-        String updateTime = "updateTime";//属性名用来动态创建lambda
+        //创建两个属性比较器
+        EntitySegmentComparer updateTime = new EntitySegmentComparer(entityClass, "updateTime");
+        EntitySegmentComparer updateBy = new EntitySegmentComparer(entityClass, "updateBy");
+        columnSetter.getSQLBuilderSegment().forEach(k -> {
+            updateTime.visit(k);
+            updateBy.visit(k);
+            return updateTime.isInSegment() && updateBy.isInSegment();
+        });
         //是否已经set了
-        if(!entityUpdateExpressionBuilder.getSetColumns().containsOnce(entityClass,updateBy)){
-            String userId = CurrentUserHelper.getUserId();
-            columnSetter.set(updateBy,userId);
+        if (!updateBy.isInSegment()) {
+            String userId = StringUtils.defaultString(CurrentUserHelper.getUserId());
+            columnSetter.set( "updateBy", userId);
         }
-        if(!entityUpdateExpressionBuilder.getSetColumns().containsOnce(entityClass,updateTime)){
-            columnSetter.set(updateTime,LocalDateTime.now());
+        if (!updateTime.isInSegment()) {
+            columnSetter.set("updateTime", LocalDateTime.now());
+        }
+    }
+    @Override
+    public void configure(Class<?> entityClass, EntityUpdateExpressionBuilder entityUpdateExpressionBuilder, ColumnOnlySelector<Object> columnSelector, Object entity) {
+        //创建两个属性比较器
+        EntitySegmentComparer updateTime = new EntitySegmentComparer(entityClass, "updateTime");
+        EntitySegmentComparer updateBy = new EntitySegmentComparer(entityClass, "updateBy");
+        columnSelector.getSQLSegmentBuilder().forEach(k -> {
+            updateTime.visit(k);
+            updateBy.visit(k);
+            return updateTime.isInSegment() && updateBy.isInSegment();
+        });
+        //是否已经set了
+        if (!updateTime.isInSegment()) {
+            columnSelector.column("updateTime");
+        }
+        if (!updateBy.isInSegment()) {
+            columnSelector.column( "updateBy");
         }
     }
 }
@@ -359,11 +379,6 @@ public class MyTenantInterceptor implements EntityInterceptor,PredicateFilterInt
         if (topicInterceptor.getTenantId() == null) {
             topicInterceptor.setTenantId(CurrentUserHelper.getTenantId());
         }
-    }
-
-    @Override
-    public void configureUpdate(Class<?> entityClass, EntityUpdateExpressionBuilder entityUpdateExpressionBuilder, Object entity) {
-
     }
 }
 ```
