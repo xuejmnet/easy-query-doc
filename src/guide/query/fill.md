@@ -8,47 +8,52 @@ title: 关联查询 Fill
 :::
 
 ## api说明
-默认fill查询结果不消费null也就是produce里面不会消费null值
+默认fill查询结果不消费null也就是produce里面不会消费null值,如果要消费null对null处理可以在consumeNull处设置为true
 ```java
-<TREntity> Queryable<T1> fillOne(SQLFuncExpression1<SQLFillSelector, Queryable<TREntity>> fillSetterExpression, Property<TREntity, ?> targetProperty, Property<T1, ?> selfProperty, BiConsumer<T1, TREntity> produce)
+<TREntity> Query<T1> fillMany(SQLFuncExpression<Query<TREntity>> fillSetterExpression, String targetProperty, String selfProperty, BiConsumer<T1, Collection<TREntity>> produce, boolean consumeNull);
 
 
-<TREntity> Queryable<T1> fillMany(SQLFuncExpression1<SQLFillSelector, Queryable<TREntity>> fillSetterExpression, Property<TREntity, ?> targetProperty,Property<T1, ?> selfProperty,  BiConsumer<T1, Collection<TREntity>> produce)
+<TREntity> Query<T1> fillOne(SQLFuncExpression<Query<TREntity>> fillSetterExpression, String targetProperty, String selfProperty, BiConsumer<T1, TREntity> produce, boolean consumeNull);
 ```
 
 参数  | 描述 | 场景 
 --- | --- | --- 
-condition | 是否需要执行当前方法  | 动态fill填充数据
 fillSetterExpression | 填充数据如何查询 | 自定义填充数据
-targetProperty | 目标表就是fill返回的表的属性  | 用于关联
+targetProperty | 目标表就是fill返回的表的属性  | 用于关联 
 selfProperty | 当前主表的属性  | 用于关联
 produce | 如何填充  | 自定义填充数据
 consumeNull | 当关联结果为null是否也会调用produce  | 过滤null或者不过滤
 
+
+::: warning 说明!!!
+> 如果希望`targetProperty`和`selfProperty`支持强类型可以通过lombok的`@FieldNameConstants`注解或者使用proxy模式下的`CityProxy.TABLE.provinceCode().getValue(), ProvinceProxy.TABLE.code().getValue()`
+:::
+
+
 ```java
-List<Province> list = easyQuery.queryable(Province.class)
-        .fillMany(x -> x.with(City.class).where(y -> y.eq(City::getCode, "3306"))
-                , City::getProvinceCode
-                , Province::getCode
-                , (x, y) -> {
+ List<Province> list =  easyQuery.queryable(Province.class)
+                .fillMany(()->{
+                    return easyQuery.queryable(City.class);
+                },"provinceCode", "code", (x, y) -> {
                     x.setCities(new ArrayList<>(y));
+                }).toList();
+
+
+        List<City> list1 = easyQuery.queryable(City.class)
+                .fillOne(()->{
+                    return easyQuery.queryable(Province.class);
+                },"code","provinceCode", (x, y) -> {
+                    x.setProvince(y);
                 })
-        .toList();
-
-
-List<City> list1 = easyQuery.queryable(City.class)
-            .fillOne(x -> x.with(Province.class), Province::getCode, City::getProvinceCode, (x, y) -> {
-                x.setProvince(y);
-            })
-            .toList();
+                .toList();
 ```
 
 vo转换
 ```java
     EasyPageResult<Province> pageResult1 = easyQuery.queryable(Province.class)
                 .fillMany(x -> x.consumeNull(true).with(City.class).where(y -> y.eq(City::getCode, "3306")).select(CityVO.class)//填充数据转成CityVO,
-                        , CityVO::getProvinceCode
-                        , Province::getCode
+                        , "provinceCode"
+                        , "code"
                         , (x, y) -> {
                             if (EasyCollectionUtil.isNotEmpty(y)) {
                                 CityVO first = EasyCollectionUtil.first(y);//获取第一条city并且赋值
