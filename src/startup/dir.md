@@ -250,7 +250,6 @@ easy-query:
 ### 数据准备
 
 我们以经典的用户管理的相关数据作为测试用例，执行SQL如下：
-
 ```sql
 -- 删除公司表
 DROP TABLE IF EXISTS company CASCADE;
@@ -270,6 +269,8 @@ CREATE TABLE IF NOT EXISTS company_detail (
     address VARCHAR(255),
     company_id INT
 );
+
+
 
 -- 删除权限表
 DROP TABLE IF EXISTS permission CASCADE;
@@ -329,10 +330,21 @@ CREATE TABLE user_role (
     role_id INTEGER
 );
 
+-- 删除商品表
+DROP TABLE IF EXISTS product CASCADE;
+
+-- 创建商品表
+CREATE TABLE product (
+    id INTEGER AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255),
+    deleted_time DATETIME,
+    deleted_user_id INTEGER
+);
+
 -- 插入公司数据
-INSERT INTO company (name, parent_id) VALUES ('总公司', NULL);
-INSERT INTO company (name, parent_id) VALUES ('分公司A', 1);
-INSERT INTO company (name, parent_id) VALUES ('分公司B', 1);
+INSERT INTO company (name, parent_id,deleted) VALUES ('总公司', NULL,0);
+INSERT INTO company (name, parent_id,deleted) VALUES ('分公司A', 1,0);
+INSERT INTO company (name, parent_id,deleted) VALUES ('分公司B', 1,0);
 
 -- 插入测试数据到 company_detail 表
 INSERT INTO company_detail (address, company_id)
@@ -377,7 +389,6 @@ INSERT INTO user_role (user_id, role_id) VALUES (1, 1);
 INSERT INTO user_role (user_id, role_id) VALUES (1, 3);
 INSERT INTO user_role (user_id, role_id) VALUES (2, 2);
 INSERT INTO user_role (user_id, role_id) VALUES (3, 3);
-
 ```
 
 ### 安装插件
@@ -1380,7 +1391,7 @@ Easy Query支持使用`leftJoin`方法进行查询，也就是在方法中声明
     }
 ```
 
-### 查询结果类型转换
+### 自定义查询结果类型
 
 在[](#分组查询)章节中有用到此功能，它在关联查询时也比较常用，一般情况，我们不会在实体类中声明有关联关系的字段，而是在VO中声明。
 
@@ -1421,49 +1432,117 @@ public class UserDetailVo {
 
 在查询时，我们可以选择自定义需要转换的列。
 
+#### 使用临时类型
+查询时，如果没有声明查询结果的返回类型，可以使用临时类型，百日`Draft`类型或者`Map`类型。
+`Draft`和`Map`类型支持后续链式结果。
 ```java
     @Test
     public void testQueryReturnType() {
+        List<Draft3<Integer, String, String>> draftList = easyEntityQuery.queryable(User.class)
+                .leftJoin(UserDetail.class, (u, ud) -> u.id().eq(ud.userId()))
+                .leftJoin(Company.class, (u, ud, c) -> u.companyId().eq(c.id()))
+                .where((u, ud, c) -> {
+                    u.name().eq("张三");
+                    ud.signature().like("静水流深");
+                    c.name().eq("总公司");
+                }).select((u, ud, c) -> Select.DRAFT.of(
+                        u.id(), ud.signature(), c.name()
+                )).toList();
+        for (Draft3<Integer, String, String> draft : draftList) {
+            Integer userId = draft.getValue1();
+            Assertions.assertNotNull(userId);
+            String signature = draft.getValue2();
+            Assertions.assertNotNull(signature);
+            String companyName = draft.getValue3();
+            Assertions.assertNotNull(companyName);
+        }
+
+        //查询时，如果没有声明查询结果的返回类型，可以使用Draft类型作为返回类型
+        MapKey<Integer> userIdKey = MapKeys.integerKey("userId");
+        MapKey<String> signatureKey = MapKeys.stringKey("signature");
+        MapKey<String> companyNameKey = MapKeys.stringKey("companyName");
+        MapKey<Integer> companyIdKey = MapKeys.integerKey("companyId");
+
+
+        draftList = easyEntityQuery.queryable(User.class)
+                .leftJoin(UserDetail.class, (u, ud) -> u.id().eq(ud.userId()))
+                .where((u, ud) -> {
+                    u.name().eq("张三");
+                    ud.signature().like("静水流深");
+                })
+                .select((u, ud) -> {
+                    MapTypeProxy map = new MapTypeProxy();
+                    map.put(userIdKey, u.id());
+                    map.put(signatureKey, ud.signature());
+                    map.put(companyIdKey, u.companyId());
+                    return map;
+                })
+                .leftJoin(Company.class, (uud, c) -> uud.get(companyIdKey).eq(c.id()))
+                .select((uud, c) -> Select.DRAFT.of(
+                        uud.get(userIdKey),
+                        uud.get(signatureKey),
+                        c.name()
+                )).toList();
+        for (Draft3<Integer, String, String> draft : draftList) {
+            Integer userId = draft.getValue1();
+            Assertions.assertNotNull(userId);
+            String signature = draft.getValue2();
+            Assertions.assertNotNull(signature);
+            String companyName = draft.getValue3();
+            Assertions.assertNotNull(companyName);
+        }
+
+        List<Map<String, Object>> resultMaps = easyEntityQuery.queryable(User.class)
+                .leftJoin(UserDetail.class, (u, ud) -> u.id().eq(ud.userId()))
+                .leftJoin(Company.class, (u, ud, c) -> u.companyId().eq(c.id()))
+                .where((u, ud, c) -> {
+                    u.name().eq("张三");
+                    ud.signature().like("静水流深");
+                    c.name().eq("总公司");
+                }).select((u, ud, c) -> {
+                    MapTypeProxy map = new MapTypeProxy();
+                    map.put(userIdKey, u.id());
+                    map.put(signatureKey, ud.signature());
+                    map.put(companyNameKey, c.name());
+                    return map;
+                }).toList();
+        for (Map<String, Object> resultMap : resultMaps) {
+            Integer userId = (Integer) resultMap.get("userId");
+            Assertions.assertNotNull(userId);
+            String signature = (String) resultMap.get("signature");
+            Assertions.assertNotNull(signature);
+            String companyName = (String) resultMap.get("companyName");
+            Assertions.assertNotNull(companyName);
+        }
+    }
+```
+
+#### 使用引用类型
+我们可以自定义引用类型作为查询结果的返回类型，但是它不支持后续链式查询
+```java
+    @Test
+    public void testCustomQueryReturnType() {
+        //使用指定的类型作为返回类型，默认为匹配的字段设值
         List<UserDetailVo> userDetailVos = easyEntityQuery.queryable(User.class)
                 .where(s -> s.name().eq("张三"))
+                .select(UserDetailVo.class).toList();
+        for (UserDetailVo userDetailVo : userDetailVos) {
+            Assertions.assertNotNull(userDetailVo.getId());
+            Assertions.assertNotNull(userDetailVo.getName());
+            Assertions.assertNull(userDetailVo.getSignature());
+        }
+
+        //使用指定的类型作为返回类型，需要手动设值
+        userDetailVos = easyEntityQuery.queryable(User.class)
+                .where(s -> s.name().eq("张三"))
                 .select(UserDetailVo.class, s -> Select.of(
-                        s.FETCHER.allFields(),//将用户表所有匹配名称的字段赋值到UserDetailVo对象中
-                        s.userDetail().signature().as(UserDetailVo::getSignature)//额外将用户签名赋值到UserDetailVo对象中
+                        //手动为匹配的字段设值,与allFields相似的方法有allFieldsExclude方法
+                        s.FETCHER.allFields(),
+                        //手动为不匹配的字段设值,as支持传入字段名称
+                        s.userDetail().signature().as(UserDetailVo::getSignature)
                 )).toList();
         for (UserDetailVo userDetailVo : userDetailVos) {
-            Assertions.assertNotNull(userDetailVo.getName());
-            Assertions.assertNotNull(userDetailVo.getSignature());
-        }
-
-        //如果想要为每个字段设值，可以使用Proxy，注意不需要指定UserDetailVo.class
-        userDetailVos = easyEntityQuery.queryable(User.class)
-                .where(s -> s.name().eq("张三"))
-                .select(s ->
-                        // userDetailVoProxy.selectAll(s); //如果字段一样可以这么写直接映射
-                        new UserDetailVoProxy()
-                                .id().set(s.id())
-                                .name().set(s.name())
-                                .signature().set(s.userDetail().signature())
-                )
-                .toList();
-        for (UserDetailVo userDetailVo : userDetailVos) {
-            Assertions.assertNotNull(userDetailVo.getName());
-            Assertions.assertNotNull(userDetailVo.getSignature());
-        }
-
-        //写法同上
-        userDetailVos = easyEntityQuery.queryable(User.class)
-                .where(s -> s.name().eq("张三"))
-                .select(s -> {
-                    UserDetailVoProxy userDetailVoProxy = new UserDetailVoProxy();
-                    // userDetailVoProxy.selectAll(s); //如果字段一样可以这么写直接映射
-                    userDetailVoProxy.id().set(s.id());
-                    userDetailVoProxy.name().set(s.name());
-                    userDetailVoProxy.signature().set(s.userDetail().signature());
-                    return userDetailVoProxy;
-                })
-                .toList();
-        for (UserDetailVo userDetailVo : userDetailVos) {
+            Assertions.assertNotNull(userDetailVo.getId());
             Assertions.assertNotNull(userDetailVo.getName());
             Assertions.assertNotNull(userDetailVo.getSignature());
         }
@@ -1481,11 +1560,88 @@ public class UserDetailVo {
                 .where(u -> u.name().eq("张三"))
                 .selectAutoInclude(UserDetailVo.class, (u, ud) -> Select.of(
                         //u.FETCHER.allFields(),请注意,调用select需要加此行,调用selectAutoInclude不需要加此行，因为selectAutoInclude会自动执行allFields
-                        //暂不支持直接使用userDetail()引用类型来进行设值
                         u.userDetail().signature().as(UserDetailVo::getSignature)
                 ))
                 .toList();
         Assertions.assertTrue(userDetailVoList.size() > 0);
+    }
+```
+
+#### 使用Proxy类型
+使用`Proxy`类型作为返回结果类型，则支持后续链式结果。
+```java
+    @Test
+    public void testCustomQueryReturnTypeWithProxy() {
+        //使用指定的类型作为返回类型，需要手动为对应的Proxy设值，注意不需要指定实体类型
+        List<UserDetailVo> userDetailVos = easyEntityQuery.queryable(User.class)
+                .where(s -> s.name().eq("张三"))
+                .select(s ->
+                        // Proxy支持selectAll方法和selectIgnore方法
+                        new UserDetailVoProxy()
+                                .id().set(s.id())
+                                .name().set(s.name())
+                                .signature().set(s.userDetail().signature())
+                )
+                .toList();
+        for (UserDetailVo userDetailVo : userDetailVos) {
+            Assertions.assertNotNull(userDetailVo.getId());
+            Assertions.assertNotNull(userDetailVo.getName());
+            Assertions.assertNotNull(userDetailVo.getSignature());
+        }
+
+        //效果同上
+        userDetailVos = easyEntityQuery.queryable(User.class)
+                .where(s -> s.name().eq("张三"))
+                .select(s -> {
+                    UserDetailVoProxy userDetailVoProxy = new UserDetailVoProxy();
+                    userDetailVoProxy.id().set(s.id());
+                    userDetailVoProxy.name().set(s.name());
+                    userDetailVoProxy.signature().set(s.userDetail().signature());
+                    return userDetailVoProxy;
+                })
+                .toList();
+        for (UserDetailVo userDetailVo : userDetailVos) {
+            Assertions.assertNotNull(userDetailVo.getId());
+            Assertions.assertNotNull(userDetailVo.getName());
+            Assertions.assertNotNull(userDetailVo.getSignature());
+        }
+
+        //效果同上
+        userDetailVos = easyEntityQuery.queryable(User.class)
+                .where(s -> s.name().eq("张三"))
+                .select(s -> new UserDetailVoProxy()
+                        .selectExpression(s.id(), s.name(), s.userDetail().signature())
+                )
+                .toList();
+        for (UserDetailVo userDetailVo : userDetailVos) {
+            Assertions.assertNotNull(userDetailVo.getId());
+            Assertions.assertNotNull(userDetailVo.getName());
+            Assertions.assertNotNull(userDetailVo.getSignature());
+        }
+
+        List<Draft3<Integer, String, String>> draftList = easyEntityQuery.queryable(User.class)
+                .where(s -> s.name().eq("张三"))
+                .select(s ->
+                        // Proxy支持selectAll方法和selectIgnore方法
+                        new UserDetailVoProxy()
+                                .id().set(s.id())
+                                .name().set(s.name())
+                                .signature().set(s.userDetail().signature())
+                )
+                .leftJoin(UserDetail.class, (u, ud) -> u.id().eq(ud.userId()))
+                .select((u, ud) -> Select.DRAFT.of(
+                        u.id(), u.name(), ud.signature()
+                ))
+                .toList();
+        for (Draft3<Integer, String, String> draft : draftList) {
+            Integer userId = draft.getValue1();
+            Assertions.assertNotNull(userId);
+            String name = draft.getValue2();
+            Assertions.assertNotNull(name);
+            String signature = draft.getValue3();
+            Assertions.assertNotNull(signature);
+
+        }
     }
 ```
 
