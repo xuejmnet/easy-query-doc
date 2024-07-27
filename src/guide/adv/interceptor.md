@@ -18,6 +18,7 @@ order: 20
 EntityInterceptor | 对象拦截器  | 用于对象插入前和修改前进行对象拦截
 PredicateFilterInterceptor | 条件拦截器  | 用户在查询,修改,删除的时候可以通过条件拦截来动态构建添加条件如:`租户id`
 UpdateSetInterceptor | 更新列拦截器  | 用户在更新update表达式的时候可以通过当前拦截器自动追加`set`列操作
+UpdateEntityColumnInterceptor | 对象列的更新拦截器  | `EntityInterceptor`主要作用是给对象赋值,但是给对象赋值的的时候比如`updateTime`在更新的时候不一定会更新这个字段,这个时候这个拦截器就会在最后可以进行处理添加对`updateTime`进行设置
 
 ## Interceptor Api
 
@@ -182,11 +183,6 @@ public class MyTenantInterceptor implements EntityInterceptor,PredicateFilterInt
             topicInterceptor.setTenantId(CurrentUserHelper.getTenantId());
         }
     }
-
-    @Override
-    public void configureUpdate(Class<?> entityClass, EntityUpdateExpressionBuilder entityUpdateExpressionBuilder, Object entity) {
-
-    }
 }
 ```
 测试代码
@@ -286,15 +282,21 @@ public class MyEntityInterceptor implements EntityInterceptor, UpdateSetIntercep
 
     @Override
     public void configure(Class<?> entityClass, EntityUpdateExpressionBuilder entityUpdateExpressionBuilder, ColumnSetter<Object> columnSetter) {
-        String updateBy = "updateBy";//属性名用来动态创建lambda
-        String updateTime = "updateTime";//属性名用来动态创建lambda
+        //创建两个属性比较器
+        EntitySegmentComparer updateTime = new EntitySegmentComparer(entityClass, "updateTime");
+        EntitySegmentComparer updateBy = new EntitySegmentComparer(entityClass, "updateBy");
+        columnSetter.getSQLBuilderSegment().forEach(k -> {
+            updateTime.visit(k);
+            updateBy.visit(k);
+            return updateTime.isInSegment() && updateBy.isInSegment();
+        });
         //是否已经set了
-        if(!entityUpdateExpressionBuilder.getSetColumns().containsOnce(entityClass,updateBy)){
-            String userId = CurrentUserHelper.getUserId();
-            columnSetter.set(updateBy,userId);
+        if (!updateBy.isInSegment()) {
+            String userId = StringUtils.defaultString(CurrentUserHelper.getUserId());
+            columnSetter.set( "updateBy", userId);
         }
-        if(!entityUpdateExpressionBuilder.getSetColumns().containsOnce(entityClass,updateTime)){
-            columnSetter.set(updateTime,LocalDateTime.now());
+        if (!updateTime.isInSegment()) {
+            columnSetter.set("updateTime", LocalDateTime.now());
         }
     }
 }
@@ -360,11 +362,6 @@ public class MyTenantInterceptor implements EntityInterceptor,PredicateFilterInt
             topicInterceptor.setTenantId(CurrentUserHelper.getTenantId());
         }
     }
-
-    @Override
-    public void configureUpdate(Class<?> entityClass, EntityUpdateExpressionBuilder entityUpdateExpressionBuilder, Object entity) {
-
-    }
 }
 ```
 
@@ -415,6 +412,84 @@ long l4 = easyQuery.deletable(topicInterceptor2).executeRows();
 ```
 
 所有的增删改都会添加对应的条件表达式值,可以做到表结构完美隔离租户之间的数据,并且用户使用全程无感
+
+
+
+## UpdateEntityColumnInterceptor
+
+
+
+### Api
+
+方法  | 默认实现 | 描述  
+--- | --- | --- 
+configure | 无  | 配置表达式更新选择需要set列自动填充
+
+```java
+
+/**
+ * create time 2023/4/3 21:13
+ * 如果是spring项目添加@Component，如果是非spring项目直接添加到EasQueryConfiguration.applyInterceptor
+ *
+ * @author xuejiaming
+ */
+public class MyEntityInterceptor implements EntityInterceptor, UpdateEntityColumnInterceptor  {
+    @Override
+    public void configureInsert(Class<?> entityClass, EntityInsertExpressionBuilder entityInsertExpressionBuilder, Object entity) {
+        TopicInterceptor topicInterceptor = (TopicInterceptor) entity;
+        if (topicInterceptor.getCreateTime() == null) {
+            topicInterceptor.setCreateTime(LocalDateTime.now());
+        }
+        if (topicInterceptor.getCreateBy() == null) {
+            topicInterceptor.setCreateBy(CurrentUserHelper.getUserId());
+        }
+        if (topicInterceptor.getUpdateTime() == null) {
+            topicInterceptor.setUpdateTime(LocalDateTime.now());
+        }
+        if (topicInterceptor.getUpdateBy() == null) {
+            topicInterceptor.setUpdateBy(CurrentUserHelper.getUserId());
+        }
+    }
+
+    @Override
+    public void configureUpdate(Class<?> entityClass, EntityUpdateExpressionBuilder entityUpdateExpressionBuilder, Object entity) {
+
+        TopicInterceptor topicInterceptor = (TopicInterceptor) entity;
+        topicInterceptor.setUpdateTime(LocalDateTime.now());
+        topicInterceptor.setUpdateBy(CurrentUserHelper.getUserId());
+    }
+
+    @Override
+    public String name() {
+        return "MyEntityInterceptor";
+    }
+
+    @Override
+    public boolean apply(Class<?> entityClass) {
+        return TopicInterceptor.class.isAssignableFrom(entityClass);
+    }
+    @Override
+    public void configure(Class<?> entityClass, EntityUpdateExpressionBuilder entityUpdateExpressionBuilder, ColumnOnlySelector<Object> columnSelector, Object entity) {
+        //创建两个属性比较器
+        EntitySegmentComparer updateTime = new EntitySegmentComparer(entityClass, "updateTime");
+        EntitySegmentComparer updateBy = new EntitySegmentComparer(entityClass, "updateBy");
+        columnSelector.getSQLSegmentBuilder().forEach(k -> {
+            updateTime.visit(k);
+            updateBy.visit(k);
+            return updateTime.isInSegment() && updateBy.isInSegment();
+        });
+        //是否已经set了
+        if (!updateTime.isInSegment()) {
+            columnSelector.column("updateTime");
+        }
+        if (!updateBy.isInSegment()) {
+            columnSelector.column( "updateBy");
+        }
+    }
+}
+
+```
+
 
 ## 按需拦截
 比如我们现在有这么一个需求因为部分接口需要针对测试数据进行移除,不希望统计到程序里面所以可以针对部分情况进行按需拦截
