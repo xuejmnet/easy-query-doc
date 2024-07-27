@@ -5,8 +5,6 @@ title: 快速开始🔥🔥🔥
 ## 简介
 在使用前，我们需要知晓目前1.8.0+版本的`easy-query`提供了多种API模式，比如`lambda`、`property`、`entity`，其中`entity`是最新开发的api,使用起来非常顺畅,非常推荐
 本章节将使用`entity`模式进行讲解，在`entity`模式中，`EasyEntityQuery`是核心接口，它提供了常用的增删改查方法，
-使用`entity`模式必须在每个需要生成`proxy`的`module`处的`pom.xm`引入`sql-processor`依赖或者在项目`maven`插件处进行配置。
-关于如何在多模块引入`sql-processor`依赖，可以参考[demo地址](https://github.com/xuejmnet/eq-multi-module)
 
 ## 最新版本
 Easy Query目前最新版本如下：
@@ -20,6 +18,12 @@ Easy Query目前最新版本如下：
 
 本章节共同作者
 - Hoysing [github](https://github.com/Hoysing) [gitee](https://gitee.com/Hoysing)
+
+
+我们将通过一个案例来说明Easy Query的如何使用，在此使用Easy Query之前，需要具备以下条件：
+- 拥有基本的Java开发环境
+- 熟悉Maven或Gradle工具
+- 熟悉Spring Boot框架
 
 ### 引入依赖
 
@@ -118,10 +122,12 @@ Easy Query目前最新版本如下：
             <version>${junit5.version}</version>
         </dependency>
 ```
+Easy Query的APT会为所有使用了`@EntityProxy`的实体类创建对应的代理类，代理类用于提供此对表别名，列名，列类型等等都提供了友好提示和类型判断，有问题可以参考[常见问题](/easy-query-doc/question)。
 
 #### SpringBoot环境
 Easy Query提供了`sql-springboot-starter`依赖以便快速整合到Spring Boot环境中，它包含了`sql-api-proxy`和各个数据库支持的依赖。
-`sql-processor`需要额外引入，因为使用`entity`模式就必须在每个需要生成`proxy`的`module`处的`pom.xm`引入它。
+`sql-processor`是需要额外引入的，因为在Spring Boot多模块项目中使用Easy Query时，必须在每个需要生成`proxy`的`module`处的`pom.xm`引入`sql-processor`依赖或者在项目`maven`插件处进行配置，因为Easy Query的APT会为所有使用了`@EntityProxy`的实体类创建对应的代理类，代理类用于提供此对表别名，列名，列类型等等都提供了友好提示和类型判断，有问题可以参考[常见问题](/easy-query-doc/question)。
+关于如何在多模块引入`sql-processor`依赖，可以参考[demo地址](https://github.com/xuejmnet/eq-multi-module)。
 ```xml
          <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -473,7 +479,7 @@ public class User implements ProxyEntityAvailable<User, UserProxy> {
     Boolean enabled;
 
     @LogicDelete(strategy = LogicDeleteStrategyEnum.BOOLEAN)
-    private Boolean deleted;
+    Boolean deleted;
 
     Integer companyId;
 
@@ -581,9 +587,6 @@ public class UserRole implements ProxyEntityAvailable<UserRole, UserRoleProxy> {
 </plugin>
 ```
 :::
-
-之所以需要代理类，是为了在查询时，可以根据实体类推断出代理类的类型，
-我们就可以使用代理类的方法辅助查询了。
 
 <img src="/startup3.png">
 
@@ -1939,7 +1942,7 @@ Easy Query支持物理删除和逻辑删除，默认情况下使用逻辑删除�
 
 ```java
 @LogicDelete(strategy = LogicDeleteStrategyEnum.BOOLEAN)
-private Boolean deleted;
+Boolean deleted;
 ```
 
 调用`deletable`方法将会修改`deleted`为`true`，因此如果不声明字段，那么将会抛出异常。
