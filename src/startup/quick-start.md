@@ -2,6 +2,20 @@
 title: 快速开始🔥🔥🔥
 ---
 
+## 简介
+在使用前，我们需要知晓目前1.8.0+版本的`easy-query`提供了多种API模式，比如`lambda`、`property`、`entity`，其中`entity`是最新开发的api,使用起来非常顺畅,非常推荐
+本章节将使用`entity`模式进行讲解，在`entity`模式中，`EasyEntityQuery`是核心接口，它提供了常用的增删改查方法，
+使用`entity`模式必须在每个需要生成`proxy`的`module`处的`pom.xm`引入`sql-processor`依赖或者在项目`maven`插件处进行配置。
+关于如何在多模块引入`sql-processor`依赖，可以参考[demo地址](https://github.com/xuejmnet/eq-multi-module)
+
+## 最新版本
+Easy Query目前最新版本如下：
+<a target="_blank" href="https://central.sonatype.com/search?q=easy-query">
+    <img src="https://img.shields.io/maven-central/v/com.easy-query/easy-query-all?label=Maven%20Central" alt="Maven" />
+</a>
+
+如果法看到Easy Query的最新版本版本，可以在[github](https://github.com/dromara/easy-query)或者[gitee](https://gitee.com/dromara/easy-query)的标签处查看最新版本
+
 ## 环境准备
 
 本章节共同作者
@@ -11,81 +25,104 @@ title: 快速开始🔥🔥🔥
 
 #### 简单环境
 
-以mysql数据库为例，请按需引入以下依赖：
-
+本章节将以mysql数据库为例，需要引入以下依赖：
 ```xml
-    <dependencies>
-        <dependency>
-            <groupId>com.zaxxer</groupId>
-            <artifactId>HikariCP</artifactId>
-            <version>4.0.3</version>
-        </dependency>
-
-
- 		<!-- 如果使用mysql数据库，则引入对应驱动 -->
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.46</version>
-        </dependency>
-        <!-- 如果使用mysql数据库，则引入其它的eq的mysql支持 -->
-        <dependency>
-            <groupId>com.easy-query</groupId>
-            <artifactId>sql-mysql</artifactId>
-            <version>2.0.25</version>
-        </dependency>
-        
-        <!-- 如果使用h2数据库，则引入对应驱动 -->
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>1.4.200</version>
-        </dependency>
-         <!-- 如果使用h2数据库，则引入其它的eq的h2支持 -->
-        <dependency>
-            <groupId>com.easy-query</groupId>
-            <artifactId>sql-h2</artifactId>
-            <version>2.0.25</version>
-        </dependency>
-
+        <!-- 引入Easy Query核心依赖 -->
         <dependency>
             <groupId>com.easy-query</groupId>
             <artifactId>sql-api-proxy</artifactId>
-            <version>2.0.25</version>
+            <version>${easy-query.version}</version>
         </dependency>
-        
+        <!-- 按需引入Easy Query的数据库支持依赖 -->
+        <dependency>
+            <groupId>com.easy-query</groupId>
+            <artifactId>sql-mysql</artifactId>
+            <version>${easy-query.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.easy-query</groupId>
+            <artifactId>sql-oracle</artifactId>
+            <version>${easy-query.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.easy-query</groupId>
+            <artifactId>sql-pgsql</artifactId>
+            <version>${easy-query.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.easy-query</groupId>
+            <artifactId>sql-mssql</artifactId>
+            <version>${easy-query.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.easy-query</groupId>
+            <artifactId>sql-h2</artifactId>
+            <version>${easy-query.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.easy-query</groupId>
+            <artifactId>sql-sqlite</artifactId>
+            <version>${easy-query.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.easy-query</groupId>
+            <artifactId>sql-clickhouse</artifactId>
+            <version>${easy-query.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.easy-query</groupId>
+            <artifactId>sql-dameng</artifactId>
+            <version>${easy-query.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.easy-query</groupId>
+            <artifactId>sql-kingbase-es</artifactId>
+            <version>${easy-query.version}</version>
+        </dependency>
+        <!-- 引入支持Easy Query的APT依赖 -->
         <dependency>
             <groupId>com.easy-query</groupId>
             <artifactId>sql-processor</artifactId>
-            <version>2.0.25</version>
+            <version>${easy-query.version}</version>
         </dependency>
+        <!-- 引入数据源 -->
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>5.8.2</version>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>${hikari.version}</version>
         </dependency>
+        <!-- 引入需要的数据库驱动 -->
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.8.2</version>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+           <version>${mysql.version}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.24</version>
+            <version>${lombok.version}</version>
         </dependency>
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
-            <version>5.8.16</version>
+           <version>${hutool.version}</version>
         </dependency>
-    </dependencies>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>${junit5.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit5.version}</version>
+        </dependency>
 ```
 
 #### SpringBoot环境
-
+Easy Query提供了`sql-springboot-starter`依赖以便快速整合到Spring Boot环境中，它包含了`sql-api-proxy`和各个数据库支持的依赖。
+`sql-processor`需要额外引入，因为使用`entity`模式就必须在每个需要生成`proxy`的`module`处的`pom.xm`引入它。
 ```xml
-    <dependencies>
          <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -94,53 +131,50 @@ title: 快速开始🔥🔥🔥
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
-        
-        <dependency>
-            <groupId>com.zaxxer</groupId>
-            <artifactId>HikariCP</artifactId>
-            <version>4.0.3</version>
-        </dependency>
-
-
- 		<!-- 如果使用mysql数据库，则引入对应驱动 -->
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.46</version>
-        </dependency>
-        
-        <!-- 引入starter，此依赖包含了各个数据库的支持 -->
+        <!-- 引入starter -->
          <dependency>
             <groupId>com.easy-query</groupId>
             <artifactId>sql-springboot-starter</artifactId>
-            <version>2.0.25</version>
+            <version>${easy-query.version}</version>
         </dependency>
+        <!-- 引入支持Easy Query的APT依赖 -->
         <dependency>
             <groupId>com.easy-query</groupId>
             <artifactId>sql-processor</artifactId>
-            <version>2.0.25</version>
+            <version>${easy-query.version}</version>
         </dependency>
+        <!-- 引入数据源 -->
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>5.8.2</version>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>${hikari.version}</version>
         </dependency>
+        <!-- 引入需要的数据库驱动 -->
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.8.2</version>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+           <version>${mysql.version}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.24</version>
+            <version>${lombok.version}</version>
         </dependency>
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
-            <version>5.8.16</version>
+           <version>${hutool.version}</version>
         </dependency>
-    </dependencies>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>${junit5.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit5.version}</version>
+        </dependency>
 ```
 
 配置`application.yml`：
