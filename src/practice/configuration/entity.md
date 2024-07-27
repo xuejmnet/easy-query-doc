@@ -70,7 +70,7 @@ public abstract class BaseEntity implements Serializable, Cloneable {
 
 @Component
 @AllArgsConstructor(onConstructor_ = @Autowired)
-public class DefaultEntityInterceptor implements EntityInterceptor, UpdateSetInterceptor {
+public class DefaultEntityInterceptor implements EntityInterceptor, UpdateSetInterceptor, UpdateEntityColumnInterceptor {
 
     //如果你是springsecurity可以用这个SecurityContextHolder.getContext()
     //如果你是satoken那么直接用StpUtil
@@ -147,15 +147,47 @@ public class DefaultEntityInterceptor implements EntityInterceptor, UpdateSetInt
      */
     @Override
     public void configure(Class<?> entityClass, EntityUpdateExpressionBuilder entityUpdateExpressionBuilder, ColumnSetter<Object> columnSetter) {
-        String updateBy = "updateBy";
-        String updateTime = "updateTime";
-        //是否已经set了 如果你觉得你程序里面不会手动去修改这两个值那么也可以不加这个判断
-        if (!entityUpdateExpressionBuilder.getSetColumns().containsOnce(entityClass, updateBy)) {
-            String userId = StringUtils.defaultString(currentUser.getUserId());
-            columnSetter.set(updateBy, userId);
+        //创建两个属性比较器 如果你觉得你程序里面不会手动去修改这两个值那么也可以不加这个判断
+        EntitySegmentComparer updateTime = new EntitySegmentComparer(entityClass, "updateTime");
+        EntitySegmentComparer updateBy = new EntitySegmentComparer(entityClass, "updateBy");
+        columnSetter.getSQLBuilderSegment().forEach(k -> {
+            updateTime.visit(k);
+            updateBy.visit(k);
+            return updateTime.isInSegment() && updateBy.isInSegment();
+        });
+        //是否已经set了
+        if (!updateBy.isInSegment()) {
+            String userId = StringUtils.defaultString(CurrentUserHelper.getUserId());
+            columnSetter.set( "updateBy", userId);
         }
-        if (!entityUpdateExpressionBuilder.getSetColumns().containsOnce(entityClass, updateTime)) {
-            columnSetter.set(updateTime, LocalDateTime.now());
+        if (!updateTime.isInSegment()) {
+            columnSetter.set("updateTime", LocalDateTime.now());
+        }
+    }
+    /**
+     * 对象属性更新
+     *
+     * @param entityClass
+     * @param entityUpdateExpressionBuilder
+     * @param columnSelector
+     * @param entity
+     */
+    @Override
+    public void configure(Class<?> entityClass, EntityUpdateExpressionBuilder entityUpdateExpressionBuilder, ColumnOnlySelector<Object> columnSelector, Object entity) {
+        //创建两个属性比较器
+        EntitySegmentComparer updateTime = new EntitySegmentComparer(entityClass, "updateTime");
+        EntitySegmentComparer updateBy = new EntitySegmentComparer(entityClass, "updateBy");
+        columnSelector.getSQLSegmentBuilder().forEach(k -> {
+            updateTime.visit(k);
+            updateBy.visit(k);
+            return updateTime.isInSegment() && updateBy.isInSegment();
+        });
+        //是否已经set了
+        if (!updateTime.isInSegment()) {
+            columnSelector.column("updateTime");
+        }
+        if (!updateBy.isInSegment()) {
+            columnSelector.column( "updateBy");
         }
     }
 
