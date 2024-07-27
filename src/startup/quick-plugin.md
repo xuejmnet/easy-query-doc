@@ -28,3 +28,13 @@ title: 安装插件提高开发体验
 ::: tip 说明!!!
 > 插件的功能并非这些我们将会在后续的章节对插件的使用进行详细介绍目前您只需要知道这两点就可以解决掉上述的apt缺点和您的疑虑
 :::
+
+## 创建DTO
+手动创建DTO是一件很麻烦的事情,可以在`easy-query:1.10.60^`+`插件0.0.48^`快速生成嵌套结构化对象模型,
+
+<img src="/EQDTO1.jpg">
+<img src="/EQDTO2.jpg">
+<img src="/EQDTO3.jpg">
+<img src="/EQDTO4.jpg">
+<img src="/EQDTO5.jpg">
+<img src="/EQDTO6.jpg">
