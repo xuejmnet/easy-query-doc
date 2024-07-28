@@ -289,7 +289,7 @@ public class User implements ProxyEntityAvailable<User, UserProxy> {
     Boolean enabled;
 
     @LogicDelete(strategy = LogicDeleteStrategyEnum.BOOLEAN)
-    private Boolean deleted;
+    Boolean deleted;
 
     Integer companyId;
 
@@ -426,13 +426,13 @@ private EasyEntityQuery easyEntityQuery;
 它不需要在每次查询时声明关联关系。
 
 ```java
-@Test
+    @Test
     public void testSubQuery(){
         //查询存在姓张用户的公司
         List<Company> companyList = easyEntityQuery.queryable(Company.class)
                 .where(c -> {
                     c.users().where(u -> {
-                        name().eq("张三");
+                        u.name().eq("张三");
                     }).any();
                 }).toList();
         Assertions.assertTrue(companyList.size() > 0);
@@ -441,11 +441,10 @@ private EasyEntityQuery easyEntityQuery;
         companyList = easyEntityQuery.queryable(Company.class)
                 .where(c -> {
                     c.users().any(u -> {
-                        name().eq("张三");
+                        u.name().eq("张三");
                     });
                 }).toList();
         Assertions.assertTrue(companyList.size() > 0);
-
 
         //查询存在姓张用户的公司，与上面写法效果一样
         //联级穿透 flatElement后仅支持但条件判断,多条件会生成多个Exists函数
@@ -457,10 +456,20 @@ private EasyEntityQuery easyEntityQuery;
                 }).toList();
         Assertions.assertTrue(companyList.size() > 0);
 
+        //查询只有一个张三用户的公司
         companyList = easyEntityQuery.queryable(Company.class)
                 .where(c -> {
                     c.users().where(u -> {
-                        name().eq("张三");
+                        u.name().eq("张三");
+                    }).count().eq(1L);
+                }).toList();
+        Assertions.assertTrue(companyList.size() > 0);
+
+        //查询一个用户签名为静水流深的公司
+        easyEntityQuery.queryable(Company.class)
+                .where(c -> {
+                    c.users().where(u -> {
+                        u.userDetail().signature().eq("静水流深");
                     }).count().eq(1L);
                 }).toList();
         Assertions.assertTrue(companyList.size() > 0);
@@ -517,9 +526,10 @@ private EasyEntityQuery easyEntityQuery;
     public void testOneToManyQuery() {
         //使用includes获取一对多关联的用户
         List<Company> companyList = easyEntityQuery.queryable(Company.class)
-                .includes(c -> c.users(), c -> {
-                    //当前公司关联的张三用户，如果不加条件就返回当前公司关联的所有用户
-                    c.where(u -> u.name().eq("张三"));
+                .includes(c -> c.users(), uq -> {
+                    uq.include(u -> u.userDetail())
+                            //当前公司关联的张三用户，如果不加条件就返回当前公司关联的所有用户
+                            .where(u -> u.name().eq("张三"));
                 })
                 .where(c -> {
                     //只查询存在张三用户的公司
@@ -529,25 +539,12 @@ private EasyEntityQuery easyEntityQuery;
                 }).toList();
         Assertions.assertTrue(companyList.size() > 0);
         for (Company company : companyList) {
-            Assertions.assertNotNull(company.getUsers());
-            Assertions.assertNull(company.getEnabledUsers());
-        }
-
-        //只查询存在张三用户而且用户是启用状态的公司
-        companyList = easyEntityQuery.queryable(Company.class)
-                //当前公司关联的已启用的用户，因为类级别上加了的额外查询条件
-                .includes(c -> c.enabledUsers(), c -> {
-                    //当前公司关联的张三用户，并且用户是启用的，如果不加条件就返回当前公司关联的已启用的用户
-                    c.where(u -> u.name().eq("张三"));
-                })
-                .where(c -> c.enabledUsers().any(u -> {
-                    u.name().eq("张三");
-                }))
-                .toList();
-        Assertions.assertTrue(companyList.size() > 0);
-        for (Company company : companyList) {
-            Assertions.assertNull(company.getUsers());
-            Assertions.assertNotNull(company.getEnabledUsers());
+            List<User> users = company.getUsers();
+            Assertions.assertNotNull(users);
+            for (User user : users) {
+                UserDetail userDetail = user.getUserDetail();
+                Assertions.assertNotNull(userDetail);
+            }
         }
     }
 ```
@@ -596,13 +593,14 @@ public class UserNavigateExtraFilterStrategy implements NavigateExtraFilterStrat
 
 ```java
     @Test
-    public void testNavigateExtraFilterStrategy(){
+    public void testNavigateExtraFilterStrategy() {
         //只查询存在张三用户而且用户是启用状态的公司
         List<Company> companyList = easyEntityQuery.queryable(Company.class)
                 //当前公司关联的已启用的用户，因为类级别上加了的额外查询条件
-                .includes(c -> c.enabledUsers(), c -> {
-                    //当前公司关联的张三用户，并且用户是启用的，如果不加条件就返回当前公司关联的已启用的用户
-                    c.where(u -> u.name().eq("张三"));
+                .includes(c -> c.enabledUsers(), uq -> {
+                    uq.include(u -> u.userDetail())
+                            //当前公司关联的张三用户，并且用户是启用的，如果不加条件就返回当前公司关联的已启用的用户
+                            .where(u -> u.name().eq("张三"));
                 })
                 .where(c -> c.enabledUsers().any(u -> {
                     u.name().eq("张三");
@@ -610,8 +608,12 @@ public class UserNavigateExtraFilterStrategy implements NavigateExtraFilterStrat
                 .toList();
         Assertions.assertTrue(companyList.size() > 0);
         for (Company company : companyList) {
-            Assertions.assertNull(company.getUsers());
-            Assertions.assertNotNull(company.getEnabledUsers());
+            List<User> enabledUsers = company.getEnabledUsers();
+            Assertions.assertNotNull(enabledUsers);
+            for (User enabledUser : enabledUsers) {
+                UserDetail userDetail = enabledUser.getUserDetail();
+                Assertions.assertNotNull(userDetail);
+            }
         }
     }
 ```
