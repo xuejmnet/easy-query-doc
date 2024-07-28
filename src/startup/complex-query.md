@@ -514,8 +514,9 @@ private EasyEntityQuery easyEntityQuery;
         Assertions.assertTrue(users.size() > 0);
     }
 ```
-
-一般情况下，不会在实体类声明有关联关系的字段，一般在VO类中声明，可以参考[](查询结果类型转换)章节
+`queryable(User.class)`返回的类型是`EntityQueryable<UserProxy, User>`，
+`include`方法中,`u`的类型是`UserProxy`，`cq`的类型是`EntityQueryable<CompanyProxy, Company>`，
+`cq.include`方法中,`c`的类型是`CompanyProxy`。
 
 ### 一对多查询
 
@@ -548,7 +549,11 @@ private EasyEntityQuery easyEntityQuery;
         }
     }
 ```
+`queryable(Company.class)`返回的类型是`EntityQueryable<CompanyProxy, Company>`，
+`includes`方法中,`c`的类型是`CompanyProxy`，`uq`的类型是`EntityQueryable<UserProxy, User>`，
+`uq.include`方法中,`u`的类型是`UserProxy`。
 
+#### 隐式关联查询筛选策略
 Easy Query支持实体类级别上添加额外的查询条件，比如查询`Company`时，除了查询关联用户外，可以查询关联的已启用的用户，
 
 在`Company`加上如下属性：
@@ -617,6 +622,9 @@ public class UserNavigateExtraFilterStrategy implements NavigateExtraFilterStrat
         }
     }
 ```
+`queryable(Company.class)`返回的类型是`EntityQueryable<CompanyProxy, Company>`，
+`includes`方法中,`c`的类型是`CompanyProxy`，`uq`的类型是`EntityQueryable<UserProxy, User>`，
+`uq.include`方法中,`u`的类型是`UserProxy`。
 
 ### 多对多查询
 
@@ -627,23 +635,23 @@ public class UserNavigateExtraFilterStrategy implements NavigateExtraFilterStrat
     public void testManyToManyQuery() {
         //用户为主表，查询用户的权限，扁平化查询结果
         List<Permission> permissions = easyEntityQuery.queryable(User.class)
-                .where(s -> {
-                    s.name().eq("张三");
+                .where(u -> {
+                    u.name().eq("张三");
                 })
-                .toList(x -> x.roles().flatElement().permissions().flatElement());
+                .toList(uq -> uq.roles().flatElement().permissions().flatElement());
         Assertions.assertTrue(permissions.size() > 0);
         //用户为主表，查询用户的权限,查询指定列名
         permissions = easyEntityQuery.queryable(User.class)
-                .where(s -> {
-                    s.name().eq("张三");
+                .where(u -> {
+                    u.name().eq("张三");
                 })
-                .toList(x -> x.roles().flatElement().permissions().flatElement(p -> p.FETCHER.id().name()));
+                .toList(uq -> uq.roles().flatElement().permissions().flatElement(p -> p.FETCHER.id().name()));
         Assertions.assertTrue(permissions.size() > 0);
 
         //权限为主表，查询用户的权限，根据所属用户进行条件查询
         permissions = easyEntityQuery.queryable(Permission.class)
-                .where(s -> {
-                    s.roles().any(role -> {
+                .where(u -> {
+                    u.roles().any(role -> {
                         role.users().any(user -> {
                             user.name().eq("张三");
                         });
@@ -652,8 +660,8 @@ public class UserNavigateExtraFilterStrategy implements NavigateExtraFilterStrat
         Assertions.assertTrue(permissions.size() > 0);
         //权限为主表，查询用户的权限，根据扁平化的所属用户进行条件查询
         permissions = easyEntityQuery.queryable(Permission.class)
-                .where(s -> {
-                    s.roles().flatElement().users().any(user -> {
+                .where(u -> {
+                    u.roles().flatElement().users().any(user -> {
                         user.name().eq("张三");
                     });
                 }).toList();
@@ -696,48 +704,12 @@ Easy Query支持使用`leftJoin`方法进行查询，也就是在方法中声明
 
 ### 自定义查询结果类型
 
-在[](#分组查询)章节中有用到此功能，它在关联查询时也比较常用，一般情况，我们不会在实体类中声明有关联关系的字段，而是在VO中声明。
-
-```java
-@EntityFileProxy
-@Data
-public class UserVo {
-    @Column(primaryKey = true, generatedKey = true)
-    Integer id;
-
-    private String name;
-
-    private String companyName;
-
-    @Navigate(value = RelationTypeEnum.OneToOne, selfProperty = "id", targetProperty = "userId")
-    private UserDetail userDetail;
-
-    @Navigate(value = RelationTypeEnum.ManyToMany,
-            mappingClass = UserRole.class,
-            selfProperty = "id",
-            selfMappingProperty = "userId",
-            targetProperty = "id",
-            targetMappingProperty = "roleId")
-    private List<Role> roles;
-}
-
-@EntityFileProxy
-@Data
-public class UserDetailVo {
-    @Column(primaryKey = true, generatedKey = true)
-    Integer id;
-
-    String name;
-
-    String signature;
-}
-```
-
-在查询时，我们可以选择自定义需要转换的列。
-
 #### 使用临时类型
-查询时，如果没有声明查询结果的返回类型，可以使用临时类型，百日`Draft`类型或者`Map`类型。
-`Draft`和`Map`类型支持后续链式结果。
+
+查询时，如果没有声明查询结果的返回类型，可以使用临时类型，比如`Draft`类型或者`Map`类型。
+调用`select`方法时，如果返回时调用`Select.DRAFT.of`方法，那么最终将返回`Draft`类型，
+调用`select`方法时，如果返回`MapTypeProxy`类型，那么最终将返回`Map`类型。
+在查询时，我们可以选择自定义需要转换的列，上述两种方式都支持后续链式结果。
 ```java
     @Test
     public void testQueryReturnType() {
@@ -821,7 +793,54 @@ public class UserDetailVo {
 ```
 
 #### 使用引用类型
-我们可以自定义引用类型作为查询结果的返回类型，但是它不支持后续链式查询
+
+在[](#分组查询)章节中有用到此功能，它在隐式关联查询时也比较常用
+
+一般情况下，在查询时需要从关联表中获取数据，但这些数据并会设如保存在持久化的实体类中，而是使用VO来封装查询结果。
+因为实体类通常用于表示数据库中的持久化对象，而VO通常用于表示业务逻辑中的临时数据结构。
+
+
+调用`selectAutoInclude`方法查询VO时，需要注意的是，需要先在实体类中声明有关联关系的字段，
+再在VO中选择需要查询的字段，声明的字段必须是一样的，比如`UserVo`的`roles`声明和`User`的`roles`声明是一样的。
+声明的`UserVo`如下：
+```java
+@EntityFileProxy
+@Data
+public class UserVo {
+    @Column(primaryKey = true, generatedKey = true)
+    Integer id;
+
+    private String name;
+
+    private String companyName;
+
+    @Navigate(value = RelationTypeEnum.OneToOne, selfProperty = "id", targetProperty = "userId")
+    private UserDetail userDetail;
+
+    @Navigate(value = RelationTypeEnum.ManyToMany,
+            mappingClass = UserRole.class,
+            selfProperty = "id",
+            selfMappingProperty = "userId",
+            targetProperty = "id",
+            targetMappingProperty = "roleId")
+    private List<Role> roles;
+}
+
+@EntityFileProxy
+@Data
+public class UserDetailVo {
+    @Column(primaryKey = true, generatedKey = true)
+    Integer id;
+
+    String name;
+
+    String signature;
+}
+```
+
+声明了VO后，我们可以使用Easy Query的`select`方法快速查询主表的数据，
+也可以使用`selectAutoInclude`方法快速查询主表所关联的表数据，它会自动将类中的全部关联字段进行`include`。
+`select`方法和`selectAutoInclude`都可以自定义引用类型作为查询结果的返回类型，注意，它不支持后续链式查询。
 ```java
     @Test
     public void testCustomQueryReturnType() {
@@ -851,7 +870,6 @@ public class UserDetailVo {
         }
 
         //查询VO对象时自动查询关联的对象
-        //注意自动筛选返回结构化数据,VO和对应的实体类的字段是一样的，比如User有userDetail和roles两个关联对象，那么UserVo也只能声明这些需要自动查询的关联对象
         List<UserVo> userVoList = easyEntityQuery.queryable(User.class)
                 .where(u -> u.name().eq("张三"))
                 .selectAutoInclude(UserVo.class)
@@ -871,6 +889,7 @@ public class UserDetailVo {
 ```
 
 #### 使用Proxy类型
+
 使用`Proxy`类型作为返回结果类型，则支持后续链式结果。
 ```java
     @Test
