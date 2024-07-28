@@ -41,7 +41,7 @@ title: 快速开始🔥🔥🔥
             <artifactId>sql-mysql</artifactId>
             <version>${easy-query.version}</version>
         </dependency>
-        <dependency>
+      <!--   <dependency>
             <groupId>com.easy-query</groupId>
             <artifactId>sql-oracle</artifactId>
             <version>${easy-query.version}</version>
@@ -80,7 +80,7 @@ title: 快速开始🔥🔥🔥
             <groupId>com.easy-query</groupId>
             <artifactId>sql-kingbase-es</artifactId>
             <version>${easy-query.version}</version>
-        </dependency>
+        </dependency> -->
         <!-- 引入支持Easy Query的APT依赖 -->
         <dependency>
             <groupId>com.easy-query</groupId>
@@ -500,6 +500,8 @@ Easy Query默认在最外层使用`AND`作为逻辑运算符进行拼接查询�
 
 与Mybatis Plus不同，Easy Query并不是在每个条件语句中后面使用逻辑运算符，而是在外面统一声明逻辑运算符的。为了更好地理解逻辑运算符的使用，下面只使用`name`做条件进行举例说明。
 
+**总结：** `and(...)`内部全是`AND`链接,`or(....)`内部全是`OR`链接,默认`AND`链接
+
 `WHERE u.name LIKE ? AND u.name LIKE ? AND u.name LIKE ?`的写法如下：
 
 ```java
@@ -673,6 +675,8 @@ public class CustomPager<TEntity> implements Pager<TEntity,PageResult<TEntity>> 
 
 查询单条记录，根据id查询：
 
+所有的不允许为空`NotNull`可以抛出自定义错误,通过替换框架的`AssertExceptionFactory`接口来实现也可以自行全局拦截错误
+
 ```java
     @Test
     public void testId() {
@@ -711,7 +715,7 @@ public class CustomPager<TEntity> implements Pager<TEntity,PageResult<TEntity>> 
                 .singleOrNull();
         Assertions.assertNotNull(idUser);
 
-        //条件查询：根据id只查询一条记录，允许为空，如果结果有多条记录，则抛出EasyQuerySingleMoreElementException
+        //条件查询：根据id只查询一条记录，不允许为空，如果结果有多条记录，则抛出EasyQuerySingleMoreElementException
         idUser = easyEntityQuery.queryable(User.class)
                 .whereById(id)
                 .singleNotNull();
@@ -793,6 +797,8 @@ Easy Query的分组支持类型推断，`groupBy`方法可以传入分组的字�
     public void testGroup() {
         //查询每个公司的用户数，使用Draft相关类型作为查询结果类型
         List<Draft2<Integer, Long>> drafts = easyEntityQuery.queryable(User.class)
+                //如果当前表达式存在两张表,比如a join b,那么GroupKeys.TABLE1.of将改为GroupKeys.TABLE2.of,
+                //其中TABLE1...N表示当前表达式是多少张表
                 .groupBy(u -> GroupKeys.TABLE1.of(u.companyId()))
                 .having(group -> group.count().eq(1L))
                 .select(group -> Select.DRAFT.of(
@@ -813,6 +819,36 @@ Easy Query的分组支持类型推断，`groupBy`方法可以传入分组的字�
                         group.groupTable().companyId().as(UserGroup::getCompanyId),
                         group.count().as(UserGroup::getCount)
                 )).toList();
+        for (UserGroup userGroup : userGroups) {
+            Integer count = userGroup.getCount();
+            Assertions.assertEquals(count, 1);
+        }
+    }
+```
+
+如果我们的UserGroup对象添加生成代理对象那么可以自定义进行set
+```java
+@Data
+@EntityProxy
+public class UserGroup {
+    Integer companyId;
+
+    Integer count;
+}
+```
+
+
+```java
+    @Test
+    public void testGroup() {
+        //查询每个公司的用户数，用自定义的查询结果类型
+        List<UserGroup> userGroups = easyEntityQuery.queryable(User.class)
+                .groupBy(u -> GroupKeys.TABLE1.of(u.companyId()))
+                .having(group -> group.groupTable().createTime().max().le(new Date()))
+                .select(group -> new UserGroupProxy()
+                        .companyId().set(group.key1())//将groupBy的key给companyId您也可以使用group.groupTable().companyId()
+                        .count().set(group.count())
+                ).toList();
         for (UserGroup userGroup : userGroups) {
             Integer count = userGroup.getCount();
             Assertions.assertEquals(count, 1);
