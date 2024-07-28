@@ -50,11 +50,6 @@ export const zhSidebar = sidebar({
       ],
     },
     {
-      text: "插件",
-      prefix: "plugin/",
-      children: ["dir.md"],
-    },
-    {
       text: "实战",
       icon: "note",
       prefix: "practice/",
