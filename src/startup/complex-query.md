@@ -975,4 +975,4 @@ public class UserDetailVo {
     }
 ```
 
-手动创建DTO是一件很麻烦的事情，我们可以使用Easy Query简化操作，请参考[创建dto](./quick-plugin.md#创建dto)章节
+手动创建DTO是一件很麻烦的事情，我们可以使用插件助手简化操作，请参考[创建DTO](../guide/config/plugin.md#创建DTO)章节

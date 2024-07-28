@@ -123,7 +123,7 @@ title: 快速开始🔥🔥🔥
 
 #### SpringBoot环境
 Easy Query提供了`sql-springboot-starter`依赖以便快速整合到Spring Boot环境中，它包含了`sql-api-proxy`和各个数据库支持的依赖。
-`sql-processor`是需要额外引入的，因为如果是在多模块项目中使用Easy Query时，必须在每个需要生成代理类的模块处的`pom.xm`引入`sql-processor`依赖或者在项目`maven`插件处进行配置，代理类的作用请参考[](#生成代理类)。
+`sql-processor`是需要额外引入的，因为如果是在多模块项目中使用Easy Query时，必须在每个需要生成代理类的模块处的`pom.xm`引入`sql-processor`依赖或者在项目`maven`插件处进行配置，代理类的作用请参考[生成代理类](#生成代理类)章节。
 关于如何在多模块引入`sql-processor`依赖，可以参考[demo地址](https://github.com/xuejmnet/eq-multi-module)。
 ```xml
          <dependency>
@@ -269,6 +269,9 @@ public class User implements ProxyEntityAvailable<User, UserProxy> {
 ### 生成代理类
 
 现在实体类`User`关联的代理类`UserProxy`是不存在的，Idea是无法识别代理类，也无法进行编译，但是我们依然可以通过构建项目来触发Easy Query的APT工具来生成代理类。Easy Query的APT会为所有使用了`@EntityProxy`的实体类创建对应的代理类，代理类用于提供此对表别名，列名，列类型等等都提供了友好提示和类型判断，这些代理类可以帮助辅助我们更好设置条件查询和设值。
+
+真正开发时可以使用插件助手快速生成接口，请参考[快速生成接口](../guide/config/plugin.md#快速生成接口)章节。
+
 构建完项目后，代理类将会生成在指定的目录中。如下：
 
 <img src="/startup1.png">
@@ -365,6 +368,7 @@ public class EasyQueryTest {
     }
 }
 ```
+在控制台输出输出的SQL可以使用插件助手格式化SQL，请参考[格式化SQL](../guide/config/plugin.md#格式化SQL)章节。
 
 #### SpringBoot环境
 
