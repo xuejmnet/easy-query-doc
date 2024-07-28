@@ -5,6 +5,8 @@ title: DML操作
 
 ### 插入
 
+更多新增插入相关内容点击：[新增](/easy-query-doc/guide/basic/insert)
+
 #### 插入对象
 
 插入时，调用`insertable`方法时，必须要再调用`executeRows`方法，传入`true`代表将为插入的对象设置生成的id值。
@@ -58,6 +60,7 @@ Easy Query也支持插入Map对象，注意，key是列名，不是实体类的�
 
 ### 更新
 
+更多更新修改相关内容点击：[更新](/easy-query-doc/guide/basic/update)
 #### 更新对象
 
 更新时，调用`updatable`方法时，必须要再调用`executeRows`方法。
@@ -289,9 +292,13 @@ Easy Query也支持更新Map对象，注意，key是列名，不是实体类的�
 
 ### 删除
 
+更多删除相关内容点击：[删除](/easy-query-doc/guide/basic/delete)
+
 #### 逻辑删除
 
 Easy Query支持物理删除和逻辑删除，默认情况下使用逻辑删除。
+
+更多逻辑删除相关内容点击：[逻辑删除](/easy-query-doc/guide/adv/logic-delete)
 
 要使用逻辑删除，需要声明字段，例如：
 

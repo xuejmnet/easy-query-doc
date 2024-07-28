@@ -9,24 +9,24 @@ Easy Query是新一代的ORM框架，它不需要像Mybatis那样，每创建一
 ### 特性
 
 - 无实体查询,无实体更新,无实体新增,无实体删除等操作
-- 动态条件,form表单查询,有值就添加到条件,没值就忽略 [DynamicWhere](http://www.easy-query.com/easy-query-doc/guide/query/dynamic-where)
-- 动态排序,form表单排序,前端指定排序 [DynamicOrderBy](http://www.easy-query.com/easy-query-doc/guide/query/dynamic-sort)
+- 动态条件,form表单查询,有值就添加到条件,没值就忽略 [DynamicWhere](/easy-query-doc/guide/query/dynamic-where)
+- 动态排序,form表单排序,前端指定排序 [DynamicOrderBy](/easy-query-doc/guide/query/dynamic-sort)
 - 对象关系结构化VO自动组装返回,支持一对多一对一结果筛选,排序,limit
-- 多数据源,动态多数据源，支持`SpringEL`，使用场景多租户(一个租户一个库) [DynamicDataSource](http://www.easy-query.com/easy-query-doc/guide/config/muti-datasource)
-- 软删除，软删除部分禁用启用非常方便，软删除记录删除时间,删除人 [LogicDelete](http://www.easy-query.com/easy-query-doc/guide/adv/logic-delete)
-- 自定义错误异常快速针对`firstNotNull`、`singleNotNull`、`required` [Exception](http://www.easy-query.com/easy-query-doc/practice/configuration/exception)
-- 枚举和数据库映射,数据脱敏,数据编码存储解码获取,枚举属性,json或者数组,计算属性等 [ValueConverter,ColumnValueSQLConverter](http://www.easy-query.com/easy-query-doc/guide/prop/)
-- 数据填充,自动赋值创建人创建时间,修改人修改时间 [拦截器](http://www.easy-query.com/easy-query-doc/guide/adv/interceptor)、 [对象实战](http://www.easy-query.com/easy-query-doc/practice/entity/)
-- 慢sql监听拦截,自动上报预警 [jdbc执行监听器](http://www.easy-query.com/easy-query-doc/guide/adv/jdbc-listener)
-- 数据库列的加密和加密后的模糊查询企业级解决方案 [数据库列加密](http://www.easy-query.com/easy-query-doc/guide/adv/column-encryption)
-- 分库分表，读写分离 [分库分表，读写分离](http://www.easy-query.com/easy-query-doc/guide/super/) (敬请期待已经完成功能文档还在完善中)
-- VO对象直接返回 [自定义vo列返回](http://www.easy-query.com/easy-query-doc/guide/query/select)
-- 数据库对象模型关联查询：一对多、一对一、多对多、多对一 [对象关系查询](http://www.easy-query.com/easy-query-doc/startup/nodsl)
-- 对象关系关联查询`nosql`不仅仅是`sql`联级筛选,支持额外条件过滤比如公用中间表,多对多关联+type区分 [联级筛选Include Filter](http://www.easy-query.com/easy-query-doc/guide/query/relation-filter)
-- [对象关系查询](http://www.easy-query.com/easy-query-doc/startup/nodsl)、[SQL查询](http://www.easy-query.com/easy-query-doc/startup/sql)强类型语法的sql查询语法
-- 智能的差异识别更新、并发更新 [更新、追踪](http://www.easy-query.com/easy-query-doc/guide/basic/update)
-- 自带分页方法和无依赖分页链式返回 [分页](http://www.easy-query.com/easy-query-doc/guide/query/paging)
-- Embeddable、ValueObject对象 [值对象](http://www.easy-query.com/easy-query-doc/guide/adv/value-object)
+- 多数据源,动态多数据源，支持`SpringEL`，使用场景多租户(一个租户一个库) [DynamicDataSource](/easy-query-doc/guide/config/muti-datasource)
+- 软删除，软删除部分禁用启用非常方便，软删除记录删除时间,删除人 [LogicDelete](/easy-query-doc/guide/adv/logic-delete)
+- 自定义错误异常快速针对`firstNotNull`、`singleNotNull`、`required` [Exception](/easy-query-doc/practice/configuration/exception)
+- 枚举和数据库映射,数据脱敏,数据编码存储解码获取,枚举属性,json或者数组,计算属性等 [ValueConverter,ColumnValueSQLConverter](/easy-query-doc/guide/prop/)
+- 数据填充,自动赋值创建人创建时间,修改人修改时间 [拦截器](/easy-query-doc/guide/adv/interceptor)、 [对象实战](/easy-query-doc/practice/entity/)
+- 慢sql监听拦截,自动上报预警 [jdbc执行监听器](/easy-query-doc/guide/adv/jdbc-listener)
+- 数据库列的加密和加密后的模糊查询企业级解决方案 [数据库列加密](/easy-query-doc/guide/adv/column-encryption)
+- 分库分表，读写分离 [分库分表，读写分离](/easy-query-doc/guide/super/) (敬请期待已经完成功能文档还在完善中)
+- VO对象直接返回 [自定义vo列返回](/easy-query-doc/guide/query/select)
+- 数据库对象模型关联查询：一对多、一对一、多对多、多对一 [对象关系查询](/easy-query-doc/startup/nodsl)
+- 对象关系关联查询`nosql`不仅仅是`sql`联级筛选,支持额外条件过滤比如公用中间表,多对多关联+type区分 [联级筛选Include Filter](/easy-query-doc/guide/query/relation-filter)
+- [对象关系查询](/easy-query-doc/startup/nodsl)、[SQL查询](/easy-query-doc/startup/sql)强类型语法的sql查询语法
+- 智能的差异识别更新、并发更新 [更新、追踪](/easy-query-doc/guide/basic/update)
+- 自带分页方法和无依赖分页链式返回 [分页](/easy-query-doc/guide/query/paging)
+- Embeddable、ValueObject对象 [值对象](/easy-query-doc/guide/adv/value-object)
 - 数据权限,业务权限拦截器,我能查看我下面的所有组,组长可以查询所有组员的数据,组员查看自己的数据
 - 原生sql片段使用,方便开发人员使用数据库特有的函数或者方言
 - java函数数据库封装支持各个数据库
@@ -39,7 +39,7 @@ Easy Query是新一代的ORM框架，它不需要像Mybatis那样，每创建一
 - 自带便捷的`batch`批处理
 - 动态报名支持对查询的表名进行动态设置可以再非分库分表模式下直接操作对应表
 - 配合`easy-cache`实现缓存的便捷使用并且是一个企业级别的延迟双删
-- insert or update语法方言 [InsertOrUpdate](http://www.easy-query.com/easy-query-doc/guide/basic/insertOrUpdate)
+- insert or update语法方言 [InsertOrUpdate](/easy-query-doc/guide/basic/insertOrUpdate)
 - 计算属性,额外计算列比如年龄是动态的而不是固定的,所以年龄应该是`(当前时间-出生日期)`,复杂计算属性比如班级表存在学生数量这个属性这个属性应该是`select count(*) from student where class_id=?`
 
 
@@ -388,7 +388,7 @@ INSERT INTO user_role (user_id, role_id) VALUES (3, 3);
 
 在使用Easy Query前，推荐安装框架插件，它可以提高Easy Query的使用开发效率，如下：
 
-![img](http://www.easy-query.com/easy-query-doc/plugin-search.png)
+![img](/easy-query-doc/plugin-search.png)
 
 
 
@@ -590,19 +590,19 @@ public class UserRole implements ProxyEntityAvailable<UserRole, UserRoleProxy> {
 
 像类似`CompanyProxy`的都是相应的实体类对应的查询辅助代理类，这些代理类可以帮助我们更好设置条件查询和设值，它们可以在构建项目时由eq框架的APT生成或者直接由eq插件生成，如下：
 
-![img](http://www.easy-query.com/easy-query-doc/startup1.png)
+![img](/easy-query-doc/startup1.png)
 
 
 
 如果存在如下情况无法解析代理类的情况，那么就将目录标记为生成目录，如下：
 
-![img](http://www.easy-query.com/easy-query-doc/startup2.png)
+![img](/easy-query-doc/startup2.png)
 
 
 
 如果依然还是不行，可以尝试点击idea右侧的maven刷新按钮进行刷新即可
 
-![img](http://www.easy-query.com/easy-query-doc/startup4.png)
+![img](/easy-query-doc/startup4.png)
 
 
 
