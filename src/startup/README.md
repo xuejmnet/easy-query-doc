@@ -1,3 +1,6 @@
+---
+title: 简介
+---
 ## 简介
 
 Easy Query是新一代的ORM框架，它不需要像Mybatis那样，每创建一个实体类，就需要创建对应的`Mapper`类和xml文件，它可以直接传入实体类作为参数进行增删改查操作，在Mybatis中，写动态条件查询，总是要书写重复的判空和拼接SQL操作，使用Easy Query的条件过滤器可以简化这些操作。相比Spring Data JPA的`EntityManager`，它没有`EntityManager`的对象状态管理等繁琐的处理，它比`EntityManager`更细粒度，更灵活，可以选择查询的字段，支持简单类型的字段，以及有关联关系的字段。
@@ -388,7 +391,7 @@ INSERT INTO user_role (user_id, role_id) VALUES (3, 3);
 
 在使用Easy Query前，推荐安装框架插件，它可以提高Easy Query的使用开发效率，如下：
 
-![img](/easy-query-doc/plugin-search.png)
+![img](/plugin-search.png)
 
 
 
@@ -590,19 +593,19 @@ public class UserRole implements ProxyEntityAvailable<UserRole, UserRoleProxy> {
 
 像类似`CompanyProxy`的都是相应的实体类对应的查询辅助代理类，这些代理类可以帮助我们更好设置条件查询和设值，它们可以在构建项目时由eq框架的APT生成或者直接由eq插件生成，如下：
 
-![img](/easy-query-doc/startup1.png)
+![img](/startup1.png)
 
 
 
 如果存在如下情况无法解析代理类的情况，那么就将目录标记为生成目录，如下：
 
-![img](/easy-query-doc/startup2.png)
+![img](/startup2.png)
 
 
 
 如果依然还是不行，可以尝试点击idea右侧的maven刷新按钮进行刷新即可
 
-![img](/easy-query-doc/startup4.png)
+![img](/startup4.png)
 
 
 
