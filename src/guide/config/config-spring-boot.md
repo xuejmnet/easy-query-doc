@@ -1,120 +1,37 @@
 ---
 title: SpringBoot配置
 ---
-
-# SpringBoot配置
-
-
-## 获取最新
-
-[https://central.sonatype.com/](https://central.sonatype.com/) 搜索`com.easy-query`获取最新安装包
-
-
-
-## spring-boot工程
-```xml
-<properties>
-    <easy-query.version>latest-version</easy-query.version>
-</properties>
-<dependency>
-    <groupId>com.easy-query</groupId>
-    <artifactId>sql-springboot-starter</artifactId>
-    <version>${easy-query.version}</version>
-</dependency>
-```
-```yml
-#配置文件
-easy-query:
-  #是否启动默认true
-  enable: true
-  #支持的数据库
-  database: mysql
-  #对象属性和数据库列名的转换器
-  name-conversion: underlined
-  #当执行物理删除是否报错,true表示报错,false表示不报错,默认true,如果配置为true,可以通过allowDeleteStament来实现允许
-  delete-throw: true
-  #是否打印sql 默认true 需要配置log信息才可以 默认实现sl4jimpl
-  print-sql: true
-  #sqlNativeSegment输入和格式化无需处理单引号会自动处理为双单引号
-  keep-native-style: true
-```
-```java
-//依赖注入
-
-@Autowired
-private EasyEntityQuery easyEntityQuery;//(强力推荐🔥🔥🔥)
-
-@Autowired
-private EasyQueryClient easyQueryClient;//通过字符串属性方式来实现查询
-
-@Autowired
-private EasyQuery easyQuery;//对EasyQueryClient的增强通过lambda方式实现查询(推荐)
-
-@Autowired
-private EasyProxyQuery easyProxyQuery;//建议转EasyEntityQuery
-```
-
+## 前言
+前面在[快速开始](../../startup/quick-start.md#springboot环境)章节中，我们知道了Easy Query如何在Spring Boot环境下使用，本章节将讲解Easy Query在Spring Boot环境下更多的功能配置。
 
 ## springboot多数据源
-因为`easy-query`默认仅支持单数据源如果需要支持多数据源可以通过手动构建`EasyQuery`的Bean实例
+多数据源配置请查看[多数据源处理](./muti-datasource.md)章节
 
+::: warning 注意点及说明!!!
+> 注意自行构建的数据源如果`DataSource`不是被spring接管的`Bean`那么事务将不会生效
+:::
+
+
+
+::: warning 说明!!!
+> 创建完拦截器后需要配置到`QueryConfiguration`,如果你是`springboot`并且是默认`easy-query`只需要添加`@Component`如果是`solon`那么可以查看[配置或配置到所有数据源](/easy-query-doc/guide/config/config-solon.html#solon所有配置)
+> 如果您是自行构建的`easy-query`需要自行添加拦截器
 ```java
-    @Bean("ds2")
-    public EasyQuery easyQuery(DataSource dataSource) {
-        EasyQueryClient easyQueryClient = EasyQueryBootstrapper.defaultBuilderConfiguration()
-                .setDefaultDataSource(dataSource)
-                .replaceService(DataSourceUnitFactory.class, SpringDataSourceUnitFactory.class)//springboot下必须用来支持事务
-                .replaceService(ConnectionManager.class, SpringConnectionManager.class)//springboot下必须用来支持事务
-                .replaceService(NameConversion.class, new UnderlinedNameConversion())
-                .optionConfigure(builder -> {
-                    builder.setDeleteThrowError(easyQueryProperties.getDeleteThrow());
-                    builder.setInsertStrategy(easyQueryProperties.getInsertStrategy());
-                    builder.setUpdateStrategy(easyQueryProperties.getUpdateStrategy());
-                    builder.setMaxShardingQueryLimit(easyQueryProperties.getMaxShardingQueryLimit());
-                    builder.setExecutorMaximumPoolSize(easyQueryProperties.getExecutorMaximumPoolSize());
-                    builder.setExecutorCorePoolSize(easyQueryProperties.getExecutorCorePoolSize());
-                    builder.setThrowIfRouteNotMatch(easyQueryProperties.isThrowIfRouteNotMatch());
-                    builder.setShardingExecuteTimeoutMillis(easyQueryProperties.getShardingExecuteTimeoutMillis());
-                    builder.setQueryLargeColumn(easyQueryProperties.isQueryLargeColumn());
-                    builder.setMaxShardingRouteCount(easyQueryProperties.getMaxShardingRouteCount());
-                    builder.setExecutorQueueSize(easyQueryProperties.getExecutorQueueSize());
-                    builder.setDefaultDataSourceName(easyQueryProperties.getDefaultDataSourceName());
-                    builder.setDefaultDataSourceMergePoolSize(easyQueryProperties.getDefaultDataSourceMergePoolSize());
-                    builder.setMultiConnWaitTimeoutMillis(easyQueryProperties.getMultiConnWaitTimeoutMillis());
-                    builder.setWarningBusy(easyQueryProperties.isWarningBusy());
-                    builder.setInsertBatchThreshold(easyQueryProperties.getInsertBatchThreshold());
-                    builder.setUpdateBatchThreshold(easyQueryProperties.getUpdateBatchThreshold());
-                    builder.setPrintSql(easyQueryProperties.isPrintSql());
-                    builder.setStartTimeJob(easyQueryProperties.isStartTimeJob());
-                    builder.setDefaultTrack(easyQueryProperties.isDefaultTrack());
-                    builder.setRelationGroupSize(easyQueryProperties.getRelationGroupSize());
-                    builder.setNoVersionError(easyQueryProperties.isNoVersionError());
-                })
-                .useDatabaseConfigure(new MySQLDatabaseConfiguration())
-                .build();
-//         QueryConfiguration queryConfiguration = easyQueryClient.getRuntimeContext().getQueryConfiguration();
-
-//         configuration.applyEncryptionStrategy(new DefaultAesEasyEncryptionStrategy());
-//         configuration.applyEncryptionStrategy(new Base64EncryptionStrategy());
-//         configuration.applyEncryptionStrategy(new MyEncryptionStrategy());
-//         configuration.applyEncryptionStrategy(new JavaEncryptionStrategy());
-//         configuration.applyLogicDeleteStrategy(new MyLogicDelStrategy());
-//         configuration.applyInterceptor(new MyEntityInterceptor());
-//         configuration.applyInterceptor(new Topic1Interceptor());
-//         configuration.applyInterceptor(new MyTenantInterceptor());
-// //        configuration.applyShardingInitializer(new FixShardingInitializer());
-//         configuration.applyShardingInitializer(new DataSourceAndTableShardingInitializer());
-//         configuration.applyShardingInitializer(new TopicShardingShardingInitializer());
-//         configuration.applyShardingInitializer(new TopicShardingTimeShardingInitializer());
-//         configuration.applyShardingInitializer(new DataSourceShardingInitializer());
-//         configuration.applyValueConverter(new EnumConverter());
-//         configuration.applyValueConverter(new JsonConverter());
-//         configuration.applyValueUpdateAtomicTrack(new IntegerNotValueUpdateAtomicTrack());
-//         configuration.applyColumnValueSQLConverter(new MySQLAesEncryptColumnValueSQLConverter());
-//         configuration.applyGeneratedKeySQLColumnGenerator(new MyDatabaseIncrementSQLColumnGenerator());
-        return new EasyQuery(easyQueryClient);
-    }
+QueryRuntimeContext runtimeContext = easyQuery.getRuntimeContext();
+QueryConfiguration configuration = runtimeContext.getQueryConfiguration();
+configuration.applyEncryptionStrategy(new DefaultAesEasyEncryptionStrategy());
+configuration.applyLogicDeleteStrategy(new MyLogicDelStrategy());
+configuration.applyInterceptor(new MyEntityInterceptor());
+configuration.applyShardingInitializer(new DataSourceAndTableShardingInitializer());
+configuration.applyValueConverter(new EnumConverter());
+configuration.applyColumnValueSQLConverter(new MySQLAesEncryptColumnValueSQLConverter());
+configuration.applyGeneratedKeySQLColumnGenerator(new MyDatabaseIncrementSQLColumnGenerator());
+TableRouteManager tableRouteManager = runtimeContext.getTableRouteManager();
+tableRouteManager.addRoute(new TopicShardingTableRoute());
+DataSourceRouteManager dataSourceRouteManager = runtimeContext.getDataSourceRouteManager();
+dataSourceRouteManager.addRoute(new TopicShardingDataSourceTimeDataSourceRoute());
 ```
+:::
 
 
 ## SpringBoot 启动报错
@@ -142,83 +59,6 @@ java.lang.IllegalStateException: Unable to load cache item
     <artifactId>spring-boot-starter-aop</artifactId>
 </dependency>
 ```
-
-## 多数据源
-默认仅支持单个数据源的处理
-
-用户也可以自行构建其他数据库或者其他数据源的`easy-query`
-
-
-
-::: warning 注意点及说明!!!
-> 注意自行构建的数据源如果`DataSource`不是被spring接管的`Bean`那么事务将不会生效
-:::
-
-```java
-
-@Configuration
-public class MyConfiguration {
-
-    @Bean("myeq")
-    public EasyQuery easyQuery1(DataSource dataSource){//数据源是你要的即可
-        EasyQueryClient easyQueryClient = EasyQueryBootstrapper.defaultBuilderConfiguration()
-                .setDefaultDataSource(dataSource)
-                .replaceService(DataSourceUnitFactory.class, SpringDataSourceUnitFactory.class)//支持spring事务
-                .replaceService(ConnectionManager.class, SpringConnectionManager.class)//支持spring事务
-                .replaceService(NameConversion.class, UnderlinedNameConversion.class)
-                .optionConfigure(builder -> {
-                    //配置和springboot的配置一样
-                    builder.setDeleteThrowError(easyQueryProperties.getDeleteThrow());
-                    builder.setInsertStrategy(easyQueryProperties.getInsertStrategy());
-                    builder.setUpdateStrategy(easyQueryProperties.getUpdateStrategy());
-                    builder.setMaxShardingQueryLimit(easyQueryProperties.getMaxShardingQueryLimit());
-                    builder.setExecutorMaximumPoolSize(easyQueryProperties.getExecutorMaximumPoolSize());
-                    builder.setExecutorCorePoolSize(easyQueryProperties.getExecutorCorePoolSize());
-                    builder.setThrowIfRouteNotMatch(easyQueryProperties.isThrowIfRouteNotMatch());
-                    builder.setShardingExecuteTimeoutMillis(easyQueryProperties.getShardingExecuteTimeoutMillis());
-                    builder.setQueryLargeColumn(easyQueryProperties.isQueryLargeColumn());
-                    builder.setMaxShardingRouteCount(easyQueryProperties.getMaxShardingRouteCount());
-                    builder.setExecutorQueueSize(easyQueryProperties.getExecutorQueueSize());
-                    builder.setDefaultDataSourceName(easyQueryProperties.getDefaultDataSourceName());
-                    builder.setDefaultDataSourceMergePoolSize(easyQueryProperties.getDefaultDataSourceMergePoolSize());
-                    builder.setMultiConnWaitTimeoutMillis(easyQueryProperties.getMultiConnWaitTimeoutMillis());
-                    builder.setWarningBusy(easyQueryProperties.isWarningBusy());
-                    builder.setInsertBatchThreshold(easyQueryProperties.getInsertBatchThreshold());
-                    builder.setUpdateBatchThreshold(easyQueryProperties.getUpdateBatchThreshold());
-                    builder.setPrintSql(easyQueryProperties.isPrintSql());
-                    builder.setStartTimeJob(easyQueryProperties.isStartTimeJob());
-                    builder.setDefaultTrack(easyQueryProperties.isDefaultTrack());
-                    builder.setRelationGroupSize(easyQueryProperties.getRelationGroupSize());
-                    builder.setNoVersionError(easyQueryProperties.isNoVersionError());
-                })
-                .useDatabaseConfigure(new OracleDatabaseConfiguration())
-                .build();
-        return new DefaultEasyQuery(easyQueryClient);
-    }
-}
-
-```
-
-
-::: warning 说明!!!
-> 创建完拦截器后需要配置到`QueryConfiguration`,如果你是`springboot`并且是默认`easy-query`只需要添加`@Component`如果是`solon`那么可以查看[配置或配置到所有数据源](/easy-query-doc/guide/config/config-solon.html#solon所有配置)
-> 如果您是自行构建的`easy-query`需要自行添加拦截器
-```java
-QueryRuntimeContext runtimeContext = easyQuery.getRuntimeContext();
-QueryConfiguration configuration = runtimeContext.getQueryConfiguration();
-configuration.applyEncryptionStrategy(new DefaultAesEasyEncryptionStrategy());
-configuration.applyLogicDeleteStrategy(new MyLogicDelStrategy());
-configuration.applyInterceptor(new MyEntityInterceptor());
-configuration.applyShardingInitializer(new DataSourceAndTableShardingInitializer());
-configuration.applyValueConverter(new EnumConverter());
-configuration.applyColumnValueSQLConverter(new MySQLAesEncryptColumnValueSQLConverter());
-configuration.applyGeneratedKeySQLColumnGenerator(new MyDatabaseIncrementSQLColumnGenerator());
-TableRouteManager tableRouteManager = runtimeContext.getTableRouteManager();
-tableRouteManager.addRoute(new TopicShardingTableRoute());
-DataSourceRouteManager dataSourceRouteManager = runtimeContext.getDataSourceRouteManager();
-dataSourceRouteManager.addRoute(new TopicShardingDataSourceTimeDataSourceRoute());
-```
-:::
 
 
 
@@ -324,7 +164,7 @@ Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Err
 		</dependency>
 	</dependencies>
 ```
-### 代理模式
+### Entity模式
 ```xml
 	<dependencies>
 		<dependency>
