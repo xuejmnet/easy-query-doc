@@ -634,6 +634,14 @@ public class UserNavigateExtraFilterStrategy implements NavigateExtraFilterStrat
     @Test
     public void testManyToManyQuery() {
         //用户为主表，查询用户的权限，扁平化查询结果
+        List<Integer> permissionIds = easyEntityQuery.queryable(User.class)
+                .where(u -> {
+                    u.name().eq("张三");
+                })
+                .toList(uq -> uq.roles().flatElement().permissions().flatElement().id());
+        Assertions.assertTrue(permissionIds.size() > 0);
+
+        //用户为主表，查询用户的权限，扁平化查询结果
         List<Permission> permissions = easyEntityQuery.queryable(User.class)
                 .where(u -> {
                     u.name().eq("张三");
