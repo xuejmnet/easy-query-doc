@@ -420,7 +420,8 @@ public class Product implements ProxyEntityAvailable<Product, ProductProxy> {
 
     String name;
 
-    @LogicDelete(strategy = LogicDeleteStrategyEnum.CUSTOM, strategyName = "MyLogicDelStrategy")
+    //注意strategyName为自定义逻辑删除的getStrategy返回的字符串,如果使用自定义逻辑删除必须将strategy策略改为LogicDeleteStrategyEnum.CUSTOM
+    @LogicDelete(strategy = LogicDeleteStrategyEnum.CUSTOM, strategyName = "CustomLogicDelStrategy")
     LocalDateTime deletedTime;
 
     Integer deletedUserId;
