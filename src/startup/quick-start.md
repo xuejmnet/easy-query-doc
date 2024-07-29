@@ -809,6 +809,8 @@ Easy Query的分组支持类型推断，`groupBy`方法可以传入分组的字�
                         //此处的key1就是分组的companyId
                         group.key1(),
                         group.count()
+                        //group.groupTable().stars().sum();//对单字段求和下面方式也行
+                        //group.sum(group.groupTable().stars());
                 )).toList();
         for (Draft2<Integer, Long> draft : drafts) {
             Long count = draft.getValue2();
@@ -822,6 +824,8 @@ Easy Query的分组支持类型推断，`groupBy`方法可以传入分组的字�
                 .select(UserGroup.class, group -> Select.of(
                         group.groupTable().companyId().as(UserGroup::getCompanyId),
                         group.count().as(UserGroup::getCount)
+                        //group.groupTable().stars().sum();//对单字段求和下面方式也行
+                        //group.sum(group.groupTable().stars());
                 )).toList();
         for (UserGroup userGroup : userGroups) {
             Integer count = userGroup.getCount();
