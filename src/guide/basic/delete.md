@@ -40,9 +40,9 @@ private Boolean deleted;
     }
 ```
 
-注意`deleted`不能为`null`，因为查询时不会判断null
+注意`deleted`不能为`null`，因为查询时不会判断`null`
 
-#### 物理删除
+## 物理删除
 
 Easy Query也支持物理删除，需要在全局配置或者当前方法配置允许执行DELETE语句，否则执行DELETE将会抛出异常。
 
@@ -66,7 +66,7 @@ Easy Query也支持物理删除，需要在全局配置或者当前方法配置�
     }
 ```
 
-#### 禁用部分逻辑删除
+## 禁用部分逻辑删除
 
 Easy Query支持查询时移除部分表的逻辑删除条件。
 ```java
@@ -107,42 +107,9 @@ Easy Query支持查询时移除部分表的逻辑删除条件。
     }
 ```
 
-#### 自定义逻辑删除策略
+## 自定义逻辑删除策略
 
 Easy Query除了支持简单的逻辑删除字段，还支持自定义逻辑删除策略。
-
-执行SQL如下：
-```sql
--- 删除商品表
-DROP TABLE IF EXISTS product CASCADE;
-
--- 创建商品表
-CREATE TABLE product (
-    id INTEGER AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255),
-    deleted_time DATETIME,
-    deleted_user_id INTEGER
-);
-```
-
-在类中声明策略：
-```java
-@EntityProxy
-@Table
-@Data
-public class Product implements ProxyEntityAvailable<Product, ProductProxy> {
-    @Column(primaryKey = true, generatedKey = true)
-    Integer id;
-
-    String name;
-
-    //注意strategyName为自定义逻辑删除的getStrategy返回的字符串,如果使用自定义逻辑删除必须将strategy策略改为LogicDeleteStrategyEnum.CUSTOM
-    @LogicDelete(strategy = LogicDeleteStrategyEnum.CUSTOM, strategyName = "CustomLogicDelStrategy")
-    LocalDateTime deletedTime;
-
-    Integer deletedUserId;
-}
-```
 
 自定义逻辑删除策略：
 ```java
@@ -188,6 +155,39 @@ public class CustomLogicDelStrategy extends AbstractLogicDeleteStrategy {
         QueryRuntimeContext runtimeContext = easyEntityQuery.getRuntimeContext();
         QueryConfiguration queryConfiguration = runtimeContext.getQueryConfiguration();
         queryConfiguration.applyLogicDeleteStrategy(new CustomLogicDelStrategy());
+```
+
+执行SQL如下：
+```sql
+-- 删除商品表
+DROP TABLE IF EXISTS product CASCADE;
+
+-- 创建商品表
+CREATE TABLE product (
+    id INTEGER AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255),
+    deleted_time DATETIME,
+    deleted_user_id INTEGER
+);
+```
+
+在类中使用逻辑删除策略：
+```java
+@EntityProxy
+@Table
+@Data
+public class Product implements ProxyEntityAvailable<Product, ProductProxy> {
+    @Column(primaryKey = true, generatedKey = true)
+    Integer id;
+
+    String name;
+
+    //注意strategyName为自定义逻辑删除的getStrategy返回的字符串,如果使用自定义逻辑删除必须将strategy策略改为LogicDeleteStrategyEnum.CUSTOM
+    @LogicDelete(strategy = LogicDeleteStrategyEnum.CUSTOM, strategyName = "CustomLogicDelStrategy")
+    LocalDateTime deletedTime;
+
+    Integer deletedUserId;
+}
 ```
 
 ```java
