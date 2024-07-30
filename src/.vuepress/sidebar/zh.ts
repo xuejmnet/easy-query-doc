@@ -8,7 +8,7 @@ export const zhSidebar = sidebar({
     {
       text: "起步",
       prefix: "startup/",
-      children: ["readme","quick-start","complex-query","dml","diff-proxy"],
+      children: ["readme","quick-start","complex-query","diff-proxy"],
     },
     // "quick-start",
     {

@@ -1,99 +1,67 @@
 ---
-title: 新增或者更新
+title: 插入或者更新
 ---
-并不是简单的查询判断是否存在,如果不存在就更新,存在就更新或者忽略,而是实现了数据库对应的方言实现数据库自身的功能,如果要使用此功能建议升级到`1.10.41+`
 
-## 支持的db
+旧版本的Easy Query提供了只支持MySQL的`onDuplicateKeyIgnore`，`onDuplicateKeyUpdate`方法，只支持PostgreSQL的`onConflictDoNothing`，`onConflictDoUpdate`方法。
+这些方法都是用于设置重复插入策略的，它们已经过时了，在此不再讲述。
+
+`1.10.41+`版本的Easy Query提供了更加强大的`conflictThen`方法，它用于插入或更新操作，它并不是简单的查询判断是否存在,如果不存在就更新,存在就更新或者忽略,而是实现了数据库对应的方言实现数据库自身的功能。它支持的数据库如下：
 
 数据库名称  | 包名  | 是否支持
 --- | --- | ---  
 MySQL | sql-mysql  | ✅
+Oracle | sql-oracle  | ✅
 PostgresSQL | sql-pgsql  | ✅
 SqlServer | sql-mssql  | ✅
 H2 | sql-h2  | ✅
+SQLite | sql-sqlite  | ✅
 达梦dameng | sql-dameng  | ✅
 人大金仓KingbaseES | sql-kingbase-es  | ✅
-Oracle | sql-oracle  | ✅
-SQLite | sql-sqlite  | ✅
 
-## onConflictThen
-- 第一个参数表示要更新的列,如果传入null则表示存在就忽略
-- 第二个参数表示指定存在的约束判断支持多列(mysql不支持指定所以设置了也无效)
 
-## 存在就忽略不更新
+`conflictThen`方法的第一个参数指定需要更新的字段，如果传入`null`则不进行更新，第二个参数指定用于判断对象是否存在所需要的字段，第二个参数如果不传则默认使用主键字段判断，支持多字段(MySQL不支持所以设置了也无效)，`conflictThen`方法执行的大概过程是根据第二个参数指定的字段判断对象是否已存在，如果存在，则更新第一个参数指定的字段，否则执行插入操作，插入的是全部字段。
 
-```java
-TopicAuto topicAuto = new TopicAuto();
-topicAuto.setStars(999);
-topicAuto.setTitle("title" + 999);
-topicAuto.setCreateTime(LocalDateTime.of(2020,1,1,1,1));
-Assert.assertNull(topicAuto.getId());
-long l = defaultEasyEntityQuery.insertable(topicAuto)
-        .onConflictThen(null)
-        .executeRows();
+## 存在则更新
 
-MERGE INTO "t_topic_auto" t1 USING (SELECT ? AS "stars",? AS "title",? AS "create_time" FROM DUAL ) t2 ON (t1."id" = t2."id") WHEN NOT MATCHED THEN INSERT ("stars","title","create_time") VALUES (t2."stars",t2."title",t2."create_time")
-```
-
-### 指定存在的条件
-```java
-TopicAuto topicAuto = new TopicAuto();
-topicAuto.setStars(999);
-topicAuto.setTitle("title" + 999);
-topicAuto.setCreateTime(LocalDateTime.of(2020,1,1,1,1));
-Assert.assertNull(topicAuto.getId());
-long l = defaultEasyEntityQuery.insertable(topicAuto)
-        .onConflictThen(null,o->o.FETCHER.stars().id())
-        .executeRows();
-
-MERGE INTO "t_topic_auto" t1 USING (SELECT ? AS "title",? AS "create_time" FROM DUAL ) t2 ON (t1."stars" = t2."stars" AND t1."id" = t2."id") WHEN NOT MATCHED THEN INSERT ("title","create_time") VALUES (t2."title",t2."create_time")
-```
-
-## 存在就更新
+本例使用`conflictThen`方法，不传第二个参数，默认使用主键字段判断对象是否已存在，本例为存在则更新第一个参数指定的字段。
 
 ```java
-//存在就更新stars和title
-TopicAuto topicAuto = new TopicAuto();
-topicAuto.setStars(999);
-topicAuto.setTitle("title" + 999);
-topicAuto.setCreateTime(LocalDateTime.of(2020,1,1,1,1));
-Assert.assertNull(topicAuto.getId());
-long l = defaultEasyEntityQuery.insertable(topicAuto)
-        .onConflictThen(o -> o.FETCHER.stars().title())
-        .executeRows();
+    @Test
+    public void testOnConflictThenUpdate() {
+        User user = easyEntityQuery.queryable(User.class).findNotNull(1);
+        Date updateTime = new Date();
+        user.setUpdateTime(updateTime);
+        long rows = easyEntityQuery.insertable(user)
+                .onConflictThen(o -> o.FETCHER.allFields())
+                .executeRows();
+        Assertions.assertTrue(rows > 0);
 
-MERGE INTO "t_topic_auto" t1 USING (SELECT ? AS "stars",? AS "title",? AS "create_time" FROM DUAL ) t2 ON (t1."id" = t2."id") WHEN MATCHED THEN UPDATE SET t1."stars" = t2."stars",t1."title" = t2."title" WHEN NOT MATCHED THEN INSERT ("stars","title","create_time") VALUES (t2."stars",t2."title",t2."create_time")
+        user = easyEntityQuery.queryable(User.class).findNotNull(1);
+        updateTime = new Date();
+        user.setUpdateTime(updateTime);
+        rows = easyEntityQuery.insertable(user)
+                .onConflictThen(o -> o.FETCHER.updateTime())
+                .executeRows();
+        Assertions.assertTrue(rows > 0);
+    }
 ```
 
-## 存在就更新
+## 不存在则插入
+
+本例使用`conflictThen`方法，使用第二个参数传入主键字段来判断对象是否已存在，本例为不存在则插入全部字段。
 
 ```java
-//存在就更新stars和title
-TopicAuto topicAuto = new TopicAuto();
-topicAuto.setStars(999);
-topicAuto.setTitle("title" + 999);
-topicAuto.setCreateTime(LocalDateTime.of(2020,1,1,1,1));
-Assert.assertNull(topicAuto.getId());
-long l = defaultEasyEntityQuery.insertable(topicAuto)
-        .onConflictThen(o -> o.FETCHER.stars().title())
-        .executeRows();
-
-MERGE INTO "t_topic_auto" t1 USING (SELECT ? AS "stars",? AS "title",? AS "create_time" FROM DUAL ) t2 ON (t1."id" = t2."id") WHEN MATCHED THEN UPDATE SET t1."stars" = t2."stars",t1."title" = t2."title" WHEN NOT MATCHED THEN INSERT ("stars","title","create_time") VALUES (t2."stars",t2."title",t2."create_time")
-
-
-//存在就更新所有列除了主键和指定约束键
-TopicAuto topicAuto = new TopicAuto();
-topicAuto.setStars(999);
-topicAuto.setTitle("title" + 999);
-topicAuto.setCreateTime(LocalDateTime.of(2020,1,1,1,1));
-Assert.assertNull(topicAuto.getId());
-long l = defaultEasyEntityQuery.insertable(topicAuto)
-        .onConflictThen(o -> o.FETCHER.allFields())
-        .executeRows();
-
-MERGE INTO "t_topic_auto" t1 USING (SELECT ? AS "stars",? AS "title",? AS "create_time" FROM DUAL ) t2 ON (t1."id" = t2."id") WHEN MATCHED THEN UPDATE SET t1."stars" = t2."stars",t1."title" = t2."title",t1."create_time" = t2."create_time" WHEN NOT MATCHED THEN INSERT ("stars","title","create_time") VALUES (t2."stars",t2."title",t2."create_time")
+    @Test
+    public void testOnConflictThenInsert() {
+        User user = new User();
+        Date createTime = new Date();
+        user.setName("新用户");
+        user.setCreateTime(createTime);
+        user.setVersion(1);
+        user.setEnabled(true);
+        long rows = easyEntityQuery.insertable(user)
+                .onConflictThen(null, o -> o.FETCHER.id())
+                .executeRows();
+        Assertions.assertTrue(rows > 0);
+    }
 ```
-
-
-## 相关搜索
-`存在更新` `存在忽略` `MERGE INTO` `onDuplicateKeyIgnore` `onDuplicateKeyUpdate` `onConflictDoNothing` `onConflictDoUpdate`
