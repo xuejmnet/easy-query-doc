@@ -3,171 +3,200 @@ title: 删除
 order: 40
 ---
 
-# 删除
-`EasyQuery`提供了内置物理删除和逻辑删除,默认`EasyQuery`不支持`delete`命令 需要开启允许或者使用delete语句的时候允许。
 
+## 逻辑删除
 
-::: code-tabs
-@tab SpringBoot
-```yml
-easy-query:
-  enable: true
-  delete-throw: true
-```
-@tab 控制台
+Easy Query支持物理删除和逻辑删除，默认情况下使用逻辑删除。
+
+要使用逻辑删除，需要声明字段，例如：
+
 ```java
-
-easyQuery = EasyQueryBootstrapper.defaultBuilderConfiguration()
-        .setDefaultDataSource(dataSource)
-        .optionConfigure(op->{
-            op.setDeleteThrowError(true);
-        })
-        .useDatabaseConfigure(new MySQLDatabaseConfiguration())
-        .build();
+@LogicDelete(strategy = LogicDeleteStrategyEnum.BOOLEAN)
+private Boolean deleted;
 ```
-:::
 
-创建`EasyQuery`配置项的时候可以通过构造函数开启允许删除，默认不允许调用删除功能
+调用`deletable`方法将会修改`deleted`为`true`，因此如果不声明字段，那么将会抛出异常。
 
+```java
+    @Test
+    public void testLogicDelete() {
+        //默认情况下，EasyQuery使用逻辑删除
+        Company company = new Company();
+        company.setName("新公司");
+        company.setDeleted(false);
+        easyEntityQuery.insertable(company).executeRows(true);
+        long rows = easyEntityQuery.deletable(Company.class)
+                .where(c -> c.name().eq("新公司"))
+                .executeRows();
+        Assertions.assertTrue(rows > 0);
 
-数据库建表脚本
+        //根据对象id删除
+        company = new Company();
+        company.setName("新公司");
+        company.setDeleted(false);
+        easyEntityQuery.insertable(company).executeRows(true);
+        rows = easyEntityQuery.deletable(company).executeRows();
+        Assertions.assertTrue(rows > 0);
+    }
+```
+
+注意`deleted`不能为`null`，因为查询时不会判断null
+
+#### 物理删除
+
+Easy Query也支持物理删除，需要在全局配置或者当前方法配置允许执行DELETE语句，否则执行DELETE将会抛出异常。
+
+通过调用`disableLogicDelete`方法可以禁用逻辑删除
+
+```java
+    @Test
+    public void testDelete() {
+        Company company = new Company();
+        company.setName("新公司");
+        easyEntityQuery.insertable(company).executeRows(true);
+        long rows = easyEntityQuery.deletable(company)
+                .disableLogicDelete()//禁用逻辑删除,使用物理删除 生成delete语句
+                .allowDeleteStatement(true)//如果不允许物理删除那么设置允许 配置项delete-throw
+                .executeRows();
+        Assertions.assertTrue(rows > 0);
+
+        Assertions.assertThrows(EasyQueryInvalidOperationException.class, () -> {
+            easyEntityQuery.deletable(company).disableLogicDelete().allowDeleteStatement(false).executeRows();
+        });
+    }
+```
+
+#### 禁用部分逻辑删除
+
+Easy Query支持查询时移除部分表的逻辑删除条件。
+```java
+    @Test
+    public void testQueryDisableLogicDelete() {
+        //删除所有公司
+        easyEntityQuery.deletable(Company.class).where(c -> c.id().isNotNull()).executeRows();
+        //查询用户关联未删除的公司
+        List<UserVo> userVos = easyEntityQuery.queryable(User.class)
+                .leftJoin(Company.class, (u, c) -> u.companyId().eq(c.id()))
+                .select(UserVo.class, (u, c) -> Select.of(
+                        c.name().as(UserVo::getCompanyName)
+                ))
+                .toList();
+        for (UserVo userVo : userVos) {
+            Assertions.assertNull(userVo.getCompanyName());
+        }
+
+        //部分禁用逻辑删除，查询用户关联全部公司
+        userVos = easyEntityQuery.queryable(User.class)
+                .leftJoin(Company.class, (u, c) -> u.companyId().eq(c.id()))
+                .tableLogicDelete(() -> false)
+                .select(UserVo.class, (u, c) -> Select.of(
+                        c.name().as(UserVo::getCompanyName)
+                ))
+                .toList();
+        for (UserVo userVo : userVos) {
+            Assertions.assertNotNull(userVo.getCompanyName());
+        }
+        //查询全部数据，包括已删除的
+        List<Company> companyList = easyEntityQuery.queryable(Company.class).disableLogicDelete().toList();
+        for (Company company : companyList) {
+            company.setDeleted(false);
+        }
+        //恢复全部数据，包括已删除的
+        long size = easyEntityQuery.updatable(companyList).disableLogicDelete().executeRows();
+        Assertions.assertEquals(companyList.size(), size);
+    }
+```
+
+#### 自定义逻辑删除策略
+
+Easy Query除了支持简单的逻辑删除字段，还支持自定义逻辑删除策略。
+
+执行SQL如下：
 ```sql
-create table t_topic
-(
-    id varchar(32) not null comment '主键ID'primary key,
-    stars int not null comment '点赞数',
-    title varchar(50)  null comment '标题',
-    create_time datetime not null comment '创建时间'
-)comment '主题表';
+-- 删除商品表
+DROP TABLE IF EXISTS product CASCADE;
+
+-- 创建商品表
+CREATE TABLE product (
+    id INTEGER AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255),
+    deleted_time DATETIME,
+    deleted_user_id INTEGER
+);
 ```
-java实体对象
+
+在类中声明策略：
 ```java
+@EntityProxy
+@Table
 @Data
-@Table("t_topic")
-public class Topic {
+public class Product implements ProxyEntityAvailable<Product, ProductProxy> {
+    @Column(primaryKey = true, generatedKey = true)
+    Integer id;
 
-    @Column(primaryKey = true)
-    private String id;
-    private Integer stars;
-    private String title;
-    private LocalDateTime createTime;
+    String name;
+
+    //注意strategyName为自定义逻辑删除的getStrategy返回的字符串,如果使用自定义逻辑删除必须将strategy策略改为LogicDeleteStrategyEnum.CUSTOM
+    @LogicDelete(strategy = LogicDeleteStrategyEnum.CUSTOM, strategyName = "CustomLogicDelStrategy")
+    LocalDateTime deletedTime;
+
+    Integer deletedUserId;
 }
-
 ```
 
-## 1.表达式删除
-
-- 表达式主键删除
+自定义逻辑删除策略：
 ```java
-long l = easyQuery.deletable(Topic.class)
-                    .whereById("999")
-                    .executeRows();
-```
-```log
-==> Preparing: DELETE FROM t_topic WHERE `id` = ?
-==> Parameters: 999(String)
-<== Total: 1
-```
-- 表达式删除
+public class CustomLogicDelStrategy extends AbstractLogicDeleteStrategy {
+    @Override
+    protected SQLExpression1<WherePredicate<Object>> getPredicateFilterExpression(LogicDeleteBuilder builder, String propertyName) {
+        return o -> o.isNull(propertyName);
+    }
 
-::: code-tabs
-@tab 对象模式
+    @Override
+    protected SQLExpression1<ColumnSetter<Object>> getDeletedSQLExpression(LogicDeleteBuilder builder, String propertyName) {
+        return o -> o.set(propertyName, LocalDateTime.now())
+                .set("deletedUserId", 1);
+    }
+
+    @Override
+    public String getStrategy() {
+        return "CustomLogicDelStrategy";
+    }
+
+    @Override
+    public Set<Class<?>> allowedPropertyTypes() {
+        return new HashSet<>(Arrays.asList(LocalDateTime.class));
+    }
+}
+```
+
+::: danger 注意
+我们在调用多次使用了`CustomLogicDelStrategy`的删除方法时，Easy Query只会调用一次`CustomLogicDelStrategy`实例的接口方法，错误示例：
 ```java
-long l = easyEntityQuery.deletable(Topic.class)
-                    .where(o->o.title().eq("title998"))
-                    .executeRows();
-```
-
-@tab lambda模式
-```java
-long l = easyQuery.deletable(Topic.class)
-                    .where(o->o.eq(Topic::getTitle,"title998"))
-                    .executeRows();
-```
-
-
-::: 
-```log
-==> Preparing: DELETE FROM t_topic WHERE `title` = ?
-==> Parameters: title998(String)
-<== Total: 1
-```
-
-## 2.实体删除
-```java
-Topic topic = easyQuery.queryable(Topic.class).whereId("997").firstNotNull("未找到当前主题数据");
-//Topic topic=new Topic();
-//topic.setId("997");
-long l = easyQuery.deletable(topic).executeRows();
-```
-```log
-==> Preparing: DELETE FROM t_topic WHERE `id` = ?
-==> Parameters: 997(String)
-<== Total: 1
-```
-
-当当前方法或者配置不允许删除命令的时候程序将会抛出对应的异常`EasyQueryInvalidOperationException`
-
-```java
-
-long l = easyQuery.deletable(Topic.class).whereById("999").allowDeleteStatement(false).executeRows();
-
-```
-
-当前对象如果支持软删除那么在生成对应命令的时候会生成UPDATE语句来实现软删除，对于是否允许删除命令将不会生效，因为允许删除命令仅对当前sql生成为`DELETE`语句才会生效判断
-
-## 3.强制物理删除
-逻辑删除
-
-::: code-tabs
-@tab 对象模式
-```java
-long l = easyQuery.deletable(BlogEntity.class)
-                    .where(o->o.id().eq("id123456"))
-                    .executeRows();
-
-==> Preparing: UPDATE `t_blog` SET `deleted` = ? WHERE `deleted` = ? AND `id` = ?
-==> Parameters: true(Boolean),false(Boolean),id123456(String)
-<== Total: 0
-```
-@tab lambda模式
-```java
-long l = easyQuery.deletable(BlogEntity.class)
-                    .where(o->o.eq(BlogEntity::getId,"id123456"))
-                    .executeRows();
-
-==> Preparing: UPDATE `t_blog` SET `deleted` = ? WHERE `deleted` = ? AND `id` = ?
-==> Parameters: true(Boolean),false(Boolean),id123456(String)
-<== Total: 0
+    @Override
+    protected SQLExpression1<ColumnSetter<Object>> getDeletedSQLExpression(LogicDeleteBuilder builder, String propertyName) {
+        //`getDeletedSQLExpression`方法只调用一次，返回的方法将会调用多次，因此now值获取后将是固定值而不是动态值
+        LocalDateTime now = LocalDateTime.now();
+        return o -> o.set(propertyName, now)
+                .set("deletedUserId", 1);
+    }
 ```
 ::: 
 
-
-物理删除
-
-::: code-tabs
-@tab 对象模式
+注册逻辑删除策略：
 ```java
-long l = easyQuery.deletable(BlogEntity.class)
-                    .where(o->o.id().eq("id123456"))
-                    .disableLogicDelete()//禁用逻辑删除,使用物理删除 生成delete语句
-                    .allowDeleteStatement(true)//如果不允许物理删除那么设置允许 配置项delete-throw
-                    .executeRows();
-
-==> Preparing: DELETE FROM `t_blog` WHERE `id` = ?
-==> Parameters: id123456(String)
-<== Total: 0
+        QueryRuntimeContext runtimeContext = easyEntityQuery.getRuntimeContext();
+        QueryConfiguration queryConfiguration = runtimeContext.getQueryConfiguration();
+        queryConfiguration.applyLogicDeleteStrategy(new CustomLogicDelStrategy());
 ```
-@tab lambda模式
+
 ```java
-long l = easyQuery.deletable(BlogEntity.class)
-                    .where(o->o.eq(BlogEntity::getId,"id123456"))
-                    .disableLogicDelete()//禁用逻辑删除,使用物理删除 生成delete语句
-                    .allowDeleteStatement(true)//如果不允许物理删除那么设置允许 配置项delete-throw
-                    .executeRows();
-
-==> Preparing: DELETE FROM `t_blog` WHERE `id` = ?
-==> Parameters: id123456(String)
-<== Total: 0
+    @Test
+    public void testCustomLogicDelete() {
+        Product product = new Product();
+        product.setName("香蕉");
+        easyEntityQuery.insertable(product).executeRows(true);
+        easyEntityQuery.deletable(product).executeRows();
+        easyEntityQuery.deletable(product).executeRows();
+    }
 ```
-::: 
