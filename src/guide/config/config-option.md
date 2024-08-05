@@ -26,6 +26,7 @@ sqlParameterPrint| DEFAULT | sql参数打印可选MYBATIS模式多一个逗号�
 mapToBeanStrict| true | jdbc结果集映射到bean是否使用属性严格模式
 defaultSchema| null | 当entity的schema为空时切defaultSchema不为空时采用defaultSchema
 resultSizeLimit| -1 | 限制全局拉取数据至多多少条,小于等于0时不生效,如果设置100后续有查询需要放大可以单独在`.configure(o->o.setResultSizeLimit(100000))`处设置
+map-key-conversion| - | 当使用map返回结果时resultSet转成map的key如何处理,默认支持全大写全小写去掉下划线也可以保留下划线
 ## 分表分库特有配置
 
 配置名称  | 默认值 | 描述  
