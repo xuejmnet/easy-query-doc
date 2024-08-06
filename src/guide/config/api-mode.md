@@ -3,10 +3,9 @@ title: api模式❗️❗️❗️
 ---
 
 ## 五种模式
-`easy-query`提供了五种模式的api查询
+`easy-query`提供了四种模式的api查询 (`lambda表达式树`由社区用户开发，作者并不负责相关bug处理)
 - `对象`模式
 - `属性`模式
-- `代理`模式
 - `lambda`模式
 - `lambda表达式树`模式（新）
 
@@ -15,9 +14,8 @@ api  | 开发方便性                                | 可维护性 | 性能| �
 --- |--------------------------------------| ---  | --- | --- 
 对象 | 非常好配合插件几乎无敌流畅                        | 易维护 | 非常好 | 配合插件能非常流畅,使用apt来生成除了build也很流畅
 属性 | 一般主要没有智能提示                           | 难维护 | 非常好 | 难维护,重构无法找到属性对应的引用
-代理 | 好,配合插件非常好,拥有完善的智能提示,书写非常方便           | 易维护 | 非常好 | 重构无法通过对象的属性对应的引用,需要额外通过代理对象找引用(插件可以解决)
 lambda | 非常好无需插件配合就有完善的智能提示,书写一般Class::Method | 易维护 | 较好 | 解析表达式性能会稍稍低于`属性模式`和`代理模式`,需要将`lambda转成属性`
-lambda表达式树（新） | 使用纯lambda表达式，可与宇宙最强orm efcore匹敌      | 易维护 | 较好 | 暂不支持分库分表注解
+lambda表达式树（新） | 使用纯lambda表达式，可与宇宙最强orm efcore匹敌      | 易维护 | 较好 | 暂不支持分库分表注解 (由社区成员开发,不建议上生产环境)
 
 ## 单表查询
 
@@ -73,74 +71,6 @@ SysUser sysUser1 = entityQuery.queryable(SysUser.class)
         .select(o->new SysUserProxy()
                 .selectExpressions(o.id(),o.createTime())
         )
-        .firstOrNull();
-        
-```
-@tab 代理模式
-```java
-
-//以下大部分模式都是先定义局部变量来进行操作可以通过lambda入参o下的o.t(),o.t1(),o.t2()来操作
-
-// 创建一个可查询SysUser的表达式
-SysUserProxy sysUser = SysUserProxy.createTable();
-ProxyQueryable<SysUserProxy, SysUser> queryable = easyProxyQuery.queryable(sysUser);
-
-//单个条件链式查询
-//toList表示查询结果集
-SysUserProxy sysUser = SysUserProxy.createTable();
-List<SysUser> sysUsers = easyProxyQuery.queryable(sysUser)
-        .where(o -> o.eq(sysUser.id(), "123xxx"))
-        .toList();
-
-
- 
-//如果不想定义局部变量 默认o.t()就是当前的SysUser表,join后会有t1、t2....t9
-List<SysUser> sysUsers = easyProxyQuery.queryable(SysUserProxy.createTable())
-        .where(o -> o.eq(o.t().id(), "123xxx"))
-        .toList();
-
-
-//条件= 和 like 组合 中间默认是and连接符
-SysUserProxy sysUser = SysUserProxy.createTable();
-List<SysUser> sysUsers = easyProxyQuery.queryable(sysUser)
-        .where(o -> o
-                .eq(sysUser.id(), "123xxx")
-                .like(sysUser.idCard(),"123")
-        ).toList();//toList表示查询结果集
-
-
-//多个where之间也是用and链接和上述方法一个意思 条件= 和 like 组合 中间默认是and连接符
-SysUserProxy sysUser = SysUserProxy.createTable();
-List<SysUser> sysUsers = easyProxyQuery.queryable(sysUser)
-        .where(o -> o.eq(sysUser.id(), "123xxx"))
-        .where(o -> o.like(sysUser.idCard(),"123")).toList();
-
-
-//返回单个对象没有查询到就返回null
-SysUserProxy sysUser = SysUserProxy.createTable();
-SysUser sysUser1 = easyProxyQuery.queryable(sysUser)
-        .where(o -> o.eq(sysUser.id(), "123xxx"))
-        .where(o -> o.like(sysUser.idCard(), "123")).firstOrNull();
-
-
-//采用创建时间倒序和id正序查询返回第一个
-SysUserProxy sysUser = SysUserProxy.createTable();
-SysUser sysUser1 = easyProxyQuery.queryable(sysUser)
-        .where(o -> o.eq(sysUser.id(), "123xxx"))
-        .where(o -> o.like(sysUser.idCard(), "123"))
-        .orderByDesc(o->o.column(sysUser.createTime()))
-        .orderByAsc(o->o.column(sysUser.id())).firstOrNull();
-
-//仅查询id和createTime两列
-SysUserProxy sysUser = SysUserProxy.createTable();
-SysUser sysUser1 = easyProxyQuery.queryable(sysUser)
-        .where(o -> o.eq(sysUser.id(), "123xxx"))
-        .where(o -> o.like(sysUser.idCard(), "123"))
-        .orderByDesc(o->o.column(sysUser.createTime()))
-        .orderByAsc(o->o.column(sysUser.id()))
-        .select(o->o.column(sysUser.id()).column(sysUser.createTime()))//也可以用columns
-        //.select(o->o.columns(sysUser.id(),sysUser.createTime()))
-        //.select(o->o.columnAll(sysUser).columnIgnore(sysUser.createTime()))//获取user表的所有字段除了createTime字段
         .firstOrNull();
         
 ```
