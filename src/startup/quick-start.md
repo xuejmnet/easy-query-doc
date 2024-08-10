@@ -20,8 +20,7 @@ title: 快速开始🔥🔥🔥
 
 ## 环境准备
 
-本章节共同作者
-- Hoysing [github](https://github.com/Hoysing) [gitee](https://gitee.com/Hoysing)
+如果想要快速搭建环境，请克隆[github](https://github.com/Hoysing/easy-query-sample)或者[gitee](https://gitee.com/Hoysing/easy-query-sample)的案例项目
 
 ### 引入依赖
 
