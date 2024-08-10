@@ -5,8 +5,8 @@ order: 10
 
 # 安装软件
 
-- [如果您是《Spring Boot》程序那么请直接点击跳转](/easy-query-doc/guide/config/config-spring-boot)
-- [如果您是《Solon》程序那么请直接点击跳转](/easy-query-doc/guide/config/config-solon)
+- [如果您是《Spring Boot》程序那么请直接点击跳转](/easy-query-doc/config/config-spring-boot)
+- [如果您是《Solon》程序那么请直接点击跳转](/easy-query-doc/config/config-solon)
 
 ## 获取最新
 

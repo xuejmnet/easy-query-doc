@@ -118,7 +118,7 @@ List<Topic> list4 = queryable.toList();
 :::
 
 
-如果你希望实现前端排序那么可以参考这个链接[DynamicSort](/easy-query-doc/guide/query/dynamic-sort)
+如果你希望实现前端排序那么可以参考这个链接[DynamicSort](/easy-query-doc/query/dynamic-sort)
 
 
 ## 函数排序

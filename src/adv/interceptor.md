@@ -33,7 +33,7 @@ apply | 哪些对象允许采用当前拦截器  | 默认可以才用是否为�
 
 
 ::: warning 说明!!!
-> 创建完拦截器后需要配置到`QueryConfiguration`,如果你是`springboot`并且是默认`easy-query`只需要添加`@Component`如果是`solon`那么可以查看[配置或配置到所有数据源](/easy-query-doc/guide/config/config-solon.html#solon所有配置)
+> 创建完拦截器后需要配置到`QueryConfiguration`,如果你是`springboot`并且是默认`easy-query`只需要添加`@Component`如果是`solon`那么可以查看[配置或配置到所有数据源](/easy-query-doc/config/config-solon.html#solon所有配置)
 > 如果您是自行构建的`easy-query`需要自行添加拦截器
 ```java
 QueryRuntimeContext runtimeContext = easyQuery.getRuntimeContext();

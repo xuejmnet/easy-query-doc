@@ -51,7 +51,7 @@ EasyPageResult<BlogEntity> page = easyQuery
 ```
 
 ## 自定义分页返回结果
-`easy-query`提供了自定义分页返回结果,用户可以自行定义分页结果,[《替换框架行为❗️❗️❗️》](/easy-query-doc/guide/config/replace-configure) 
+`easy-query`提供了自定义分页返回结果,用户可以自行定义分页结果,[《替换框架行为❗️❗️❗️》](/easy-query-doc/config/replace-configure) 
 
 ### 替换接口
 `EasyPageResultProvider`

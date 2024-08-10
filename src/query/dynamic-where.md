@@ -607,7 +607,7 @@ Array | 不为null且不为空
 `easy-query`默认采用接口模式实现`whereObject`用户可以自行替换框架行为,甚至`@EasyWhereCondition`也可以自己实现
 
 ### 如何替换框架行为
-[《替换框架行为❗️❗️❗️》](/easy-query-doc/guide/config/replace-configure) 
+[《替换框架行为❗️❗️❗️》](/easy-query-doc/config/replace-configure) 
 
 ### 接口
 `WhereObjectQueryExecutor` 默认实现 `DefaultWhereObjectQueryExecutor`

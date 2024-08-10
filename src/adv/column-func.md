@@ -8,9 +8,9 @@ title: 自定义数据库函数(旧)
 ::: warning 说明!!!
 > 目前不是很建议看这一章节,因为当前的函数设计只适合单个属性的处理,并且过于繁琐,所以建议使用`sqlNativeSegment`或者`SqlFunction`来实现数据库方言自定义
 :::
-[`sqlNativeSegment`](/easy-query-doc/guide/query/native-sql)
+[`sqlNativeSegment`](/easy-query-doc/query/native-sql)
 
-[`自定义数据库函数(新)`](/easy-query-doc/guide/adv/column-func-new)
+[`自定义数据库函数(新)`](/easy-query-doc/adv/column-func-new)
 <!-- [`SqlFunction`]() -->
 
 ```sql
@@ -113,5 +113,5 @@ public static <T, R> ColumnPropertyFunction ifNULLOrDefault(Property<T, R> colum
 
 
 ::: warning 说明!!!
-> `ColumnPropertyFunction`、`ColumnFunction`的组合仅支持单个数据库列字段的处理,如果需要支持多个数据库字段,请看[《自定义数据库片段》](/easy-query-doc/guide/adv/sql-segment)
+> `ColumnPropertyFunction`、`ColumnFunction`的组合仅支持单个数据库列字段的处理,如果需要支持多个数据库字段,请看[《自定义数据库片段》](/easy-query-doc/adv/sql-segment)
 :::
