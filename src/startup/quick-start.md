@@ -728,6 +728,8 @@ public class CustomPager<TEntity> implements Pager<TEntity,PageResult<TEntity>> 
 
 
 ```
+查询时一般使用使用表别名作为参数名，我们可以使用插件助手快速提示，请参考[参数变量名提示](../guide/config/plugin.md#参数名提示)章节。
+`eq`是`=`运算符，调用`eq`方法可能不够直观地编写方法，我们可以使用插件助手快速提示，请参考[关系运算符提示](../guide/config/plugin.md#关系运算符提示)章节。
 
 查询单条记录，根据条件查询：
 
