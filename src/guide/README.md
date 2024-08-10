@@ -40,7 +40,7 @@ icon: creative
 `EasyQuery`目前除了基础的增删改查外未来还将支持分库分表，读写分离，字段加密等企业级功能
 
 #### 基础
-- [《EasyQuery:数据新增》](/easy-query-doc/guide/basic/insert)
-- [《EasyQuery:数据修改》](/easy-query-doc/guide/basic/update)
-- [《EasyQuery:数据删除》](/easy-query-doc/guide/basic/delete)
-- [《EasyQuery:数据查询》](/easy-query-doc/guide/query/)
+- [《EasyQuery:数据新增》](/easy-query-doc/basic/insert)
+- [《EasyQuery:数据修改》](/easy-query-doc/basic/update)
+- [《EasyQuery:数据删除》](/easy-query-doc/basic/delete)
+- [《EasyQuery:数据查询》](/easy-query-doc/query/)

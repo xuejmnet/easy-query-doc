@@ -4,7 +4,7 @@ title: 匿名类型查询
 
 ::: warning lambda表达式树模式
 
-lambda表达式树模式的用户请看后面的[select](/easy-query-doc/guide/query/select)
+lambda表达式树模式的用户请看后面的[select](/easy-query-doc/query/select)
 
 :::
 

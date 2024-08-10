@@ -193,7 +193,7 @@ Topic topic = easyQueryClient.queryable(Topic.class)
 ::: 
 默认异常替换成业务异常
 ::: warning notnull异常!!!
-> 框架默认针对NotNull返回的错误类型可能并不是你所希望得我们可以通过重写接口实现自己的自定义异常，接口`AssertExceptionFactory.class`默认实现类`DefaultAssertExceptionFactory.class`  [查看替换框架行为](/easy-query-doc/guide/config/replace-configure)
+> 框架默认针对NotNull返回的错误类型可能并不是你所希望得我们可以通过重写接口实现自己的自定义异常，接口`AssertExceptionFactory.class`默认实现类`DefaultAssertExceptionFactory.class`  [查看替换框架行为](/easy-query-doc/config/replace-configure)
 :::
 
 

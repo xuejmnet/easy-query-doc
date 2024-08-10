@@ -5,7 +5,7 @@ title: 数据库函数列
 `easy-query`提供了数据库函数列值转换,可以完美的实现java对象和数据库列的函数互相交换,比如数据库函数`加密、解密`、`base64 编码、解码`等数据库函数对
 
 ## mysql加密解密
-[《数据库列加密》](/easy-query-doc/guide/adv/column-encryption) 上一篇文章我们讲解了如何使用java代码来实现数据库列的加密解密,接下来我将使用数据库函数来实现
+[《数据库列加密》](/easy-query-doc/adv/column-encryption) 上一篇文章我们讲解了如何使用java代码来实现数据库列的加密解密,接下来我将使用数据库函数来实现
 
 
 AES_DECRYPT(from_base64(`receiver_mobile`)
