@@ -812,37 +812,52 @@ Easy Query支持使用`leftJoin`方法进行查询，也就是在方法中声明
 再在VO中选择需要查询的字段，声明的字段必须是一样的，比如`UserVo`的`roles`声明和`User`的`roles`声明是一样的。
 声明的`UserVo`如下：
 ```java
-@EntityFileProxy
+
+
+
+@EntityProxy
 @Data
 public class UserVo {
-    @Column(primaryKey = true, generatedKey = true)
-    Integer id;
-
-    private String name;
-
-    private String companyName;
-
-    @Navigate(value = RelationTypeEnum.OneToOne, selfProperty = "id", targetProperty = "userId")
-    private UserDetail userDetail;
-
-    @Navigate(value = RelationTypeEnum.ManyToMany,
-            mappingClass = UserRole.class,
-            selfProperty = "id",
-            selfMappingProperty = "userId",
-            targetProperty = "id",
-            targetMappingProperty = "roleId")
-    private List<Role> roles;
-}
-
-@EntityFileProxy
-@Data
-public class UserDetailVo {
     @Column(primaryKey = true, generatedKey = true)
     Integer id;
 
     String name;
 
     String signature;
+}
+
+@EntityProxy
+@Data
+public class MyUserVo {
+    Integer id;
+
+    private String name;
+
+    private String companyName;
+    private String signature;
+    //因为实体已经有对应的关系所以这边只需要设置和实体一样的类型无需再设置selfProperty和targetProperty
+    @Navigate(value = RelationTypeEnum.OneToOne)
+    private MyUserDetailVo userDetail;
+
+    //因为实体已经有对应的关系所以这边只需要设置和实体一样的类型无需再设置selfProperty和targetProperty
+    @Navigate(value = RelationTypeEnum.ManyToMany)
+    private List<MyRoleVo> roles;
+}
+@EntityProxy
+@Data
+public class MyUserDetailVo {
+    Integer id;
+
+    String signature;
+
+    Integer userId;
+}
+@EntityProxy
+@Data
+public class MyRoleVo {
+    Integer id;
+
+    String name;
 }
 ```
 
@@ -853,49 +868,54 @@ public class UserDetailVo {
     @Test
     public void testCustomQueryReturnType() {
         //使用指定的类型作为返回类型，默认为匹配的字段设值
-        List<UserDetailVo> userDetailVos = easyEntityQuery.queryable(User.class)
+        List<UserVo> userVos = easyEntityQuery.queryable(User.class)
                 .where(s -> s.name().eq("张三"))
-                .select(UserDetailVo.class).toList();
-        for (UserDetailVo userDetailVo : userDetailVos) {
-            Assertions.assertNotNull(userDetailVo.getId());
-            Assertions.assertNotNull(userDetailVo.getName());
-            Assertions.assertNull(userDetailVo.getSignature());
+                .select(UserVo.class).toList();
+        for (UserVo userVo : userVos) {
+            Assertions.assertNotNull(userVo.getId());
+            Assertions.assertNotNull(userVo.getName());
+            Assertions.assertNull(userVo.getSignature());//无法映射到signature
         }
 
         //使用指定的类型作为返回类型，需要手动设值
-        userDetailVos = easyEntityQuery.queryable(User.class)
+        userVo = easyEntityQuery.queryable(User.class)
                 .where(s -> s.name().eq("张三"))
-                .select(UserDetailVo.class, s -> Select.of(
+                .select(UserVo.class, s -> Select.of(
                         //手动为匹配的字段设值,与allFields相似的方法有allFieldsExclude方法
                         s.FETCHER.allFields(),
                         //手动为不匹配的字段设值,as支持传入字段名称
-                        s.userDetail().signature().as(UserDetailVo::getSignature)
+                        s.userDetail().signature().as(UserVo::getSignature)
                 )).toList();
-        for (UserDetailVo userDetailVo : userDetailVos) {
-            Assertions.assertNotNull(userDetailVo.getId());
-            Assertions.assertNotNull(userDetailVo.getName());
-            Assertions.assertNotNull(userDetailVo.getSignature());
+        for (UserVo userVo : userDetailVos) {
+            Assertions.assertNotNull(userVo.getId());
+            Assertions.assertNotNull(userVo.getName());
+            Assertions.assertNotNull(userVo.getSignature());
         }
 
+
+        
         //查询VO对象时自动查询关联的对象
-        List<UserVo> userVoList = easyEntityQuery.queryable(User.class)
+        List<MyUserVo> userVoList = easyEntityQuery.queryable(User.class)
                 .where(u -> u.name().eq("张三"))
-                .selectAutoInclude(UserVo.class)
+                .selectAutoInclude(MyUserVo.class)
                 .toList();
         Assertions.assertTrue(userVoList.size() > 0);
 
-        List<UserDetailVo> userDetailVoList = easyEntityQuery.queryable(User.class)
+        List<MyUserVo> myUserVoList = easyEntityQuery.queryable(User.class)
                 .leftJoin(UserDetail.class, (u, ud) -> u.id().eq(ud.userId()))
                 .where(u -> u.name().eq("张三"))
-                .selectAutoInclude(UserDetailVo.class, (u, ud) -> Select.of(
+                .selectAutoInclude(MyUserVo.class, (u, ud) -> Select.of(
                         //u.FETCHER.allFields(),请注意,调用select需要加此行,调用selectAutoInclude不需要加此行，因为selectAutoInclude会自动执行allFields
-                        u.userDetail().signature().as(UserDetailVo::getSignature)
+                        u.userDetail().signature().as(MyUserVo::getSignature)
                 ))
                 .toList();
-        Assertions.assertTrue(userDetailVoList.size() > 0);
+        Assertions.assertTrue(myUserVoList.size() > 0);
     }
 ```
 
+::: tip 说明!!!
+> selectAutoInclude的对象可以通过插件的CreateStructDTO来实现
+:::
 #### 使用Proxy类型
 
 使用`Proxy`类型作为返回结果类型，则支持后续链式结果。
@@ -903,50 +923,37 @@ public class UserDetailVo {
     @Test
     public void testCustomQueryReturnTypeWithProxy() {
         //使用指定的类型作为返回类型，需要手动为对应的Proxy设值，注意不需要指定实体类型
-        List<UserDetailVo> userDetailVos = easyEntityQuery.queryable(User.class)
+        List<UserVo> userVos = easyEntityQuery.queryable(User.class)
                 .where(s -> s.name().eq("张三"))
                 .select(s ->
                         // Proxy支持selectAll方法和selectIgnore方法
-                        new UserDetailVoProxy()
+                        new UserVoProxy()
                                 .id().set(s.id())
                                 .name().set(s.name())
                                 .signature().set(s.userDetail().signature())
                 )
                 .toList();
-        for (UserDetailVo userDetailVo : userDetailVos) {
-            Assertions.assertNotNull(userDetailVo.getId());
-            Assertions.assertNotNull(userDetailVo.getName());
-            Assertions.assertNotNull(userDetailVo.getSignature());
+        for (UserVo userVo : userVos) {
+            Assertions.assertNotNull(userVo.getId());
+            Assertions.assertNotNull(userVo.getName());
+            Assertions.assertNotNull(userVo.getSignature());
         }
 
         //效果同上
-        userDetailVos = easyEntityQuery.queryable(User.class)
+        userVos = easyEntityQuery.queryable(User.class)
                 .where(s -> s.name().eq("张三"))
                 .select(s -> {
-                    UserDetailVoProxy userDetailVoProxy = new UserDetailVoProxy();
-                    userDetailVoProxy.id().set(s.id());
-                    userDetailVoProxy.name().set(s.name());
-                    userDetailVoProxy.signature().set(s.userDetail().signature());
-                    return userDetailVoProxy;
+                    UserVoProxy userVoProxy = new UserVoProxy();
+                    userVoProxy.id().set(s.id());
+                    userVoProxy.name().set(s.name());
+                    userVoProxy.signature().set(s.userDetail().signature());
+                    return userVoProxy;
                 })
                 .toList();
-        for (UserDetailVo userDetailVo : userDetailVos) {
-            Assertions.assertNotNull(userDetailVo.getId());
-            Assertions.assertNotNull(userDetailVo.getName());
-            Assertions.assertNotNull(userDetailVo.getSignature());
-        }
-
-        //效果同上
-        userDetailVos = easyEntityQuery.queryable(User.class)
-                .where(s -> s.name().eq("张三"))
-                .select(s -> new UserDetailVoProxy()
-                        .selectExpression(s.id(), s.name(), s.userDetail().signature())
-                )
-                .toList();
-        for (UserDetailVo userDetailVo : userDetailVos) {
-            Assertions.assertNotNull(userDetailVo.getId());
-            Assertions.assertNotNull(userDetailVo.getName());
-            Assertions.assertNotNull(userDetailVo.getSignature());
+        for (UserVo userVo : userVos) {
+            Assertions.assertNotNull(userVo.getId());
+            Assertions.assertNotNull(userVo.getName());
+            Assertions.assertNotNull(userVo.getSignature());
         }
 
         List<Draft3<Integer, String, String>> draftList = easyEntityQuery.queryable(User.class)
