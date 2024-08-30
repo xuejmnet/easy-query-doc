@@ -19,28 +19,31 @@ private Boolean deleted;
 
 ```java
     @Test
-    public void testLogicDelete() {
-        //默认情况下，EasyQuery使用逻辑删除
+    public void testLogicDelete1() {
+        //默认情况下，EasyQuery使用逻辑删除 自增id
         Company company = new Company();
         company.setName("新公司");
         company.setDeleted(false);
-        easyEntityQuery.insertable(company).executeRows(true);
+        easyEntityQuery.insertable(company).executeRows(true);//回填自增id
         long rows = easyEntityQuery.deletable(Company.class)
                 .where(c -> c.name().eq("新公司"))
                 .executeRows();
         Assertions.assertTrue(rows > 0);
-
-        //根据对象id删除
-        company = new Company();
+    }
+    @Test
+    public void testLogicDelete1() {
+        //默认情况下，EasyQuery使用逻辑删除 自增id
+        Company company = new Company();
         company.setName("新公司");
         company.setDeleted(false);
-        easyEntityQuery.insertable(company).executeRows(true);
+        easyEntityQuery.insertable(company).executeRows(true);//回填自增id
+        //根据对象id删除
         rows = easyEntityQuery.deletable(company).executeRows();
         Assertions.assertTrue(rows > 0);
     }
 ```
 
-注意`deleted`不能为`null`，因为查询时不会判断`null`
+如果`deleted`在数据库有默认值那么可以不设置,这样`insertable`就不会将`deleted`字段加入sql中数据库会使用默认值
 
 ## 物理删除
 
