@@ -19,7 +19,7 @@ Easy Query简化了多表关联操作，只要声明好了实体类之间的关�
 - 软删除，软删除部分禁用启用非常方便，软删除记录删除时间,删除人 [LogicDelete](/easy-query-doc/adv/logic-delete)
 - 自定义错误异常快速针对`firstNotNull`、`singleNotNull`、`required` [Exception](/easy-query-doc/practice/configuration/exception)
 - 枚举和数据库映射,数据脱敏,数据编码存储解码获取,枚举属性,json或者数组,计算属性等 [ValueConverter,ColumnValueSQLConverter](/easy-query-doc/prop/)
-- 数据填充,自动赋值创建人创建时间,修改人修改时间 [拦截器](/easy-query-doc/adv/interceptor)、 [对象实战](/easy-query-doc/practice/entity/)
+- 数据填充,自动赋值创建人创建时间,修改人修改时间 [拦截器](/easy-query-doc/adv/interceptor)、 [对象实战](/easy-query-doc/practice/configuration/entity)
 - 慢sql监听拦截,自动上报预警 [jdbc执行监听器](/easy-query-doc/adv/jdbc-listener)
 - 数据库列的加密和加密后的模糊查询企业级解决方案 [数据库列加密](/easy-query-doc/adv/column-encryption)
 - 分库分表，读写分离 [分库分表，读写分离](/easy-query-doc/super/) (敬请期待已经完成功能文档还在完善中)
