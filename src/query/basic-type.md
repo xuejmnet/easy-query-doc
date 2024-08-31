@@ -71,18 +71,6 @@ List<String> list1 = easyQueryClient.queryable(Topic.class)
 <== Total: 1
 ```
 
-@tab lambda表达式树模式
-```java
-List<String> list = elq.queryable(Topic.class)
-                .where(f -> f.getId() == "1")
-                .select(s -> s.getId())
-                .toList();
-
-==> Preparing: SELECT t.`id` FROM `t_topic` t WHERE t.`id` = ?
-==> Parameters: 1(String)
-<== Time Elapsed: 2(ms)
-<== Total: 1
-```
 :::
 
 ## Integer
@@ -147,18 +135,6 @@ List<Integer> list1 = easyQueryClient.queryable(Topic.class)
 ==> Preparing: SELECT t.`stars` FROM `t_topic` t WHERE t.`id` = ?
 ==> Parameters: 1(String)
 <== Time Elapsed: 1(ms)
-<== Total: 1
-```
-@tab lambda表达式树模式
-```java
-List<Integer> list2 = elq.queryable(Topic.class)
-        .where(f -> f.getId() == "1")
-        .select(s -> s.getStars())
-        .toList();
-
-==> Preparing: SELECT t.`stars` FROM `t_topic` t WHERE t.`id` = ?
-==> Parameters: 1(String)
-<== Time Elapsed: 2(ms)
 <== Total: 1
 ```
 :::
@@ -280,19 +256,6 @@ List<Map<String,Object>> list1 = easyQueryClient.queryable(Topic.class)
 
 
 ==> Preparing: SELECT * FROM `t_topic` t WHERE t.`id` = ?
-==> Parameters: 1(String)
-<== Time Elapsed: 2(ms)
-<== Total: 1
-```
-@tab lambda表达式树模式
-
-```java
-List<Map<String,Object>> list3 = elq.queryable(Topic.class)
-                .where(f -> f.getId() == "1")
-                // 暂时不支持对返回弱类型Map的字段选择
-                .toMaps();
-
-==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM `t_topic` t WHERE t.`id` = ?
 ==> Parameters: 1(String)
 <== Time Elapsed: 2(ms)
 <== Total: 1

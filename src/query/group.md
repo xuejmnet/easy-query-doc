@@ -12,7 +12,7 @@ order: 30
 ```java
 List<TopicGroupTestDTO> topicGroupTestDTOS = easyEntityQuery.queryable(Topic.class)
                 .where(o -> o.id().eq("3"))
-                .groupBy(o -> GroupKeys.TABLE1.of(o.id()))
+                .groupBy(o -> GroupKeys.TABLE1.of(o.id()))//join一张表后那么应该用 GroupKeys.TABLE2.of()
                 .select(g->{
                     TopicGroupTestDTOProxy result = new TopicGroupTestDTOProxy();
                     result.id().set(g.key1());
@@ -77,65 +77,6 @@ List<TopicGroupTestDTO> topicGroupTestDTOS = easyQuery.queryable(Topic.class)
 `select`第二个参数表示需要映射的关系,`columnAs`方法和`column`如果两者对象在数据库列上映射是一样的那么可以用`column`也是一样的,`columnCount`表示需要对id列进行`count`聚合并且映射到`TopicGroupTestDTO::getIdCount`
 ```
 
-@tab lambda表达式树模式
-```java
-// groupBy单个字段
-
-List<TopicGroupTestDTO> topicGroupTestDTOS = elq.queryable(Topic.class)
-        .where(o -> o.getId() == "3")
-        // 单个元素(id)的组(group)
-        .groupBy(o -> o.getId())
-        // 出于安全考虑，groupBy之后想要tolist就必须显示的select字段
-        .select(g ->
-        {
-            TopicGroupTestDTO result = new TopicGroupTestDTO();
-            // 选择了Topic表的id字段
-            // 注意此时g.key代表了Topic的id字段，因为只有一个对象，所以不需要g.key.xxx
-            result.setId(g.key);
-            // 选择了Topic表的id字段,并且套了一层count聚合函数
-            result.setIdCount((int) g.count(s -> s.getId()));
-            // 选择了Topic表的id字段,并且套了一层min聚合函数
-            result.setIdMin(g.min(s -> s.getId()));
-            return result;
-        })
-        .toList();
-
-// groupBy多个字段
-List<TopicGroupTestDTO> topicGroupTestDTOS = elq.queryable(Topic.class)
-                .where(o -> o.getId() == "3")
-                // 这里相当于声明了一个有一个元素(id)的组(group)
-                // 支持声明多个元素
-                .groupBy(o -> new Grouper()
-                {
-                    String id = o.getId();
-                    //int num = o.getStars();
-                })
-                // 出于安全考虑，groupBy之后想要tolist就必须显示的select字段
-                .select(g ->
-                {
-                    TopicGroupTestDTO result = new TopicGroupTestDTO();
-                    // 选择了Topic表的id字段
-                    result.setId(g.key.id);
-                    // 选择了Topic表的id字段,并且套了一层count聚合函数
-                    result.setIdCount((int) g.count(s -> s.getId()));
-                    // 选择了Topic表的id字段,并且套了一层min聚合函数
-                    result.setIdMin(g.min(s -> s.getId()));
-                    return result;
-                })
-                // 显然你可以使用匿名类，上下相等
-                //.select(g -> new TempResult()
-                //{
-                //    String id = g.key.id;
-                //    long idCount = g.count(s -> s.getId());
-                //    String idMin = g.min(s -> s.getId());
-                //})
-                .toList();
-
-==> Preparing: SELECT t.`id` AS `id`,COUNT(t.`id`) AS `idCount`,MIN(t.`id`) AS `idMin` FROM t_topic t WHERE t.`id` = ? GROUP BY t.`id`
-==> Parameters: 3(String)
-<== Total: 1
-
-```
 ::: 
 
 
@@ -156,37 +97,6 @@ List<BlogGroupIdAndName> list = easyEntityQuery.queryable(Topic.class)
 
 ==> Preparing: SELECT t.`id` AS `id`,COUNT(t1.`id`) AS `id_count` FROM `t_topic` t LEFT JOIN `t_blog` t1 ON t1.`deleted` = ? AND t.`id` = t1.`id` WHERE t.`title` IS NOT NULL AND t.`create_time` <= ? GROUP BY t.`id`,t1.`star`
 ==> Parameters: false(Boolean),2021-03-04T05:06(LocalDateTime)
-<== Time Elapsed: 7(ms)
-<== Total: 0
-```
-
-Lambda表达式树 `group` 多表2张表及以上时，`group.聚合函数()`的lambda入参个数等同于多表的数量，比方说A,B,C三张表查询的时候，查询B表的id字段的count时的lambda表达式为:group.count((t1,t2,t3) -> t2.getId())
-
-```java
-List<BlogGroupIdAndName> list = elq.queryable(Topic.class)
-        .leftJoin(BlogEntity.class, (t, b2) -> t.getId() == b2.getId())
-        .where((t, b2) -> t.getTitle() != null
-                && (t.getCreateTime().isEqual(LocalDateTime.of(2021, 3, 4, 5, 6))
-                || t.getCreateTime().isBefore(LocalDateTime.of(2021, 3, 4, 5, 6))
-        ))
-        // 选择了两个元素的group
-        .groupBy((t1, b2) -> new Grouper()
-        {
-            String k1 = t1.getId();
-            int k2 = b2.getStar();
-        })
-        .select(group ->
-        {
-            BlogGroupIdAndName blogGroupIdAndName = new BlogGroupIdAndName();
-            // group的k1(Topic表的id字段)映射到BlogGroupIdAndName类的id字段
-            blogGroupIdAndName.setId(group.key.k1);
-            // group的k2(COUNT(BlogEntity表的id字段))映射到BlogGroupIdAndName类的idCount字段
-            blogGroupIdAndName.setIdCount(group.count((t1, t2) -> t2.getId()));
-            return blogGroupIdAndName;
-        }).toList();
-
-==> Preparing: SELECT t.`id` AS `id`,COUNT(t1.`id`) AS `id_count` FROM `t_topic` t LEFT JOIN `t_blog` t1 ON t1.`deleted` = ? AND t.`id` = t1.`id` WHERE t.`title` <> NULL AND (t.`create_time` = ? OR t.`create_time` < ?) GROUP BY t.`id`,t1.`star`
-==> Parameters: null(Object),2021-03-04T05:06(LocalDateTime),2021-03-04T05:06(LocalDateTime)
 <== Time Elapsed: 7(ms)
 <== Total: 0
 ```

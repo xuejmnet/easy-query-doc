@@ -163,42 +163,6 @@ List<Topic> topics = easyQueryClient
 <== Total: 1
 ```
 
-@tab lambda表达式树
-```java
-//根据条件查询表中的第一条记录
-List<Topic> topics = elq
-        .queryable(Topic.class)
-        .limit(1)
-        .toList();
-==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM t_topic t LIMIT 1
-<== Total: 1
-
-//根据条件查询表中的第一条记录,查不到就返回空对象
-Topic topic1 = easyEntityQuery
-        .queryable(Topic.class)
-        .firstOrNull();
-==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM t_topic t LIMIT 1
-<== Total: 1
-
-//根据条件查询id为3的记录,查不到就返回空对象
-Topic topic2 = elq
-        .queryable(Topic.class)
-        .where(o -> o.getId() == "3")
-        .firstNotNull();
-==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM t_topic t WHERE t.`id` = ? LIMIT 1
-==> Parameters: 3(String)
-<== Total: 1
-
-//根据条件查询id为3同时title匹配"%3%"的记录,查不到就返回空对象
-Topic topic3 = elq
-        .queryable(Topic.class)
-        .where(o -> o.getId() == "3" && o.getTitle().contains("3"))
-        .firstOrNull();
-==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM t_topic t WHERE t.`id` = ? AND t.`title` LIKE ? LIMIT 1
-==> Parameters: 3(String),%3%(String)
-<== Total: 1
-
-```
 :::
 
 ## 多表
@@ -328,31 +292,6 @@ List<BlogEntity> blogEntities = easyQueryClient
 <== Total: 1
 ```
 
-@tab lambda表达式树模式
-```java
-Topic topic = elq.queryable(Topic.class)
-        .leftJoin(BlogEntity.class, (t, b) -> t.getId() == b.getId())
-        .where((t, b) -> t.getId() == "3")
-        .firstOrNull();
-
-==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM t_topic t LEFT JOIN t_blog t1 ON t.`id` = t1.`id` WHERE t.`id` = ? LIMIT 1
-==> Parameters: 3(String)
-<== Total: 1
-
-List<BlogEntity> blogEntities = elq
-        .queryable(Topic.class)
-        //join 后面是多参数委托,第一个主表,第二个参数为join表
-        .innerJoin(BlogEntity.class, (t, b) -> t.getId() == b.getId())
-        .where((t, b) -> t.getTitle() != null && b.getId() == "3")
-        //这里我们需要返回BlogEntity列表，所以直接传入BlogEntity
-        .select(BlogEntity.class)
-        .toList();
-
-==> Preparing: SELECT t1.`id`,t1.`create_time`,t1.`update_time`,t1.`create_by`,t1.`update_by`,t1.`deleted`,t1.`title`,t1.`content`,t1.`url`,t1.`star`,t1.`publish_time`,t1.`score`,t1.`status`,t1.`order`,t1.`is_top`,t1.`top` FROM t_topic t INNER JOIN t_blog t1 ON t.`id` = t1.`id` WHERE t1.`title` <> NULL AND t.`id` = ?
-==> Parameters: 3(String)
-<== Total: 1
-
-```
 :::
 
 
@@ -397,23 +336,6 @@ List<BlogEntity> topics = easyQuery
 <== Total: 1
 ```
 
-@tab lambda表达式树模式
-```java
-LQuery<Topic> lQuery = elq
-                .queryable(Topic.class)
-                .where(o -> o.getId() == "3");
-//SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM t_topic t WHERE t.`id` = ?
-
-List<BlogEntity> blogEntities = elq
-        .queryable(BlogEntity.class)
-        .leftJoin(lQuery, (a, b) -> a.getId() == b.getId())
-        .where((a, b) -> a.getId() != null && b.getId() != null)
-        .toList();
-
-==> Preparing: SELECT t.`id`,t.`create_time`,t.`update_time`,t.`create_by`,t.`update_by`,t.`deleted`,t.`title`,t.`content`,t.`url`,t.`star`,t.`publish_time`,t.`score`,t.`status`,t.`order`,t.`is_top`,t.`top` FROM `t_blog` t LEFT JOIN (SELECT t1.`id`,t1.`stars`,t1.`title`,t1.`create_time` FROM `t_topic` t1 WHERE t1.`id` = ?) t2 ON t.`id` = t2.`id` WHERE t.`deleted` = ? AND t.`id` <> NULL AND t2.`id` <> NULL
-==> Parameters: 3(String),false(Boolean)
-<== Total: 1
-```
 ::: 
 
 ## 自定义VO返回结果
@@ -543,42 +465,6 @@ Queryable<BlogEntityTest2> queryable = easyQuery.queryable(BlogEntity.class)
            
 ```
 
-@tab lambda表达式树模式
-```java
-// 不指定select字段的场合，此时会自动将从BlogEntity表查询的结果映射到BlogEntityTest对象上
-List<BlogEntityTest> list1 = elq.queryable(BlogEntity.class)
-        .select(BlogEntityTest.class).toList();
-
-
-// 想要指定select字段的场合
-// 1.使用匿名对象
-String sql1 = elq.queryable(BlogEntity.class)
-        .where(o -> o.getId() == "2")
-        .select(o -> new TempResult()
-        {
-            BigDecimal score = o.getOrder();//将查询的order映射到匿名对象的score上
-            // 填写更多你想要的字段{var a = o.getXxx()}
-        })
-        .limit(1).toSQL();
-
-// 2. 使用java类型
-String sql2 = elq.queryable(BlogEntity.class)
-        .where(o -> o.getId() == "2")
-        .select(o ->
-        {
-            BlogEntity blogEntity = new BlogEntity();
-            blogEntity.setScore(o.getOrder());//将查询的order映射到java对象的score上
-            // 填写更多你想要的字段{obj.setXxx(o.getXxx())}
-            return blogEntity;
-        })
-        .limit(1).toSQL();
-
-
-// 两者等价
-Assert.assertEquals("SELECT t.`order` AS `score` FROM `t_blog` t WHERE t.`deleted` = ? AND t.`id` = ? LIMIT 1", sql1);
-Assert.assertEquals("SELECT t.`order` AS `score` FROM `t_blog` t WHERE t.`deleted` = ? AND t.`id` = ? LIMIT 1", sql2);
-
-```
 ::: 
 
 ## API
