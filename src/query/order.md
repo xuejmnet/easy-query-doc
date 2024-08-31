@@ -20,16 +20,6 @@ title: 排序
 <== Total: 101
 ```
 
-@tab lambda表达式树模式
-```java
-List<Topic> list1 = elq.queryable(Topic.class)
-                .orderBy(t -> t.getId())
-                .toList();
-
-==> Preparing: SELECT `id`,`stars`,`title`,`create_time` FROM `t_topic` ORDER BY `id` ASC
-<== Time Elapsed: 2(ms)
-<== Total: 101
-```
 :::
 
 ## 双字段排序
@@ -64,18 +54,6 @@ List<Topic> list = easyEntityQuery.queryable(Topic.class)
 <== Total: 101
 ```
 
-@tab lambda表达式树模式
-```java
-List<Topic> list2 = elq.queryable(Topic.class)
-                .orderBy(t -> t.getId())
-                // 反向排序
-                .orderBy(t -> t.getCreateTime(), false)
-                .toList();
-
-==> Preparing: SELECT `id`,`stars`,`title`,`create_time` FROM `t_topic` ORDER BY `id` ASC,`create_time` DESC
-<== Time Elapsed: 3(ms)
-<== Total: 101
-```
 :::
 
 ## 动态排序
@@ -98,23 +76,6 @@ List<Topic> list = easyEntityQuery.queryable(Topic.class)
 <== Total: 101
 ```
 
-@tab lambda表达式树模式
-```java
-LQuery<Topic> queryable = elq.queryable(Topic.class);
-
-// 后续考虑加入orderByIf
-if (false)
-{
-    queryable.orderBy(t->t.getId());
-}
-
-queryable.orderBy(t -> t.getCreateTime(), false);
-List<Topic> list4 = queryable.toList();
-
-==> Preparing: SELECT `id`,`stars`,`title`,`create_time` FROM `t_topic` ORDER BY `create_time` DESC
-<== Time Elapsed: 3(ms)
-<== Total: 101
-```
 :::
 
 
@@ -141,16 +102,6 @@ List<Topic> list = easyEntityQuery.queryable(Topic.class)
 <== Total: 101
 ```
 
-@tab lambda表达式树模式
-```java
-List<Topic> list5 = elq.queryable(Topic.class)
-        .orderBy(t -> SqlFunctions.dateFormat(t.getCreateTime(),"%Y-%m-%d"))
-        .toList();
-
-==> Preparing: SELECT `id`,`stars`,`title`,`create_time` FROM `t_topic` ORDER BY DATE_FORMAT(`create_time`,'%Y-%m-%d') DESC
-<== Time Elapsed: 11(ms)
-        <== Total: 101
-```
 :::
 
 ## null最前最后
