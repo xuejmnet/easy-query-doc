@@ -121,6 +121,8 @@ long rows = easyQuery.insertable(topics.get(0)).insert(topics.get(1)).executeRow
 
 ## 4.自增主键回填
 很多时候我们设置id自增那么需要在插入的时候回填对应的主键自增信息所以`easy-query`也提供了该功能,并且很方便的使用
+
+- `executeRows(true)` true表示需要回填主键
 ```java
 @Data
 @Table("t_topic_auto")
@@ -141,6 +143,7 @@ topicAuto.setStars(999);
 topicAuto.setTitle("title" + 999);
 topicAuto.setCreateTime(LocalDateTime.now().plusDays(99));
 Assert.assertNull(topicAuto.getId());
+//true表示需要回填主键
 long l = easyQuery.insertable(topicAuto).executeRows(true);
 Assert.assertEquals(1,l);
 Assert.assertNotNull(topicAuto.getId());
