@@ -41,14 +41,14 @@ Easy Query提供了`updatable`方法，支持更新单条数据和多条数据,�
 
 ## 更新策略
 
-Easy Query默认采用`SQLExecuteStrategyEnum.ONLY_NOT_NULL_COLUMNS`策略进行更新，也就是默认只更新有值的列，可以使用`setSQLStrategy`方法设置执行策略，设置`SQLExecuteStrategyEnum.ALL_COLUMNS`可以更新全部列。
+Easy Query默认采用`SQLExecuteStrategyEnum.ALL_COLUMNS`策略进行更新，也就是默认更新全列，可以使用`setSQLStrategy`方法设置执行策略，设置`SQLExecuteStrategyEnum.ONLY_NOT_NULL_COLUMNS`可以更新非null列。
 ```java
     @Test
     public void testUpdateAll() {
         User user = easyEntityQuery.queryable(User.class).findNotNull(1);
         DateTime updateTime = new DateTime();
         user.setUpdateTime(updateTime);
-        long rows = easyEntityQuery.updatable(user).setSQLStrategy(SQLExecuteStrategyEnum.ALL_COLUMNS).executeRows();
+        long rows = easyEntityQuery.updatable(user).setSQLStrategy(SQLExecuteStrategyEnum.ONLY_NOT_NULL_COLUMNS).executeRows();
         Assertions.assertTrue(rows > 0);
         Assertions.assertNotNull(user.getId());
     }
