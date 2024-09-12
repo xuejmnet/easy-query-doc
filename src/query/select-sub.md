@@ -132,6 +132,117 @@ FROM
 WHERE
     t.`name` LIKE '%xx公司%'
 ```
+## 优化
+`select子查询`如果在大数量的情况下默认性能不是很理想,那么是否有性能比较高的使用方式呢,比如在分页下面我们先对结果集进行筛选在进行`select子查询`,亦或者先对结果集进行limit在进行select子查询那么性能将大大的提升,那么如何使用呢,在新版本2.0.78+版本`eq`提供了`limitSelect`和`toPageSelectResult`来方便用户处理实现这种操作
+
+### 未优化版本
+```java
+
+EasyPageResult<Draft2<String, Integer>> pageResult = easyEntityQuery.queryable(Company.class)
+        .where(com -> com.name().like("xx公司"))
+        .select(com -> Select.DRAFT.of(
+                com.id(),
+                com.users().where(u -> u.name().likeMatchLeft("李")).sum(u -> u.age())
+        )).toPageResult(2, 10);
+
+//获取count
+SELECT 
+    COUNT(*) 
+FROM 
+    `t_company` t 
+WHERE 
+    t.`name` LIKE '%xx公司%'
+
+//获取结果
+SELECT
+    t.`id` AS `value1`,
+    IFNULL((SELECT
+        SUM(t2.`age`) 
+    FROM
+        `t_user` t2 
+    WHERE
+        t2.`company_id` = t.`id` 
+        AND t2.`name` LIKE '李%'),
+    0) AS `value2` 
+FROM
+    `t_company` t 
+WHERE
+    t.`name` LIKE '%xx公司%' LIMIT 10 OFFSET 10
+```
+
+### 优化版本
+```java
+//select的操作放到单独一个匿名表达式
+EasyPageResult<Draft2<String, Integer>> pageResult = easyEntityQuery.queryable(Company.class)
+                .where(com -> com.name().like("xx公司"))
+                .toPageSelectResult(q -> {
+                    return q.select(com->Select.DRAFT.of(
+                            com.id(),
+                            com.users().where(u -> u.name().likeMatchLeft("李")).sum(u -> u.age())
+                    ));
+                },2, 10);
+
+
+//获取count
+SELECT 
+    COUNT(*) 
+FROM 
+    `t_company` t 
+WHERE 
+    t.`name` LIKE '%xx公司%'
+
+//获取结果
+SELECT
+    t1.`id` AS `value1`,
+    IFNULL((SELECT
+        SUM(t3.`age`) 
+    FROM
+        `t_user` t3 
+    WHERE
+        t3.`company_id` = t1.`id` 
+        AND t3.`name` LIKE '李%'),
+    0) AS `value2` 
+FROM
+    (SELECT
+        t.`id`,
+        t.`name`,
+        t.`create_time` 
+    FROM
+        `t_company` t 
+    WHERE
+        t.`name` LIKE '%xx公司%' LIMIT 10 OFFSET 10) t1
+```
+区别就是将子查询额外放到了外面以最小颗粒来实现高性能子查询
+
+### 优化版本分步查询
+```java
+//创建表达式
+EntityQueryable<CompanyProxy, Company> queryable = easyEntityQuery.queryable(Company.class)
+            .where(com -> com.name().like("xx公司"));
+
+//获取total            
+long total = queryable.cloneQueryable().count();
+//先进行limit在进行select
+List<Draft2<String, Integer>> data = queryable.cloneQueryable().limitSelect(10, 10, com -> Select.DRAFT.of(
+        com.id(),
+        com.users().where(u -> u.name().likeMatchLeft("李")).sum(u -> u.age())
+)).toList();
+```
+
+### 优化原始版本分布查询
+```java
+ EntityQueryable<CompanyProxy, Company> queryable = easyEntityQuery.queryable(Company.class)
+                .where(com -> com.name().like("xx公司"));
+long total = queryable.cloneQueryable().count();
+//limit+select+select就是limitSelect的默认实现如果你是低版本可以通过这种方式调用来实现优化子查询
+List<Draft2<String, Integer>> data = queryable.cloneQueryable().limit(10, 10)
+        .select(com -> com)
+        .select(com -> Select.DRAFT.of(
+                com.id(),
+                com.users().where(u -> u.name().likeMatchLeft("李")).sum(u -> u.age())
+        )).toList();
+```
+
 ## 手动模式
 ::: code-tabs
 @tab 对象模式
