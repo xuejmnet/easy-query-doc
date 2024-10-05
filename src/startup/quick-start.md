@@ -402,6 +402,11 @@ private EasyEntityQuery easyEntityQuery;
     public void testQueryColumns() {
         //查询指定列名
         List<User> users = easyEntityQuery.queryable(User.class)
+                //2.0.66^版本查询当前表指定列可以不添加`fetchProxy`
+                .select(u -> u.FETCHER.id().name()).toList();
+
+        //2.0.66以前版本需要添加`fetchProxy`
+        List<User> users = easyEntityQuery.queryable(User.class)
                 .select(u -> u.FETCHER.id().name().fetchProxy()).toList();
         for (User user : users) {
             Assertions.assertNotNull(user.getId());
@@ -410,6 +415,7 @@ private EasyEntityQuery easyEntityQuery;
             Assertions.assertNull(user.getUpdateTime());
         }
 
+        //先获取所有的列然后排除掉不需要的
         users = easyEntityQuery.queryable(User.class)
                 .select(User.class, u -> Select.of(u.FETCHER.allFieldsExclude(u.createTime(), u.updateTime()))).toList();
         for (User user : users) {
@@ -418,7 +424,9 @@ private EasyEntityQuery easyEntityQuery;
             Assertions.assertNull(user.getCreateTime());
             Assertions.assertNull(user.getUpdateTime());
         }
-
+        //现获取所有的列然后排除掉不需要的
+        //和上面表达式的区别就是上面表达式select后不支持继续where了，但是下面这个表达式返回的是Proxy所以可以继续where orderBy等操作相当于
+        //是吧select当做是一张匿名表select t1.id,t1.name from ( select id,name from user t) t1
         users = easyEntityQuery.queryable(User.class)
                 .select(o -> new UserProxy()
                         .selectAll(o)
