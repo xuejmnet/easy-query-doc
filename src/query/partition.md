@@ -4,6 +4,18 @@ title: PARTITION BY
 
 `PARTITION BY`是数据库的一个`窗口函数`,部分数据库可能不支持或者低版本数据库不支持，请结合具体数据库使用
 
+## 提供api
+
+方法  
+--- 
+rowNumberOver
+rankOver
+denseRankOver
+countOver
+sumOver
+avgOver
+maxOver
+minOver
 
 ## 初始化数据表结构
 
