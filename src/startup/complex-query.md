@@ -46,6 +46,12 @@ Easy Query提供`include`或者`includes`方法来额外自动查询出当前主
    - 一个用户可以有多个角色，一个角色也可以分配给多个用户通过 `user_role` 表来关联 `user` 和 `role`。
    - 一个角色可以有多个权限，一个权限也可以属于多个角色。通过 `role_permission` 表来关联 `roles` 和 `permission`。
 
+
+
+::: tip 说明!!!
+> `2.0.93^`版本支持多属性比如人员企业关系表(`company_user`)和工单表(`task`)如果以人员企业为视角那么可以通过`com_id`+`user_id`来关联`task`表的`com_id`+`user_id`而不仅限于单一属性
+:::
+
 现在准备数据，后面的大部分使用案例将根据这些数据进行测试，SQL如下：
 ```sql
 -- 删除公司表
