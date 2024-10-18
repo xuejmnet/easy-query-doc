@@ -4,9 +4,9 @@ title: 关联查询 Include
 
 `easy-query` 1.2.1+ 支持关联查询,支持多级关联查询,并且只支持first和tolist两个返回方法,支持vo对象返回支持`include`追加追踪、禁止、逻辑删除、where过滤、order、limit等一系列处理，但是返回结果必须是数据库对象实例(include方法内部),如果需要额外字段返回可以使用`columnInclude`/`columnIncludeMany`自定义返回
 
-<!-- ::: warning 说明!!!
-> 暂时不支持`proxy`模式
-::: -->
+::: warning 说明!!!
+> `OneToOne`和`ManyToOne`有着天然的区别,比如每条记录都有一个创建人id,如果你添加创建人关系对象到记录对象里面,那么应该设置`ManyToOne`表示多条记录都会有这个创建人,而不是`OneToOne`，如果您设置`OneToOne`那么如果2条记录有相同的创建人则只会有一个创建人被关联上,具体可以反向推导比如一个人有多少条记录很明显是`OneToMany`那么反过来就是`ManyToOne`
+:::
 
 类型  | 描述 | 场景 
 --- | --- | --- 
@@ -279,7 +279,7 @@ List<SchoolStudent> stus = easyQuery.queryable(SchoolStudent.class)
 [SchoolStudent(id=1, classId=class1, name=学生1, schoolClass=SchoolClass(id=class1, name=班级1, schoolStudents=null, schoolTeachers=null), schoolStudentAddress=null), SchoolStudent(id=2, classId=class2, name=学生2, schoolClass=SchoolClass(id=class2, name=班级2, schoolStudents=null, schoolTeachers=null), schoolStudentAddress=null), SchoolStudent(id=3, classId=class1, name=学生3, schoolClass=SchoolClass(id=class1, name=班级1, schoolStudents=null, schoolTeachers=null), schoolStudentAddress=null)]
 ```
 
-## 多对多
+## ManyToMany
 班级和老师之间的关系
 ::: tip 说明!!!
 > 多对多无论是否存在多的一方最终都会填充集合,永远不会为null
