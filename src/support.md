@@ -31,10 +31,26 @@ icon: creative
 
 ::: 
 
-
-
 ::: tip 说明!!!
 > 代理模式下`where`的第一个参数是`filter`过滤器,第二个参数开始才是真正的表
+:::
+
+
+
+
+
+
+::: tabs
+
+@tab entity
+
+
+编写中...
+@tab lambda
+编写中...
+@tab client
+编写中...
+
 :::
 
 -->
