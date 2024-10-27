@@ -28,7 +28,7 @@ supportQueryLike | false | 是否支持模糊查询,默认不支持,默认支持
 @Data
 @Table("t_sys_user_encryption")
 public class SysUserEncryption {
-    @Column(primaryKey = true)xia
+    @Column(primaryKey = true)
     private String id;
     private String name;
     @Encryption(strategy = Base64EncryptionStrategy.class)

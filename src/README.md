@@ -126,7 +126,7 @@ List<UserDTO> userInfo = easyEntityQuery.queryable(SysUser.class)
         )).toList();
 ```
 
-@tab 隐式 join 筛选
+@tab 隐式 join 筛选🔥
 
 ```java
 //user和address一对一
@@ -151,7 +151,7 @@ List<SysUser> userInHz = easyEntityQuery.queryable(SysUser.class)
                 }).toList();
 ```
 
-@tab 隐式子查询
+@tab 隐式子查询🔥
 
 ```java
 //user和role多对多
@@ -220,7 +220,7 @@ List<Draft2<String, Long>> userIdAndRoleCount1 = easyEntityQuery.queryable(SysUs
         )).toList();
 ```
 
-@tab 结构化数据返回
+@tab 结构化数据返回🔥
 
 ```java
 
@@ -272,7 +272,7 @@ public class StructSysUserDTO {
 }
 ```
 
-@tab 结构化穿透
+@tab 结构化穿透🔥
 
 ```java
 
