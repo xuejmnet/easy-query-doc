@@ -1,1 +1,0 @@
-import{_ as t}from"./plugin-vue_export-helper-c27b6911.js";import{o,c as e}from"./app-3070a265.js";const n={};function c(r,a){return o(),e("div")}const f=t(n,[["render",c],["__file","annotation.html.vue"]]);export{f as default};
