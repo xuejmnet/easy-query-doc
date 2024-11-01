@@ -36,6 +36,11 @@ export const zhSidebar = sidebar({
       children: ["readme.md","logic-delete","auto-key","interceptor","batch","sql-func-v1","sql-func","column-encryption","column-sql-func-auto","data-tracking","version","column-func-new","column-func","value-object","jdbc-listener","type-handler"],
     },
     {
+      text: "注解",
+      prefix: "annotations/",
+      children: ["navigate-flat"],
+    },
+    {
       text: "超级",
       prefix: "super/",
       children: ["readme.md","sharding-table.md","sharding-datasource.md","sharding-all.md","default-route-rule","default-route-initializer","sharding-mod.md","sharding-time.md",
