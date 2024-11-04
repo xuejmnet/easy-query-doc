@@ -28,6 +28,7 @@ defaultSchema| null | 当entity的schema为空时切defaultSchema不为空时采
 resultSizeLimit| -1 | 限制全局拉取数据至多多少条,小于等于0时不生效,如果设置100后续有查询需要放大可以单独在`.configure(o->o.setResultSizeLimit(100000))`处设置
 mapKeyConversion| - | 当使用map返回结果时resultSet转成map的key如何处理,默认支持全大写全小写去掉下划线也可以保留下划线
 printNavSql| true | 关联查询是否打印二次子查询的sql
+propertyMode| `PropertyModeEnum.FIRST_LOWER` | 表示entity属性是首字母小写(为了兼容lambda和lambdakt的模式),还有一个就是`PropertyModeEnum.SAME_AS_ENTITY`如果你是entity模式那么建议使用这个
 ## 分表分库特有配置
 
 配置名称  | 默认值 | 描述  
