@@ -19,7 +19,7 @@ ManyToMany | 多对多  | 班级和老师
 
 List<SchoolClass> classes = easyEntityQuery.queryable(SchoolClass.class)
                         //查询班级并且连带查询每个班级最先入学的前5位学生
-                        .include(o -> o.schoolStudents(),x->x.orderBy(u->u.createTime().asc()).limit(5))
+                        .includes(o -> o.schoolStudents(),x->x.orderBy(u->u.createTime().asc()).limit(5))
                         .toList();
 
 ```

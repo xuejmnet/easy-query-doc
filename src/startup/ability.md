@@ -9,7 +9,10 @@ title: 功能目录指引
 - [删除]
 
 ## 额外功能
+- [include,includes]
+- [selectAutoInclude](/easy-query-doc/query/select-auto-include)
 - [分页]
+- [DTO、VO直接返回]
 - [批处理]
 - [分组]
 - [排序]

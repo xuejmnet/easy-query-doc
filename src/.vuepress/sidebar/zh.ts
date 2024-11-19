@@ -8,7 +8,7 @@ export const zhSidebar = sidebar({
     {
       text: "起步",
       prefix: "startup/",
-      children: ["readme","quick-start","complex-query","ability","annotation","dto"],
+      children: ["readme","quick-start","complex-query","ability","annotation"],
     },
     {
       text: "配置",
@@ -23,7 +23,7 @@ export const zhSidebar = sidebar({
     {
       text: "查询",
       prefix: "query/",
-      children: ["readme.md","select","basic-type","anonymous-type","or-condition","paging","multi-query","group","partition","order","native-sql","dynamic-table","stream-query","to-map","select-column","union","select-sub","where-sub","relation","relation-filter","fill","where","reuse","case-when","dynamic-where","dynamic-sort"],
+      children: ["readme.md","select","basic-type","anonymous-type","or-condition","paging","multi-query","group","partition","order","native-sql","dynamic-table","stream-query","to-map","select-column","union","select-sub","where-sub","relation","relation-filter","select-auto-include","fill","where","reuse","case-when","dynamic-where","dynamic-sort"],
     },
     {
       text: "计算属性",

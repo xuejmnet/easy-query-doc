@@ -48,7 +48,7 @@ title: 国产框架Solon配置
 <dependency>
     <groupId>org.noear</groupId>
     <artifactId>solon-web</artifactId>
-    <version>2.4.0</version>
+    <version>2.9.3</version>
 </dependency>
 ```
 

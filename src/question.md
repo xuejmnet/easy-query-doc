@@ -97,7 +97,7 @@ easyEntityQuery.deletable(User.class).disableLogicDelete()allowDeleteStatement(t
 ::: warning 报错!!!
 如果遇到build后报错java:程序包xxxxxxxx.proxy不存在
 
-
+- 检查是否存在javacTree之类的错误可能是由于lombok版本过低升级即可
 - 查看是否引入sql-processor包
 - 设置idea的注解处理器 Build,Execution,Deployment,Compiler,Annotation Processors 选择Enable annotation processing 并且选择Obtain processors from project classpath
 
