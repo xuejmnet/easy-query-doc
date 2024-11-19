@@ -6,7 +6,7 @@ title: 快速开始🔥🔥🔥
 在此使用Easy Query之前，需要具备以下条件：
 - 拥有基本的Java开发环境
 - 熟悉Maven或Gradle工具
-- 熟悉Spring Boot框架
+- 熟悉[Spring Boot](https://github.com/spring-projects/spring-boot) 或 [Solon](https://gitee.com/opensolon/solon) 框架
 
 目前1.8.0+版本的Easy Query提供了多种API模式，比如`lambda`、`property`、`entity`，其中`entity`模式是最新开发的，强烈推荐使用它
 本章节将基于`entity`模式进行讲解，在`entity`模式中，`EasyEntityQuery`是核心接口，它提供了常用的增删改查方法，
@@ -323,6 +323,17 @@ public class User implements ProxyEntityAvailable<User, UserProxy> {
 :::
 
 <img src="/startup3.png">
+
+可以通过插件快速添加该接口
+
+
+<img src="/startup5.png">
+
+::: warning 说明!!!
+> 如果EasyQueryImplement没有效果请检查类是否添加了`@EntityProxy`或者`@EntityFileProxy`
+:::
+
+<img src="/startup6.png">
 
 ::: warning 说明!!!
 > 2.0.15+版本框架不需要实现`proxyTableClass`方法，idea-plugin插件在0.0.57后也将不会生成该方法

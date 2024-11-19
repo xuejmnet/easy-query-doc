@@ -349,7 +349,7 @@ List<Draft2<String, String>> idAndName = easyEntityQuery.queryable(SysUser.class
             user.createTime().gt(LocalDateTime.now());
         }).select(user -> Select.DRAFT.of(
                 user.id(),
-                user.expression().sqlType("IFNULL({0},'')", c -> c.expression(user.name())).setPropertyType(String.class)
+                user.expression().sqlSegment("IFNULL({0},'')", c -> c.expression(user.name())).setPropertyType(String.class)
         )).toList();
 
 ```

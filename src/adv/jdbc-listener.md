@@ -328,9 +328,6 @@ public class LogSlowSQLListener implements JdbcExecutorListener {
         //为了不影响性能建议采用异步线程池发送http,同步的话会影响性能
         //为了不影响性能建议采用异步线程池发送http,同步的话会影响性能
         //为了不影响性能建议采用异步线程池发送http,同步的话会影响性能
-        //通过serviceProvider来获取注册的bean实例
-        AppContext service = serviceProvider.getService(AppContext.class);
-        HttpLogRequest httpLogRequest = service.getBean(HttpLogRequest.class);
         JdbcExecuteBeforeArg beforeArg = afterArg.getBeforeArg();
         //通过getState来获取before的参数
 //        Map<String, Object> state = beforeArg.getState();
@@ -340,6 +337,9 @@ public class LogSlowSQLListener implements JdbcExecutorListener {
         //因为sqlParameters第一层大于1表示是批处理,批处理的时间一般是比较多的你可以选择
         //不记录本次sql或者只记录sql不记录sql参数自行处理
         if(elapsed>=3*1000 && beforeArg.getSqlParameters().size()<=1){
+            //通过serviceProvider来获取注册的bean实例
+            AppContext service = serviceProvider.getService(AppContext.class);
+            HttpLogRequest httpLogRequest = service.getBean(HttpLogRequest.class);
             //发送http请求
 
             String sql = beforeArg.getSql();

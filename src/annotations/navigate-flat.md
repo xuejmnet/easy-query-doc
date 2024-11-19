@@ -7,7 +7,13 @@ title: NavigateFlat
 
 没有n+1的复杂度,拥有高性能的获取
 
-加入我们的对应关系是如下的
+属性  | 默认值 | 描述  
+--- | --- | --- 
+value | RelationMappingTypeEnum.AUTO | 指定flat的对象是单个还是多个默认自动(后续应该会自动推断删除这个值),目前不需要设置
+mappingPath | {} | 当前属性添加`@NavigateFlat`后要拉取的数据路径
+pathAlias | "" | 用于代替mappingPath的强类型属性支持插件生成路径,获取的值是当前类下的静态属性
+
+假如我们的对应关系是如下的
 ```java
 public class SysUser{
     private String id;

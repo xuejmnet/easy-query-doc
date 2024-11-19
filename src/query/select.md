@@ -761,7 +761,7 @@ List<BlogPartitionEntityVO> list = easyEntityQuery.queryable(BlogEntity.class)
                     BlogPartitionEntityVOProxy r = new BlogPartitionEntityVOProxy();
                     r.selectAll(b);
                     r.num().set(
-                            expression.sqlType("ROW_NUMBER() OVER(PARTITION BY {0} ORDER BY {1} DESC)", c -> c.expression(b.title()).expression(b.score()))
+                            expression.sqlSegment("ROW_NUMBER() OVER(PARTITION BY {0} ORDER BY {1} DESC)", c -> c.expression(b.title()).expression(b.score()))
                                     .setPropertyType(Integer.class)
                     );
                     return r;
