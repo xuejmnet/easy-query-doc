@@ -14,7 +14,7 @@ export const zhSidebar = sidebar({
       text: "案例",
       prefix: "examples/",
       collapsible:true,
-      children: ["example1","example2"],
+      children: ["example1","example2","include-example"],
     },
     {
       text: "配置",
