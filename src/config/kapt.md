@@ -107,14 +107,13 @@ fun main(args: Array<String>) {
         .setDefaultDataSource(hikariDataSource)
         .useDatabaseConfigure(MySQLDatabaseConfiguration())
         .build()
-        //如果实现了ProxyEntityAvailable(可用插件生成则可以使用EasyEntityQuery,本质和EasyProxyQuery一样)
-    var easyProxyQuery = DefaultEasyProxyQuery(easyQueryClient)
+        //如果实现了ProxyEntityAvailable(可用插件生成则可以使用EasyEntityQuery)
+    var easyEntityQuery = DefaultEasyEntityQuery(easyQueryClient)
 
-    var topic = TopicProxy.createTable()
-    var toList2 = easyProxyQuery.queryable(topic)
+    var toList2 = easyEntityQuery.queryable(topic)
         .where {
-            it.eq(topic.id(), "1")
-                .eq(topic.stars3(), 1)
+            it.id().eq("1")
+            it.stars3()eq(,1)
         }
         .toList()
 }
