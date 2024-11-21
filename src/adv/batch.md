@@ -4,7 +4,11 @@ title: Batch批处理
 # Batch批处理
 `easy-query`如果需要使用batch功能首先需要在链接字符串添加`rewriteBatchedStatements=true`启用参数（mysql）,默认框架会在配置参数阈值到达后自动合并sql调用`executeBatch`合并,如果需要手动调用或者手动限制不调用可以通过调用`batch`方法
 
+文档提供的链接字符串设置不一定适合所有版本请以实际情况为准可以通过本地库进行10w级别的插入来进行测试判断是否生效
+
 `mysql`需要链接字符串启用批处理参数`rewriteBatchedStatements=true`,其他数据库自行查询相关的说明也可能不需要 `addBatch`、`executeBatch`
+
+`sqlserver`将 `useBulkCopyForBatchInsert=true;` 添加到连接字符串可启用此功能。 批处理相关链接 https://learn.microsoft.com/zh-cn/sql/connect/jdbc/use-bulk-copy-api-batch-insert-operation?view=sql-server-ver16 
 
 ## 例如
 `jdbc:mysql://127.0.0.1:3306/easy-query-test?serverTimezone=GMT%2B8&characterEncoding=utf-8&useSSL=false&rewriteBatchedStatements=true`
