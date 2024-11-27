@@ -47,6 +47,8 @@ executorCorePoolSize | `Math.min(processors, 4)`  | 仅`executorMaximumPoolSize`
 executorQueueSize | `1024`  | 仅`executorMaximumPoolSize`>0时生效，线程池有界队列大小
 startTimeJob| `false` | 当使用系统默认的按时间分片时设置这个配置为`true`那么框架会在内存中添加对应的系统表,原理就是开启一个定时任务线程去执行
 shardingFetchSize| `1000` | 在分片下默认拉取大小设置
+shardingQueryInTransaction| serializable | `serializable`事务内查询会将maxShardingQueryLimit设置为1走串行防止脏读因为并发查询下当前事务不可以,也可以使用`concurrency`无视当前事务查询,性能而言`concurrency`优先,`serializable`会保证相对数据一致,也可以手动设置queryable().useMaxShardingQueryLimit(n)
+
 
 ## spring-boot
 通过配置文件可以直接配置上述选项
