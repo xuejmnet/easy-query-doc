@@ -78,6 +78,7 @@ export const zhSidebar = sidebar({
         }
       ],
     },
-    "support"
+    "support",
+    "members"
   ],
 });
