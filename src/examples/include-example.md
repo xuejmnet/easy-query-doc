@@ -584,6 +584,191 @@ public class SchoolTeacherVO {
 ```
 
 通过VO返回实现自定义列,并且实现额外的处理
+
+
+::: tabs
+
+@tab SchoolStudent
+
+```java
+@Table("school_student")
+@Data
+@ToString
+@EntityFileProxy
+public class SchoolStudent implements ProxyEntityAvailable<SchoolStudent, SchoolStudentProxy> {
+    @Column(primaryKey = true)
+    private String id;
+    private String classId;
+    private String name;
+//    private Integer age;
+    @Navigate(value = RelationTypeEnum.ManyToOne, selfProperty = "classId", targetProperty = "id")
+    private SchoolClass schoolClass;
+    @Navigate(value = RelationTypeEnum.OneToOne, targetProperty = "studentId")
+    private SchoolStudentAddress schoolStudentAddress;
+
+}
+@tab SchoolClass
+```java
+
+@Table("school_class")
+@Data
+@ToString
+@EntityFileProxy
+public class SchoolClass implements ProxyEntityAvailable<SchoolClass , SchoolClassProxy> {
+    @Column(primaryKey = true)//主键
+    private String id;
+    private String name;
+    //一对多 一个班级多个学生
+    @Navigate(value = RelationTypeEnum.OneToMany, targetProperty = "classId")
+    //完整配置,property忽略表示对应的主键
+//    @Navigate(value = RelationTypeEnum.OneToMany,selfProperty = "id",targetProperty = "classId")
+    private List<SchoolStudent> schoolStudents;
+
+    //中间表多对多配置,其中mappingClass表示中间表,selfMappingProperty表示中间表的哪个字段和当前表对应,
+    //targetMappingProperty表示中间表的哪个字段和目标表的属性对应
+    @Navigate(value = RelationTypeEnum.ManyToMany
+            , mappingClass = SchoolClassTeacher.class
+            , selfMappingProperty = "classId"
+            , targetMappingProperty = "teacherId")
+    //完整配置其中自己的属性和目标属性忽略表示主键
+//    @Navigate(value = RelationTypeEnum.ManyToMany
+//            , selfProperty = "id"
+//            , targetProperty = "id"
+//            , mappingClass = SchoolClassTeacher.class
+//            , selfMappingProperty = "classId"
+//            , targetMappingProperty = "teacherId")
+
+    private List<SchoolTeacher> schoolTeachers;
+}
+```
+@tab SchoolStudent
+```java
+@Table("school_student")
+@Data
+@ToString
+@EntityFileProxy
+public class SchoolStudent implements ProxyEntityAvailable<SchoolStudent, SchoolStudentProxy> {
+    @Column(primaryKey = true)
+    private String id;
+    private String classId;
+    private String name;
+//    private Integer age;
+    @Navigate(value = RelationTypeEnum.ManyToOne, selfProperty = "classId", targetProperty = "id")
+    private SchoolClass schoolClass;
+    @Navigate(value = RelationTypeEnum.OneToOne, targetProperty = "studentId")
+    private SchoolStudentAddress schoolStudentAddress;
+
+}
+```
+
+@tab SchoolTeacher
+```java
+@Table("school_teacher")
+@Data
+@ToString
+@EntityFileProxy
+public class SchoolTeacher implements ProxyEntityAvailable<SchoolTeacher , SchoolTeacherProxy> {
+    @Column(primaryKey = true)
+    private String id;
+    private String name;
+    @Navigate(value = RelationTypeEnum.ManyToMany
+            , mappingClass = SchoolClassTeacher.class
+            , selfProperty = "id"
+            , selfMappingProperty = "teacherId"
+            , targetProperty = "id"
+            , targetMappingProperty = "classId")
+
+    private List<SchoolClass> schoolClasses;
+}
+```
+@tab SchoolStudentAddress
+```java
+@Table("school_student_address")
+@Data
+@ToString
+@EntityFileProxy
+public class SchoolStudentAddress implements ProxyEntityAvailable<SchoolStudentAddress , SchoolStudentAddressProxy> {
+    private String id;
+    private String studentId;
+    private String address;
+    @Navigate(value = RelationTypeEnum.ManyToOne,selfProperty = "studentId",targetProperty = "id")
+    private SchoolStudent schoolStudent;
+}
+```
+@tab SchoolStudentVO
+```java
+@Data
+@EntityProxy
+public class SchoolStudentVO {
+    private String id;
+    private String classId;
+    private String name;
+    @Navigate(RelationTypeEnum.ManyToOne)
+    private SchoolClassVO schoolClass;
+    @Navigate(RelationTypeEnum.OneToOne)
+    private SchoolStudentAddressVO schoolStudentAddress;
+}
+
+```
+@tab SchoolClassVO
+```java
+@Data
+@EntityProxy
+public class SchoolClassVO {
+    private String id;
+    private String name;
+    @Navigate(RelationTypeEnum.OneToMany)
+    private List<SchoolStudentVO> schoolStudents;
+    @Navigate(RelationTypeEnum.ManyToMany)
+    private List<SchoolTeacherVO> schoolTeachers;
+}
+```
+@tab SchoolStudentAddressVO
+```java
+@Data
+@ToString
+@EntityProxy
+public class SchoolStudentAddressVO{
+    private String id;
+    private String studentId;
+    private String address;
+    private String name;
+    @Navigate(value = RelationTypeEnum.ManyToOne)
+    private SchoolStudentVO schoolStudent;
+
+}
+```
+@tab SchoolTeacherVO
+```java
+@Data
+@ToString
+@EntityProxy
+public class SchoolTeacherVO {
+    private String id;
+    private String name;
+}
+```
+
+:::
+
+
+
+::: tabs
+
+@tab entity
+```java
+List<SchoolStudentVO> list1 = easyEntityQuery.queryable(SchoolStudent.class)
+                        .include(o -> o.schoolClass())
+                        .select(o -> new SchoolStudentVOProxy().adapter(r -> {
+                            r.selectAll(o);
+                            //第二个参数表示自定义设置映射
+                            r.schoolClass().set(o.schoolClass());
+                            //r.schoolClass().set(o.schoolClass()//x->{return voproxy()});
+                        }))
+                        .toList();
+```
+@tab lambda
+
 ```java
 //查询学生表,并且额外查出对应的班级表
 //一对一
@@ -684,3 +869,6 @@ List<SchoolClassVO> list2 = easyQuery.queryable(SchoolClass.class)
 <== Total: 2
 ```
 
+
+
+:::
