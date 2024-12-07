@@ -97,6 +97,55 @@ List<SysUser> users = easyEntityQuery.queryable(SysUser.class)
     }).toList();
 ```
 
+@tab 隐式 join 筛选🔥
+
+```java
+//user和address一对一
+//查询杭州或绍兴的用户
+List<SysUser> userInHz = easyEntityQuery.queryable(SysUser.class)
+                .where(u -> {
+                    //隐式子查询会自动join用户表和地址表
+                    u.or(()->{
+                      //根据条件是否生效自动添加address表的join
+                        u.address().city().eq("杭州市");
+                        u.address().city().eq("绍兴市");
+                    });
+                }).toList();
+
+
+//查询用户名叫小明并且家住杭州的
+List<SysUser> userInHz = easyEntityQuery.queryable(SysUser.class)
+                .where(u -> {
+                    u.name().eq("小明");
+                    //隐式子查询会自动join地址表
+                    //根据条件是否生效自动添加address表的join
+                    //比如eq("")和eq("杭州生成的表不存在address和city的区别")
+                    u.address().city().eq("杭州市");
+                }).toList();
+```
+
+@tab 隐式子查询🔥
+
+```java
+//user和role多对多
+//筛选用户角色是管理员的
+List<SysUser> adminUsers = easyEntityQuery.queryable(SysUser.class)
+            .where(s -> {
+                //筛选条件为角色集合里面有角色名称叫做管理员的
+                s.roles().where(role -> {
+                    role.name().eq("管理员");
+                }).any();
+            }).toList();
+
+//匿名返回用户id和用户所拥有的角色数量
+List<Draft2<String, Long>> userIdAndRoleCount = easyEntityQuery.queryable(SysUser.class)
+        .where(user -> user.name().like("小明"))
+        .select(user -> Select.DRAFT.of(
+                user.id(),
+                user.roles().count()
+        )).toList();
+```
+
 @tab join 多表
 
 ```java
@@ -123,53 +172,6 @@ List<UserDTO> userInfo = easyEntityQuery.queryable(SysUser.class)
         .select(UserDTO.class,(user, addr) -> Select.DRAFT.of(
                 user.FETCHER.id().createTime(),
                 addr.area()
-        )).toList();
-```
-
-@tab 隐式 join 筛选🔥
-
-```java
-//user和address一对一
-//查询杭州或绍兴的用户
-List<SysUser> userInHz = easyEntityQuery.queryable(SysUser.class)
-                .where(u -> {
-                    //隐式子查询会自动join用户表和地址表
-                    u.or(()->{
-                      //
-                        u.address().city().eq("杭州市");
-                        u.address().city().eq("绍兴市");
-                    });
-                }).toList();
-
-
-//查询用户名叫小明并且家住杭州的
-List<SysUser> userInHz = easyEntityQuery.queryable(SysUser.class)
-                .where(u -> {
-                    u.name().eq("小明");
-                    //隐式子查询会自动join用户表和地址表
-                    u.address().city().eq("杭州市");
-                }).toList();
-```
-
-@tab 隐式子查询🔥
-
-```java
-//user和role多对多
-//筛选用户角色是管理员的
-List<SysUser> adminUsers = easyEntityQuery.queryable(SysUser.class)
-            .where(s -> {
-                //筛选条件为角色集合里面有角色名称叫做管理员的
-                s.roles().where(role -> {
-                    role.name().eq("管理员");
-                }).any();
-            }).toList();
-
-//匿名返回用户id和用户所拥有的角色数量
-List<Draft2<String, Long>> userIdAndRoleCount = easyEntityQuery.queryable(SysUser.class)
-        .where(user -> user.name().like("小明"))
-        .select(user -> Select.DRAFT.of(
-                user.id(),
-                user.roles().count()
         )).toList();
 ```
 
