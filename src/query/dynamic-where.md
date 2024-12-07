@@ -11,53 +11,12 @@ title: 动态条件
 动态条件 | 可以实现任意复杂条件构建  | 对于大部分业务场景过于复杂
 对象查询 | 可以快速实现基于dto的条件查询  | 条件仅支持and,且属性名需要一致,不一致需要手动映射为一致
 
-## 查询对象
-```java
-
-@Data
-public class BlogQuery1Request {
-
-    /**
-     * 标题
-     */
-    private String title;
-    /**
-     * 内容
-     */
-    private String content;
-    /**
-     * 点赞数
-     */
-    private Integer star;
-    /**
-     * 发布时间
-     */
-    private LocalDateTime publishTimeBegin;
-    private LocalDateTime publishTimeEnd;
-    /**
-     * 评分
-     */
-    private BigDecimal score;
-    /**
-     * 状态
-     */
-    private Integer status;
-    /**
-     * 排序
-     */
-    private BigDecimal order;
-    /**
-     * 是否置顶
-     */
-    private Boolean isTop;
-    private List<Integer> statusList=new ArrayList<>();
-    private List<Integer> statusNotList=new ArrayList<>();
-}
-
-```
 
 ## 动态条件
-
+框架提供了多种动态条件方式
+- `if`条件包裹
+- api第一个参数`boolean`,where第一个参数`boolean`
+- `filterConfigure` 
 
 ::: code-tabs
 @tab 对象模式
@@ -76,12 +35,21 @@ List<BlogEntity> result = easyEntityQuery.queryable(BlogEntity.class)
         
             //当query.getContext不为空是添加查询条件 content like query.getContext
             o.content().like(EasyStringUtil.isNotBlank(query.getContent()), query.getContent());
+            //上下两种效果一样具体如何使用自己选择
+            if(EasyStringUtil.isNotBlank(query.getContent())){
+                o.content().like(query.getContent());
+            }
+
             //当query.getOrder不为null是添加查询条件 content = query.getContext
             o.order().eq(query.getOrder() != null, query.getOrder());
             //当query.getPublishTimeBegin()不为null添加左闭区间,右侧同理 publishTimeBegin <= publishTime <= publishTimeEnd
             o.publishTime().rangeClosed(query.getPublishTimeBegin() != null, query.getPublishTimeBegin(), query.getPublishTimeEnd() != null, query.getPublishTimeEnd());
             //添加in条件
             o.status().in(EasyCollectionUtil.isNotEmpty(query.getStatusList()), query.getStatusList());
+    })
+    .where(query.getOrder() != null,o -> {
+            //当query.getOrder不为null是添加查询条件 content = query.getContext
+            o.order().eq(query.getOrder());
     }).toList();
 
 ==> Preparing: SELECT `id`,`create_time`,`update_time`,`create_by`,`update_by`,`deleted`,`title`,`content`,`url`,`star`,`publish_time`,`score`,`status`,`order`,`is_top`,`top` FROM `t_blog` WHERE `deleted` = ? AND `content` LIKE ? AND `order` = ? AND `publish_time` >= ? AND `publish_time` <= ? AND `status` IN (?,?)
@@ -228,6 +196,8 @@ List<BlogEntity> result = easyQueryClient.queryable(BlogEntity.class)
 
 ## 条件接受
 `1.4.31^`以上版本支持`ValueFilter` 条件接收器,`Queryable`默认行为`AnyValueFilter.DEFAULT`所有的条件都接受,框架提供了一个可选`NotNullOrEmptyValueFilter.DEFAULT`当传入的条件参数值非null且字符串的情况下非空那么才会增加到条件里面,仅where条件生效。并且只有左侧是属性而非属性函数时才会生效如果左侧为函数那么将不会生效
+
+如果存在隐式join那么`2.3.0^`版本可以做到更加智能的处理
 
 用户也可以自定义实现接口
 ```java
