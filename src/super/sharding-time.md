@@ -46,7 +46,7 @@ public class TopicShardingTimeShardingInitializer extends AbstractShardingMonthI
 首先我们来看下对象
 ```java
 @Data
-@Table(value = "t_topic_sharding_time")
+@Table(value = "t_topic_sharding_time",shardingInitializer = TopicShardingTimeShardingInitializer.class)
 public class TopicShardingTime {
 
     @Column(primaryKey = true)
