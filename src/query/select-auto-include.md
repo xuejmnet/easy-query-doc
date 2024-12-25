@@ -194,7 +194,13 @@ List<SysUserDTO> users = easyEntityQuery.queryable(SysUser.class)
 
 ## 结构化数据返回
 
-右键需要生成dto的包,选择`CreateStructDTO`(安装插件最新版本即可) 选择您需要的类
+
+::: tip 说明!!!
+> 右键需要生成dto的包,选择`CreateStructDTO`(安装插件最新版本即可) 选择您需要的类
+> 右键需要生成dto的包,选择`CreateStructDTO`(安装插件最新版本即可) 选择您需要的类
+> 右键需要生成dto的包,选择`CreateStructDTO`(安装插件最新版本即可) 选择您需要的类
+:::
+
 ```java
 
 /**
