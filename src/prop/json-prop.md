@@ -89,7 +89,7 @@ public class JsonListConverter implements ValueConverter<Object, String> {
 
         //下面是jackson的用法 如果你是jackson
         Type complexType = columnMetadata.getComplexPropType().complexType();
-        return JsonUtil.jsonStr2Object(s, new TypeReference<Object>() {
+        return ObjectMapper.readValue(s, new TypeReference<Object>() {//异常自行处理
             @Override
             public Type getType() {
                 return complexType;
