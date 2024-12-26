@@ -69,6 +69,35 @@ public class JsonConverter implements ValueConverter<Object, String> {
     }
 }
 
+//专门给集合用null为空数组
+@Component
+public class JsonListConverter implements ValueConverter<Object, String> {
+    @Override
+    public String serialize(Object o, ColumnMetadata columnMetadata) {
+        if(o==null){
+            return "[]";
+        }
+        return JsonUtil.object2JsonStr(o);
+    }
+
+    @Override
+    public Object deserialize(String s, ColumnMetadata columnMetadata) {
+        if(StringUtils.isBlank(s)){
+            return new ArrayList<>();
+        }
+        
+
+        //下面是jackson的用法 如果你是jackson
+        Type complexType = columnMetadata.getComplexPropType().complexType();
+        return JsonUtil.jsonStr2Object(s, new TypeReference<Object>() {
+            @Override
+            public Type getType() {
+                return complexType;
+            }
+        });
+    }
+}
+
 @Data
 @Table("t_topic_type")
 @ToString
