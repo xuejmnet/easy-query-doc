@@ -6,7 +6,7 @@ title: 自定义主键
 
 ## PrimaryKeyGenerator
 
-
+自定义主键目前支持使用PrimaryKeyGenerator或者 [拦截器](/easy-query-doc/practice/configuration/entity)
 
 方法  | 参数 | 描述  
 --- | --- | --- 
@@ -15,12 +15,28 @@ setPrimaryKey | 对象,key的columnMetadata | 用来对对象进行设置主键(
 
 执行顺序在`insert`的方法调用`executeRows`后将先执行对象的`PrimaryKeyGenerator.setPrimaryKey`然后执行拦截器,所以如果您不需要可以在拦截器里面对其进行从新设置或者清空
 
+
+
+
 ## 如何使用
 - 当前对象必须是数据库对象`@Table`
 - 当前属性必须是主键`@Column(primaryKet=true)`
 - 当前属性不可以是生成列`@Column(generateKey=true)`不可以`generateKey=true`
 - 当前属性添加`@Column(primaryKet=true,primaryKeyGenerator=UUIDPrimaryKeyGenerator.class)`
 - 如果有多主键那么也是一样的用法
+
+
+## spring-boot
+```java
+`@Component`将对应的`PrimaryKeyGenerator`注入即可
+```
+
+## 控制台
+```java
+        QueryRuntimeContext runtimeContext = easyQuery.getRuntimeContext();
+        QueryConfiguration configuration = runtimeContext.getQueryConfiguration();
+        configuration.applyPrimaryKeyGenerator(new MyTestPrimaryKeyGenerator());
+```
 
 ## UUIDPrimaryKeyGenerator
 如何实现一个UUID的主键生成器
