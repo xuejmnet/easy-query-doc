@@ -600,7 +600,8 @@ MapKey<Integer> blogCount = MapKeys.integerKey("blogCount");
                     b.star().gt(1);
                 })
                 //对其group by
-                .groupBy(b -> GroupKeys.TABLE1.of(b.id()))
+                //创建group by 2.3.4之前使用GroupKeys.TABLE1_10.of
+                .groupBy(b -> GroupKeys.of(b.id()))
                 //生成中间对象并且变成匿名表(每次select都是生成匿名表,后续如果没有别的操作那么匿名表会被展开)
                 // select * from (select blogId,blogCount from xxx group by id) t
                 //如果select后续没有非终结操作那么会被展开为 select blogId,blogCount from xxx group by id
@@ -640,7 +641,8 @@ MapKey<String> blogId = MapKeys.stringKey("blogId");
                 .where(b -> {
                     b.star().gt(1);
                 })
-                .groupBy(b -> GroupKeys.TABLE1.of(b.id()))
+                //创建group by 2.3.4之前使用GroupKeys.TABLE1_10.of
+                .groupBy(b -> GroupKeys.of(b.id()))
                 .select(group -> new MapTypeProxy().put(blogId, group.key1()).put(blogCount, group.intCount()));
 
 //        easyEntityQuery.getRuntimeContext().getEntityMetadataManager().getEntityMetadata()
@@ -667,7 +669,8 @@ MapKey<String> blogId = MapKeys.stringKey("blogId");
                     b.star().gt(1);
                 })
                 //对其group by
-                .groupBy(b -> GroupKeys.TABLE1.of(b.id()))
+                //创建group by 2.3.4之前使用GroupKeys.TABLE1_10.of
+                .groupBy(b -> GroupKeys.of(b.id()))
                 //生成中间对象并且变成匿名表(每次select都是生成匿名表,后续如果没有别的操作那么匿名表会被展开)
                 // select * from (select id as value1,count(*) as value2 from xxx group by id) t
                 //如果select后续没有非终结操作那么会被展开为 select value1,value2 from xxx group by id

@@ -824,9 +824,8 @@ Easy Query的分组支持类型推断，`groupBy`方法可以传入分组的字�
     public void testGroup() {
         //查询每个公司的用户数，使用Draft相关类型作为查询结果类型
         List<Draft2<Integer, Long>> drafts = easyEntityQuery.queryable(User.class)
-                //如果当前表达式存在两张表,比如a join b,那么GroupKeys.TABLE1.of将改为GroupKeys.TABLE2.of,
-                //其中TABLE1...N表示当前表达式是多少张表
-                .groupBy(u -> GroupKeys.TABLE1.of(u.companyId()))
+                //创建group by 2.3.4之前使用GroupKeys.TABLE1_10.of
+                .groupBy(u -> GroupKeys.of(u.companyId()))
                 .having(group -> group.count().eq(1L))
                 .select(group -> Select.DRAFT.of(
                         //此处的key1就是分组的companyId
@@ -842,7 +841,8 @@ Easy Query的分组支持类型推断，`groupBy`方法可以传入分组的字�
 
         //查询每个公司的用户数，用自定义的查询结果类型
         List<UserGroup> userGroups = easyEntityQuery.queryable(User.class)
-                .groupBy(u -> GroupKeys.TABLE1.of(u.companyId()))
+                //创建group by 2.3.4之前使用GroupKeys.TABLE1_10.of
+                .groupBy(u -> GroupKeys.of(u.companyId()))
                 .having(group -> group.groupTable().createTime().max().le(new Date()))
                 .select(UserGroup.class, group -> Select.of(
                         group.groupTable().companyId().as(UserGroup::getCompanyId),
@@ -874,7 +874,8 @@ public class UserGroup {
     public void testGroup() {
         //查询每个公司的用户数，用自定义的查询结果类型
         List<UserGroup> userGroups = easyEntityQuery.queryable(User.class)
-                .groupBy(u -> GroupKeys.TABLE1.of(u.companyId()))
+                //创建group by 2.3.4之前使用GroupKeys.TABLE1_10.of
+                .groupBy(u -> GroupKeys.of(u.companyId()))
                 .having(group -> group.groupTable().createTime().max().le(new Date()))
                 .select(group -> new UserGroupProxy()
                         .companyId().set(group.key1())//将groupBy的key给companyId您也可以使用group.groupTable().companyId()
