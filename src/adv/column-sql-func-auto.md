@@ -445,7 +445,9 @@ List<Draft3<Integer, String, String>> list = easyEntityQuery.queryable(UserExtra
             .where(u -> {
                 u.id().eq("test3");
                 u.fullName().like("悟");
-            }).groupBy(u -> GroupKeys.TABLE1.of(u.age(), u.fullName()))
+            })
+            //创建group by 2.3.4之前使用GroupKeys.TABLE1_10.of
+            .groupBy(u -> GroupKeys.of(u.age(), u.fullName()))
             .select(group -> Select.DRAFT.of(
                     group.key1(),
                     group.key2(),

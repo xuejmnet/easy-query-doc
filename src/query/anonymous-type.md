@@ -27,7 +27,8 @@ List<Draft2<String, Long>> list = easyEntityQuery.queryable(Topic.class)
                     o.title().like("123");
                     o.createTime().ge(LocalDateTime.of(2022, 2, 1, 3, 4));
                 })
-                .groupBy(o -> GroupKeys.TABLE1.of(o.id()))
+                //创建group by 2.3.4之前使用GroupKeys.TABLE1_10.of
+                .groupBy(o -> GroupKeys.of(o.id()))
                 .select(o -> Select.DRAFT.of(
                         o.key1(),
                         o.count()
@@ -103,7 +104,8 @@ draft草稿类型需要提供具体类型不然则已`jdbc.resultSet.getObject`�
 ```java
 List<BlogEntity> list = easyEntityQuery.queryable(BlogEntity.class)
                     .where(o -> o.id().eq("123" ))
-                    .groupBy(o -> GroupKeys.TABLE1.of(o.id()))
+                    //创建group by 2.3.4之前使用GroupKeys.TABLE1_10.of
+                    .groupBy(o -> GroupKeys.of(o.id()))
                     .having(o -> {
                         o.count().ne(1);
                         o.sum(o.group().star()).ge(10);

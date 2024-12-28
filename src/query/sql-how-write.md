@@ -23,7 +23,8 @@ title: 这个sql怎么写
 ```java
 List<Draft3<Integer, Integer, Integer>> list = easyEntityQuery.queryable(BlogEntity.class)
           .where(o -> o.createTime().gt(o._now().plusMonths(-3))) //WHERE 日期 >= CURDATE()- INTERVAL 3 MONTH
-          .groupBy(o -> GroupKeys.TABLE1.of(o.createTime().year(), o.createTime().month()))//GROUP BY 年份，月份
+          //创建group by 2.3.4之前使用GroupKeys.TABLE1_10.of
+          .groupBy(o -> GroupKeys.of(o.createTime().year(), o.createTime().month()))//GROUP BY 年份，月份
           .orderBy(o -> {
               o.key1().asc();  // ORDER BY 年份，月份;
               o.key2().asc();

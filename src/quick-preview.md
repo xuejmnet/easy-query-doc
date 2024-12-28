@@ -30,7 +30,8 @@ EasyQuery官方QQ群: 170029046
                                 user.id().like("123");
                                 user.id().like(false, "123");
                             })
-                            .groupBy(user->GroupKeys.TABLE1.of(user.id()))//创建group by
+                            //创建group by 2.3.4之前使用GroupKeys.TABLE%s.of
+                            .groupBy(user->GroupKeys.of(user.id()))
                             .select(group -> new SysUserProxy()
                                     .id().set(group.key1())//对当前id进行赋值
                                     .phone().set(group.count().toStr())//对当前phone进行赋值因为phone是string类型所以goup后的count需要强转成string也就是

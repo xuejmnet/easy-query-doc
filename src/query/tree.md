@@ -93,7 +93,8 @@ List<Draft2<String, Number>> list = entityQuery.queryable(MyCategory.class)
         })
         .asTreeCTE()
         .leftJoin(BlogEntity.class, (m, b2) -> m.id().eq(b2.id()))
-        .groupBy((m1, b2) -> GroupKeys.TABLE2.of(m1.name()))
+        //创建group by 2.3.4之前使用GroupKeys.TABLE1_10.of
+        .groupBy((m1, b2) -> GroupKeys.of(m1.name()))
         .select(group -> Select.DRAFT.of(
                 group.key1(),
                 group.groupTable().t2.star().sum()

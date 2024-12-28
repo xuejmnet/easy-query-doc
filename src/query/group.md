@@ -12,7 +12,8 @@ order: 30
 ```java
 List<TopicGroupTestDTO> topicGroupTestDTOS = easyEntityQuery.queryable(Topic.class)
                 .where(o -> o.id().eq("3"))
-                .groupBy(o -> GroupKeys.TABLE1.of(o.id()))//join一张表后那么应该用 GroupKeys.TABLE2.of()
+                //创建group by 2.3.4之前使用GroupKeys.TABLE1_10.of
+                .groupBy(o -> GroupKeys.of(o.id()))
                 .select(g->{
                     TopicGroupTestDTOProxy result = new TopicGroupTestDTOProxy();
                     result.id().set(g.key1());
@@ -89,7 +90,8 @@ List<BlogGroupIdAndName> list = easyEntityQuery.queryable(Topic.class)
                     t.title().isNotNull();
                     t.createTime().le(LocalDateTime.of(2021, 3, 4, 5, 6));
                 })
-                .groupBy((t1, b2) -> GroupKeys.TABLE2.of(t1.id(), b2.star()))
+                //创建group by 2.3.4之前使用GroupKeys.TABLE1_10.of
+                .groupBy((t1, b2) -> GroupKeys.of(t1.id(), b2.star()))
                 .select(group -> new BlogGroupIdAndNameProxy()
                     .id().set(group.key1())
                     .idCount().set(group.groupTable().t2.id().count())
