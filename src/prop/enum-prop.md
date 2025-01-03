@@ -36,6 +36,13 @@ configuration.applyValueConverter(new EnumConverter());
 数据库对象很多时候我们可能希望将枚举值设计为java枚举对象而不是integer,所以这边先用枚举来做一个测试
 
 ### 数据库对象属性枚举值
+
+::: warning 说明!!!
+> 如果您的数据库既有数字类型又有字符串类型来存储枚举,那么这边是建议你创建`NumberEnumValueAutoConverter`转换器 + `INumberEnum`接口,`NumberEnumValueAutoConverter`的`apply`校验是否实现`INumberEnum.class`，
+> 然后再创建`StringEnumValueAutoConverter`转换器 + `IStringEnum`接口,`StringEnumValueAutoConverter`的`apply`校验是否实现`IStringEnum.class`
+> 如果你不想创建多个转换器那么可以创建一个`Object`的转换器自己去处理`EnumConverter implements EnumValueAutoConverter<IEnum<?>,Object>`
+:::
+
 ```java
 //枚举接口
 public interface IEnum<TEnum extends IEnum<TEnum>> {
@@ -52,8 +59,10 @@ public class EnumDeserializer {
         throw new IllegalArgumentException("Invalid integer value for enum: " + integer);
     }
 }
+
+//每个枚举都需要添加ColumnConversion
 //枚举转换器
-public class EnumConverter implements ValueConverter<IEnum<?>,Number> {
+public class EnumConverter implements ValueConverter<IEnum<?>,Number> {//泛型第二个参数建议使用Number,防止出现cast类型转换Long转Integer
     @Override
     public Number serialize(IEnum<?> iEnum, ColumnMetadata columnMetadata) {
         if(iEnum=null){
@@ -73,7 +82,7 @@ public class EnumConverter implements ValueConverter<IEnum<?>,Number> {
 
 //如果你希望当前枚举转换配置到全局可以使用 EnumValueAutoConverter
 //EnumValueAutoConverter第一个泛型参数 不可以是具体枚举类型除非整个系统就一个枚举类型
-public class EnumConverter implements EnumValueAutoConverter<IEnum<?>,Number> {
+public class EnumConverter implements EnumValueAutoConverter<IEnum<?>,Number> {//泛型第二个参数建议使用Number,防止出现cast类型转换Long转Integer
     @Override
     public Number serialize(IEnum<?> iEnum, ColumnMetadata columnMetadata) {
         if(iEnum == null){
