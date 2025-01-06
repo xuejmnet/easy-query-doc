@@ -4,9 +4,10 @@ title: 功能目录指引
 
 ## 基础功能
 - [查询](/easy-query-doc/query/)
-- [新增]
-- [修改]
-- [删除]
+- [select](/easy-query-doc/query/)
+- [insert]
+- [update]
+- [delete]
 
 ## 额外功能
 - [include,includes](/easy-query-doc/query/relation) 一对一 一对多 多对一 多对多的关联关系说明

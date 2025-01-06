@@ -30,6 +30,7 @@ mapKeyConversion| - | 当使用map返回结果时resultSet转成map的key如何�
 printNavSql| true | 关联查询是否打印二次子查询的sql
 propertyMode| `PropertyModeEnum.FIRST_LOWER` | 表示entity属性是首字母小写(为了兼容lambda和lambdakt的模式),还有一个就是`PropertyModeEnum.SAME_AS_ENTITY`如果你是entity模式那么建议使用这个
 relationTableAppend| `RelationTableAppendEnum.SMART` | `SMART`表示智能添加`relationTable`隐式join吗，`DEFAULT`则需要代码执行的时候不执行到导航属性需要`if`代码块包裹
+mappingStrategy| `EntityMappingStrategyEnum.COLUMN_ONLY` | 对象间的映射关系,默认以`列名`映射,可以选择`属性名`或者`列名+属性名`
 
 ## 分表分库特有配置
 
