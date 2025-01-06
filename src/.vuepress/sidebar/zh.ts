@@ -29,6 +29,12 @@ export const zhSidebar = sidebar({
       children: ["readme.md","api-use","performance-desc","performance","quick-preview","insert","update","delete","insertOrUpdate","transaction"],
     },
     {
+      text: "功能模块",
+      prefix: "ability/",
+      collapsible:true,
+      children: ["readme.md","select","insert","update","delete"],
+    },
+    {
       text: "查询",
       prefix: "query/",
       collapsible:true,
