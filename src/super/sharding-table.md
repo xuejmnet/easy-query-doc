@@ -134,6 +134,8 @@ easy-query:
   name-conversion: underlined
   database: mysql
   defaultDataSourceMergePoolSize: 50
+  #entity映射到dto/vo使用属性匹配模式
+  mapping-strategy: property_only
 ```
 
 我们设置了最大连接数100,分片可用连接池数50

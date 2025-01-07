@@ -98,6 +98,8 @@ easy-query:
   #主要是这边需要配置日志
   log-class: com.easyquery.springbootdemo.logging.
   print-sql: true
+  #entity映射到dto/vo使用属性匹配模式
+  mapping-strategy: property_only
 ```
 @tab 控制台配置
 ```java

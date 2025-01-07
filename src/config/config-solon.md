@@ -173,6 +173,9 @@ easy-query:
     name-conversion: underlined
     # 物理删除时抛出异常 不包括手写sql的情况
     delete-throw: true
+    #entity映射到dto/vo使用属性匹配模式
+    #支持 property_only column_only column_and_property
+    mapping-strategy: property_only
     # 插入列策略 all_columns only_not_null_columns only_null_columns
     insert-strategy: only_not_null_columns 
     # 更新列策略 all_columns only_not_null_columns only_null_columns
