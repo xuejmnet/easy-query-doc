@@ -152,7 +152,7 @@ easy-query:
   database: mysql
   defaultDataSourceMergePoolSize: 50
   #entity映射到dto/vo使用属性匹配模式
-  mapping-strategy: property_only
+  mapping-strategy: property_first
 ```
 
 我们设置了最大连接数100,分片可用连接池数50保证至少有50个连接可以给非分片用,当然另外50个非分片会和分片进行竞争

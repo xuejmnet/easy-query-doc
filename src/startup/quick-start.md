@@ -209,7 +209,7 @@ easy-query:
   #是否打印sql 默认true 需要配置log信息才可以 默认实现sl4jimpl
   print-sql: true
   #entity映射到dto/vo使用属性匹配模式
-  mapping-strategy: property_only
+  mapping-strategy: property_first
   #sqlNativeSegment输入和格式化无需处理单引号会自动处理为双单引号
   keep-native-style: true
   #配置为默认追踪,但是如果不添加@EasyQueryTrack注解还是不会启用所以建议开启这个如果需要只需要额外添加注解即可

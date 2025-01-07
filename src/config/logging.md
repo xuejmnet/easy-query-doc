@@ -99,7 +99,7 @@ easy-query:
   log-class: com.easyquery.springbootdemo.logging.
   print-sql: true
   #entity映射到dto/vo使用属性匹配模式
-  mapping-strategy: property_only
+  mapping-strategy: property_first
 ```
 @tab 控制台配置
 ```java
