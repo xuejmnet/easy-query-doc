@@ -8,13 +8,7 @@ export const zhSidebar = sidebar({
     {
       text: "起步",
       prefix: "startup/",
-      children: ["readme","quick-start","complex-query","ability","annotation"],
-    },
-    {
-      text: "案例",
-      prefix: "examples/",
-      collapsible:true,
-      children: ["example1","example2","include-example"],
+      children: ["readme","quick-start","complex-query","mapping-rule","ability","annotation"],
     },
     {
       text: "配置",
@@ -22,23 +16,23 @@ export const zhSidebar = sidebar({
       collapsible:true,
       children: ["readme.md","dependency-injection","config-java","config-kotlin","config-solon","config-spring-boot","config-option","annotation","replace-configure","logging","api-mode","kapt","muti-datasource","easy-trans","plugin"],
     },
-    {
-      text: "基础操作",
-      prefix: "basic/",
-      collapsible:true,
-      children: ["readme.md","api-use","performance-desc","performance","quick-preview","insert","update","delete","insertOrUpdate","transaction"],
-    },
+    // {
+    //   text: "基础操作",
+    //   prefix: "basic/",
+    //   collapsible:true,
+    //   children: ["readme.md","api-use","performance-desc","performance","quick-preview"],
+    // },
     {
       text: "功能模块",
       prefix: "ability/",
       collapsible:true,
-      children: ["readme.md","select","insert","update","delete"],
+      children: ["readme.md","select","insert","update","delete","transaction","insertOrUpdate"],
     },
     {
       text: "查询",
       prefix: "query/",
-      collapsible:true,
-      children: ["readme.md","select","basic-type","anonymous-type","or-condition","paging","multi-query","group","partition","order","native-sql","dynamic-table","stream-query","to-map","select-column","union","select-sub","where-sub","relation","relation-filter","select-auto-include","fill","where","reuse","case-when","dynamic-where","dynamic-sort","dynamic-join","tree"],
+      collapsible:true,//,"select-column"
+      children: ["readme.md","select","basic-type","dto-vo","anonymous-type","or-condition","paging","multi-query","group","partition","order","native-sql","dynamic-table","stream-query","to-map","union","select-sub","where-sub","relation","relation-filter","select-auto-include","fill","where","reuse","case-when","dynamic-where","dynamic-sort","dynamic-join","tree"],
     },
     {
       text: "计算属性",
@@ -64,6 +58,12 @@ export const zhSidebar = sidebar({
       collapsible:true,
       children: ["readme.md","sharding-table.md","sharding-datasource.md","sharding-all.md","default-route-rule","default-route-initializer","sharding-mod.md","sharding-time.md",
       "sharding-all-time.md","sharding-multi.md","sharding-sequence.md"],
+    },
+    {
+      text: "案例",
+      prefix: "examples/",
+      collapsible:true,
+      children: ["example1","example2","include-example"],
     },
     {
       text: "实战",
