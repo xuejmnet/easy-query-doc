@@ -51,8 +51,8 @@ easy-query:
   #sqlNativeSegment输入和格式化无需处理单引号会自动处理为双单引号
   keep-native-style: true
   #entity映射到dto/vo使用属性匹配模式
-  #支持 property_only column_only column_and_property
-  mapping-strategy: property_only
+  #支持 property_only column_only column_and_property property_first
+  mapping-strategy: property_first
 ```
 ```java
 
