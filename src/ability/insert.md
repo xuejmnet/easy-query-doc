@@ -67,8 +67,15 @@ long rows = easyQuery.insertable(topics.get(0)).executeRows();
 如果当前数据表为自增id那么会回填对应的数据到id主键里面使用`executeRows(true)`
 
 ## 2.多条插入
-批量插入需要jdbc链接字符串开启`&allowMultiQueries=true&rewriteBatchedStatements=true`开启后性能将会大幅提升,并且默认需要使`InsertStrategy`用`ALL_COULMNS`策略,不然还是单条执行,当然可以使用batch或者到了插入批处理阈值也是可以的
 
+当对象集合数量大于默认设置的阈值`insertBatchThreshold`则会自动使用`batch`来插入数据,性能会大大提高,当然如果数量不足`insertBatchThreshold`阈值可以手动调用`batch`方法
+
+<!-- 批量插入需要jdbc链接字符串开启`&allowMultiQueries=true&rewriteBatchedStatements=true`开启后性能将会大幅提升,当然可以使用batch或者到了插入批处理阈值也是可以的 -->
+
+
+::: warning 说明!!!
+> 如果你是mysql数据库则需要添加`rewriteBatchedStatements=true`不然性能和循环插入一样
+:::
 
 ::: code-tabs
 @tab 对象模式

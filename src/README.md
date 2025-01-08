@@ -74,6 +74,8 @@ copyright: false
 footer: 使用 <a href="https://theme-hope.vuejs.press/" target="_blank">VuePress Theme Hope</a> 主题 | MIT 协议, 版权所有 © 2019-present Mr.Hope
 ---
 
+<!-- <video src="/videos/EQ 插件支持 DTO 实体 Column 比对.mp4" muted autoplay id='v' width="800"></video> -->
+
 ::: code-tabs
 @tab 单表查询
 
@@ -97,7 +99,7 @@ List<SysUser> users = easyEntityQuery.queryable(SysUser.class)
     }).toList();
 ```
 
-@tab 隐式 join 筛选🔥
+@tab 隐式 join 筛选 🔥
 
 ```java
 //user和address一对一
@@ -124,7 +126,7 @@ List<SysUser> userInHz = easyEntityQuery.queryable(SysUser.class)
                 }).toList();
 ```
 
-@tab 隐式子查询🔥
+@tab 隐式子查询 🔥
 
 ```java
 //user和role多对多
@@ -222,7 +224,7 @@ List<Draft2<String, Long>> userIdAndRoleCount1 = easyEntityQuery.queryable(SysUs
         )).toList();
 ```
 
-@tab 结构化数据返回🔥
+@tab 结构化数据返回 🔥
 
 ```java
 
@@ -274,7 +276,7 @@ public class StructSysUserDTO {
 }
 ```
 
-@tab 结构化穿透🔥
+@tab 结构化穿透 🔥
 
 ```java
 
@@ -388,10 +390,9 @@ List<Draft2<String, String>> idAndName = easyEntityQuery.queryable(SysUser.class
     
 </div>
 
-## 🔔  QQ 群: 170029046
+## 🔔 QQ 群: 170029046
 
 <br/>
-
 
 ## 🔔 交流 QQ 群
 
@@ -417,3 +418,28 @@ List<Draft2<String, String>> idAndName = easyEntityQuery.queryable(SysUser.class
 [vuepress-theme-hope](https://vuepress-theme-hope.github.io/)
 
 <link rel="stylesheet" href="/index.css">
+
+
+
+<!-- ```mermaid
+erDiagram
+    CUSTOMER {
+        int customer_id
+        string name
+        string email
+    }
+
+    ORDER {
+        int order_id
+        date order_date
+        float amount
+    }
+
+    CUSTOMER ||--o{ ORDER : places
+    ORDER }o--|{ PRODUCT : contains
+    PRODUCT {
+        int product_id
+        string name
+        float price
+    }
+``` -->

@@ -14,7 +14,7 @@ order: 20
 ```java
 Topic topic = easyQuery
                 .queryable(Topic.class)
-                .leftJoin(BlogEntity.class, (t, t1) -> tid().eq(t1.id()))
+                .leftJoin(BlogEntity.class, (t, t1) -> t.id().eq(t1.id()))
                 .where(o -> o.id().eq("3"))
                 .firstOrNull();
 
