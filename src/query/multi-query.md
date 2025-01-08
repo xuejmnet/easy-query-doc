@@ -32,7 +32,8 @@ Topic topic = easyQuery
                         t1.title().isNotNull();
                         t.id().eq("3");
                 })
-                .select(BlogEntity.class, (t, t1) -> t1.FETCHER.allFields())
+                .select((t, t1) -> t1)
+                // .select(BlogEntity.class, (t, t1) -> t1.FETCHER.allFields())
                 .toList();
 
 ==> Preparing: SELECT t1.`id`,t1.`create_time`,t1.`update_time`,t1.`create_by`,t1.`update_by`,t1.`deleted`,t1.`title`,t1.`content`,t1.`url`,t1.`star`,t1.`publish_time`,t1.`score`,t1.`status`,t1.`order`,t1.`is_top`,t1.`top` FROM t_topic t INNER JOIN t_blog t1 ON t1.`deleted` = ? AND t.`id` = t1.`id` WHERE t1.`title` IS NOT NULL AND t.`id` = ?
