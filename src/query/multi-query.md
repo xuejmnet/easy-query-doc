@@ -14,8 +14,8 @@ order: 20
 ```java
 Topic topic = easyQuery
                 .queryable(Topic.class)
-                .leftJoin(BlogEntity.class, (t, t1) -> t.eq(t1, Topic::getId, BlogEntity::getId))
-                .where(o -> o.eq(Topic::getId, "3"))
+                .leftJoin(BlogEntity.class, (t, t1) -> tid().eq(t1.id()))
+                .where(o -> o.id().eq("3"))
                 .firstOrNull();
 
 ==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM t_topic t LEFT JOIN t_blog t1 ON t1.`deleted` = ? AND t.`id` = t1.`id` WHERE t.`id` = ? LIMIT 1
@@ -27,9 +27,12 @@ Topic topic = easyQuery
 ```java
  List<BlogEntity> blogEntities = easyQuery
                 .queryable(Topic.class)
-                .innerJoin(BlogEntity.class, (t, t1) -> t.eq(t1, Topic::getId, BlogEntity::getId))
-                .where((t, t1) -> t1.isNotNull(BlogEntity::getTitle).then(t).eq(Topic::getId, "3"))
-                .select(BlogEntity.class, (t, t1) -> t1.columnAll())
+                .innerJoin(BlogEntity.class, (t, t1) -> t.id().eq(t1.id()))
+                .where((t, t1) ->{
+                        t1.title().isNotNull();
+                        t.id().eq("3");
+                })
+                .select(BlogEntity.class, (t, t1) -> t1.FETCHER.allFields())
                 .toList();
 
 ==> Preparing: SELECT t1.`id`,t1.`create_time`,t1.`update_time`,t1.`create_by`,t1.`update_by`,t1.`deleted`,t1.`title`,t1.`content`,t1.`url`,t1.`star`,t1.`publish_time`,t1.`score`,t1.`status`,t1.`order`,t1.`is_top`,t1.`top` FROM t_topic t INNER JOIN t_blog t1 ON t1.`deleted` = ? AND t.`id` = t1.`id` WHERE t1.`title` IS NOT NULL AND t.`id` = ?
@@ -42,12 +45,15 @@ Topic topic = easyQuery
 //创建一个匿名表的表达式
  Queryable<Topic> sql = easyQuery
                 .queryable(Topic.class)
-                .where(o -> o.eq(Topic::getId, "3"));
+                .where(o -> o.id().eq("3"));
                 
         List<BlogEntity> topics = easyQuery
                 .queryable(BlogEntity.class)
-                .leftJoin(sql,(a,b)->a.eq(b,BlogEntity::getId,Topic::getId))//join匿名表
-                .where(o -> o.isNotNull(BlogEntity::getId).eq(BlogEntity::getId,"3"))
+                .leftJoin(sql,(a,b)->a.id().eq(b.id()))//join匿名表
+                .where(o -> {
+                        o.id().isNotNull();
+                        o.id().eq("3");
+                })
                 .toList();
 
 ==> Preparing: SELECT t.`id`,t.`create_time`,t.`update_time`,t.`create_by`,t.`update_by`,t.`deleted`,t.`title`,t.`content`,t.`url`,t.`star`,t.`publish_time`,t.`score`,t.`status`,t.`order`,t.`is_top`,t.`top` FROM t_blog t LEFT JOIN (SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM t_topic t WHERE t.`id` = ?) t1 ON t.`id` = t1.`id` WHERE t.`deleted` = ? AND t.`id` IS NOT NULL AND t.`id` = ?
@@ -60,13 +66,19 @@ Topic topic = easyQuery
 ```java
  Queryable<TopicGroupTestDTO> sql = easyQuery
                 .queryable(Topic.class)
-                .where(o -> o.eq(Topic::getId, "3"))
-                .groupBy(o->o.column(Topic::getId))
-                .select(TopicGroupTestDTO.class, o->o.columnAs(Topic::getId,TopicGroupTestDTO::getId).columnCount(Topic::getId,TopicGroupTestDTO::getIdCount));
+                .where(o -> o.id().eq("3"))
+                .groupBy(o->GroupKeys.of(o.id()))
+                .select(TopicGroupTestDTO.class, group->Select.of(
+                        group.key1().as(TopicGroupTestDTO.Fields.id),
+                        group.id().count().as(TopicGroupTestDTO.Fields.idCount)
+                ));
         List<BlogEntity> topics = easyQuery
                 .queryable(BlogEntity.class)
-                .leftJoin(sql,(a,b)->a.eq(b,BlogEntity::getId,TopicGroupTestDTO::getId))
-                .where(o -> o.isNotNull(BlogEntity::getId).eq(BlogEntity::getId,"3"))
+                .leftJoin(sql,(a,b)->a.id().eq(b.id()))
+                .where(o -> {
+                        o.id().isNotNull();
+                        o.id().eq("3");
+                })
                 .toList();
 
 ==> Preparing: SELECT t.`id`,t.`create_time`,t.`update_time`,t.`create_by`,t.`update_by`,t.`deleted`,t.`title`,t.`content`,t.`url`,t.`star`,t.`publish_time`,t.`score`,t.`status`,t.`order`,t.`is_top`,t.`top` FROM t_blog t LEFT JOIN (SELECT t.`id` AS `id`,COUNT(t.`id`) AS `idCount` FROM t_topic t WHERE t.`id` = ? GROUP BY t.`id`) t1 ON t.`id` = t1.`id` WHERE t.`deleted` = ? AND t.`id` IS NOT NULL AND t.`id` = ?
@@ -82,18 +94,15 @@ Topic topic = easyQuery
 Queryable3<Topic, BlogEntity, SysUser> where = easyQuery
         .queryable(Topic.class)
         //第一个join采用双参数,参数1表示第一张表Topic 参数2表示第二张表 BlogEntity,对应关系就是参数顺序
-        .leftJoin(BlogEntity.class, (t, t1) -> t.eq(t1, Topic::getId, BlogEntity::getId))//t表示Topic表,t1表示BlogEntity表,对应关系就是参数顺序
+        .leftJoin(BlogEntity.class, (t, t1) -> t.id().eq(t1.id()))//t表示Topic表,t1表示BlogEntity表,对应关系就是参数顺序
         //第二个join采用三参数,参数1表示第一张表Topic 参数2表示第二张表 BlogEntity 第三个参数表示第三张表 SysUser,对应关系就是参数顺序
-        .leftJoin(SysUser.class, (t, t1, t2) -> t.eq(t2, Topic::getId, SysUser::getId))
-        .where(o -> o.eq(Topic::getId, "123"))//单个条件where参数为主表Topic
+        .leftJoin(SysUser.class, (t, t1, t2) -> t.id().eq(t2.id()))
+        .where(o -> o.id().eq("123"))//单个条件where参数为主表Topic
         //支持单个参数或者全参数,全参数个数为主表+join表个数 链式写法期间可以通过then来切换操作表
-        .where((t, t1, t2) -> t.eq(Topic::getId, "123").then(t1).like(BlogEntity::getTitle, "456")
-                .then(t2).eq(BaseEntity::getCreateTime, LocalDateTime.now()))
-        //如果不想用链式的then来切换也可以通过lambda 大括号方式执行顺序就是代码顺序,默认采用and链接
         .where((t, t1, t2) -> {
-            t.eq(Topic::getId, "123");
-            t1.like(BlogEntity::getTitle, "456");
-            t1.eq(BaseEntity::getCreateTime, LocalDateTime.now());
+                t.id().eq("123");
+                t1.title().like("456");
+                t2.createTime().eq(LocalDateTime.now());
         });
 
 
@@ -102,19 +111,16 @@ Queryable3<Topic, BlogEntity, SysUser> where = easyQuery
 Queryable<Topic> where = easyQuery
         .queryable(Topic.class)
         //第一个join采用双参数,参数1表示第一张表Topic 参数2表示第二张表 BlogEntity
-        .leftJoin(BlogEntity.class, (t, t1) -> t.eq(t1, Topic::getId, BlogEntity::getId))
+        .leftJoin(BlogEntity.class, (t, t1) -> t.id().eq(t1.id()))
         //第二个join采用三参数,参数1表示第一张表Topic 参数2表示第二张表 BlogEntity 第三个参数表示第三张表 SysUser
-        .leftJoin(SysUser.class, (t, t1, t2) -> t.eq(t2, Topic::getId, SysUser::getId))
-        .where(o -> o.eq(Topic::getId, "123"))//单个条件where参数为主表Topic
+        .leftJoin(SysUser.class, (t, t1, t2) -> t.id().eq(t2.id()))
+        .where(o -> o.id().eq("123"))//单个条件where参数为主表Topic
         //支持单个参数或者全参数,全参数个数为主表+join表个数 链式写法期间可以通过then来切换操作表
         //如果where参数过多不想写可以用whereMerge,selectMerge,orderByMerge同理
-        .where((t, t1, t2) -> t.eq(Topic::getId, "123").then(t1).like(BlogEntity::getTitle, "456")
-                .then(t2).eq(BaseEntity::getCreateTime, LocalDateTime.now()))
-        //如果不想用链式的then来切换也可以通过lambda 大括号方式执行顺序就是代码顺序,默认采用and链接
         .where((t, t1, t2) -> {
-            t.eq(Topic::getId, "123");
-            t1.like(BlogEntity::getTitle, "456");
-            t1.eq(BaseEntity::getCreateTime, LocalDateTime.now());
+                t.id().eq("123");
+                t1.title().like("456");
+                t2.createTime().eq(LocalDateTime.now());
         });
 ```
 

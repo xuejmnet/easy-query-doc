@@ -3,7 +3,7 @@ title: 对象映射规则
 ---
 
 # 对象映射规则
-`eq 2.4.0+`版本提供`mapping-strategy`提供三个选择,默认(之前版本)是`COLUMN_ONLY`，新版本提供了额外两种选择`PROPERTY_FIRST`和`PROPERTY_ONLY`和`COLUMN_AND_PROPERTY`
+`eq 2.4.1+`版本提供`mapping-strategy`提供三个选择,默认(之前版本)是`COLUMN_ONLY`，新版本提供了额外两种选择`PROPERTY_FIRST`和`PROPERTY_ONLY`和`COLUMN_AND_PROPERTY`
 
 如果你无法理解那么请在`新项目`的时候选择`PROPERTY_FIRST`❗️
 
