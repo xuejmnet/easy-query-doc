@@ -87,3 +87,27 @@ A.a->AVO.d
 A.b->AVO.b
 
 N/A->AVO.a
+
+
+# Solon 下如何全局修改
+```java
+public static void main(String[] args) {
+
+    Solon.start(Main.class, args, app -> {
+
+        app.onEvent(EasyQueryBuilderConfiguration.class, configuration -> {
+
+            // COLUMN_ONLY: 默认策略, 表示实体的对应的列名和映射对象的列名相同能映射
+            configuration.replaceService(EntityMappingRule.class, ColumnEntityMappingRule.class);
+            // PROPERTY_ONLY: 表示实体的对应的属性名和映射对象的属性名相同能映射
+            configuration.replaceService(EntityMappingRule.class, PropertyEntityMappingRule.class);
+            // COLUMN_AND_PROPERTY: 表示先使用实体对应的列名匹配如果无法映射则使用属性名进行匹配
+            configuration.replaceService(EntityMappingRule.class, TryColumnAndPropertyEntityMappingRule.class);
+            // PROPERTY_FIRST: 推荐策略, 表示实体的对应的属性名和映射对象的属性名相同能映射,和PROPERTY_ONLY的区别就是如果是函数式片段没有property通过alias来匹配
+            configuration.replaceService(EntityMappingRule.class, PropertyFirstEntityMappingRule.class);
+        });
+
+    });
+
+}
+```
