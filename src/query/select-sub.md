@@ -248,7 +248,7 @@ List<Draft2<String, Integer>> data = queryable.cloneQueryable().limit(10, 10)
 @tab 对象模式
 ```java
 @Data
-@EntityFileProxy
+@EntityProxy
 public class TopicSubQueryBlog implements ProxyEntityAvailable<TopicSubQueryBlog , TopicSubQueryBlogProxy> {
     private String id;
     private Integer stars;

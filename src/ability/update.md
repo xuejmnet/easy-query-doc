@@ -217,7 +217,7 @@ Easy Query也支持更新`Map`对象，注意，key是列名，不是实体类�
     public void testUpdateMap() {
         Map<String, Object> userMap = new LinkedHashMap<>();
         userMap.put("id", 1);
-        userMap.put("update_time", new Date());
+        userMap.put("update_time", LocalDateTime.now());
         long rows = easyEntityQuery.mapUpdatable(userMap)
                 .asTable("user")
                 .setSQLStrategy(SQLExecuteStrategyEnum.ONLY_NOT_NULL_COLUMNS)

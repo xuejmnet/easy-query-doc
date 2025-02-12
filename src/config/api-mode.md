@@ -34,11 +34,11 @@ Easy Query早期版本使用的是lambda模式，传入lambda表达式作为属�
         User user = easyQueryClient.queryable(User.class)
                 .where(u -> u.eq("name", "张三"))
                 .firstNotNull();
-        user.setUpdateTime(new Date());
+        user.setUpdateTime(LocalDateTime.now());
         easyQueryClient.updatable(user).executeRows();
         Integer userId = user.getId();
         easyQueryClient.updatable(User.class)
-                .set("updateTime",new Date())
+                .set("updateTime",LocalDateTime.now())
                 .where(o -> o.eq("id",userId))
                 .executeRows();
 
@@ -47,10 +47,10 @@ Easy Query早期版本使用的是lambda模式，传入lambda表达式作为属�
         user = easyQuery.queryable(User.class)
                 .where(u -> u.eq(User::getName, "张三"))
                 .firstNotNull();
-        user.setUpdateTime(new Date());
+        user.setUpdateTime(LocalDateTime.now());
         easyQuery.updatable(user).executeRows();
         easyQuery.updatable(User.class)
-                .set(User::getUpdateTime,new Date())
+                .set(User::getUpdateTime,LocalDateTime.now())
                 .where(o -> o.eq(User::getId,userId))
                 .executeRows();
 
@@ -59,11 +59,11 @@ Easy Query早期版本使用的是lambda模式，传入lambda表达式作为属�
         user = easyProxyQuery.queryable(UserProxy.createTable())
                 .where(u -> u.name().eq("张三"))
                 .firstNotNull();
-        user.setUpdateTime(new Date());
+        user.setUpdateTime(LocalDateTime.now());
         easyProxyQuery.updatable(user).useProxy(UserProxy.createTable()).executeRows();
         easyProxyQuery.updatable(UserProxy.createTable())
                 .setColumns(o -> {
-                    o.updateTime().set(new Date());
+                    o.updateTime().set(LocalDateTime.now());
                 })
                 .where(o -> o.id().eq(userId))
                 .executeRows();
@@ -73,7 +73,7 @@ Easy Query早期版本使用的是lambda模式，传入lambda表达式作为属�
         easyEntityQuery.updatable(user).executeRows();
         easyEntityQuery.updatable(User.class)
                 .setColumns(o -> {
-                    o.updateTime().set(new Date());
+                    o.updateTime().set(LocalDateTime.now());
                 })
                 .where(o -> o.id().eq(userId))
                 .executeRows();

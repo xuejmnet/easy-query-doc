@@ -12,7 +12,7 @@ title: 跨表计算属性
 @Table("school_class")
 @Data
 @ToString
-@EntityFileProxy
+@EntityProxy
 public class SchoolClassAggregateProp implements ProxyEntityAvailable<SchoolClassAggregateProp, SchoolClassAggregatePropProxy> {
     @Column(primaryKey = true)//主键
     private String id;

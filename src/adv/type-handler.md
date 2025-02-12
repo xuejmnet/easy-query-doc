@@ -25,5 +25,13 @@ setParameter |  设置jdbc参数
 ```java
 
 JdbcTypeHandlerManager jdbcTypeHandlerManager = easyQuery.getRuntimeContext().getJdbcTypeHandlerManager();
-jdbcTypeHandlerManager.appendHandler(CustomPropertyType.class,CustomPropertyTypeHandler,true);
+jdbcTypeHandlerManager.appendHandler(CustomPropertyType.class,new CustomPropertyTypeHandler(),true);
+```
+
+## 指定列添加
+```java
+public class User{
+    @Column(typeHandler = CustomPropertyTypeHandler.class)
+    private CustomPropertyType name;
+}
 ```

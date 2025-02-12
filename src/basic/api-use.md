@@ -391,7 +391,7 @@ Queryable<Topic> where = easyQuery
 
 
 @Data
-@EntityFileProxy
+@EntityProxy
 public class  QueryVO implements ProxyEntityAvailable<QueryVO , QueryVOProxy> {
     private String id;
     private String field1;

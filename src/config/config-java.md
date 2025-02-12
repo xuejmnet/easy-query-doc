@@ -99,8 +99,7 @@ order: 10
 
 @Data
 @Table("t_topic")
-@EntityFileProxy //添加这个属性那么Topic对象会代理生成TopicProxy (需要idea build一下当前项目)
-//@EntityProxy @EntityFileProxy两个都可以 File是插件处理,不带file的需要额外引入sql-processor是apt生成
+@EntityProxy 
 public class Topic implements ProxyEntityAvailable<Topic , TopicProxy>{//implements ProxyEntityAvailable<Topic , TopicProxy>接口有插件生成也可以自行添加
 
     @Column(primaryKey = true)
