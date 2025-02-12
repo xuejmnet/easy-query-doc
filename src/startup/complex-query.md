@@ -31,6 +31,27 @@ title: 关系查询体验🔥🔥🔥
 
 ::: tabs
 
+@tab 关系图
+```mermaid
+erDiagram
+    COMPANY {
+        STRING id PK
+        STRING name
+        DATETIME createTime
+        DECIMAL registerMoney
+    }
+
+    SYSUSER {
+        STRING id PK
+        STRING name
+        DATETIME birthday
+        STRING companyId FK
+    }
+
+    COMPANY ||--o{ SYSUSER : "One-to-Many (id → companyId)"
+```
+
+
 @tab Company
 ```java
 @Data
