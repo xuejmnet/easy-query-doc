@@ -93,6 +93,12 @@ export const zhSidebar = sidebar({
       children: ["readme.md","json-prop","collection-prop","enum-prop","sql-column-prop","status-prop","combine-prop","aggregate-prop","sql-column-generate-prop"],
     },
     {
+      text: "code-first",
+      prefix: "code-first/",
+      collapsible:true,
+      children: ["readme.md","quick-start","api","custom"],
+    },
+    {
       text: "高级",
       prefix: "adv/",
       collapsible:true,
