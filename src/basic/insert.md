@@ -20,7 +20,7 @@ java实体对象
 ```java
 @Data
 @Table("t_topic")
-@EntityFileProxy
+@EntityProxy
 public class Topic implements ProxyEntityAvailable<Topic , TopicProxy>{
 
     @Column(primaryKey = true)
@@ -126,7 +126,7 @@ long rows = easyQuery.insertable(topics.get(0)).insert(topics.get(1)).executeRow
 ```java
 @Data
 @Table("t_topic_auto")
-@EntityFileProxy
+@EntityProxy
 public class TopicAuto implements ProxyEntityAvailable<TopicAuto , TopicAutoProxy>{
 
     @Column(primaryKey = true,generatedKey = true)//设置主键为自增

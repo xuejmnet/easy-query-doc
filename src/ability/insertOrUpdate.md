@@ -29,7 +29,7 @@ SQLite | sql-sqlite  | ✅
     @Test
     public void testOnConflictThenUpdate() {
         User user = easyEntityQuery.queryable(User.class).findNotNull(1);
-        Date updateTime = new Date();
+        LocalDateTime updateTime = LocalDateTime.now();
         user.setUpdateTime(updateTime);
         long rows = easyEntityQuery.insertable(user)
                 .onConflictThen(o -> o.FETCHER.allFields())
@@ -37,7 +37,7 @@ SQLite | sql-sqlite  | ✅
         Assertions.assertTrue(rows > 0);
 
         user = easyEntityQuery.queryable(User.class).findNotNull(1);
-        updateTime = new Date();
+        updateTime = LocalDateTime.now();
         user.setUpdateTime(updateTime);
         rows = easyEntityQuery.insertable(user)
                 .onConflictThen(o -> o.FETCHER.updateTime())
@@ -54,7 +54,7 @@ SQLite | sql-sqlite  | ✅
     @Test
     public void testOnConflictThenInsert() {
         User user = new User();
-        Date createTime = new Date();
+        LocalDateTime createTime = LocalDateTime.now();
         user.setName("新用户");
         user.setCreateTime(createTime);
         user.setVersion(1);
@@ -65,3 +65,9 @@ SQLite | sql-sqlite  | ✅
         Assertions.assertTrue(rows > 0);
     }
 ```
+
+## mysql不支持第二个参数设置
+
+可以参考如下文章
+
+https://blog.csdn.net/qq_42402854/article/details/136749503

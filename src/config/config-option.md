@@ -10,8 +10,8 @@ title: 配置参数选项(重要)❗️❗️❗️
 database | `DatabaseEnum.DEFAULT`  | 默认使用符合SQL92的语法,如果您的数据库在`easy-query`的支持数据库范围内请选择正确的您在使用的数据库
 deleteThrow | `true`  | `easy-query`为了针对数据安全进行了默认的不允许物理删除,并不是不可以执行delete操作而是不可以在执行delete后生成delete语句,建议使用逻辑删除来规避。比如`delete from t_user where uid=1` 在使用逻辑删除后会变成`update t_user set deleted=1 where uid=1`使用逻辑删除框架默认实现该功能,用户还是一样使用`deletable`方法来调用执行
 nameConversion | `underlined`  | 目前有两个选择当然用户也可以自行实现接口`NameConversion`,目前可选`default`、`underlined`、`upper_underlined`、`lower_camel_case`、`upper_camel_case`,启用`default`表示默认的对象和数据库映射关系为属性名如属性名`userAge`那么对应数据库也是`userAge`列名,`underlined`表示采用下划线`userAge`将对应数据库`user_age`列,当然全局设置了后面也可以在`@Column`上进行手动指定对应的列名
-insertStrategy | `ONLY_NOT_NULL_COLUMNS`  | `insert`命名默认采用非null列插入,如果一张表存在`id`和`name`那么当`name`为null列时生成的sql将不会指定`name`列比如`insert into t_user (id) values(?)`如果`name`列不是null,那么生成的sql将是`insert into t_user (id,name) values(?,?)`，因为默认为非null列插入所以执行的sql是单条单条执行,并不会合并批处理,相对性能会稍微低一点,当然也可以在执行时手动更改执行策略为`SQLExecuteStrategyEnum.ALL_COLUMNS`那么将会进行`executeBatch`
-updateStrategy | `ALL_COLUMNS`  | 默认update命令生成的语句将是对整个对象的所有列进行更新,不会判断是否为null,默认这种情况下会将多个对象进行合并执行batch而不是单条执行
+insertStrategy | `ONLY_NOT_NULL_COLUMNS`  | `insert`命名默认采用非null列插入,如果一张表存在`id`和`name`那么当`name`为null列时生成的sql将不会指定`name`列比如`insert into t_user (id) values(?)`如果`name`列不是null,那么生成的sql将是`insert into t_user (id,name) values(?,?)`,如果插入集合内既有部分列null也有部分列非null那么调用batch会生成n条sql,将sql一样的合并到一起,所以按自己需求选择即可(默认的配置就很好了)
+updateStrategy | `ALL_COLUMNS`  | 默认update命令生成的语句将是对整个对象的所有列进行更新,不会判断是否为null,如果需要可以自行设置是否null、not null或者all columns更新
 insertBatchThreshold | 1024  | 如果insertable一次性添加对象集合大于等于1024个那么会对其进行相同sql进行合并提高执行效率,链接字符串需要添加`rewriteBatchedStatements=true`(mysql),可以通过调用insert或者update的batch方法来手动使用或者禁用,比如大于等于3,不要问为什么不默认`batch`因为`batch`部分jdbc驱动或者数据库不会返回正确的受影响行数
 updateBatchThreshold | 1024  | 如果updatable一次性添加对象集合大于等于1024个那么会对其进行相同sql进行合并提高执行效率,链接字符串需要添加`rewriteBatchedStatements=true`(mysql),可以通过调用insert或者update的batch方法来手动使用或者禁用,比如大于等于3,不要问为什么不默认`batch`因为`batch`部分jdbc驱动或者数据库不会返回正确的受影响行数
 logClass | -  | `spring-boot`下默认是`com.easy.query.sql.starter.logging.Slf4jImpl`实现如果你是非`spring-boot`可以自行实现或者使用控制台日志`LogFactory.useStdOutLogging()`

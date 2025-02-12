@@ -2,19 +2,27 @@ import { sidebar } from "vuepress-theme-hope";
 
 export const zhSidebar = sidebar({
   "/": [
-    "",
-    "quick-preview",
+    {
+      text: "快速开始",
+      prefix: "startup/",
+      children: ["what-is-easy-query","quick-start","complex-query"],
+    },
+    // "quick-preview",
     "question",
     {
-      text: "起步",
-      prefix: "startup/",
-      children: ["readme","quick-start","complex-query","mapping-rule","ability","annotation"],
+      text: "使用指南",
+      prefix: "use-guide/",
+      children: ["spring-boot","sb-multi-datasource","solon","kotlin"],
     },
     {
-      text: "配置",
-      prefix: "config/",
-      collapsible:true,
-      children: ["readme.md","dependency-injection","config-java","config-kotlin","config-solon","config-spring-boot","config-option","annotation","replace-configure","logging","api-mode","kapt","muti-datasource","easy-trans","plugin"],
+      text: "目录",
+      prefix: "directory/",
+      children: ["ability","annotation"],
+    },
+    {
+      text: "框架相关",
+      prefix: "framework/",
+      children: ["config-option","annotation","replace-configure","logging","mapping-rule","easy-trans","plugin"],
     },
     // {
     //   text: "基础操作",
@@ -25,15 +33,59 @@ export const zhSidebar = sidebar({
     {
       text: "功能模块",
       prefix: "ability/",
-      collapsible:true,
-      children: ["readme.md","select","insert","update","delete","transaction","insertOrUpdate"],
+      children: ["readme.md",
+        {
+          text: "select",
+          prefix: "select/",
+          collapsible:true,
+          children: ["select","api","common-api","single","dto-vo",
+            "anonymous-type","page","select-auto-include","partition","union",
+            "tree","case-when","stream-query","to-map","select-sub","relation",
+          "relation-filter","relation-extra-filter","fill"],
+        },
+        {
+          text: "where",
+          prefix: "where/",
+          collapsible:true,
+          children: ["readme","api","and-or","condition-compare","dynamic-where","where-sub"],
+        },
+        {
+          text: "join",
+          prefix: "join/",
+          collapsible:true,
+          children: ["multi","implicit-multi"],
+        },
+        {
+          text: "order-by",
+          prefix: "order-by/",
+          collapsible:true,
+          children: ["order","dynamic-sort"],
+        },
+        {
+          text: "group-by",
+          prefix: "group-by/",
+          collapsible:true,
+          children: ["group"],
+        },"insert","update","delete","transaction","insertOrUpdate","batch","dynamic-table-name","reuse","native-sql"],
     },
-    {
-      text: "查询",
-      prefix: "query/",
-      collapsible:true,//,"select-column"
-      children: ["readme.md","select","basic-type","dto-vo","anonymous-type","or-condition","paging","multi-query","group","partition","order","native-sql","dynamic-table","stream-query","to-map","union","select-sub","where-sub","relation","relation-filter","select-auto-include","fill","where","reuse","case-when","dynamic-where","dynamic-sort","dynamic-join","tree"],
-    },
+    // {
+    //   text: "功能模块2",
+    //   prefix: "ability/",
+    //   collapsible:true,
+    //   children: ["readme.md",
+    //     {
+    //       text: "查询",
+    //       prefix: "ability/",
+    //       collapsible:true,
+    //       children: ["readme.md","select","insert","update","delete","transaction","insertOrUpdate"],
+    //     }
+    //     ,"insert","update","delete","transaction","insertOrUpdate"],
+    // },
+    // {
+    //   text: "查询",
+    //   prefix: "query/",
+    //   children: ["readme.md","native-sql"],
+    // },
     {
       text: "计算属性",
       prefix: "prop/",

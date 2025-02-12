@@ -40,7 +40,7 @@ toStreamResult |  `new DefaultJdbcStreamResultSet`  | 查询返回符合条件�
 ```java
 @Data
 @Table("t_topic")
-@EntityFileProxy
+@EntityProxy
 public class Topic implements ProxyEntityAvailable<Topic , TopicProxy>{
 
     @Column(primaryKey = true)

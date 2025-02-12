@@ -13,9 +13,9 @@ export default hopeTheme({
 
   logo: "/logo.svg",
 
-  // repo: "https://github.com/xuejmnet/easy-query",
+  repo: "https://github.com/xuejmnet/easy-query-doc",
 
-  docsDir: "demo/theme-docs/src",
+  docsDir: "src",
   // themeColor:true,
   // outlookLocales:{},
 
@@ -27,12 +27,13 @@ export default hopeTheme({
       // sidebar
       sidebar: zhSidebar,
 
-      footer: "Default footer",
+      footer: "默认页脚",
+
 
       displayFooter: true,
-
+      // page meta
       metaLocales: {
-        editLink: "Edit this page on GitHub",
+        editLink: "在 GitHub 上编辑此页",
       },
     },
 

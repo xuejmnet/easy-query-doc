@@ -594,7 +594,7 @@ public class SchoolTeacherVO {
 @Table("school_student")
 @Data
 @ToString
-@EntityFileProxy
+@EntityProxy
 public class SchoolStudent implements ProxyEntityAvailable<SchoolStudent, SchoolStudentProxy> {
     @Column(primaryKey = true)
     private String id;
@@ -613,7 +613,7 @@ public class SchoolStudent implements ProxyEntityAvailable<SchoolStudent, School
 @Table("school_class")
 @Data
 @ToString
-@EntityFileProxy
+@EntityProxy
 public class SchoolClass implements ProxyEntityAvailable<SchoolClass , SchoolClassProxy> {
     @Column(primaryKey = true)//主键
     private String id;
@@ -646,7 +646,7 @@ public class SchoolClass implements ProxyEntityAvailable<SchoolClass , SchoolCla
 @Table("school_student")
 @Data
 @ToString
-@EntityFileProxy
+@EntityProxy
 public class SchoolStudent implements ProxyEntityAvailable<SchoolStudent, SchoolStudentProxy> {
     @Column(primaryKey = true)
     private String id;
@@ -666,7 +666,7 @@ public class SchoolStudent implements ProxyEntityAvailable<SchoolStudent, School
 @Table("school_teacher")
 @Data
 @ToString
-@EntityFileProxy
+@EntityProxy
 public class SchoolTeacher implements ProxyEntityAvailable<SchoolTeacher , SchoolTeacherProxy> {
     @Column(primaryKey = true)
     private String id;
@@ -686,7 +686,7 @@ public class SchoolTeacher implements ProxyEntityAvailable<SchoolTeacher , Schoo
 @Table("school_student_address")
 @Data
 @ToString
-@EntityFileProxy
+@EntityProxy
 public class SchoolStudentAddress implements ProxyEntityAvailable<SchoolStudentAddress , SchoolStudentAddressProxy> {
     private String id;
     private String studentId;

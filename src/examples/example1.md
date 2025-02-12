@@ -129,7 +129,7 @@ public class SchoolStudent implements ProxyEntityAvailable<SchoolStudent, School
 @Table("school_course")
 @Data
 @ToString
-@EntityFileProxy
+@EntityProxy
 public class SchoolCourse implements ProxyEntityAvailable<SchoolCourse , SchoolCourseProxy> {
     @Column(primaryKey = true)//主键
     private String id;
@@ -340,7 +340,7 @@ List<SchoolCourse> courses = easyEntityQuery.queryable(SchoolClass.class)
 ```java
 
 @Data
-@EntityFileProxy
+@EntityProxy
 public class SchoolClassVO {
     private String id;
     private String name;
@@ -356,7 +356,7 @@ public class SchoolClassVO {
 ```java
 
 @Data
-@EntityFileProxy
+@EntityProxy
 public class SchoolStudentVO {
     private String id;
     private String classId;
@@ -374,7 +374,7 @@ public class SchoolStudentVO {
 
 @Data
 @ToString
-@EntityFileProxy
+@EntityProxy
 public class SchoolStudentAddressVO {
     private String id;
     private String studentId;
@@ -390,7 +390,7 @@ public class SchoolStudentAddressVO {
 
 @Data
 @ToString
-@EntityFileProxy
+@EntityProxy
 public class SchoolTeacherVO {
     private String id;
     private String name;
