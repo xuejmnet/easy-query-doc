@@ -43,7 +43,7 @@ Easy Query提供了支持事务的方法。事务的相关方法如下：
 因此在Spring Boot环境下，Easy Query也支持注解式开启事务，即Easy Query支持Spring的`@Transactional`来开启事务了，同时支持嵌套事务。
 
 ```java
-    @Transaction
+    @Transactional(rollbak=Exception.class)
     public void testTransaction() {
         User user = new User();
         user.setName("新用户");
