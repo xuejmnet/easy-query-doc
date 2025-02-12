@@ -39,7 +39,7 @@ export const zhSidebar = sidebar({
           prefix: "select/",
           collapsible:true,
           children: ["select","api","common-api","single","dto-vo",
-            "anonymous-type","page","select-auto-include","partition","union",
+            "anonymous-type","page","select-auto-include","select-auto-include-configurable","partition","union",
             "tree","case-when","stream-query","to-map","select-sub","relation",
           "relation-filter","relation-extra-filter","fill"],
         },
