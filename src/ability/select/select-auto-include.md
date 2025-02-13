@@ -2,6 +2,10 @@
 title: 结构化DTO selectAutoInclude
 ---
 
+## 快速预览
+
+<img src="/selectAutoInclude.gif">
+
 本章节我们将展示easy-query的超强dto返回,支持结构化数据返回,非结构化平铺数据返回还有穿透结构返回
 
 - 非结构化平铺数据
