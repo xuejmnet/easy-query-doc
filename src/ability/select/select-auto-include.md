@@ -4,7 +4,179 @@ title: 结构化DTO selectAutoInclude
 
 ## 快速预览
 
+
+
+::: tip 说明!!!
+> 一行代码实现结构化对象获取
+:::
+
+
+
 <img src="/selectAutoInclude.gif">
+
+
+预览里面我们采用的对象和dto分别是
+
+
+::: tabs
+
+@tab Company
+```java
+
+@Data
+@Table(value = "t_company",comment = "企业表")
+@EntityProxy
+@FieldNameConstants
+public class Company implements ProxyEntityAvailable<Company , CompanyProxy> {
+    /**
+     * 企业id
+     */
+    @Column(primaryKey = true,comment = "企业id",dbType = "varchar(32)")
+    private String id;
+    /**
+     * 企业名称
+     */
+    @Column(comment = "企业名称",nullable = false)
+    private String name;
+
+    /**
+     * 企业创建时间
+     */
+    @Column(comment = "企业创建时间")
+    private LocalDateTime createTime;
+
+    /**
+     * 注册资金
+     */
+    @Column(comment = "注册资金")
+    private BigDecimal registerMoney;
+
+
+    @Column(comment = "测试列",dbType = "varchar(500)",renameFrom = "column")
+    private String column1;
+
+
+
+    /**
+     * 企业拥有的用户
+     */
+    @Navigate(value = RelationTypeEnum.OneToMany,
+            selfProperty = {Company.Fields.id},
+            targetProperty = {SysUser.Fields.companyId})
+    private List<SysUser> users;
+}
+```
+@tab SysUser
+```java
+
+@Data
+@Table(value = "t_user",comment = "用户表")
+@EntityProxy
+@FieldNameConstants
+public class SysUser implements ProxyEntityAvailable<SysUser , SysUserProxy> {
+    /**
+     * 用户id
+     */
+    @Column(primaryKey = true,comment = "用户id",dbType = "varchar(32)")
+    private String id;
+    /**
+     * 用户姓名
+     */
+    @Column(comment = "用户姓名")
+    private String name;
+    /**
+     * 用户出生日期
+     */
+    @Column(comment = "用户出生日期")
+    private LocalDateTime birthday;
+
+    /**
+     * 用户所属企业id
+     */
+    @Column(comment = "用户所属企业id")
+    private String companyId;
+
+    /**
+     * 用户所属企业
+     */
+    @Navigate(value = RelationTypeEnum.ManyToOne,
+            selfProperty = {SysUser.Fields.companyId},
+            targetProperty = {Company.Fields.id})
+    private Company company;
+}
+
+```
+@tab CompanyDTO
+```java
+
+@Data
+@ToString
+public class CompanyDTO {
+
+
+    /**
+     * 企业id
+     */
+    @Column(dbType = "varchar(32)", comment = "企业id")
+    private String id;
+    /**
+     * 企业名称
+     */
+    @Column(nullable = false, comment = "企业名称")
+    private String name;
+    /**
+     * 企业创建时间
+     */
+    @Column(comment = "企业创建时间")
+    private LocalDateTime createTime;
+    /**
+     * 注册资金
+     */
+    @Column(comment = "注册资金")
+    private BigDecimal registerMoney;
+    @Column(dbType = "varchar(500)", comment = "测试列", renameFrom = "column")
+    private String column1;
+    /**
+     * 企业拥有的用户
+     */
+    @Navigate(value = RelationTypeEnum.OneToMany)
+    private List<InternalUsers> users;
+
+
+    /**
+     * {@link com.easy.query.console.entity.SysUser }
+     */
+    @Data
+    public static class InternalUsers {
+        /**
+         * 用户id
+         */
+        @Column(dbType = "varchar(32)", comment = "用户id")
+        private String id;
+        /**
+         * 用户姓名
+         */
+        @Column(comment = "用户姓名")
+        private String name;
+        /**
+         * 用户出生日期
+         */
+        @Column(comment = "用户出生日期")
+        private LocalDateTime birthday;
+        /**
+         * 用户所属企业id
+         */
+        @Column(comment = "用户所属企业id")
+        private String companyId;
+
+
+    }
+
+}
+
+```
+
+:::
 
 本章节我们将展示easy-query的超强dto返回,支持结构化数据返回,非结构化平铺数据返回还有穿透结构返回
 
