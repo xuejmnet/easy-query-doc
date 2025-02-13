@@ -11,7 +11,7 @@ title: 结构化DTO selectAutoInclude
 :::
 
 
-<video src="/videos/selectAutoInclude.mp4" muted controls autoplay id='v' width="800"></video>
+<video src="/videos/selectAutoInclude.mp4" muted loop autoplay id='v' width="800"></video>
 <!-- <img src="/selectAutoInclude.gif"> -->
 
 
