@@ -88,7 +88,7 @@ import com.easy.query.core.proxy.ProxyEntityAvailable;
 import com.test.entity.proxy.TopicProxy;
 
 
-
+//也可以用data class
 
 @Table("t_topic")
 @EntityProxy
