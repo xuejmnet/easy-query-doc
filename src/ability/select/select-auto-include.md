@@ -11,8 +11,8 @@ title: 结构化DTO selectAutoInclude
 :::
 
 
-
-<img src="/selectAutoInclude.gif">
+<video src="/videos/selectAutoInclude.mp4" muted controls autoplay id='v' width="800"></video>
+<!-- <img src="/selectAutoInclude.gif"> -->
 
 
 预览里面我们采用的对象和dto分别是
