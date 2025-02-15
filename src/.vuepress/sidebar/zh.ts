@@ -22,7 +22,7 @@ export const zhSidebar = sidebar({
     {
       text: "框架相关",
       prefix: "framework/",
-      children: ["config-option","annotation","replace-configure","logging","mapping-rule","easy-trans","plugin"],
+      children: ["config-option","key-word","annotation","replace-configure","logging","mapping-rule","easy-trans","plugin"],
     },
     // {
     //   text: "基础操作",
