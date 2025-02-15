@@ -128,3 +128,6 @@ easyEntityQuery.deletable(User.class).disableLogicDelete()allowDeleteStatement(t
 </plugin>
 ```
 :::
+
+## 关键字处理
+[关键字处理](/easy-query-doc/framework/key-word)
