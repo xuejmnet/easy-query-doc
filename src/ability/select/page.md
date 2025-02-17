@@ -14,7 +14,7 @@ title: 分页查询
 ```java
    EasyPageResult<Topic> topicPageResult = easyQuery
                 .queryable(Topic.class)
-                .where(o -> o.isNotNull(Topic::getId))
+                .where(o -> o.id().isNotNull())
                 .toPageResult(1, 20);
 
 ==> Preparing: SELECT  COUNT(1)  FROM t_topic t WHERE t.`id` IS NOT NULL
@@ -26,9 +26,15 @@ title: 分页查询
 ```java
 EasyPageResult<BlogEntity> page = easyQuery
             .queryable(Topic.class)
-            .innerJoin(BlogEntity.class, (t, t1) -> t.eq(t1, Topic::getId, BlogEntity::getId))
-            .where((t, t1) -> t1.isNotNull(BlogEntity::getTitle).then(t).eq(Topic::getId, "3"))
-            .select(BlogEntity.class, (t, t1) -> t1.columnAll().columnIgnore(BlogEntity::getId))
+            .innerJoin(BlogEntity.class, (t, t1) -> t.id().eq(t1.id()))
+            .where((t, t1) -> {
+
+                t1.title().isNotNull();
+                t.id().eq("3");
+            })
+            .select(BlogEntity.class, (t, t1) -> Select.of(
+                t1.FETCHER.allFieldsExclude(t1.id())
+            ))
             .toPageResult(1, 20);
 
 ==> Preparing: SELECT  COUNT(1)  FROM t_topic t INNER JOIN t_blog t1 ON t.`id` = t1.`id` WHERE t1.`title` IS NOT NULL AND t.`id` = ?
@@ -43,10 +49,13 @@ EasyPageResult<BlogEntity> page = easyQuery
 ```java
 EasyPageResult<BlogEntity> page = easyQuery
                 .queryable(Topic.class)
-                .innerJoin(BlogEntity.class, (t, t1) -> t.eq(t1, Topic::getId, BlogEntity::getId))
-                .where((t, t1) -> t1.isNotNull(BlogEntity::getTitle))
-                .groupBy((t, t1)->t1.column(BlogEntity::getId))
-                .select(BlogEntity.class, (t, t1) -> t1.column(BlogEntity::getId).columnSum(BlogEntity::getScore))
+                .innerJoin(BlogEntity.class, (t, t1) -> t.id().eq(t1.id()))
+                .where((t, t1) -> t1.title().isNotNull())
+                .groupBy((t, t1)-> GrouopKeys.of(t1.id()))
+                .select(BlogEntity.class, group -> Select.of(
+                    group.key1().as("id"),
+                    group.score().sum().as("score")
+                ))//t1.column(BlogEntity::getId).columnSum(BlogEntity::getScore)
                 .toPageResult(1, 20);
 
 ==> Preparing: SELECT  COUNT(1)  FROM (SELECT t1.`id`,SUM(t1.`score`) AS `score` FROM t_topic t INNER JOIN t_blog t1 ON t.`id` = t1.`id` WHERE t1.`title` IS NOT NULL GROUP BY t1.`id`) t2
@@ -134,6 +143,35 @@ public class DefaultShardingPageResult<T> implements EasyShardingPageResult<T> {
 }
 
 ```
+
+### 自己实现分页返回实现
+比如`mybatis-plus`默认返回不是data是records,那么eq应该如何才能实现返回records呢
+```java
+
+public class MyPageResult<T> extends DefaultPageResult<T> {
+    public MyPageResult(long total, List<T> data) {
+        super(total, data);
+    }
+    //重写getData方法，因为jackson默认返回不关心字段只关注getXXX方法
+    @JsonProperty("records")
+    @Override
+    public List<T> getData() {
+        return super.getData();
+    }
+}
+```
+实现`EasyPageResultProvider`接口我们只需要继承默认的`DefaultEasyPageResultProvider`即可没必要自己实现一个
+```java
+
+public class MyEasyPageResultProvider extends DefaultEasyPageResultProvider {
+    @Override
+    public <T> EasyPageResult<T> createPageResult(long pageIndex, long pageSize, long total, List<T> data) {
+        return new MyPageResult<>(total,data);
+    }
+}
+
+```
+最后参考替换框架实现文档来实现替换默认实现[点我查看](/easy-query-doc/framework/replace-configure)
 
 ## 无依赖使用自己的PageResult
 很多时候框架提供的`EasyPageResult<T>`提供了方便的同时让整个项目高度依赖`easy-query`这是一个非常不好的事情,所以`easy-query`在1.4.25提供了自定义`PageResult<TResult>`结果,并且提供了链式方法调用方便开发人员
