@@ -90,7 +90,7 @@ export const zhSidebar = sidebar({
       text: "计算属性",
       prefix: "prop/",
       collapsible:true,
-      children: ["readme.md","json-prop","collection-prop","enum-prop","sql-column-prop","status-prop","combine-prop","aggregate-prop","sql-column-generate-prop"],
+      children: ["readme.md","json-prop","collection-prop","enum-prop","sql-column-prop","status-prop","combine-prop","aggregate-prop","sql-column-generate-prop","simple-sql-prop"],
     },
     {
       text: "code-first",
