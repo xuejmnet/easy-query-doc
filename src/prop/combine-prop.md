@@ -51,6 +51,42 @@ create table t_user_extra
 ###
 ```java
 
+public class FullNameColumnValueSQLConverter implements ColumnValueSQLConverter {
+    @Override
+    public void selectColumnConvert(TableAvailable table, ColumnMetadata columnMetadata, SQLPropertyConverter sqlPropertyConverter, QueryRuntimeContext runtimeContext) {
+        SQLFunc fx = runtimeContext.fx();
+        SQLFunction concat = fx.concat("firstName", "lastName");
+        String sqlSegment = concat.sqlSegment(table);
+        sqlPropertyConverter.sqlNativeSegment(sqlSegment,context->{
+            concat.consume(context.getSQLNativeChainExpressionContext());
+            context.setAlias(columnMetadata.getName());
+        });
+
+        //原则上在mysql中上下一样但是如果遇到换库那么就需要用户适配,如果使用系统提供的函数那么则可以在各个数据库之间通用
+//        sqlPropertyConverter.sqlNativeSegment("CONCAT({0},{1})",c->{
+//            c.expression("firstName").expression("lastName");
+//            c.setAlias(columnMetadata.getName());
+//        });
+    }
+
+    @Override
+    public void propertyColumnConvert(TableAvailable table, ColumnMetadata columnMetadata, SQLPropertyConverter sqlPropertyConverter, QueryRuntimeContext runtimeContext) {
+        SQLFunc fx = runtimeContext.fx();
+        SQLFunction concat = fx.concat("firstName", "lastName");
+        String sqlSegment = concat.sqlSegment(table);
+        sqlPropertyConverter.sqlNativeSegment(sqlSegment,context->{
+            concat.consume(context.getSQLNativeChainExpressionContext());
+        });
+    }
+
+    @Override
+    public void valueConvert(TableAvailable table, ColumnMetadata columnMetadata, SQLParameter sqlParameter, SQLPropertyConverter sqlPropertyConverter, QueryRuntimeContext runtimeContext,boolean isCompareValue) {
+        sqlPropertyConverter.sqlNativeSegment("{0}",context->{
+            context.value(sqlParameter);
+        });
+    }
+}
+
 public class UserAgeColumnValueSQLConverter implements ColumnValueSQLConverter {
     @Override
     public boolean isRealColumn() {
@@ -118,36 +154,6 @@ public class UserAgeColumnValueSQLConverter implements ColumnValueSQLConverter {
     }
 }
 
-
-public class FullNameColumnValueSQLConverter implements ColumnValueSQLConverter {
-    @Override
-    public void selectColumnConvert(TableAvailable table, ColumnMetadata columnMetadata, SQLPropertyConverter sqlPropertyConverter, QueryRuntimeContext runtimeContext) {
-        SQLFunc fx = runtimeContext.fx();
-        SQLFunction concat = fx.concat("firstName", "lastName");
-        String sqlSegment = concat.sqlSegment(table);
-        sqlPropertyConverter.sqlNativeSegment(sqlSegment,context->{
-            concat.consume(context.getSQLNativeChainExpressionContext());
-            context.setAlias(columnMetadata.getName());
-        });
-    }
-
-    @Override
-    public void propertyColumnConvert(TableAvailable table, ColumnMetadata columnMetadata, SQLPropertyConverter sqlPropertyConverter, QueryRuntimeContext runtimeContext) {
-        SQLFunc fx = runtimeContext.fx();
-        SQLFunction concat = fx.concat("firstName", "lastName");
-        String sqlSegment = concat.sqlSegment(table);
-        sqlPropertyConverter.sqlNativeSegment(sqlSegment,context->{
-            concat.consume(context.getSQLNativeChainExpressionContext());
-        });
-    }
-
-    @Override
-    public void valueConvert(TableAvailable table, ColumnMetadata columnMetadata, SQLParameter sqlParameter, SQLPropertyConverter sqlPropertyConverter, QueryRuntimeContext runtimeContext,boolean isCompareValue) {
-        sqlPropertyConverter.sqlNativeSegment("{0}",context->{
-            context.value(sqlParameter);
-        });
-    }
-}
 
 ```
 
