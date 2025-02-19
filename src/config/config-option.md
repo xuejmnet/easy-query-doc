@@ -31,6 +31,7 @@ printNavSql| true | 关联查询是否打印二次子查询的sql
 propertyMode| `PropertyModeEnum.FIRST_LOWER` | 表示entity属性是首字母小写(为了兼容lambda和lambdakt的模式),还有一个就是`PropertyModeEnum.SAME_AS_ENTITY`如果你是entity模式那么建议使用这个
 relationTableAppend| `RelationTableAppendEnum.SMART` | `SMART`表示智能添加`relationTable`隐式join吗，`DEFAULT`则需要代码执行的时候不执行到导航属性需要`if`代码块包裹
 mappingStrategy| `EntityMappingStrategyEnum.COLUMN_ONLY` | 对象间的映射关系,默认以`列名`映射,可以选择`属性名`或者`列名+属性名`
+reverseOffsetThreshold| 0 | 反向排序偏移量阈值,比如设置为`10000`那么分页的时候如果offset>设置的值`10000`并且offset>(total*0.5)也就是查询偏移量超过了总数的一半那么会启用反向排序
 
 ## 分表分库特有配置
 

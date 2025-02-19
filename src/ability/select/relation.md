@@ -122,6 +122,241 @@ List<SchoolStudent> list2 = easyEntityQuery.queryable(SchoolStudent.class)
 
 ::: 
 
+## 忽略关联查询的value
+`eq`默认关联查询是使用`selfProperty`的值对目标属性的表进行二次关联查询,默认情况下`selfProperty`的值为`null`则不会对目标属性进行再次查询,那么有时候我们数据库可能存在其他值，在表现形式上等同于null，比如字符串`-`,`/`,或者空字符串,那么对于二次查询其实没有任何意义,那么我们应该如何去替换让框架支持呢。
+
+这次的内容主要在[这个连接中](https://github.com/dromara/easy-query/issues/302)
+
+首先我们需要替换`RelationValueFactory`这个接口
+
+方法  | 作用
+--- | --- 
+create | 返回关联属性`selfProperty`的相关元数据信息
+RelationValue | 创建一个可比较的关联值
+
+我们再来看其默认实现`DefaultRelationValueFactory`
+```java
+
+public class DefaultRelationValueFactory implements RelationValueFactory{
+    @Override
+    public RelationValueColumnMetadata create(EntityMetadata entityMetadata, String[] properties) {
+        if(properties.length==1){
+            return new SingleRelationValueColumnMetadata(entityMetadata,properties[0]);
+        }
+        return new MultiRelationValueColumnMetadata(entityMetadata,properties);
+    }
+
+    @Override
+    public RelationValue createRelationValue(List<Object> values) {
+        if(values.size()==1){
+            return new SingleRelationValue(values.get(0));
+        }
+        return new MultiRelationValue(values);
+    }
+}
+```
+
+### RelationValue
+其中`RelationValue`的返回是我们需要注意的
+
+方法  | 作用
+--- | --- 
+isNull | 用来判断这次的关系值是否可以用来作为下一次的查询条件返回true表示需要被过滤
+getValues | 返回其内部的值
+
+实现  | 作用
+--- | --- 
+SingleRelationValue | 当且仅当selfProperty为长度为1或者空(主键情况)的数组时才会使用当前对象，比如:selfProperty=["id"]那么value为id的值
+MultiRelationValue | 当且仅当selfProperty为长度大于1的数组时才会使用当前对象，比如:selfProperty=["id","username"]那么values[0]为id的值,values[1]为username的值
+
+### 替换
+我们需要对`RelationValueColumnMetadata`和`RelationValue`的两个方法进行替换成我们自己的
+```java
+
+public class MySingleRelationValue implements RelationValue {
+    protected final Object value;
+
+    public MySingleRelationValue(Object value) {
+        this.value = value;
+    }
+
+    @Override
+    public List<Object> getValues() {
+        return Collections.singletonList(value);
+    }
+
+    @Override
+    public boolean isNull() {
+        //横岗也需要被过滤
+        return Objects.isNull(value) || Objects.equals("-", value);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MySingleRelationValue that = (MySingleRelationValue) o;
+        return Objects.equals(value, that.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(value);
+    }
+
+    @Override
+    public String toString() {
+        return "SingleRelationValue{" +
+                "value=" + value +
+                '}';
+    }
+}
+
+
+
+public class MyMultiRelationValue implements RelationValue {
+    protected final List<Object> values;
+
+    public MyMultiRelationValue(List<Object> values) {
+        this.values = values;
+    }
+
+    @Override
+    public List<Object> getValues() {
+        return values;
+    }
+
+    /**
+     * 当且仅当values中的有任意元素是null时返回true
+     * 如果你认为例子中的id或者username有其他不符合就可以直接忽略可以使用重写该类来替换掉默认行为
+     *
+     * @return
+     */
+    @Override
+    public boolean isNull() {
+        return EasyCollectionUtil.any(values, o -> Objects.isNull(o) || Objects.equals("-", o));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MyMultiRelationValue that = (MyMultiRelationValue) o;
+        return Objects.equals(values, that.values);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(values);
+    }
+
+    @Override
+    public String toString() {
+        return "MultiRelationValue{" +
+                "values=" + values +
+                '}';
+    }
+}
+
+
+
+public class MySingleRelationValueColumnMetadata implements RelationValueColumnMetadata {
+    private final ColumnMetadata columnMetadata;
+    private final RelationValue columnName;
+
+    public MySingleRelationValueColumnMetadata(EntityMetadata entityMetadata, String property) {
+        this.columnMetadata = entityMetadata.getColumnNotNull(property);
+        this.columnName = new MySingleRelationValue(columnMetadata.getName());
+    }
+
+    @Override
+    public RelationValue getRelationValue(Object entity) {
+        if (entity == null) {
+            throw new EasyQueryInvalidOperationException("current entity can not be null");
+        }
+        Object value = columnMetadata.getGetterCaller().apply(entity);
+        return new MySingleRelationValue(value);
+    }
+
+    @Override
+    public RelationValue getRelationValue(Map<String, Object> mappingRow) {
+        Object value = mappingRow.get(columnMetadata.getName());
+        return new MySingleRelationValue(value);
+    }
+
+    @Override
+    public RelationValue getName() {
+        return columnName;
+    }
+}
+
+
+
+public class MyMultiRelationValueColumnMetadata implements RelationValueColumnMetadata {
+    private final List<ColumnMetadata> columnMetadataList;
+    private final RelationValue columnName;
+
+    public MyMultiRelationValueColumnMetadata(EntityMetadata entityMetadata, String[] properties) {
+        ArrayList<ColumnMetadata> columnMetadataList = new ArrayList<>(properties.length);
+        for (String property : properties) {
+            ColumnMetadata columnMetadata = entityMetadata.getColumnNotNull(property);
+            columnMetadataList.add(columnMetadata);
+        }
+        this.columnMetadataList = columnMetadataList;
+
+        List<Object> columnNames = EasyCollectionUtil.select(columnMetadataList, (columnMetadata, index) -> columnMetadata.getName());
+        this.columnName = new MyMultiRelationValue(columnNames);
+    }
+
+    @Override
+    public RelationValue getRelationValue(Object entity) {
+        if (entity == null) {
+            throw new EasyQueryInvalidOperationException("current entity can not be null");
+        }
+        List<Object> values = EasyCollectionUtil.select(columnMetadataList, (columnMetadata, index) -> columnMetadata.getGetterCaller().apply(entity));
+        return new MyMultiRelationValue(values);
+    }
+
+    @Override
+    public RelationValue getRelationValue(Map<String, Object> mappingRow) {
+        List<Object> values = EasyCollectionUtil.select(columnMetadataList, (columnMetadata, index) -> mappingRow.get(columnMetadata.getName()));
+        return new MyMultiRelationValue(values);
+    }
+
+    @Override
+    public RelationValue getName() {
+        return columnName;
+    }
+}
+
+
+public class MyDefaultRelationValueFactory implements RelationValueFactory {
+    @Override
+    public RelationValueColumnMetadata create(EntityMetadata entityMetadata, String[] properties) {
+        if (properties.length == 1) {
+            return new MySingleRelationValueColumnMetadata(entityMetadata, properties[0]);
+        }
+        return new MyMultiRelationValueColumnMetadata(entityMetadata, properties);
+    }
+
+    @Override
+    public RelationValue createRelationValue(List<Object> values) {
+        if (values.size() == 1) {
+            return new MySingleRelationValue(values.get(0));
+        }
+        return new MyMultiRelationValue(values);
+    }
+}
+
+
+```
+
+### 最后替换服务即可
+```java
+replaceService(RelationValueFactory.class, MyDefaultRelationValueFactory.class)
+```
+
+
 ## Navigate
 
 
