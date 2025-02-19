@@ -1,0 +1,1 @@
+import{_ as e}from"./plugin-vue_export-helper-c27b6911.js";import{o as t,c as o}from"./app-16b339b4.js";const c={};function r(n,_){return t(),o("div")}const a=e(c,[["render",r],["__file","kotlin2.html.vue"]]);export{a as default};
