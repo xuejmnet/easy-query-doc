@@ -131,20 +131,12 @@ List<SchoolStudent> list2 = easyEntityQuery.queryable(SchoolStudent.class)
 
 方法  | 作用
 --- | --- 
-create | 返回关联属性`selfProperty`的相关元数据信息
 RelationValue | 创建一个可比较的关联值
 
 我们再来看其默认实现`DefaultRelationValueFactory`
 ```java
 
 public class DefaultRelationValueFactory implements RelationValueFactory{
-    @Override
-    public RelationValueColumnMetadata create(EntityMetadata entityMetadata, String[] properties) {
-        if(properties.length==1){
-            return new SingleRelationValueColumnMetadata(entityMetadata,properties[0]);
-        }
-        return new MultiRelationValueColumnMetadata(entityMetadata,properties);
-    }
 
     @Override
     public RelationValue createRelationValue(List<Object> values) {
@@ -170,9 +162,9 @@ SingleRelationValue | 当且仅当selfProperty为长度为1或者空(主键情�
 MultiRelationValue | 当且仅当selfProperty为长度大于1的数组时才会使用当前对象，比如:selfProperty=["id","username"]那么values[0]为id的值,values[1]为username的值
 
 ### 替换
-我们需要对`RelationValueColumnMetadata`和`RelationValue`的两个方法进行替换成我们自己的
+我们需要对`RelationValue`的两个方法进行替换成我们自己的
 ```java
-
+//用于单值比较
 public class MySingleRelationValue implements RelationValue {
     protected final Object value;
 
@@ -214,6 +206,7 @@ public class MySingleRelationValue implements RelationValue {
 
 
 
+//用于多值比较
 public class MyMultiRelationValue implements RelationValue {
     protected final List<Object> values;
 
@@ -259,85 +252,7 @@ public class MyMultiRelationValue implements RelationValue {
 }
 
 
-
-public class MySingleRelationValueColumnMetadata implements RelationValueColumnMetadata {
-    private final ColumnMetadata columnMetadata;
-    private final RelationValue columnName;
-
-    public MySingleRelationValueColumnMetadata(EntityMetadata entityMetadata, String property) {
-        this.columnMetadata = entityMetadata.getColumnNotNull(property);
-        this.columnName = new MySingleRelationValue(columnMetadata.getName());
-    }
-
-    @Override
-    public RelationValue getRelationValue(Object entity) {
-        if (entity == null) {
-            throw new EasyQueryInvalidOperationException("current entity can not be null");
-        }
-        Object value = columnMetadata.getGetterCaller().apply(entity);
-        return new MySingleRelationValue(value);
-    }
-
-    @Override
-    public RelationValue getRelationValue(Map<String, Object> mappingRow) {
-        Object value = mappingRow.get(columnMetadata.getName());
-        return new MySingleRelationValue(value);
-    }
-
-    @Override
-    public RelationValue getName() {
-        return columnName;
-    }
-}
-
-
-
-public class MyMultiRelationValueColumnMetadata implements RelationValueColumnMetadata {
-    private final List<ColumnMetadata> columnMetadataList;
-    private final RelationValue columnName;
-
-    public MyMultiRelationValueColumnMetadata(EntityMetadata entityMetadata, String[] properties) {
-        ArrayList<ColumnMetadata> columnMetadataList = new ArrayList<>(properties.length);
-        for (String property : properties) {
-            ColumnMetadata columnMetadata = entityMetadata.getColumnNotNull(property);
-            columnMetadataList.add(columnMetadata);
-        }
-        this.columnMetadataList = columnMetadataList;
-
-        List<Object> columnNames = EasyCollectionUtil.select(columnMetadataList, (columnMetadata, index) -> columnMetadata.getName());
-        this.columnName = new MyMultiRelationValue(columnNames);
-    }
-
-    @Override
-    public RelationValue getRelationValue(Object entity) {
-        if (entity == null) {
-            throw new EasyQueryInvalidOperationException("current entity can not be null");
-        }
-        List<Object> values = EasyCollectionUtil.select(columnMetadataList, (columnMetadata, index) -> columnMetadata.getGetterCaller().apply(entity));
-        return new MyMultiRelationValue(values);
-    }
-
-    @Override
-    public RelationValue getRelationValue(Map<String, Object> mappingRow) {
-        List<Object> values = EasyCollectionUtil.select(columnMetadataList, (columnMetadata, index) -> mappingRow.get(columnMetadata.getName()));
-        return new MyMultiRelationValue(values);
-    }
-
-    @Override
-    public RelationValue getName() {
-        return columnName;
-    }
-}
-
-
 public class MyDefaultRelationValueFactory implements RelationValueFactory {
-    @Override
-    public RelationValueColumnMetadata create(EntityMetadata entityMetadata, String[] properties) {
-        if (properties.length == 1) {
-            return new MySingleRelationValueColumnMetadata(entityMetadata, properties[0]);
-        }
-        return new MyMultiRelationValueColumnMetadata(entityMetadata, properties);
-    }
 
     @Override
     public RelationValue createRelationValue(List<Object> values) {
