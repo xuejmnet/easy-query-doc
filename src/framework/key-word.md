@@ -15,6 +15,16 @@ PGSQL | "order"
 MsSQL | [order]
 
 
+
+
+java属性  | nameConversion   | 对应数据库列  
+---  | ---  | --- 
+userAge  | DEFAULT 默认 | userAge
+userAge  | UNDERLINED 大写字母转小写下划线| user_age
+userAge  | UPPER_UNDERLINED 全大写大写字母转小写下划线| USER_AGE
+userAge  | LOWER_CAMEL_CASE 小驼峰| userAge
+userAge  | UPPER_CAMEL_CASE 大驼峰| UserAge
+
 ## 选择数据库
 
 
