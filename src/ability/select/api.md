@@ -9,14 +9,14 @@ title: api说明
 
 @tab entity -->
 
-| 方法                           | 支持后续链式 | 描述                                                                                                                                                                                                                                            |
-| ------------------------------ | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `select(o->proxy)`             | ✅           | 用户可以自定义实现返回结果<br> (返回结果必须是 Proxy 类, 简单说就是 DTO 需要添加注解`@EntityProxy`)                                                                                                                                             |
-| `selectColumn(o->o.column())`  | ❌           | 用于用户返回单个字段, 当然也可以直接用`select(o->o.id())`需要`eq 2.0.0^`                                                                                                                                                                        |
+| 方法                           | 支持后续链式 | 描述                |
+| ------------------------------ | ------------ | -------------------------------------- |
+| `select(o->proxy)`             | ✅           | 用户可以自定义实现返回结果<br> (返回结果必须是 Proxy 类, 简单说就是 DTO 需要添加注解`@EntityProxy`)              |
+| `selectColumn(o->o.column())`  | ❌           | 用于用户返回单个字段, 当然也可以直接用`select(o->o.id())`需要`eq 2.0.0^`          |
 | `select(Class<TR>)`            | ❌           | 自动映射表和 DTO 对应关系, (对应关系是 DTO 映射的 columnName 和实体的 columnName 一致则映射), 比如两个属性都是`name`, 但是实体添加了`@Column(value="my_name")`那么 DTO 的`name`属性如果没有添加对应的注解, 将无法自动映射需要手动`as`来进行查询 |
-| `select(Class<TR>,expression)` | ❌           | 用户可以对任意`DTO`对象的 class 进行自动或者手动映射比如 <br> `select(DTO.class,o->Select.of(o.FETCHER.allFields(),o.name().as("myName")))`                                                                                                     |
-| `selectAutoInclude`            | ❌           | 支持用户返回任意列的数据库对象关系关联的数据, 比如嵌套结构: <br> {name:.. , age:... ,list:[{...}, {...}]}                                                                                                                                       |
-| `selectAutoInclude expression` | ❌           | 支持用户返回任意列的数据库对象关系关联的数据,<br>并且还可以`额外自定义join`返回其他数据, 比如嵌套结构: <br> {name:.. , age:... ,address:...,list:[{...}, {...}]},其中 address 是用户地址的所属信息额外赋值                                      |
+| `select(Class<TR>,expression)` | ❌           | 用户可以对任意`DTO`对象的 class 进行自动或者手动映射比如 <br> `select(DTO.class,o->Select.of(o.FETCHER.allFields(),o.name().as("myName")))`        |
+| `selectAutoInclude`            | ❌           | 支持用户返回任意列的数据库对象关系关联的数据, 比如嵌套结构: <br> {name:.. , age:... ,list:[{...}, {...}]}      |
+| `selectAutoInclude expression` | ❌           | 支持用户返回任意列的数据库对象关系关联的数据,<br>并且还可以`额外自定义join`返回其他数据, 比如嵌套结构: <br> {name:.. , age:... ,address:...,list:[{...}, {...}]},其中 address 是用户地址的所属信息额外赋值       |
 
 <!-- ::: -->
 
