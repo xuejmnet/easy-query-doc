@@ -596,6 +596,22 @@ Assert.assertEquals("SELECT `id`,`create_time`,`update_time`,`create_by`,`update
 
 您可以自行实现这个并且使用自己的注解来配合使用
 
+
+### 动态列
+
+有时候我们的搜索不一定是动态是否生效有可能需要实现动态的列名处理,这边eq提供了任意列`anyColumn`需要`eq2.6.2+`
+
+`anyColumn(property)`支持隐式join:比如`o.anyColumn("user.age")`等于`o.user().age()`
+```java
+
+        List<DocBankCard> list = easyEntityQuery.queryable(DocBankCard.class)
+                .where(bank_card -> {
+                    bank_card.anyColumn("code").eq("456");
+                    //上下两者写法一样
+                    //bank_card.code().eq("321");
+                }).toList();
+```
+
 ## 相关搜索
 
 `注解查询` `动态查询` `dto查询` `json查询` `对象查询` `form查询` `表单查询`

@@ -1,5 +1,5 @@
 ---
-title: easy-qeury 简介
+title: easy-query 简介
 ---
 
 # easy-qeury 简介
