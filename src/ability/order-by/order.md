@@ -121,3 +121,24 @@ List<Topic> list = easyEntityQuery.queryable(Topic.class)
 <== Time Elapsed: 5(ms)
 <== Total: 101
 ```
+
+## 自定义正序倒序
+
+```java
+
+List<Topic> list = easyEntityQuery.queryable(Topic.class)
+        .orderBy(t -> {
+            t.id().asc(false);//false表示不生效
+            t.createTime().orderBy(true/false);//true/false表示正序倒序而不是是否生效
+        })
+        .toList();
+
+boolean asc=false;
+OrderByModeEnum nullMode=OrderByModeEnum.NULLS_LAST;
+List<Topic> list = easyEntityQuery.queryable(Topic.class)
+        .orderBy(t -> {
+            t.createTime().orderBy(asc,nullMode);//true/false表示正序倒序而不是是否生效
+        })
+        .toList();
+
+```
