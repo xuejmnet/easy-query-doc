@@ -104,7 +104,7 @@ WHERE
         AND t5.`type` = '456'),0) = 789
 ```
 
-## manJoin隐式group
+## manyJoin隐式group
 使用`manyJoin`后,框架会识别各个子查询将其合并到一起,`eq`会足够的智能将多个子查询合并到一起让编写复杂sql变得极其容易
 ```java
 easyEntityQuery.queryable(DocUser.class)
@@ -156,7 +156,7 @@ WHERE
     AND t2.`__sum3__` = 789
 ```
 
-## manJoin带条件
+## manyJoin带条件
 ```java
 
 
@@ -219,7 +219,7 @@ WHERE
     AND t3.`__sum3__` = 789
 ```
 
-## manJoin排序查询
+## manyJoin排序查询
 ```java
 
 List<Draft3<String, Integer, String>> 银行 = easyEntityQuery.queryable(DocUser.class)
