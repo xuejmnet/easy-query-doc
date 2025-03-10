@@ -7,6 +7,14 @@ order: 30
 
 本章节的环境配置请参考[环境准备](../../startup/quick-start.md#环境准备)章节
 
+
+::: danger 说明!!!
+> 默认`update(entity)`操作是更新对象全部列到数据库,不忽略`null`值,如果需要修改策略请进行[配置](/easy-query-doc/framework/config-optio)或手动设置策略
+> 默认`update(entity)`操作是更新对象全部列到数据库,不忽略`null`值,如果需要修改策略请进行[配置](/easy-query-doc/framework/config-optio)或手动设置策略
+> 默认`update(entity)`操作是更新对象全部列到数据库,不忽略`null`值,如果需要修改策略请进行[配置](/easy-query-doc/framework/config-optio)或手动设置策略
+:::
+
+
 ## 更新对象
 
 Easy Query提供了`updatable`方法，支持更新单条数据和多条数据,支持批量更新，
