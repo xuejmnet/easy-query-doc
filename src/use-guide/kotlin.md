@@ -1,5 +1,5 @@
 ---
-title: kotlin配置使用
+title: kotlin配置ksp使用
 ---
 
 # kotlin配置使用

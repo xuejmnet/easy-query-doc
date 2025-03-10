@@ -12,7 +12,7 @@ export const zhSidebar = sidebar({
     {
       text: "使用指南",
       prefix: "use-guide/",
-      children: ["spring-boot","sb-multi-datasource","solon","kotlin"],
+      children: ["spring-boot","sb-multi-datasource","solon","kotlin","kapt"],
     },
     {
       text: "目录",
@@ -53,7 +53,7 @@ export const zhSidebar = sidebar({
           text: "join",
           prefix: "join/",
           collapsible:true,
-          children: ["multi","implicit-multi"],
+          children: ["multi","implicit-multi","implicit-group"],
         },
         {
           text: "order-by",
