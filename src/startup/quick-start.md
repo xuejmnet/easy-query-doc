@@ -270,7 +270,7 @@ import com.easy.query.api.proxy.client.EasyEntityQuery;
 import com.easy.query.console.entity.Company;
 import com.easy.query.console.entity.SysUser;
 import com.easy.query.core.api.client.EasyQueryClient;
-import com.easy.query.core.basic.api.database.CodeFirstExecutable;
+import com.easy.query.core.basic.api.database.CodeFirstCommand;
 import com.easy.query.core.basic.api.database.DatabaseCodeFirst;
 import com.easy.query.core.bootstrapper.EasyQueryBootstrapper;
 import com.easy.query.core.logging.LogFactory;
@@ -299,9 +299,9 @@ public class Main {
         //如果不存在数据库则创建
         databaseCodeFirst.createDatabaseIfNotExists();
         //自动同步数据库表
-        CodeFirstExecutable codeFirstExecutable = databaseCodeFirst.syncTables(Arrays.asList(Company.class, SysUser.class));
+        CodeFirstCommand codeFirstCommand = databaseCodeFirst.syncTableCommand(Arrays.asList(Company.class, SysUser.class));
         //执行命令
-        codeFirstExecutable.executeWithTransaction(arg->{
+        codeFirstCommand.executeWithTransaction(arg->{
             System.out.println(arg.sql);
             arg.commit();
         });

@@ -338,3 +338,33 @@ public class MyController {
 
 
 ```
+
+## 使用默认配置多数据源
+```yml
+
+easy-query:
+  enable: true
+  build: false #不使用默认的build,然后自行构建eq示实例
+......
+```
+使用yml的默认配置但是不对其进行默认的实例构建自行构建
+```java
+
+    @Bean
+    @Primary
+    public EasyQueryClient easyQueryClient(DataSource dataSource,EasyQueryProperties easyQueryProperties,EasyQueryInitializeOption easyQueryInitializeOption, StarterConfigurer starterConfigurer) {
+
+        return SpringBootStarterBuilder.buildClient(dataSource, easyQueryProperties, easyQueryInitializeOption, starterConfigurer);
+        // return SpringBootStarterBuilder.buildClient(dataSource, easyQueryProperties, easyQueryInitializeOption, s->{
+        //     s.addService();
+        // });
+    }
+
+    @Bean
+    @Primary
+    public EasyEntityQuery entityQuery(EasyQueryClient easyQueryClient) {
+        return new DefaultEasyEntityQuery(easyQueryClient);
+    }
+
+    //构建剩余的
+```

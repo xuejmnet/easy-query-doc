@@ -161,7 +161,9 @@ WHERE
 
 
 easyEntityQuery.queryable(DocUser.class)
-        .manyJoin(o -> o.bankCards(), bcq -> bcq.where(x -> {
+        .manyJoin(o -> o.bankCards())
+        //可作用于非manyJoin普通子查询也可以受用
+        .manyConfigure(o -> o.bankCards(), bcq -> bcq.where(x -> {
             //支持隐式join和普通属性筛选
             x.bank().name().eq("银行");
             x.type().like("45678");
@@ -301,4 +303,25 @@ WHERE
 ORDER BY
     t3.`__sum2__` ASC,
     t3.`__max4__` DESC
+```
+
+## 案例3
+```java
+
+easyEntityQuery.queryable(DocUser.class)
+        .manyJoin(o -> o.bankCards())
+        .where(user -> {
+            user.bankCards().where(x -> x.code().likeMatchLeft("400")).any();
+        })
+        .select(user -> Select.DRAFT.of(
+                user.id(),
+                user.bankCards().where(x->x.type().eq("工商")).count(),
+                user.bankCards().where(x->x.type().eq("建设")).count(),
+                user.bankCards().where(x->x.type().eq("农业")).count()
+        ))
+        .toList();
+
+==> Preparing: SELECT t.`id` AS `value1`,t2.`__count3__` AS `value2`,t2.`__count4__` AS `value3`,t2.`__count5__` AS `value4` FROM `doc_user` t LEFT JOIN (SELECT t1.`uid`,(CASE WHEN COUNT((CASE WHEN t1.`code` LIKE ? THEN ? ELSE ? END)) > 0 THEN TRUE ELSE FALSE END) AS `__any2__`,COUNT((CASE WHEN t1.`type` = ? THEN ? ELSE ? END)) AS `__count3__`,COUNT((CASE WHEN t1.`type` = ? THEN ? ELSE ? END)) AS `__count4__`,COUNT((CASE WHEN t1.`type` = ? THEN ? ELSE ? END)) AS `__count5__` FROM `doc_bank_card` t1 GROUP BY t1.`uid`) t2 ON t2.`uid` = t.`id` WHERE t2.`__any2__` = ?
+==> Parameters: 400%(String),1(Integer),null(null),工商(String),1(Integer),null(null),建设(String),1(Integer),null(null),农业(String),1(Integer),null(null),true(Boolean)
+<== Time Elapsed: 6(ms)
 ```
