@@ -22,6 +22,7 @@ setUp | 查询方向,默认向下，参数true向上,false向下(默认)
 setUnionAll | 是否使用union all，参数true使用unionAll(默认),false使用union
 setCTETableName |  设置cte表别名默认as_tree_cte  
 setDeepColumnName | 默认深度列别名
+setChildFilter | 设置child的过滤条件
 
 ```java
 @Table("category")
@@ -132,6 +133,49 @@ LEFT JOIN
 "t_blog" t6 ON t6."deleted" = false AND t."id" = t6."id" 
 GROUP BY
 t."name"
+```
+
+如果需要对child进行额外的过滤filter
+```java
+List<MyCategory> treeList = entityQuery.queryable(MyCategory.class)
+            .where(m -> {
+                m.id().eq("1");
+            }).asTreeCTE(op->{
+                op.setChildFilter(child->{
+                    child.name().like("123");
+                });
+            })
+            .toTreeList();
+
+
+-- 第1条sql数据
+WITH RECURSIVE "as_tree_cte" AS ( (SELECT
+    0 AS "cte_deep",
+    t1."id",
+    t1."parent_id",
+    t1."name" 
+FROM
+    "category" t1 
+WHERE
+    t1."id" = '1')  
+UNION
+ALL  (SELECT
+t2."cte_deep" + 1 AS "cte_deep",
+t3."id",
+t3."parent_id",
+t3."name" 
+FROM
+"as_tree_cte" t2 
+INNER JOIN
+"category" t3 
+    ON t3."parent_id" = t2."id" 
+WHERE
+t2."name" LIKE '%123%') )  SELECT
+t."id",
+t."parent_id",
+t."name" 
+FROM
+"as_tree_cte" t
 ```
 
 ## asTreeCTECustom

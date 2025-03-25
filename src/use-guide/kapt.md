@@ -25,17 +25,17 @@ title: kotlin配置kapt使用
 <dependency>
     <groupId>com.easy-query</groupId>
     <artifactId>sql-mysql</artifactId>
-    <version>1.4.24</version>
+    <version>${last-version}</version>
 </dependency>
 <dependency>
     <groupId>com.easy-query</groupId>
     <artifactId>sql-processor</artifactId>
-    <version>1.4.24</version>
+    <version>${last-version}</version>
 </dependency>
 <dependency>
     <groupId>com.easy-query</groupId>
     <artifactId>sql-api-proxy</artifactId>
-    <version>1.4.24</version>
+    <version>${last-version}</version>
 </dependency>
 ```
 
@@ -52,7 +52,7 @@ title: kotlin配置kapt使用
             <path>
                 <groupId>com.easy-query</groupId>
                 <artifactId>sql-processor</artifactId>
-                <version>1.4.24</version>
+                <version>${last-version}</version>
             </path>
         </annotationProcessorPaths>
     </configuration>
@@ -192,7 +192,7 @@ java.sql.SQLSyntaxErrorException: Unknown column 'stars2' in 'field list'
                                 <path>
                                     <groupId>com.easy-query</groupId>
                                     <artifactId>sql-processor</artifactId>
-                                    <version>1.4.24</version>
+                                    <version>${last-version}</version>
                                 </path>
                             </annotationProcessorPaths>
                         </configuration>
@@ -247,17 +247,17 @@ java.sql.SQLSyntaxErrorException: Unknown column 'stars2' in 'field list'
         <dependency>
             <groupId>com.easy-query</groupId>
             <artifactId>sql-mysql</artifactId>
-            <version>1.4.24</version>
+            <version>${last-version}</version>
         </dependency>
         <dependency>
             <groupId>com.easy-query</groupId>
             <artifactId>sql-processor</artifactId>
-            <version>1.4.24</version>
+            <version>${last-version}</version>
         </dependency>
         <dependency>
             <groupId>com.easy-query</groupId>
             <artifactId>sql-api-proxy</artifactId>
-            <version>1.4.24</version>
+            <version>${last-version}</version>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
