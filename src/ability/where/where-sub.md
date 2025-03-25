@@ -169,7 +169,7 @@ List<Topic> list = easyEntityQuery.queryable(Topic.class)
 //SELECT t1.`id` FROM `t_blog` t1 WHERE t1.`deleted` = ? AND t1.`id` = ?
         EntityQueryable<StringProxy, String> idQueryable = easyEntityQuery.queryable(BlogEntity.class)
                 .where(o -> o.id().eq("123" ))
-                .select(o -> new StringProxy(o.id()));//如果子查询in string那么就需要select string，如果integer那么select要integer 两边需要一致
+                .selectColumn(o -> o.id());//如果子查询in string那么就需要select string，如果integer那么select要integer 两边需要一致
 
         List<Topic> list = easyEntityQuery.queryable(Topic.class)
                 .where(o -> o.id().in(idQueryable)).toList();
@@ -193,7 +193,7 @@ List<Topic> list = easyEntityQuery.queryable(Topic.class)
 //SELECT t1.`id` FROM `t_blog` t1 WHERE t1.`deleted` = ? AND t1.`id` = ?
         EntityQueryable<StringProxy, String> idQueryable = easyEntityQuery.queryable(BlogEntity.class)
                 .where(o -> o.id().eq("123" ))
-                .select(o -> new StringProxy(o.id()));//如果子查询in string那么就需要select string，如果integer那么select要integer 两边需要一致
+                .selectColumn(o -> o.id());//如果子查询in string那么就需要select string，如果integer那么select要integer 两边需要一致
 
         List<Topic> list = easyEntityQuery.queryable(Topic.class)
                 .where(o -> o.id().notIn(idQueryable)).toList();
