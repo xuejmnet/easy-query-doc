@@ -2,4 +2,4 @@
 User-agent:*
 Disallow:
 
-Sitemap: https://vuepress-theme-hope-docs-demo.netlify.app/easy-query-doc/sitemap.xml
+Sitemap: https://github.com/dromara/easy-query/easy-query-doc/sitemap.xml
