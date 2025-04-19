@@ -125,29 +125,6 @@ ORDER BY
 
 ```
 
-@tab lambda模式
-```java
-
-List<Topic> list = easyQuery.queryable(Topic.class)
-        .where(b -> {
-            b.eq(Topic::getId,"123");
-        }).orderByAsc(t -> {
-            t.sqlNativeSegment("RAND()");
-        }).toList();
-
-
-SELECT
-    `id`,
-    `stars`,
-    `title`,
-    `create_time` 
-FROM
-    `t_topic` 
-WHERE
-    `id` = '123' 
-ORDER BY
-    RAND()
-```
 @tab 属性模式
 ```java
 
@@ -233,61 +210,6 @@ ORDER BY
     IFNULL(`stars`,1) DESC,RAND()
 ```
 
-@tab lambda模式
-```java
-
-List<Topic> list = easyQuery.queryable(Topic.class)
-        .where(b -> {
-            b.eq(Topic::getId,"123");
-        }).orderByAsc(t -> {
-            t.sqlNativeSegment("IFNULL({0},{1}) DESC",c->{
-                c.expression(Topic::getStars).value(1);
-            });
-            t.sqlNativeSegment("RAND()");
-        }).toList();
-
-
-SELECT
-    `id`,
-    `stars`,
-    `title`,
-    `create_time` 
-FROM
-    `t_topic` 
-WHERE
-    `id` = '123' 
-ORDER BY
-    IFNULL(`stars`,1) DESC,RAND()
-
-
-List<Topic> list = easyQuery.queryable(Topic.class)
-                .where(b -> {
-                    b.eq(Topic::getId,"123");
-                    b.sqlNativeSegment("{0}!={1}",c->{
-                        c.expression(Topic::getStars).expression(Topic::getCreateTime);
-                    });
-                }).orderByAsc(t -> {
-                    t.sqlNativeSegment("IFNULL({0},{1}) DESC",c->{
-                        c.expression(Topic::getStars).value(1);
-                    });
-                    t.sqlNativeSegment("RAND()");
-                }).toList();
-
-
-
-SELECT
-    `id`,
-    `stars`,
-    `title`,
-    `create_time` 
-FROM
-    `t_topic` 
-WHERE
-    `id` = '123' 
-    AND `stars`!=`create_time` 
-ORDER BY
-    IFNULL(`stars`,1) DESC,RAND()
-```
 @tab 属性模式
 ```java
 

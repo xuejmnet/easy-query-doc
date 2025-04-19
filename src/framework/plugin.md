@@ -1,5 +1,6 @@
 ---
 title: 插件助手
+order: 8
 ---
 
 工欲善其事必先利其器,一款好用的助手插件可以帮助我们节省大量的时间去编写处理重复性劳动
@@ -44,52 +45,56 @@ idea 社区版
 ## 插件下载
 从idea的插件市场下载插件
 
-<img src="/plugin-market.jpg">
+<img :src="$withBase('/images/plugin-market.jpg')">
 
 
 ## SQL格式化
 Easy Query插件支持将SQL和参数进行格式化成可以执行的SQL。
 
-<img src="/plugin-tools.png">
+<img :src="$withBase('/images/plugin-tools.png')">
 
 
 ::: warning 注意点及说明!!!
 > 数据库格式化只是简单的把参数拼接到sql中这样就可以直接运行，但是因为参数的复杂程度可能导致sql拼接不正确，所以这边不能太依赖这个插件尤其是参数中存在括号参数等会被误认为是参数从而导致拼接错误,轻易实际为准,sql预览这个只是锦上添花并不能作为实际的参考
 :::
 
-<img src="/plugin-sql-format-preview.jpg">
-<img src="/plugin-sql-format-preview2.jpg">
+<img :src="$withBase('/images/plugin-sql-format-preview.jpg')">
+<img :src="$withBase('/images/plugin-sql-format-preview2.jpg')">
 
 ## 快速生成接口
 
-<img src="/startup5.png">
+<img :src="$withBase('/images/startup5.png')">
 
 ::: warning 说明!!!
 > 如果EasyQueryImplement没有效果请检查类是否添加了`@EntityProxy`或者`@EntityFileProxy`
 :::
 
-<img src="/startup6.png">
+<img :src="$withBase('/images/startup6.png')">
 
 ## Entity对象生成
-<img src="/plugin-database-1.png">
+::: warning 说明!!!
+> 该功能只有企业版本的idea才能支持因为用到的依赖是企业版本idea特有的
+:::
 
-<img src="/plugin-database-2.png">
-<img src="/plugin-database-3.png">
-<img src="/plugin-database-4.png">
-<img src="/plugin-database-5.png">
-<img src="/plugin-database-6.png">
-<img src="/plugin-database-7.png">
+<img :src="$withBase('/images/plugin-database-1.png')">
+
+<img :src="$withBase('/images/plugin-database-2.png')">
+<img :src="$withBase('/images/plugin-database-3.png')">
+<img :src="$withBase('/images/plugin-database-4.png')">
+<img :src="$withBase('/images/plugin-database-5.png')">
+<img :src="$withBase('/images/plugin-database-6.png')">
+<img :src="$withBase('/images/plugin-database-7.png')">
 
 
 ## 创建DTO
 手动创建DTO是一件很麻烦的事情,可以在`easy-query:1.10.60^`+`插件0.0.48^`快速生成嵌套结构化对象模型,
 
-<img src="/EQDTO1.jpg">
-<img src="/EQDTO2.jpg">
-<img src="/EQDTO3.jpg">
-<img src="/EQDTO4.jpg">
-<img src="/EQDTO5.jpg">
-<img src="/EQDTO6.jpg">
+<img :src="$withBase('/images/EQDTO1.jpg')">
+<img :src="$withBase('/images/EQDTO2.jpg')">
+<img :src="$withBase('/images/EQDTO3.jpg')">
+<img :src="$withBase('/images/EQDTO4.jpg')">
+<img :src="$withBase('/images/EQDTO5.jpg')">
+<img :src="$withBase('/images/EQDTO6.jpg')">
 
 ## 参数名提示
 
@@ -98,27 +103,27 @@ Easy Query插件支持将SQL和参数进行格式化成可以执行的SQL。
 
 首先使用`@EasyAlias`声明表别名。
 
-<img src="/plugin-max1.jpg">
+<img :src="$withBase('/images/plugin-max1.jpg')">
 
 查询此实体类时，插件将可以自动提示并自动补充查询参数的编写。
 如果选择`where_code_block`提示则会额外生成对应的`{}`
 
-<img src="/plugin-max2.jpg">
+<img :src="$withBase('/images/plugin-max2.jpg')">
 
-<img src="/plugin-max3.jpg">
+<img :src="$withBase('/images/plugin-max3.jpg')">
 
 关联查询
 
-<img src="/plugin-max3_1.png">
-<img src="/plugin-max3_2.png">
+<img :src="$withBase('/images/plugin-max3_1.png')">
+<img :src="$withBase('/images/plugin-max3_2.png')">
 
 
 除了配置`@EasyAlias`，我们也可以在`Tools`->`QuickTipSetting`设置，为没有添加`@EasyAlias`的实体类添加表别名
 
-<img src="/plugin-max4.jpg">
+<img :src="$withBase('/images/plugin-max4.jpg')">
 
 
-<img src="/plugin-max5.jpg">
+<img :src="$withBase('/images/plugin-max5.jpg')">
 
 
 
@@ -166,36 +171,36 @@ Easy Query插件支持将SQL和参数进行格式化成可以执行的SQL。
 对于这些符合无需特别去记忆，Easy Query插件贴心的提供了这些关系运算符的提示，
 我们可以直接使用`>`，`<`等关系运算符的提示，插件将自动替换对应的方法名。
 
-<img src="/plugin-max11.jpg">
+<img :src="$withBase('/images/plugin-max11.jpg')">
 
-<img src="/plugin-max12.jpg">
+<img :src="$withBase('/images/plugin-max12.jpg')">
 
-<img src="/plugin-max13.jpg">
+<img :src="$withBase('/images/plugin-max13.jpg')">
 
-<img src="/plugin-max14.jpg">
+<img :src="$withBase('/images/plugin-max14.jpg')">
 
-<img src="/plugin-max15.jpg">
+<img :src="$withBase('/images/plugin-max15.jpg')">
 
-<img src="/plugin-max16.jpg">
+<img :src="$withBase('/images/plugin-max16.jpg')">
 
 <!-- ## 快速匿名对象
 
 `anonymous`智能提示
 
-<img src="/plugin-max6.jpg">
+<img :src="$withBase('/images/plugin-max6.jpg')">
 
 
-<img src="/plugin-max7.jpg">
+<img :src="$withBase('/images/plugin-max7.jpg')">
 
 
 
-<img src="/plugin-max8.jpg">
+<img :src="$withBase('/images/plugin-max8.jpg')">
 
 
-<img src="/plugin-max9.jpg">
+<img :src="$withBase('/images/plugin-max9.jpg')">
 
 
-<img src="/plugin-max10.jpg"> -->
+<img :src="$withBase('/images/plugin-max10.jpg')"> -->
 
 ## 默认错误消息
 `EasyAssertMessage`注解实现默认错误消息

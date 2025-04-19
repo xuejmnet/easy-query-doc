@@ -1,5 +1,6 @@
 ---
 title: 动态构建Repository
+order: 1
 ---
 
 ## 新建项目

@@ -1,5 +1,8 @@
 ---
 title: 集合属性
+order: 2
+category:
+  - memory
 ---
 
 # Java对象数据库值转换

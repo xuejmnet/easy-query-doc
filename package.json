@@ -1,20 +1,25 @@
 {
-  "name": "easy-query-doc",
-  "version": "1.0.0",
-  "description": "easy-query-doc",
-  "license": "Apache-2.0",
+  "name": "eq-doc",
+  "description": "eq-doc",
+  "packageManager": "pnpm@10.0.0",
+  "version": "2.0.0",
+  "license": "MIT",
   "type": "module",
   "scripts": {
-    "docs:build": "vuepress build src",
-    "docs:clean-dev": "vuepress dev src --clean-cache",
-    "docs:dev": "vuepress dev src",
-    "docs:update-package": "yarn dlx vp-update"
+    "docs:build": "vuepress-vite build src",
+    "docs:clean-dev": "vuepress-vite dev src --clean-cache",
+    "docs:dev": "vuepress-vite dev src",
+    "docs:update-package": "pnpm dlx vp-update"
   },
   "devDependencies": {
-    "@vuepress/client": "2.0.0-beta.66",
-    "vue": "^3.3.4",
-    "vuepress": "2.0.0-beta.66",
-    "vuepress-plugin-search-pro": "^2.0.0-beta.233",
-    "vuepress-theme-hope": "2.0.0-beta.233"
+    "@vuepress/bundler-vite": "2.0.0-rc.21",
+    "@vuepress/helper": "2.0.0-rc.92",
+    "@vuepress/plugin-docsearch": "2.0.0-rc.95",
+    "mermaid": "^11.5.0",
+    "sass-embedded": "^1.83.0",
+    "vue": "^3.5.13",
+    "vuepress": "2.0.0-rc.21",
+    "vuepress-plugin-typedjs2": "^2.0.0",
+    "vuepress-theme-hope": "2.0.0-rc.81"
   }
 }

@@ -1,5 +1,6 @@
 ---
 title: Batch批处理
+order: 4
 ---
 # Batch批处理
 `easy-query`如果需要使用batch功能首先需要在链接字符串添加`rewriteBatchedStatements=true`启用参数（mysql）,默认框架会在配置参数阈值到达后自动合并sql调用`executeBatch`合并,如果需要手动调用或者手动限制不调用可以通过调用`batch`方法

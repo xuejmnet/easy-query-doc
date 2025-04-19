@@ -1,5 +1,6 @@
 ---
 title: 自定义异常
+order: 2
 ---
 
 正常业务开发我们都会选择性的使用自定义异常然后全局拦截来作为业务中断的消息返回到前端。
@@ -35,19 +36,19 @@ public class BusinessException extends RuntimeException {
 
 //正常业务我们会抛出业务异常
 
-SysUser u=query(SysUser.class).whereById("123").firstOrNull();
+SysUser u=query(SysUser.class).whereById("123").singleOrNull();
 if(u==null){
     throw new BusinessException("未找到对应的用户信息");
 }
 //下面这种方式也可以
-SysUser u=query(SysUser.class).whereById("123").firstNotNull(()->new BusinessException("未找到对应的用户信息"));
+SysUser u=query(SysUser.class).whereById("123").singleNotNull(()->new BusinessException("未找到对应的用户信息"));
 ```
 
 ## 进阶
 因为上述代码存在很多冗余重复性的代码,所以我们对全局拦截器进行修改让其拦截`easy-query`的异常那么上述代码我们可以改成
 ```java
-SysUser u=query(SysUser.class).whereById("123").firstNotNull("未找到对应的用户信息");
-// 抛出 EasyQueryFirstNotNullException 
+SysUser u=query(SysUser.class).whereById("123").singleNotNull("未找到对应的用户信息");
+// 抛出 EasyQuerySignleNotNullException 
 ```
 
 如果你大部分的时候不需要编写错误信息且大部分时候错误都是一样的情况下那么我建议这么来处理
@@ -60,8 +61,8 @@ public class SysUser{
 我们在用户表的实体上添加断言信息下面代码可以改成
 
 ```java
-SysUser u=query(SysUser.class).whereById("123").firstNotNull();//如果不写自动抛出@EasyAssertMessage内容,也可以手动写入进行覆盖
-// 抛出 EasyQueryFirstNotNullException 
+SysUser u=query(SysUser.class).whereById("123").singleNotNull();//如果不写自动抛出@EasyAssertMessage内容,也可以手动写入进行覆盖
+// 抛出 EasyQuerySignleNotNullException 
 ```
 
 ## 高阶

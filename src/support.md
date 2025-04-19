@@ -14,9 +14,9 @@ icon: creative
 ## 爱心
 如果您觉得这个框架有用可以请作者喝杯咖啡
 
-<img src="/wx.jpg" class="no-zoom" style="width:200px;">
+<img :src="$withBase('/images/wx.jpg')" class="no-zoom" style="width:200px;">
 
-<img src="/zfb.jpg" class="no-zoom" style="width:200px;">
+<img :src="$withBase('/images/zfb.jpg')" class="no-zoom" style="width:200px;">
 
 
 
@@ -52,5 +52,14 @@ icon: creative
 编写中...
 
 :::
+
+
+
+
+接口  | 功能  
+---  | --- 
+ValueConverter  | 将数据库和对象值进行互相转换的接口
+\<TProperty>  | 对象属性类型
+\<TProvider>  | 数据库对应的java类型
 
 -->

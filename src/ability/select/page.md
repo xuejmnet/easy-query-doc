@@ -1,5 +1,6 @@
 ---
 title: 分页查询
+order: 70
 ---
 
 # 分页
@@ -335,7 +336,8 @@ PageResult<Topic> pageResult = easyEntityQuery.queryable(Topic.class)
 ## 反向排序分页
 当我们在使用分页查询的时候
 具体原理看下图
-<img src="/reverse.png">
+<!-- <img src="/reverse.png"> -->
+<img :src="$withBase('/images/reverse.png')">
 
 
 ### 配置项

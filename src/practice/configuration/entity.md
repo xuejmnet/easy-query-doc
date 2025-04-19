@@ -1,5 +1,6 @@
 ---
 title: 对象设计
+order: 1
 ---
 
 # 对象设计
@@ -249,7 +250,7 @@ public class MyBooleanLogicDeleteStrategy extends AbstractLogicDeleteStrategy {
 }
 ```
 
-这样我们就完成了新增自动填充创建信息和修改信息,删除自动填充删除信息,而不需要认为手动赋值
+这样我们就完成了新增自动填充创建信息和修改信息,删除自动填充删除信息,而不需要人为手动赋值
 
 
 ## 额外搜索

@@ -1,5 +1,6 @@
 ---
 title: 介绍
+order: 10
 ---
 
 # 说明
@@ -45,7 +46,7 @@ where.....
 - 强类型的 java 语言类型`select`后置有助于推导表达式后续可操作的类,比如`stream api`
 - `select后置`其实本质和书写 sql 是一样的,虽然你在编写 sql 的时候是 select 先写但是你在不写`from group by`等操作后是无法编写 select 的内容只能用`*`来代替,所以其实 sql 的书写本质也是`select后置`
 
-<img src="/sql-executor.png" width="500">
+<img :src="$withBase('/images/sql-executor.png')" width="500">
 
 ::: tip 说明!!!
 
@@ -60,7 +61,7 @@ where.....
 
 
 
-<img src="/simple-query.jpg">
+<img :src="$withBase('/images/simple-query.jpg')">
 
 我们以这个简单的例子为例可以看到我们应该编写的顺序是select在最后
 ```java
@@ -83,7 +84,7 @@ easyEntityQuery.queryable(HelpProvince.class)
 ```
 
 复杂的查询顺序
-<img src="/simple-nest-query.jpg">
+<img :src="$withBase('/images/simple-nest-query.jpg')">
 
 ```java
 easyEntityQuery.queryable(HelpProvince.class) //1

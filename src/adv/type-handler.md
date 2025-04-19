@@ -1,5 +1,6 @@
 ---
 title: 自定义TypeHandler
+order: 11
 ---
 
 ## JdbcTypeHandlerManager

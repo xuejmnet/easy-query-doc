@@ -1,7 +1,87 @@
 // place your custom styles here
 @media (min-width: 997px){
-    :root{--content-width:80%}
+    :root{--content-width:1080px}
 }
+.margin-right-home{
+    margin-right: 250px;
+}
+.color-var{
+    color: #de485a;
+}
+.color-method{
+    color: #5298e3;
+}
+.color-clazz{
+    color: #d1a44a;
+}
+.color-lambda{
+    color: #c27f3c;
+}
+.color-const{
+    color: #86c569;
+}
+.color-key{
+    color: #a347b7;
+}
+.vp-hero-info{
+    justify-content: center;
+}
+.vp-hero-info .vp-hero-image{
+
+}
+// .vp-hero-info-wrapper {
+//     min-height: 600px;
+// }
+// .vp-highlight-info-wrapper{
+//     justify-content:flex-start
+// }
+.vp-hero-infos{
+    min-width: 1000px;
+}
+#main-description{
+    max-width: none;
+    height: 170px;
+}
+
+
+.mermaid-content{
+    // .row-rect-odd{
+    //     .nodeLabel{
+    //         p{
+    //             color: #000;
+    //         }
+    //     }
+    // }
+    .nodeLabel{
+        p{
+            color: #000;
+        }
+    }
+    //  .row-rect-odd{
+    //     path{
+    
+    //         fill: #fff;
+    //         [data-theme="dark"] & {
+    //             fill: #88edc1;
+    //         }
+    //     }
+    // }
+    
+    // path{
+
+    //     fill: #fff;
+    //     [data-theme="dark"] & {
+    //         fill: #000;
+    //     }
+    // }
+    // .divider{
+    //     path{
+    //         fill: #389d70;
+    //     }
+    // }
+}
+
+
 .com-box-f{
     padding: 1em 1em 30px;
     text-align: center;}
@@ -14,9 +94,3 @@
 .com-box-you a img:hover{transform: none;}
 .com-box-you a{flex: 0 0 14.5%; line-height: 60px; height: 60px; margin: 10px;}
 .com-box-you a img{min-width: 60%; max-width: 85%; vertical-align: middle; max-height: 100%;}
-
-.vp-sidebar-title{
-    font-size: 14px;
-    font-weight: 600;
-    // color: #000;
-}

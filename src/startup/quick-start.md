@@ -1,7 +1,9 @@
 ---
 title: 快速体验
+order: 2
+category:
+  - Startup
 ---
-
 ## 前言
 在此使用`eq`之前，需要具备以下条件：
 - 拥有基本的Java开发环境(idea优先🔥 也可以是vscode本文主要针对idea用户)
@@ -183,14 +185,15 @@ public class SysUser implements ProxyEntityAvailable<SysUser , SysUserProxy> {
 
 构建完项目后，代理类将会生成在指定的目录中。如下：
 
-<img src="/startup5.png">
+<img  :src="$withBase('/images/startup5.png')">
+
 
 
 ::: warning 说明!!!
 > 如果EasyQueryImplement没有效果请检查类是否添加了`@EntityProxy`
 :::
 
-<img src="/startup3.png">
+<img  :src="$withBase('/images/startup3.png')">
 
 
 
@@ -205,13 +208,13 @@ public class SysUser implements ProxyEntityAvailable<SysUser , SysUserProxy> {
 
 构建项目后，如果Idea依然是无法识别代理类的，那么可以将目录标记为生成目录。
 
-<img src="/startup2.png">
+<img  :src="$withBase('/images/startup2.png')">
 
 ::: warning 说明!!!
 > 如果您还是不行那么建议您点击idea右侧的maven刷新按钮进行刷新即可
 :::
 
-<img src="/startup4.png">
+<img  :src="$withBase('/images/startup4.png')">
 
 <!-- 构建项目，生成完代理类后，需要在`User`中引入对应的代理类`UserProxy` -->
 
@@ -409,9 +412,10 @@ List<Company> companies = entityQuery.queryable(Company.class)
 ### 筛选
 
 
-::: 动态筛选 说明!!!
+::: tip 说明!!!
 > 动态筛选去动态筛选章节
 :::
+
 ```java
 
 List<Company> companies = entityQuery.queryable(Company.class)
@@ -434,9 +438,10 @@ List<Company> companies = entityQuery.queryable(Company.class)
 
 ### 排序
 
-::: 动态排序 说明!!!
+::: tip 说明!!!
 > 动态排序去动态排序章节
 :::
+
 ```java
 //先按创建时间正序后按姓名倒序
 List<Company> companies = entityQuery.queryable(Company.class)
@@ -456,7 +461,7 @@ List<Company> companies = entityQuery.queryable(Company.class)
 
 ### 分页
 
-::: 分页 说明!!!
+::: tip 说明!!!
 > 更多分页功能请详见分页章节
 :::
 

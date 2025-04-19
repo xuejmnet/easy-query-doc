@@ -2,7 +2,7 @@
 title: 隐式Group
 ---
 
-`隐式Group`又称为`ManyJoin`用来处理ORM在OLAP领域的最后一块短板,可以说这个功能是目前现有orm都不存在的一个功能
+`隐式Group`使用api`subQueryToGroupJoin`用来处理ORM在OLAP领域的最后一块短板,可以说这个功能是目前现有orm都不存在的一个功能
 
 - 体验和隐式子查询一样
 - 多条件自动合并到隐式group中
@@ -15,9 +15,9 @@ title: 隐式Group
 
 
 ## api
-`manyJoin`将对象关系`XToMany`转成`join`来实现高效的查询
+`subQueryToGroupJoin`将对象关系`XToMany`转成`join`来实现高效的查询
 
-`manyJoin(true,o->o.many(),query->query.where(x->x.name().like("123")))`
+`subQueryToGroupJoin(true,o->o.many())`
 
 参数  | 类型 | 描述  
 --- | --- | --- 
@@ -104,11 +104,11 @@ WHERE
         AND t5.`type` = '456'),0) = 789
 ```
 
-## manyJoin隐式group
-使用`manyJoin`后,框架会识别各个子查询将其合并到一起,`eq`会足够的智能将多个子查询合并到一起让编写复杂sql变得极其容易
+## subQueryToGroupJoin隐式group
+使用`subQueryToGroupJoin`后,框架会识别各个子查询将其合并到一起,`eq`会足够的智能将多个子查询合并到一起让编写复杂sql变得极其容易
 ```java
 easyEntityQuery.queryable(DocUser.class)
-        .manyJoin(o -> o.bankCards())
+        .subQueryToGroupJoin(o -> o.bankCards())
         .where(user -> {
             user.bankCards().where(x -> x.type().eq("123")).
                     sum(o -> o.code().toNumber(Integer.class))
@@ -156,14 +156,14 @@ WHERE
     AND t2.`__sum3__` = 789
 ```
 
-## manyJoin带条件
+## subQueryToGroupJoin带条件
 ```java
 
 
 easyEntityQuery.queryable(DocUser.class)
-        .manyJoin(o -> o.bankCards())
-        //可作用于非manyJoin普通子查询也可以受用
-        .manyConfigure(o -> o.bankCards(), bcq -> bcq.where(x -> {
+        .subQueryToGroupJoin(o -> o.bankCards())
+        //可作用于非subQueryToGroupJoin普通子查询也可以受用
+        .subQueryConfigure(o -> o.bankCards(), bcq -> bcq.where(x -> {
             //支持隐式join和普通属性筛选
             x.bank().name().eq("银行");
             x.type().like("45678");
@@ -221,11 +221,11 @@ WHERE
     AND t3.`__sum3__` = 789
 ```
 
-## manyJoin排序查询
+## subQueryToGroupJoin排序查询
 ```java
 
 List<Draft3<String, Integer, String>> 银行 = easyEntityQuery.queryable(DocUser.class)
-        .manyJoin(o -> o.bankCards(), bcq -> bcq.where(x -> {
+        .subQueryToGroupJoin(o -> o.bankCards(), bcq -> bcq.where(x -> {
             //支持隐式join和普通属性筛选
             x.bank().name().eq("银行");
             x.type().like("45678");
@@ -309,7 +309,7 @@ ORDER BY
 ```java
 
 easyEntityQuery.queryable(DocUser.class)
-        .manyJoin(o -> o.bankCards())
+        .subQueryToGroupJoin(o -> o.bankCards())
         .where(user -> {
             user.bankCards().where(x -> x.code().likeMatchLeft("400")).any();
         })
