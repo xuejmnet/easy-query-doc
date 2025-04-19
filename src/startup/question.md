@@ -1,6 +1,9 @@
 ---
 title: 常见问题(重要)❗️❗️❗️
+order: 99
 ---
+
+
 # 常见问题
 这里主要汇总了一些常见的问题
 ## SpringBoot 启动报错
@@ -36,66 +39,6 @@ easy-query:
 easy-query-track:
   # 默认是true
   enable: false
-```
-
-如果出现如下错误
-```log
-Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'easyQueryInitializeOption' defined in class path resource [com/easy/query/sql/starter/EasyQueryStarterAutoConfiguration.class]: Unsatisfied dependency expressed through method 'easyQueryInitializeOption' parameter 1; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'java.util.Map<java.lang.String, com.easy.query.core.basic.extension.version.VersionStrategy>' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {}
-
-```
-
-
-可能是springboot版本太低导致没有的依赖不是以空map返回而是报错
-
-建议重写bean
-```java
-//    @Bean
-//    @ConditionalOnMissingBean
-//    public EasyQueryInitializeOption easyQueryInitializeOption(Map<String, Interceptor> interceptorMap,
-//                                                               Map<String, VersionStrategy> versionStrategyMap,
-//                                                               Map<String, LogicDeleteStrategy> logicDeleteStrategyMap,
-//                                                               Map<String, ShardingInitializer> shardingInitializerMap,
-//                                                               Map<String, EncryptionStrategy> encryptionStrategyMap,
-//                                                               Map<String, ValueConverter<?, ?>> valueConverterMap,
-//                                                               Map<String, TableRoute<?>> tableRouteMap,
-//                                                               Map<String, DataSourceRoute<?>> dataSourceRouteMap,
-//                                                               Map<String, ValueUpdateAtomicTrack<?>> valueUpdateAtomicTrackMap,
-//                                                               Map<String, JdbcTypeHandler> jdbcTypeHandlerMap,
-//                                                               Map<String, ColumnValueSQLConverter> columnValueSQLConverterMap,
-//                                                               Map<String, IncrementSQLColumnGenerator> incrementSQLColumnGeneratorMap
-//    ) {
-//        return new EasyQueryInitializeOption(interceptorMap,
-//                versionStrategyMap,
-//                logicDeleteStrategyMap,
-//                shardingInitializerMap,
-//                encryptionStrategyMap,
-//                valueConverterMap,
-//                tableRouteMap,
-//                dataSourceRouteMap,
-//                valueUpdateAtomicTrackMap,
-//                jdbcTypeHandlerMap,
-//                columnValueSQLConverterMap,
-//                incrementSQLColumnGeneratorMap);
-//    }
-
-
-    @Bean
-    @Primary
-    public EasyQueryInitializeOption easyQueryInitializeOption(Map<String, Interceptor> interceptorMap
-    ) {
-        return new EasyQueryInitializeOption(interceptorMap,
-                versionStrategyMap,
-                Collections.emptyMap(),
-                Collections.emptyMap(),
-                Collections.emptyMap(),
-                Collections.emptyMap(),
-                Collections.emptyMap(),
-                Collections.emptyMap(),
-                Collections.emptyMap(),
-                Collections.emptyMap(),
-                Collections.emptyMap(),
-                Collections.emptyMap());
-    }
 ```
 
 ## 没有生成Proxy
@@ -157,6 +100,10 @@ easyEntityQuery.deletable(User.class).disableLogicDelete()allowDeleteStatement(t
 ::: warning 报错!!!
 如果遇到build后报错java:程序包xxxxxxxx.proxy不存在
 
+原因 因为entity模式是通过java的apt编译时生成代码来实现对应的功能,所以如果您的项目存在错误的情况下那么只要不clean后重新编译那么你是能够知道具体错误点的，如果你clean了后那么可能会因为某些原因比如`Controller`里面有代码没加尾分号导致整体报错,那么也会引发apt问题而导致proxy错误,具体可以看您git前后的提交修改了什么导致的,如果一开始就无法编译通过那么原因可能是没有正确引入`sql-processor`或`sql-ksp-processor`
+
+- 检查实体类是否存在没有编译通过的错误
+- 整体项目是否能编译通过
 - 检查是否存在javacTree之类的错误可能是由于lombok版本过低升级即可
 - 查看是否引入sql-processor包（如果没有如下`annotationProcessorPaths`那么建议各自需要生成proxy的模块独立引入(多模块下)）
 - 如果您是`gralde`那么引入应该是`implement改为annotationprocesser`即`annotationProcessor "com.easy-query:sql-processor:${easyQueryVersion}"`
@@ -188,3 +135,17 @@ easyEntityQuery.deletable(User.class).disableLogicDelete()allowDeleteStatement(t
 </plugin>
 ```
 :::
+
+## 关键字处理
+因为sql语句添加了双引号 反引号 等操作导致大小写敏感所以可以使用`nameConversion`让java属性正确的映射到数据库
+
+
+java属性  | nameConversion   | 对应数据库列  
+---  | ---  | --- 
+userAge  | DEFAULT 默认 | userAge
+userAge  | UNDERLINED 大写字母转小写下划线| user_age
+userAge  | UPPER_UNDERLINED 全大写大写字母转小写下划线| USER_AGE
+userAge  | LOWER_CAMEL_CASE 小驼峰| userAge
+userAge  | UPPER_CAMEL_CASE 大驼峰| UserAge
+
+[关键字处理](/easy-query-doc/framework/key-word)

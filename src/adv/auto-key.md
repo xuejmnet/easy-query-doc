@@ -1,5 +1,6 @@
 ---
 title: 自定义主键
+order: 2
 ---
 
 `easy-query`提供了`PrimaryKeyGenerator`接口该接口可以由用户自行实现,具体功能就是可以自动对当前对象的主键进行赋值,比如你可以实现一个uuid的或者雪花id的 `2.0.43^`

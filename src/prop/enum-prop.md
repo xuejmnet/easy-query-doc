@@ -1,5 +1,8 @@
 ---
 title: 枚举属性
+order: 4
+category:
+  - memory
 ---
 
 # Java对象数据库值转换

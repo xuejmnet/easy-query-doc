@@ -1,5 +1,8 @@
 ---
 title: json属性
+order: 1
+category:
+  - memory
 ---
 
 # Java对象数据库值转换

@@ -1,5 +1,6 @@
 ---
 title: CaseWhen
+order: 130
 ---
 
 
@@ -8,10 +9,10 @@ title: CaseWhen
 
 方法  | 描述 | 用法  
 --- | --- | --- 
-SQLClientFunc | 支持`EasyQueryClient`表达式api  | SQLClientFunc.caseWhenBuilder(t).caseWhen(f -> f.eq("title", "123"), "111").caseWhen(f -> f.eq("title", "456"), "222").elseEnd("2223")
-SQL4JFunc | 支持`EasyQuery`表达式api  | SQL4JFunc.caseWhenBuilder(o).caseWhen(f -> f.eq(Topic::getTitle, "123"), "111").caseWhen(f -> f.eq(Topic::getTitle, "456"), "222").elseEnd("2223")
-SQL4KtFunc | 支持`EasyKtQuery`表达式api  | SQL4KtFunc.caseWhenBuilder(selector).caseWhen(f -> f.eq(t.title(), "123"), "111").caseWhen(f -> f.eq(t.title(), "456"), "222").elseEnd("2223")
-Expression | 支持`EasyEntityQuery`表达式api   | o.expression().caseWhen(() -> o.title().eq("123")).then("1").elseEnd("2")
+SQLClientFunc | 支持`EasyQueryClient`表达式api  | `SQLClientFunc.caseWhenBuilder(t).caseWhen(f -> f.eq("title", "123"), "111").caseWhen(f -> f.eq("title", "456"), "222").elseEnd("2223")`
+Expression | 支持`EasyEntityQuery`表达式api   | `o.expression().caseWhen(() -> o.title().eq("123")).then("1").elseEnd("2")`
+隐式`CaseWhen` | 对属性使用聚合函数+filter筛选  | `o.age().sum().filter(()->o.name().like("小明"))`
+
 
 
 ## 简单查询
@@ -86,4 +87,63 @@ List<Topic> list = easyEntityQuery.queryable(Topic.class)
 <== Time Elapsed: 2(ms)
 <== Total: 0
 
+```
+
+## 属性聚合函数筛选
+`eq`对大部分函数实现了属性聚合函数筛选来实现隐式`CaseWhen`
+```java
+
+easyEntityQuery.queryable(BlogEntity.class)
+        .where(t_blog -> {
+                t_blog.title().like("123");
+
+        }).groupBy(t_blog -> GroupKeys.of(t_blog.title()))
+        .select(group -> Select.DRAFT.of(
+                group.key1(),
+                group.groupTable().id().count().filter(() -> {
+                        group.groupTable().star().ge(123);
+                })
+        )).toList();
+
+
+
+-- 第1条sql数据
+SELECT
+    t.`title` AS `value1`,
+    COUNT((CASE WHEN t.`star` >= 123 THEN t.`id` ELSE null END)) AS `value2` 
+FROM
+    `t_blog` t 
+WHERE
+    t.`deleted` = false 
+    AND t.`title` LIKE '%123%' 
+GROUP BY
+    t.`title`
+```
+
+## group+where
+```java
+
+easyEntityQuery.queryable(BlogEntity.class)
+        .where(t_blog -> {
+                t_blog.title().like("123");
+
+        }).groupBy(t_blog -> GroupKeys.of(t_blog.title()))
+        .select(group -> Select.DRAFT.of(
+                group.key1(),
+                group.where(t -> t.star().ge(123)).count()
+        )).toList();
+
+
+
+-- 第1条sql数据
+SELECT
+    t.`title` AS `value1`,
+    COUNT((CASE WHEN t.`star` >= 123 THEN 1 ELSE null END)) AS `value2` 
+FROM
+    `t_blog` t 
+WHERE
+    t.`deleted` = false 
+    AND t.`title` LIKE '%123%' 
+GROUP BY
+    t.`title`
 ```

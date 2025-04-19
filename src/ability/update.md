@@ -5,7 +5,7 @@ order: 30
 
 ## 前言
 
-本章节的环境配置请参考[环境准备](../../startup/quick-start.md#环境准备)章节
+本章节的环境配置请参考[环境准备](/easy-query-doc/startup/quick-start.md#环境准备)章节
 
 
 ::: danger 说明!!!

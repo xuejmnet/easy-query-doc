@@ -1,5 +1,6 @@
 ---
-title: 关联查询 Fill
+title: 结构化属性填充
+order: 200
 ---
 `easy-query`提供了注解配置以外的自定义填充数据,主要是针对配置外的方法,具体api为`fillOne`、`fillMany`,可以再查询时自定义关联属性(各自一个),并且支持直接`select vo`
 

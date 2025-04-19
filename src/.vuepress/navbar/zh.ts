@@ -2,26 +2,10 @@ import { navbar } from "vuepress-theme-hope";
 
 export const zhNavbar = navbar([
   "/",
-  // { text: "案例", icon: "discover", link: "/demo/" },
-  {
-    text: "更新日志",
-    icon: "creative",
-    link: "/upgrade",
-    // children: [
-    //   {
-    //     text: "基础操作",
-    //     icon: "creative",
-    //     prefix: "basic/",
-    //     children: ["insert","update","delete", { text: "...", icon: "more", link: "" }],
-    //   },
-    //   {
-    //     text: "查询",
-    //     icon: "creative",
-    //     prefix: "query/",
-    //     children: ["query","paging", { text: "...", icon: "more", link: "" }],
-    //   }
-    // ],
-  },
+  // "/startup/",
+  // "/portfolio",
+  "/demo/",
+  "/discussions",
   {
     text: "项目地址",
     icon: "github",
@@ -40,8 +24,27 @@ export const zhNavbar = navbar([
     ]
   }
   // {
-  //   text: "V2 文档",
-  //   icon: "note",
-  //   link: "https://theme-hope.vuejs.press/zh/",
+  //   text: "Guide",
+  //   icon: "lightbulb",
+  //   prefix: "/guide/",
+  //   children: [
+  //     {
+  //       text: "Bar",
+  //       icon: "lightbulb",
+  //       prefix: "bar/",
+  //       children: ["baz", { text: "...", icon: "ellipsis", link: "#" }],
+  //     },
+  //     {
+  //       text: "Foo",
+  //       icon: "lightbulb",
+  //       prefix: "foo/",
+  //       children: ["ray", { text: "...", icon: "ellipsis", link: "#" }],
+  //     },
+  //   ],
+  // },
+  // {
+  //   text: "V2 Docs",
+  //   icon: "book",
+  //   link: "https://theme-hope.vuejs.press/",
   // },
 ]);

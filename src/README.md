@@ -1,447 +1,309 @@
 ---
 home: true
-icon: home
+icon: house
 title: 项目主页
-heroImage: /logo.svg
+heroFullScreen: true
+heroImage: /images/logo.svg
+bgImage: /images/bg/6-light.svg
+bgImageDark: /images/bg/6-dark.svg
+bgImageStyle:
+  background-attachment: fixed
 heroText: easy-query
-tagline: 🚀 java下唯一一款同时支持强类型对象关系查询和强类型SQL语法查询的ORM,拥有对象模型筛选、隐式子查询、隐式join、显式子查询、显式join,支持Java/Kotlin
+tagline: 🚀 java下最强ORM没有之一(支持kotlin)</br><span class="vuepress_typed"></span> 
 actions:
   - text: 开始使用 →
-    link: /startup/
+    icon: lightbulb
+    link: ./startup/what-is-easy-query
     type: primary
 
   - text: 爱心支持💡
-    link: /support
+    link: ./support
 
-# features:
+highlights:
+  # - header: 优雅的dsl
+  #   # image: /assets/image/features.svg
+  #   # bgImage: /images/bg/1-light.svg
+  #   # bgImageDark: /images/bg/1-dark.svg
+  #   # image: https://jowayyoung.github.io/static/bruce/feature.svg
+  #   # bgImage: /images/bg/9-light.svg
+  #   # bgImageDark: /images/bg/9-dark.svg
+  #   image: https://jowayyoung.github.io/static/bruce/summary.svg
+  #   bgImage: /images/bg/3-light.svg
+  #   bgImageDark: /images/bg/3-dark.svg
+  #   highlights:
+  #     - title: 123
 
-# - title: 零依赖
-#   icon: async
-#   details: 核心包无任何依赖,没有历史包袱,全部自行实现
-#   # link: /easy-query-doc/query/relation
 
-# - title: 零调用
-#   icon: copy
-#   details: 使用lambda表达式缓存实现bean对象的”零“调用耗时赋值和获取值,而不是普通的高频反射
-#   # link: https://theme-hope.vuejs.press/zh/layout/
+  - header: 隐式查询
+    image: /assets/image/features.svg
+    bgImage: /easy-query-doc/images/bg/1-light.svg
+    bgImageDark: /easy-query-doc/images/bg/1-dark.svg
+    highlights:
+      - title: 隐式join
+        icon: network-wired
+        details: OneToOne、ManyToOne 自动实现join查询筛选、排序和结果获取
+        link: https://theme-hope.vuejs.press/zh/guide/feature/catalog.html
 
-# - title: 零SQL
-#   icon: object
-#   details: ORM 框架可以屏蔽 SQL 语句的复杂性，通过提供面向对象的查询语言、方法，简化数据查询和操作强类型更加安全
-#   # link: https://theme-hope.vuejs.press/zh/layout/
+      - title: 隐式子查询
+        icon: comment-dots
+        details: OneToMany、ManyToMany 自动实现子查询查询筛选、排序和聚合函数结果获取
+        link: https://theme-hope.vuejs.press/zh/guide/feature/comment.html
 
-# - title: 零配置
-#   icon: tool
-#   details: ORM 框架可以通过自动扫描实体类和数据库表之间的映射关系，无需繁琐的配置文件。
-#   # link: https://theme-hope.vuejs.press/zh/layout/
+      - title: 隐式分组
+        icon: circle-info
+        details: OneToMany、ManyToMany 自动实现子查询优化合并将多个子查询合并成一个分组查询支持筛选、排序和聚合函数结果获取
+        link: https://theme-hope.vuejs.press/zh/guide/feature/page-info.html
 
-# - title: 多语言
-#   icon: language
-#   details: 支持java、kotlin两种语言,并且提供了两种语言相似的api，维护同一套内部接口保证两边api仅仅是针对核心功能的扩展
+      - title: 隐式分区分组
+        icon: lock
+        details: OneToMany、ManyToMany 自动实现第一个、第N个数据的筛选、排序和聚合函数结果获取
+        link: https://theme-hope.vuejs.press/zh/guide/feature/encrypt.html
 
-# - title: 强类型
-#   icon: structure
-#   details: 如果一款orm不包含泛型约束,那么这个orm就没有必要存在,因为他和手写sql没有任何区别,无法在编译时为您提供错误信息,帮您做到强类型语言该有的提示
+      - title: 隐式CASE WHEN
+        icon: code
+        details: 属性.聚合函数.筛选，o.age().sum().filter(()->o.name().like("123"))
+        link: https://theme-hope.vuejs.press/zh/guide/feature/search.html
 
-# - title: 分库分表
-#   icon: condition
-#   details: 一款自带分库分表读写分离的orm,拥有和市面上大部分分库分表框架抗衡的能力,并且抽象了业务逻辑可以让用户完全自定义自己的业务逻辑来实现
+  - header: 功能
+    description: 一套完整的针对jdbc的关系型数据库查询解决方案
+    # image: https://jowayyoung.github.io/static/bruce/scheme.svg
+    bgImage: /easy-query-doc/images/bg/2-light.svg
+    bgImageDark: /easy-query-doc/images/bg/2-dark.svg
+    bgImageStyle:
+      background-repeat: repeat
+      background-size: initial
+    features:
+      - title: code-first
+        icon: clipboard-check
+        details: 基于对象实体的数据库表结构快速生成与维护的解决方案
+        link: https://theme-hope.vuejs.press/zh/guide/markdown/others.html#link-check
 
-# - title: 列加密
-#   icon: lock
-#   details: 自带数据库列加密,并且支持模糊查询实现高性能而不是单纯的数据库函数调用,并且用户可以自定义自己的加密函数
+      - title: 优雅的对象关系
+        icon: box-archive
+        details: 完美的将dsl和对象关系结合做到点点点即可实现数据库的数据库查询操作
+        link: https://theme-hope.vuejs.press/zh/guide/markdown/stylize/hint.html
 
-# - title: VO查询
-#   icon: search
-#   details: 框架让VO的能得到了进一步的提升,而不是单纯的数据交换对象,用户可以针对VO的字段进行自动化列选择查询,并且支持自定义VO对象让其更加丰富
-#   link: /query/select-column
+      - title: 任意sql片段
+        icon: bell
+        details: 支持在dsl中穿插任意sql片段来保证各种个性化sql的实现
+        link: https://theme-hope.vuejs.press/zh/guide/markdown/stylize/alert.html
 
-# - title: 差异更新
-#   icon: change
-#   details: 市面上基本上大部分java orm仅支持全量更新或者null列非null列更新,而不支持差异更新,框架提供差异更新追踪数据变化情况,提高更新sql的强壮性
-#   link: /basic/update#_3-差异更新
+      - title: 基于POJO
+        icon: table-columns
+        details: 框架基于POJO实现与数据库之间的访问,可以保证与市面上大部分ORM兼容一套对象代码
+        link: https://theme-hope.vuejs.press/zh/guide/markdown/content/tabs.html
 
-# - title: 原子列更新
-#   icon: react
-#   details: 实体对象更新如updateById是一个用户方便但是无差别更新的方法,但是框架提供了差异更新让其上升到了一个纬度并且在没有乐观锁的情况下支持库存数量级别的原子更新
+      - title: 零依赖
+        icon: code
+        details: 框架本身基于java8和org.jetbrains.annotations(编译时)真正做到了零依赖,完全基于jdbc的高性能开发orm完全自主可控
+        link: https://theme-hope.vuejs.press/zh/guide/markdown/code/code-tabs.html
 
-# - title: 关联查询
-#   icon: style
-#   details: 框架不仅支持多表原始sql的join模式,也支持数据库对象模型的一对一、一对多、多对一、多对多模式,并且支持关联查询的自定义过滤,逻辑删除等一系列特性
-#   link: /query/relation
+      - title: 一套dsl
+        icon: align-center
+        details: 使用优雅的dsl将多个数据库方案进行高度抽象为'类'java方法,用户只需要一套代码便可在多个数据库之间运行
+        link: https://theme-hope.vuejs.press/zh/guide/markdown/stylize/hint.html
+
+      - title: 低学习成本
+        icon: code
+        details: 实现'类'stream api将操作数据库转换成操作java集合的方法来实现数据库的操作
+        link: https://theme-hope.vuejs.press/zh/guide/markdown/stylize/attrs.html
+
+      - title: 原生分库分表
+        icon: superscript
+        details: 无需引入和部署任意中间件和引入任意jar包即可实现高性能分库分表和任意自定义分库分表
+        link: https://theme-hope.vuejs.press/zh/guide/markdown/stylize/sup-sub.html
+
+      - title: 结构化对象拉取
+        icon: quote-left
+        details: 实现按数据库对象的映射关系快速创建dto并且拉取结构化数据
+        link: https://theme-hope.vuejs.press/zh/guide/markdown/content/footnote.html
+
+      - title: 无感apt
+        icon: highlighter
+        details: 使用插件快速生成apt所需的类来实现idea下的无感apt,无需build||compile即可马上使用apt类
+        link: https://theme-hope.vuejs.press/zh/guide/markdown/stylize/mark.html
+
+      - title: 快速lambda入参
+        icon: eraser
+        details: 基于插件快速实现lambda入参参数并且可以以最快速度实现dsl的编写
+        link: https://theme-hope.vuejs.press/zh/guide/markdown/stylize/spoiler.html
+
+      - title: group感知
+        icon: square-check
+        details: java下唯一一款支持group感知的orm能够做到数据在编写dsl的时候由扁平转向结构化的变化
+        link: https://theme-hope.vuejs.press/zh/guide/markdown/grammar/tasklist.html
+
+      - title: 丰富的api
+        icon: image
+        details: 提供了常用的返回集合、返回单个对象、返回分页并且提供动态条件、动态排序等一些列功能
+        link: https://theme-hope.vuejs.press/zh/guide/markdown/grammar/image.html
+
+      - title: 计算属性
+        icon: puzzle-piece
+        details: 提供了强大的内存计算属性和数据库计算属性,其中数据库计算属性还支持dsl内的筛选、排序和返回
+        link: https://theme-hope.vuejs.press/zh/guide/component/grammar.html
+
+      - title: 无限的扩展性
+        icon: puzzle-piece
+        details: eq框架是一个基于多例的由ioc容器提供服务隔离的框架,内部所有服务都可以被用户自行替换,并且用户还可以自行注入任意服务来达到和eq的配合
+        link: https://theme-hope.vuejs.press/zh/guide/component/built-in.html
+
+      - title: DTO、VO直接返回
+        icon: chart-simple
+        details: 直接由数据库结果集映射到DTO、VO支持显式或者隐式赋值达到数据拉取的目的完全不需要map-struct之类的框架辅助entity到dto、vo
+        link: https://theme-hope.vuejs.press/zh/guide/markdown/chart/chartjs.html
+
+      - title: 企业级数据库列加密
+        icon: route
+        details: 支持企业级数据库列加密和解密,让脱库后的数据安全性提升，并且支持高性能的数据库加密列的like检索
+        link: https://theme-hope.vuejs.press/zh/guide/markdown/chart/flowchart.html
+
+      - title: 乐观锁
+        icon: chart-pie
+        details: 原生支持乐观锁来实现数据库的数据并发安全性保证业务逻辑的准确性
+        link: https://theme-hope.vuejs.press/zh/guide/markdown/chart/mermaid.html
+
+      - title: 数据追踪
+        icon: diagram-project
+        details: 基于aop实现数据库的数据在查询的时候进行数据库变更的追踪来实现最小颗粒的update生成
+        link: https://theme-hope.vuejs.press/zh/guide/markdown/chart/plantuml.html
+
+      - title: 逻辑删除
+        icon: square-root-variable
+        details: 原生支持逻辑删除和个性化逻辑删除支持记录删除时间删除人和删除原因等一些列自定义功能
+        link: https://theme-hope.vuejs.press/zh/guide/markdown/grammar/math.html
+
+
+  # - header: 特性
+  #   # description: 完整无障碍支持的可定制外观
+  #   image: https://jowayyoung.github.io/static/bruce/feature.svg
+  #   bgImage: /images/bg/9-light.svg
+  #   bgImageDark: /images/bg/9-dark.svg
+  #   highlights:
+  #     - title: 📦 开箱即用
+  #       # icon: circle-half-stroke
+  #       details: 默认适配了springboot和solon等相关starter引入设置相关数据库类型即可
+  #       link: https://theme-hope.vuejs.press/zh/guide/interface/darkmode.html
+
+  #     - title: 🛡️ 强类型
+  #       # icon: palette
+  #       details: 使用强类型dsl满足开发业务阶段保证类型安全问题和智能提示
+  #       link: https://theme-hope.vuejs.press/zh/guide/interface/theme-color.html
+
+  #     - title: 🔥 弱类型
+  #       # icon: ellipsis
+  #       details: 为业务动态性提供无限可能性支持用户自定义低代码相关平台
+  #       link: https://theme-hope.vuejs.press/zh/guide/interface/others.html
+
+
+
+  - header: 结构化DTO
+    # description: 一个完美的响应式布局。
+    image: https://jowayyoung.github.io/static/bruce/install.svg
+    bgImage: /easy-query-doc/images/bg/5-light.svg
+    bgImageDark: /easy-query-doc/images/bg/5-dark.svg
+    highlights:
+      - title: 创建DTO
+        icon: window-maximize
+        details: 使用插件在指定包上右键"Create Struct DTO",选择起始实体,勾选需要返回的结构类型
+        link: https://theme-hope.vuejs.press/zh/guide/layout/navbar.html
+
+      - title: 查询
+        icon: fas fa-window-maximize fa-rotate-270
+        details: 使用<b>selectAutoInclude(DTO.class)</b>对其进行查询
+        link: https://theme-hope.vuejs.press/zh/guide/layout/sidebar.html
+
+  # - header: 博客
+  #   description: 通过主题创建个人博客
+  #   image: /assets/image/blog.svg
+  #   bgImage: /images/bg/5-light.svg
+  #   bgImageDark: /images/bg/5-dark.svg
+  #   highlights:
+  #     - title: 博客功能
+  #       icon: blog
+  #       details: 通过文章的日期、标签和分类展示文章
+  #       link: https://theme-hope.vuejs.press/zh/guide/blog/intro.html
+
+  #     - title: 博客主页
+  #       icon: house
+  #       details: 全新博客主页
+  #       link: https://theme-hope.vuejs.press/zh/guide/blog/home.html
+
+  #     - title: 博主信息
+  #       icon: circle-info
+  #       details: 自定义名称、头像、座右铭和社交媒体链接
+  #       link: https://theme-hope.vuejs.press/zh/guide/blog/blogger.html
+
+  #     - title: 时间线
+  #       icon: clock
+  #       details: 在时间线中浏览和通读博文
+  #       link: https://theme-hope.vuejs.press/zh/guide/blog/timeline.html
+
+  - header: 计算属性
+    description: 一种特殊的属性列与常规的表的列不同他是一种通过表的列或者更加复杂的函数得出的属性
+    image: /assets/image/advanced.svg
+    bgImage: /easy-query-doc/images/bg/4-light.svg
+    bgImageDark: /easy-query-doc/images/bg/4-dark.svg
+    highlights:
+      - title: json计算属性
+        icon: dumbbell
+        details: 将对象映射到数据库列使用json的方式
+        link: https://theme-hope.vuejs.press/zh/guide/advanced/seo.html
+
+      - title: 枚举计算属性
+        icon: sitemap
+        details: 将枚举映射到数据库列,在java使用时通过枚举自带的提示可以清晰的了解值与其含义
+        link: https://theme-hope.vuejs.press/zh/guide/advanced/sitemap.html
+
+      - title: 列计算属性
+        icon: rss
+        details: 通过数据库函数让列进行特殊处理,比如存储到数据库使用数据库的base64 encode,取出来后也是数据库的base64 decode
+        link: https://theme-hope.vuejs.press/zh/guide/advanced/feed.html
+
+      - title: 无列计算属性
+        icon: mobile-screen
+        details: 数据库中并不存在当前列,比如age是通过当前时间和birthday计算出来的一种属性,并且可用于筛选、排序和返回
+        link: https://theme-hope.vuejs.press/zh/guide/advanced/pwa.html
+
+
+      - title: 跨表计算属性
+        icon: circle-info
+        details: 当前属性是通过跨多张表组合得到的值,比如班级表在不冗余班级人数的情况下可以通过子查询来实现人数
+        link: https://theme-hope.vuejs.press/zh/guide/advanced/pwa.html
+
+  - header: 联系我们
+    # description: 通过主题创建个人博客
+    image: /assets/image/blog.svg
+    bgImage: /easy-query-doc/images/bg/5-light.svg
+    bgImageDark: /easy-query-doc/images/bg/5-dark.svg
+    highlights:
+      - title: 博客功能
+        icon: blog
+        details: 通过文章的日期、标签和分类展示文章
+        link: https://theme-hope.vuejs.press/zh/guide/blog/intro.html
+
+      - title: 博客主页
+        icon: house
+        details: 全新博客主页
+        link: https://theme-hope.vuejs.press/zh/guide/blog/home.html
+
+      - title: 博主信息
+        icon: circle-info
+        details: 自定义名称、头像、座右铭和社交媒体链接
+        link: https://theme-hope.vuejs.press/zh/guide/blog/blogger.html
+
+      - title: 时间线
+        icon: clock
+        details: 在时间线中浏览和通读博文
+        link: https://theme-hope.vuejs.press/zh/guide/blog/timeline.html
 
 copyright: false
-footer: 使用 <a href="https://theme-hope.vuejs.press/" target="_blank">VuePress Theme Hope</a> 主题 | MIT 协议, 版权所有 © 2019-present Mr.Hope
+footer: Apache 2.0 协议, 版权所有 © 2022-至今 xuejmnet
 ---
+<!-- 
 
-<!-- <video src="/videos/EQ 插件支持 DTO 实体 Column 比对.mp4" muted autoplay id='v' width="800"></video> -->
+这是项目主页的案例。你可以在这里放置你的主体内容。
 
+想要使用此布局，你需要在页面 front matter 中设置 `home: true`。
 
-
-::: code-tabs
-@tab 单表查询
-
-```java
-//筛选用户名称包含小明的
-List<SysUser> users = easyEntityQuery.queryable(SysUser.class)
-    .where(s -> s.name().like("小明")).toList();
-//筛选用户名称包含小明并且是2020年以前创建的
-List<SysUser> users = easyEntityQuery.queryable(SysUser.class)
-    .where(s -> {
-            s.name().like("小明");
-            s.createTime().lt(LocalDateTime.of(2020,1,1,0,0));
-    }).toList();
-//筛选用户名称包含小明的或者名称包含小红的
-List<SysUser> users = easyEntityQuery.queryable(SysUser.class)
-    .where(s -> {
-        s.or(() -> {
-            s.name().like("小明");
-            s.name().like("小红");
-        });
-    }).toList();
-```
-
-@tab 隐式 join 筛选 🔥
-
-```java
-//user和address一对一
-//查询杭州或绍兴的用户
-List<SysUser> userInHz = easyEntityQuery.queryable(SysUser.class)
-                .where(u -> {
-                    //隐式子查询会自动join用户表和地址表
-                    u.or(()->{
-                      //根据条件是否生效自动添加address表的join
-                        u.address().city().eq("杭州市");
-                        u.address().city().eq("绍兴市");
-                    });
-                }).toList();
-
-
-//查询用户名叫小明并且家住杭州的
-List<SysUser> userInHz = easyEntityQuery.queryable(SysUser.class)
-                .where(u -> {
-                    u.name().eq("小明");
-                    //隐式子查询会自动join地址表
-                    //根据条件是否生效自动添加address表的join
-                    //比如eq("")和eq("杭州生成的表不存在address和city的区别")
-                    u.address().city().eq("杭州市");
-                }).toList();
-```
-
-@tab 隐式子查询 🔥
-
-```java
-//user和role多对多
-//筛选用户角色是管理员的
-List<SysUser> adminUsers = easyEntityQuery.queryable(SysUser.class)
-            .where(s -> {
-                //筛选条件为角色集合里面有角色名称叫做管理员的
-                s.roles().where(role -> {
-                    role.name().eq("管理员");
-                }).any();
-            }).toList();
-
-//匿名返回用户id和用户所拥有的角色数量
-List<Draft2<String, Long>> userIdAndRoleCount = easyEntityQuery.queryable(SysUser.class)
-        .where(user -> user.name().like("小明"))
-        .select(user -> Select.DRAFT.of(
-                user.id(),
-                user.roles().count()
-        )).toList();
-```
-
-@tab join 多表
-
-```java
-//匿名对象
-List<Draft3<String, LocalDateTime, String>> userInfo = easyEntityQuery.queryable(SysUser.class)
-        .leftJoin(SysUserAddress.class, (user, addr) -> user.id().eq(addr.userId()))
-        .where((user, addr) -> {
-            user.name().like("小明");
-            addr.city().eq("杭州");
-        })
-        .select((user, addr) -> Select.DRAFT.of(
-                user.id(),
-                user.createTime(),
-                addr.area()
-        )).toList();
-
-
-List<UserDTO> userInfo = easyEntityQuery.queryable(SysUser.class)
-        .leftJoin(SysUserAddress.class, (user, addr) -> user.id().eq(addr.userId()))
-        .where((user, addr) -> {
-            user.name().like("小明");
-            addr.city().eq("杭州");
-        })
-        .select(UserDTO.class,(user, addr) -> Select.DRAFT.of(
-                user.FETCHER.id().createTime(),
-                addr.area()
-        )).toList();
-```
-
-@tab 显式子查询
-
-```java
-
-List<SysUser> userIn = easyEntityQuery.queryable(SysUser.class)
-        .where(user -> {
-            user.id().in(
-                    easyEntityQuery.queryable(SysRole.class)
-                            .select(s -> s.id())
-            );
-        }).toList();
-
-
-List<SysUser> userExists = easyEntityQuery.queryable(SysUser.class)
-        .where(user -> {
-
-            user.expression().exists(()->{
-                return easyEntityQuery.queryable(SysRole.class)
-                        .where(role -> {
-                            role.name().eq("管理员");
-                            role.id().eq(user.id());
-                        });
-                    });
-        }).toList();
-
-
-//匿名返回用户id和用户所拥有的角色数量
-List<Draft2<String, Long>> userIdAndRoleCount1 = easyEntityQuery.queryable(SysUser.class)
-        .where(user -> user.name().like("小明"))
-        .select(user -> Select.DRAFT.of(
-                user.id(),
-                user.expression().subQuery(() -> {
-                    return easyEntityQuery.queryable(SysRole.class)
-                            .where(r -> {
-                                r.expression().exists(()->{
-                                    return easyEntityQuery.queryable(UserRole.class)
-                                            .where(u -> {
-                                                u.roleId().eq(r.id());
-                                                u.userId().eq(user.id());
-                                            });
-                                });
-                            })
-                            .selectCount();
-                })
-        )).toList();
-```
-
-@tab 结构化数据返回 🔥
-
-```java
-
-//可以直接筛选出结构化DTO
-List<StructSysUserDTO> users = easyEntityQuery.queryable(SysUser.class)
-        .where(s -> s.name().like("小明"))
-        .selectAutoInclude(StructSysUserDTO.class).toList();
-
-
-{
-	"id": "...",
-	"createTime": "...",
-	"roles": [{
-		"id": "...",
-		"name": "",
-		"menus": [{
-			"id": "....",
-			"name": "...."
-		}, {
-			"id": "....",
-			"name": "...."
-		}]
-	}]
-}
-
-//返回用户角色和菜单
-
-@Data
-public class StructSysUserDTO {
-
-    private String id;
-    private String name;
-    private LocalDateTime createTime;
-    @Navigate(value = RelationTypeEnum.ManyToMany)
-    private List<InternalRoles> roles;
-    @Data
-    public static class InternalRoles {
-        private String id;
-        //....
-        @Navigate(value = RelationTypeEnum.ManyToMany)
-        private List<InternalMenus> menus;
-    }
-    @Data
-    public static class InternalMenus {
-        private String id;
-        private String name;
-        //....
-    }
-}
-```
-
-@tab 结构化穿透 🔥
-
-```java
-
-快速返回用户拥有的菜单,因为用户和菜单中间由角色进行关联并且两者都是多对多所以如果需要自行实现那么是非常麻烦的一件事情
-
-用户和菜单之间隔着角色的多对多所以如果想要获取用户的菜单id直接可以通过这种方式快速筛选
-
-方式1 仅获取用户拥有的菜单id
-
-List<String> menuIds = easyEntityQuery.queryable(SysUser.class)
-        .where(s -> s.name().like("小明"))
-        .toList(s -> s.roles().flatElement().menus().flatElement().id());
-
-
-方式2 仅获取用户拥有的菜单id和菜单名称
-
-
-List<SysMenu> menuIdNames = easyEntityQuery.queryable(SysUser.class)
-        .where(s -> s.name().like("小明"))
-        .toList(s -> s.roles().flatElement().menus().flatElement(x->x.FETCHER.id().name()));
-
-List<SysUserFlatDTO> users = easyEntityQuery.queryable(SysUser.class)
-        .where(s -> s.name().like("小明"))
-        .selectAutoInclude(SysUserFlatDTO.class).toList();
-
-@Data
-public class SysUserFlatDTO {
-    private String id;
-    private String name;
-    private LocalDateTime createTime;
-
-    //穿透获取用户下的roles下的menus下的id 如果穿透获取的是非基本类型那么对象只能是数据库对象而不是dto对象
-    @NavigateFlat(value = RelationMappingTypeEnum.ToMany,mappingPath = {
-            SysUser.Fields.roles,
-            SysRole.Fields.menus,
-            SysMenu.Fields.id
-    })
-    private List<String> menuIds;
-
-//非基本对象也可以直接返回数据库对象
-//    @NavigateFlat(value = RelationMappingTypeEnum.ToMany,mappingPath = {
-//            SysUser.Fields.roles,
-//            SysRole.Fields.menus
-//    })
-//    private List<SysMenu> menu;
-
-    @NavigateFlat(value = RelationMappingTypeEnum.ToMany,mappingPath = {
-            SysUser.Fields.roles,
-            SysMenu.Fields.id
-    })
-    private List<String> roleIds;
-}
-
-
-```
-
-@tab 原生 sql
-
-```java
-//原生sql执行
-
-List<SysUser> filterTime = easyEntityQuery.queryable(SysUser.class)
-        .where(user -> {
-            user.expression().sql("{0} > {1}", c -> {
-                c.value(LocalDateTime.now()).expression(user.createTime());
-            });
-        }).toList();
-
-//原生sql片段
-
-
-List<Draft2<String, String>> idAndName = easyEntityQuery.queryable(SysUser.class)
-        .where(user -> {
-            user.createTime().gt(LocalDateTime.now());
-        }).select(user -> Select.DRAFT.of(
-                user.id(),
-                user.expression().sqlSegment("IFNULL({0},'')", c -> c.expression(user.name())).setPropertyType(String.class)
-        )).toList();
-
-```
-
-:::
-
-<div align="center">
-    <a target="_blank" href="https://central.sonatype.com/search?q=easy-query">
-        <img src="https://img.shields.io/maven-central/v/com.easy-query/easy-query-all?label=Maven%20Central" alt="Maven" />
-    </a>
-    <a target="_blank" href="https://www.apache.org/licenses/LICENSE-2.0.txt">
-		<img src="https://img.shields.io/:license-Apache2-blue.svg" alt="Apache 2" />
-	</a>
-    <a target="_blank" href="https://www.oracle.com/java/technologies/javase/javase-jdk8-downloads.html">
-		<img src="https://img.shields.io/badge/JDK-8-green.svg" alt="jdk-8" />
-	</a>
-    <a target="_blank" href="https://www.oracle.com/java/technologies/javase/jdk11-archive-downloads.html">
-		<img src="https://img.shields.io/badge/JDK-11-green.svg" alt="jdk-11" />
-	</a>
-    <a target="_blank" href="https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html">
-		<img src="https://img.shields.io/badge/JDK-17-green.svg" alt="jdk-17" />
-	</a>
-    <br />
-        <img src="https://img.shields.io/badge/SpringBoot-v2.x-blue">
-        <img src="https://img.shields.io/badge/SpringBoot-v3.x-blue">
-        <a target="_blank" href='https://gitee.com/noear/solon'><img src="https://img.shields.io/badge/Solon-v2.x-blue"></a>
-    <br />
-    <a target="_blank" href='https://gitee.com/xuejm/easy-query'>
-		<img src='https://gitee.com/xuejm/easy-query/badge/star.svg' alt='Gitee star'/>
-	</a>
-    <a target="_blank" href='https://github.com/xuejmnet/easy-query'>
-		<img src="https://img.shields.io/github/stars/xuejmnet/easy-query.svg?logo=github" alt="Github star"/>
-	</a>
-    
-</div>
-
-## 🔔 QQ 群: 170029046
-
-<br/>
-
-## 🔔 交流 QQ 群
-
-::: center
-<img src="/qrcode.jpg" alt="群号: 170029046" class="no-zoom" style="width:200px;">
-
-#### EasyQuery 官方 QQ 群: 170029046
-
-## github 仓库
-
-[easy-query](https://github.com/xuejmnet/easy-query)
-
-## gitee 仓库
-
-[easy-query](https://gitee.com/xuejm/easy-query)
-
-## 许可证
-
-[Apache-2.0 License](https://github.com/xuejmnet/easy-query/blob/main/LICENSE)
-
-## 文档主题
-
-[vuepress-theme-hope](https://vuepress-theme-hope.github.io/)
-
-<link rel="stylesheet" href="/index.css">
-
-
-
-<!-- ```mermaid
-erDiagram
-    CUSTOMER {
-        int customer_id
-        string name
-        string email
-    }
-
-    ORDER {
-        int order_id
-        date order_date
-        float amount
-    }
-
-    CUSTOMER ||--o{ ORDER : places
-    ORDER }o--|{ PRODUCT : contains
-    PRODUCT {
-        int product_id
-        string name
-        float price
-    }
-``` -->
+配置项的相关说明详见 [项目主页配置](https://theme-hope.vuejs.press/zh/guide/layout/home/)。 -->

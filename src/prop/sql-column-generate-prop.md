@@ -1,5 +1,8 @@
 ---
 title: 函数自增属性
+order: 10
+category:
+  - sql
 ---
 
 `easy-query`支持以数据库函数生成列值,比如通过自定义`nextId()`函数来实现插入时生成对应的id列,而不是普通的对象属性列.

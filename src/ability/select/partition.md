@@ -1,5 +1,6 @@
 ---
 title: PARTITION BY
+order: 100
 ---
 
 `PARTITION BY`是数据库的一个`窗口函数`,部分数据库可能不支持或者低版本数据库不支持，请结合具体数据库使用

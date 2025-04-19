@@ -50,12 +50,6 @@ long rows = easyEntityQuery.insertable(topics.get(0)).executeRows();
 //返回结果rows为1
 ```
 
-@tab lambda模式
-```java
-long rows = easyQuery.insertable(topics.get(0)).executeRows();
-//返回结果rows为1
-```
-
 ::: 
 
 ```log
@@ -83,11 +77,6 @@ long rows = easyQuery.insertable(topics.get(0)).executeRows();
 long rows = easyEntityQuery.insertable(topics).executeRows();
 //返回结果rows为10
 ```
-@tab lambda模式
-```java
-long rows = easyQuery.insertable(topics).executeRows();
-//返回结果rows为10
-```
 :::
 
 ```log
@@ -110,11 +99,6 @@ long rows = easyQuery.insertable(topics).executeRows();
 @tab 对象模式
 ```java
 long rows = easyEntityQuery.insertable(topics.get(0)).insert(topics.get(1)).executeRows();
-//返回结果rows为2
-```
-@tab lambda模式
-```java
-long rows = easyQuery.insertable(topics.get(0)).insert(topics.get(1)).executeRows();
 //返回结果rows为2
 ```
 :::
@@ -214,7 +198,7 @@ Easy Query提供了`conflictThen`方法,请参考[插入或更新](./insertOrUpd
 
 如果在使用方法时遇到了问题，欢迎进群提问。
 ::: center
-<img src="/qrcode.jpg" alt="群号: 170029046" class="no-zoom" style="width:200px;">
+<img :src="$withBase('/images/qrcode.jpg')" alt="群号: 170029046" class="no-zoom" style="width:200px;">
 
 #### EasyQuery官方QQ群: 170029046
 :::

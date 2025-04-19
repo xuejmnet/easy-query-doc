@@ -1,5 +1,8 @@
 ---
 title: 复合计算属性
+order: 8
+category:
+  - sql
 ---
 
 ## 复合计算属性

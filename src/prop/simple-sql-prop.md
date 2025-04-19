@@ -1,5 +1,8 @@
 ---
 title: 简单数据库函数属性
+order: 5
+category:
+  - sql
 ---
 
 # 背景

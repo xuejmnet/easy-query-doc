@@ -1,5 +1,6 @@
 ---
 title: 动态排序
+order: 2
 ---
 
 # 动态排序
@@ -34,7 +35,9 @@ asc | 表示是否正序,true为正序,false为倒序
 orderByMode | 表示排序针对null值的情况设置,`null_first`或者`null_last`传递`null`表示排序不处理`null`
 tableIndex | 表示显式join下的第几张表`from表是0`,每次`join+1`,默认值`0`为主表
 
-<img src="/table-sort.png">
+
+
+<img :src="$withBase('/images/table-sort.png')">
 
 ## 单字段动态排序
 首先我们实现`ObjectSort`接口的方法,传入builder对象排序属性和是否正序即可
@@ -47,9 +50,9 @@ public class BlogSortRequest implements ObjectSort {
     private Boolean asc;
     @Override
     public void configure(ObjectSortBuilder builder) {
-        if(EasyStringUtil.isNotBlank(sort)&&asc!=null){
-            builder.orderBy(sort,asc);
-            builder.orderBy(sort, asc, OrderByModeEnum.NULLS_LAST);
+        if(EasyStringUtil.isNotBlank(sort)){
+            builder.orderBy(sort, asc == null || asc);
+            builder.orderBy(sort, asc == null || asc, OrderByModeEnum.NULLS_LAST);
             // builder.orderBy(sort,asc);
         }
     }
@@ -79,7 +82,7 @@ public class BlogSortMultiRequest implements ObjectSort {
     @Override
     public void configure(ObjectSortBuilder builder) {
         for (SortConfig order : orders) {
-            builder.orderBy(order.getProperty(),order.getAsc(),order.getNullMode());
+            builder.orderBy(order.getProperty(),order.getAsc()==null || order.getAsc(),order.getNullMode());
         }
     }
 
@@ -128,7 +131,7 @@ public class BlogSortJoinRequest implements ObjectSort {
         for (SortConfig order : orders) {
             //如果采用 createTime 排序那么就使用第二张表
             int tableIndex = Objects.equals(order.getProperty(), "createTime") ? 1 : 0;
-            builder.orderBy(order.getProperty(),order.getAsc(),tableIndex);
+            builder.orderBy(order.getProperty(),order.getAsc()==null||order.getAsc(),tableIndex);
         }
     }
 
@@ -179,7 +182,7 @@ public class UISort implements ObjectSort {
         for (Map.Entry<String, Boolean> s : sort.entrySet()) {
             //自行判断key和value是否为null 因为是包装类型可能会出现npe
             // key为需要排序的属性,value表示需要排序是不是asc
-            builder.orderBy(s.getKey(),s.getValue());
+            builder.orderBy(s.getKey(),s.getValue()==null||s.getValue());
         }
     }
 }
