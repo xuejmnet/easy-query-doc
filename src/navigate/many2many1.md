@@ -204,6 +204,14 @@ WHERE
 ```java
 
 
+List<SysUser> userInHz = easyEntityQuery.queryable(SysUser.class)
+        .subQueryToGroupJoin(x -> x.roles())
+        .where(u -> {
+            u.name().eq("小明");
+            u.roles().none(role -> role.name().like("管理员"));
+            u.roles().any(role -> role.name().like("普通员工"));
+        }).toList();
+
 -- 第1条sql数据
 SELECT
     t.`id`,

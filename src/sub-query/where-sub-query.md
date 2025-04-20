@@ -440,6 +440,7 @@ List<Company> list = easyEntityQuery.queryable(Company.class)
 
 List<Company> list = easyEntityQuery.queryable(Company.class)
         .where(com -> {
+                com.users().any(u->u.age().gt(18));
                 com.users().flatElement().age().gt(18);
         }).toList();
 
