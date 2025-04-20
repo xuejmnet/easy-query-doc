@@ -17,7 +17,7 @@ title: 隐式Group
 ## api
 `subQueryToGroupJoin`将对象关系`XToMany`转成`join`来实现高效的查询
 
-`subQueryToGroupJoin(true,o->o.many())`
+`subQueryToGroupJoin(true,o->o.many())` 支持多个子查询
 
 参数  | 类型 | 描述  
 --- | --- | --- 
@@ -25,6 +25,115 @@ condition | boolean  | 用来控制是否将子查询转成`隐式Group`
 manyPropColumn | expression  | 返回需要将哪个子查询转成`隐式Group`
 adapter | expression  | 对子查询进行增强相当于是对子查询额外添加条件
 
+
+::: tabs
+@tab 关系图
+<img :src="$withBase('/images/bank_card_user.svg')">
+
+@tab SysUser
+```java
+
+@Table("t_sys_user")
+@EntityProxy
+@Data
+@FieldNameConstants
+@EasyAlias("user")
+public class SysUser implements ProxyEntityAvailable<SysUser , SysUserProxy> {
+    @Column(primaryKey = true)
+    private String id;
+    private String name;
+    private String phone;
+    private Integer age;
+    private LocalDateTime createTime;
+
+    /**
+     * 用户拥有的银行卡数
+     */
+    @Navigate(value = RelationTypeEnum.OneToMany, selfProperty = {"id"}, targetProperty = {"uid"})
+    private List<SysBankCard> bankCards;
+}
+
+```
+
+@tab SysBankCard
+```java
+
+@Table("t_bank_card")
+@EntityProxy
+@Data
+@FieldNameConstants
+@EasyAlias("bank_card")
+public class SysBankCard implements ProxyEntityAvailable<SysBankCard , SysBankCardProxy> {
+    @Column(primaryKey = true)
+    private String id;
+    private String uid;
+    /**
+     * 银行卡号
+     */
+    private String code;
+    /**
+     * 银行卡类型借记卡 储蓄卡
+     */
+    private String type;
+    /**
+     * 所属银行
+     */
+    private String bankId;
+    /**
+     * 用户开户时间
+     */
+    private LocalDateTime openTime;
+
+    /**
+     * 所属银行
+     */
+    @Navigate(value = RelationTypeEnum.ManyToOne, selfProperty = {"bankId"}, targetProperty = {"id"})
+    @ForeignKey//可以不加 加了就是InnerJoin处理更多细节查看注解篇章
+    private SysBank bank;
+
+    /**
+     * 所属用户
+     */
+    @Navigate(value = RelationTypeEnum.ManyToOne, selfProperty = {"uid"}, targetProperty = {"id"})
+    private SysUser user;
+}
+
+
+```
+
+@tab SysBank
+```java
+
+@Table("t_bank")
+@EntityProxy
+@Data
+@FieldNameConstants
+@EasyAlias("bank")
+public class SysBank implements ProxyEntityAvailable<SysBank, SysBankProxy> {
+    @Column(primaryKey = true)
+    private String id;
+    /**
+     * 银行名称
+     */
+    private String name;
+    /**
+     * 成立时间
+     */
+    private LocalDateTime createTime;
+
+    /**
+     * 拥有的银行卡
+     */
+    @Navigate(value = RelationTypeEnum.OneToMany,
+            selfProperty = {"id"},
+            targetProperty = {"bankId"})
+    private List<SysBankCard> bankCards;
+}
+
+```
+
+:::
+<!-- 
 ```mermaid
 erDiagram
     DOCBANKCARD {
@@ -49,7 +158,7 @@ erDiagram
 
     DOCBANKCARD }o--|| DOCUSER : "Many-to-One (uid → id)"
     DOCBANKCARD }o--|| DOCBANK : "Many-to-One (bankId → id)"
-```
+``` -->
 
 
 ## 普通隐式子查询
@@ -324,4 +433,45 @@ easyEntityQuery.queryable(DocUser.class)
 ==> Preparing: SELECT t.`id` AS `value1`,t2.`__count3__` AS `value2`,t2.`__count4__` AS `value3`,t2.`__count5__` AS `value4` FROM `doc_user` t LEFT JOIN (SELECT t1.`uid`,(CASE WHEN COUNT((CASE WHEN t1.`code` LIKE ? THEN ? ELSE ? END)) > 0 THEN TRUE ELSE FALSE END) AS `__any2__`,COUNT((CASE WHEN t1.`type` = ? THEN ? ELSE ? END)) AS `__count3__`,COUNT((CASE WHEN t1.`type` = ? THEN ? ELSE ? END)) AS `__count4__`,COUNT((CASE WHEN t1.`type` = ? THEN ? ELSE ? END)) AS `__count5__` FROM `doc_bank_card` t1 GROUP BY t1.`uid`) t2 ON t2.`uid` = t.`id` WHERE t2.`__any2__` = ?
 ==> Parameters: 400%(String),1(Integer),null(null),工商(String),1(Integer),null(null),建设(String),1(Integer),null(null),农业(String),1(Integer),null(null),true(Boolean)
 <== Time Elapsed: 6(ms)
+```
+
+## 一对多对多设置subQuerytoGroupJoin
+M8User和M8Role多对多,然后M8Role和M8Menu多对多
+```java
+        List<M8User> admin = easyEntityQuery.queryable(M8User.class)
+                .subQueryToGroupJoin(s->s.roles())
+                //设置role下的menu也是用隐式group
+                .subQueryConfigure(s->s.roles(),s->s.subQueryToGroupJoin(r->r.menus()))
+                .where(m -> {
+                    m.roles().any(r -> {
+                        r.menus().any(menu -> menu.name().eq("admin"));
+                    });
+                }).toList();
+```
+
+## 配置整个表达式都是用subQuerytoGroupJoin
+上面的配置有时候层级很深过于繁琐,那么有没有一键开启使用`subQuerytoGroupJoin`的呢?情况下面
+```java
+
+    List<M8User> admin = easyEntityQuery.queryable(M8User.class)
+            .configure(o->{
+                o.getBehavior().addBehavior(EasyBehaviorEnum.ALL_SUB_QUERY_GROUP_JOIN);
+            })
+            .where(m -> {
+                m.roles().flatElement().menus().flatElement().name().eq("admin");
+            }).toList();
+//上下一样 上面是展开后的重写如果存在多个条件那么menu单独作为any即可
+
+        List<M8User> admin = easyEntityQuery.queryable(M8User.class)
+                .configure(o->{
+                    o.getBehavior().addBehavior(EasyBehaviorEnum.ALL_SUB_QUERY_GROUP_JOIN);
+                })
+                .where(m -> {
+
+                    m.roles().any(r -> {
+                        r.menus().any(menu -> menu.name().eq("admin"));
+                    });
+                }).toList();
+
+
 ```

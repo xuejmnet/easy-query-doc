@@ -46,6 +46,13 @@ codeFirstCommand.executeWithTransaction(arg -> {
 });
 ```
 
+
+::: danger 说明!!!
+> `syncTableCommand`里面出现两个类以上是`MySQL`连接字符串需要添加`&allowMultiQueries=true`参数,默认不加该参数则无法执行多条语句合并的sql
+> 比如`jdbc:mysql://127.0.0.1:3316/easy-query-db?serverTimezone=GMT%2B8&characterEncoding=utf-8&useSSL=false&allowMultiQueries=true&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true`
+:::
+
+
 ## 列说明表说明
 我们如何添加列说明和表说明在生成的代码中
 
@@ -200,9 +207,9 @@ CREATE TABLE IF NOT EXISTS `t_company` (
 ```
 
 ## 添加列
-我们在现有类里面添加一个类然后执行代码`执行syncTableCommand`
+我们在现有类里面添加一个列然后执行代码`执行syncTableCommand`
 ```java
-//添加一个新列
+    //添加一个新列
     @Column(comment = "测试列",dbType = "varchar(500)")
     private String column;
 ```

@@ -402,7 +402,6 @@ WHERE
                 .where(s -> {
                     //判断菜单下的角色存在角色的用户叫做小明的
                     //s.roles().flatElement().users().flatElement().name().eq("小明");//如果只有一个条件name可以这么写
-
                     //flatElement表示放弃当前表的查询比如roles表因为没有条件所以不需要直接展开即可对roles下的users进行筛选
                     s.roles().flatElement().users().any(user -> {
                         user.name().eq("小明");
