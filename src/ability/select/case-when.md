@@ -110,7 +110,7 @@ easyEntityQuery.queryable(BlogEntity.class)
 -- 第1条sql数据
 SELECT
     t.`title` AS `value1`,
-    COUNT((CASE WHEN t.`star` >= 123 THEN t.`id` ELSE null END)) AS `value2` 
+    COUNT((CASE WHEN t.`star` >= 123 THEN t.`id` ELSE NULL END)) AS `value2` 
 FROM
     `t_blog` t 
 WHERE
@@ -138,7 +138,7 @@ easyEntityQuery.queryable(BlogEntity.class)
 -- 第1条sql数据
 SELECT
     t.`title` AS `value1`,
-    COUNT((CASE WHEN t.`star` >= 123 THEN 1 ELSE null END)) AS `value2` 
+    COUNT((CASE WHEN t.`star` >= 123 THEN 1 ELSE NULL END)) AS `value2` 
 FROM
     `t_blog` t 
 WHERE

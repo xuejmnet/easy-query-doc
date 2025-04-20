@@ -225,8 +225,8 @@ LEFT JOIN
     (
         SELECT
             t2.`user_id` AS `user_id`,
-            (CASE WHEN COUNT((CASE WHEN t1.`name` LIKE '%管理员%' THEN 1 ELSE null END)) > 0 THEN false ELSE true END) AS `__none2__`,
-            (CASE WHEN COUNT((CASE WHEN t1.`name` LIKE '%普通员工%' THEN 1 ELSE null END)) > 0 THEN true ELSE false END) AS `__any3__` 
+            (CASE WHEN COUNT((CASE WHEN t1.`name` LIKE '%管理员%' THEN 1 ELSE NULL END)) > 0 THEN false ELSE true END) AS `__none2__`,
+            (CASE WHEN COUNT((CASE WHEN t1.`name` LIKE '%普通员工%' THEN 1 ELSE NULL END)) > 0 THEN true ELSE false END) AS `__any3__` 
         FROM
             `t_role` t1 
         INNER JOIN

@@ -354,8 +354,8 @@ List<Part2<SysBank, Long, Long>> bankAndCounts = easyEntityQuery.queryable(SysBa
     LEFT JOIN
         (SELECT
             t1.`bank_id` AS `bankId`, 
-            COUNT((CASE WHEN t1.`type` = '储蓄卡' THEN 1 ELSE null END)) AS `__count2__`,
-            COUNT((CASE WHEN t1.`type` = '信用卡' THEN 1 ELSE null END)) AS `__count3__` 
+            COUNT((CASE WHEN t1.`type` = '储蓄卡' THEN 1 ELSE NULL END)) AS `__count2__`,
+            COUNT((CASE WHEN t1.`type` = '信用卡' THEN 1 ELSE NULL END)) AS `__count3__` 
         FROM `t_bank_card` t1 
         GROUP BY
             t1.`bank_id`) t2 
@@ -490,7 +490,7 @@ List<Part1<SysBank, Boolean>> bankCardTop2s = easyEntityQuery.queryable(SysBank.
                 WHEN COUNT((CASE 
                     WHEN t2.`open_time` >= '2002-01-01 00:00' 
                         THEN 1 
-                    ELSE null 
+                    ELSE NULL 
             END)) > 0 
                 THEN false 
             ELSE true 

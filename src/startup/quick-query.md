@@ -306,6 +306,9 @@ WHERE
 
 List<SysUser> list = easyEntityQuery.queryable(SysUser.class)
         .subQueryToGroupJoin(u->u.bankCards())//启用隐式group
+        // .configure(o->{//当我们的子查询数量很多时升级到后2.8.14后可以配置行为全部子查询转group join
+        //     o.getBehavior().addBehavior(EasyBehaviorEnum.ALL_SUB_QUERY_GROUP_JOIN);
+        // })
         .where(user -> {
             //至少2张工商银行
             user.bankCards().where(card -> {
@@ -332,8 +335,8 @@ LEFT JOIN
     (
         SELECT
             t1.`uid` AS `uid`,
-            COUNT((CASE WHEN t3.`name` = '工商银行' THEN 1 ELSE null END)) AS `__count2__`,
-            (CASE WHEN COUNT((CASE WHEN t3.`name` = '建设银行' THEN 1 ELSE null END)) > 0 THEN false ELSE true END) AS `__none3__` 
+            COUNT((CASE WHEN t3.`name` = '工商银行' THEN 1 ELSE NULL END)) AS `__count2__`,
+            (CASE WHEN COUNT((CASE WHEN t3.`name` = '建设银行' THEN 1 ELSE NULL END)) > 0 THEN false ELSE true END) AS `__none3__` 
         FROM
             `t_bank_card` t1 
         INNER JOIN
@@ -521,7 +524,7 @@ LEFT JOIN
         SELECT
             t2.`uid` AS `uid`,
             (CASE 
-                WHEN COUNT((CASE WHEN t4.`create_time` >= '2000-01-01 00:00' THEN 1 ELSE null END)) > 0 THEN false ELSE true 
+                WHEN COUNT((CASE WHEN t4.`create_time` >= '2000-01-01 00:00' THEN 1 ELSE NULL END)) > 0 THEN false ELSE true 
             END) AS `__none2__`,
             GROUP_CONCAT(t4.`name` SEPARATOR ',') AS `__joining3__` 
         FROM
