@@ -218,7 +218,7 @@ List<SysUser> users = easyEntityQuery.queryable(SysUser.class)
                 WHEN COUNT((CASE 
                     WHEN t1.`type` = '储蓄卡' 
                         THEN 1 
-                    ELSE null 
+                    ELSE NULL 
             END)) > 0 
                 THEN true 
             ELSE false 
@@ -331,7 +331,7 @@ List<SysUser> users = easyEntityQuery.queryable(SysUser.class)
             t1.`uid` AS `uid`, COUNT((CASE 
                 WHEN t1.`type` = '储蓄卡' 
                     THEN 1 
-                ELSE null 
+                ELSE NULL 
         END)) AS `__count2__` FROM `t_bank_card` t1 
     GROUP BY
         t1.`uid`) t2 

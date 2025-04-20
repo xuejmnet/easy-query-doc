@@ -387,11 +387,11 @@ LEFT JOIN
             END)) AS `__sum3__`,
             MAX((CASE 
                 WHEN t1.`type` = '123' THEN t1.`code` 
-                ELSE null 
+                ELSE NULL 
             END)) AS `__max4__`,
             MIN((CASE 
                 WHEN t1.`type` = '123' THEN t1.`code` 
-                ELSE null 
+                ELSE NULL 
             END)) AS `__min5__` 
         FROM
             `doc_bank_card` t1 

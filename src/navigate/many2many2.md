@@ -113,7 +113,7 @@ LEFT JOIN
     (
         SELECT
             t1.`uid` AS `uid`,
-            (CASE WHEN COUNT((CASE WHEN t1.`name` = 'JAVA开发' THEN 1 ELSE null END)) > 0 THEN true ELSE false END) AS `__any2__`,
+            (CASE WHEN COUNT((CASE WHEN t1.`name` = 'JAVA开发' THEN 1 ELSE NULL END)) > 0 THEN true ELSE false END) AS `__any2__`,
             COUNT(*) AS `__count3__` 
         FROM
             `t_user_book` t1 
