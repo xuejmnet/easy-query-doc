@@ -251,6 +251,7 @@ public class SysBankDTO {
     public static class InternalUser {
         private static final ExtraAutoIncludeConfigure EXTRA_AUTO_INCLUDE_CONFIGURE= SysUserProxy.TABLE.EXTRA_AUTO_INCLUDE_CONFIGURE()
                 .configure(query->query.subQueryToGroupJoin(u->u.userBooks()))//配置表达式为隐式子查询
+                // .configure(query -> query.configure(s->s.getBehavior().addBehavior(EasyBehaviorEnum.ALL_SUB_QUERY_GROUP_JOIN)))//如果有多个子查询并且都需要转成groupJoin
                 .select(u-> Select.of(
                         u.userBooks().count().as(Fields.bookCount),
                         u.userBooks().orderBy(book->book.price().desc()).firstElement().name().as(Fields.bookName),
@@ -466,6 +467,7 @@ List<SysBankDTO> list = easyEntityQuery.queryable(SysBank.class)
     public static class InternalUser {
         private static final ExtraAutoIncludeConfigure EXTRA_AUTO_INCLUDE_CONFIGURE= SysUserProxy.TABLE.EXTRA_AUTO_INCLUDE_CONFIGURE()
                 .configure(query->query.subQueryToGroupJoin(u->u.userBooks()))//配置表达式为隐式子查询
+                // .configure(query -> query.configure(s->s.getBehavior().addBehavior(EasyBehaviorEnum.ALL_SUB_QUERY_GROUP_JOIN)))//如果有多个子查询并且都需要转成groupJoin
                 .where(o -> {
                     ConfigureArgument configureArgument = o.getEntitySQLContext().getExpressionContext().getConfigureArgument();
                     String arg = configureArgument.getTypeArg();

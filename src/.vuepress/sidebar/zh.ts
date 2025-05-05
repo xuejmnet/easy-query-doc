@@ -63,6 +63,12 @@ export const zhSidebar = sidebar({
           prefix: "group-by/",
           collapsible:true,
           children: "structure",
+        },
+        {
+          text: "返回结果VO、DTO",
+          prefix: "return-result/",
+          collapsible:true,
+          children: "structure",
         },"insert","update","delete","transaction","insertOrUpdate","batch","dynamic-table-name","reuse","native-sql"
       ],
     },
@@ -93,6 +99,12 @@ export const zhSidebar = sidebar({
     {
       text: "子查询",
       prefix: "sub-query/",
+      collapsible:true,
+      children: "structure",
+    },
+    {
+      text: "性能相关",
+      prefix: "performance/",
       collapsible:true,
       children: "structure",
     },

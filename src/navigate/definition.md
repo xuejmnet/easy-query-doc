@@ -37,6 +37,8 @@ limit  | long  | toMany，用于拉取数据的时候对子表进行排序
 extraFilter  | Class<? extends NavigateExtraFilterStrategy>  | 额外筛选支持中间表和目标表
 directMapping  | String[]  | 用于合并多个ToOne
 relationPropertyStrategy  | String | 自定义关联关系时用于手动指定条件比如你是逗号分割那么不是以等于符号进行判断可能会用like左匹配或者findInSet这种方言函数
+required  | boolean | 表示目标对象是否必须存在，作用如果你是ManyToOne或者OneToOne则隐式join会变成inner join，如果你是OneToMany或者ManyToMany那么隐式group将会以inner join进行连表 如果是隐式partition by那么index=0也就是firstElement也是inner join，其余情况使用left join
+subQueryToGroupJoin  | boolean | 子查询转groupJoin 仅toMany生效,建议数据量大于20-50w后或者系统明显出现子查询缓慢的情况下开启这个
 
 ## 一对一
 一对一本质是特殊的多对一关系,常用于垂直分表领域,比如用户和用户的扩展信息表

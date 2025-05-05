@@ -4,7 +4,7 @@ order: 30
 ---
 
 # 分组
-`easy-query`提供了方便的分组查询功能的支持
+`easy-query`提供了方便的分组查询功能的支持,并且支持链式支持group感知类型变化
 
 # 链式api
 在`entity`模式下`groupBy`后会将多个结果集进行合并到`group.groupTable()`里面如果需要操作group前的表需要从`group.groupTable()`里面获取,当表达式是单表那么`group.groupTable()`本身就是当前表,当表达式是多表join的那么表达式的表访问存在于`group.groupTable().t1....tn`

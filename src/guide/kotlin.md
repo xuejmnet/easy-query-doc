@@ -1,6 +1,6 @@
 ---
 title: kotlin配置ksp使用
-order: 6
+order: 7
 ---
 
 # kotlin配置使用

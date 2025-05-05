@@ -1,6 +1,6 @@
 ---
 title: kotlin配置kapt使用
-order: 7
+order: 8
 ---
 
 `easy-query`的代理模式通过apt生成动态代码执行数据库操作,并且框架提供了自动apt编译插件修改entity数据库对象无需build也会自动修改对应的apt文件,进首页qq群后或者后续等待作者发布....

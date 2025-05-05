@@ -172,6 +172,11 @@ encryptWordMinLength| 4 | 最小加密长度
 chineseCharOccupancyLength| 2| 一个中文占用长度
 throwIfDecryptFail| true | 遇到错误是否抛出
 
+
+::: warning 说明!!!
+> 默认`AbstractUnSupportEmojiAesBase64EncryptionStrategy`和`AbstractSupportEmojiAesBase64EncryptionStrategy`对于数据库传入空字符串也会加密所以`isBlank`和`lisNotBlank`这种函数就会失效建议用户自行实现如果传入空是否不加密还是空
+:::
+
 ```java
 public class MyEncryptionStrategy extends AbstractSupportEmojiAesBase64EncryptionStrategy {
     @Override

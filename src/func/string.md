@@ -138,7 +138,7 @@ List<DocBankCard> list = easyEntityQuery.queryable(DocBankCard.class)
 ## joining
 
 ::: warning 说明!!!
-> sqlserver下需要高版本才支持该还输
+> sqlserver下需要高版本才支持该函数
 :::
 用于将多多维度的字符串数据组合成一列的函数比如group后的name逗号组合用户下有多少个角色
 
@@ -212,4 +212,18 @@ List<Integer> list = easyEntityQuery.queryable(DocBankCard.class)
 ```
 
 ## indexOf
-暂未实现....
+
+`2.8.17^`用来比较字符串在当前字符串(列)中存在的索引位置大于等于0表示存在
+
+数据库  | 方言  
+---  | --- 
+MySQL  | LOCATE
+MSSQL  | CHARINDEX
+PGSQL  | STRPOS
+ORACLE  | INSTR
+```java
+List<BlogEntity> list = easyEntityQuery.queryable(BlogEntity.class)
+                .where(t_blog -> {
+                    t_blog.title().indexOf("30%").gt(-1);
+                }).toList();
+```
