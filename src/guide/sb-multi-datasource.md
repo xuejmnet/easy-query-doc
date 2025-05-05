@@ -196,7 +196,7 @@ public class MultiDataSourceConfiguration {
     }
 
     /**
-     * 不是spring接管的datasource那么事务将不会生效
+     * 需要用户自行实现对应的DataSource的PlatformTransactionManager
      * @return
      */
     @Bean("xxx")
@@ -205,6 +205,13 @@ public class MultiDataSourceConfiguration {
                 .url("")
                 .username("")
                 .password("").build();
+    }
+    /**
+     * 实现对应datasource1的事务管理器
+     */
+    @Bean(name = "xxxTransactionManager")
+    public PlatformTransactionManager xxxTxManager(@Qualifier("xxx") DataSource dataSource) {
+        return new DataSourceTransactionManager(dataSource);
     }
     @Bean("ds2")
     public EasyEntityQuery easyQuery(/*注入您自己的多数据源datasource*/@Qualifier("xxx")DataSource dataSource) {

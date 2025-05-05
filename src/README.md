@@ -42,27 +42,27 @@ highlights:
       - title: 隐式join
         icon: network-wired
         details: OneToOne、ManyToOne 自动实现join查询筛选、排序和结果获取
-        link: https://theme-hope.vuejs.press/zh/guide/feature/catalog.html
+        # link: https://theme-hope.vuejs.press/zh/guide/feature/catalog.html
 
       - title: 隐式子查询
         icon: comment-dots
         details: OneToMany、ManyToMany 自动实现子查询查询筛选、排序和聚合函数结果获取
-        link: https://theme-hope.vuejs.press/zh/guide/feature/comment.html
+        # link: https://theme-hope.vuejs.press/zh/guide/feature/comment.html
 
       - title: 隐式分组
         icon: circle-info
         details: OneToMany、ManyToMany 自动实现子查询优化合并将多个子查询合并成一个分组查询支持筛选、排序和聚合函数结果获取
-        link: https://theme-hope.vuejs.press/zh/guide/feature/page-info.html
+        # link: https://theme-hope.vuejs.press/zh/guide/feature/page-info.html
 
       - title: 隐式分区分组
         icon: lock
         details: OneToMany、ManyToMany 自动实现第一个、第N个数据的筛选、排序和聚合函数结果获取
-        link: https://theme-hope.vuejs.press/zh/guide/feature/encrypt.html
+        # link: https://theme-hope.vuejs.press/zh/guide/feature/encrypt.html
 
       - title: 隐式CASE WHEN
         icon: code
         details: 属性.聚合函数.筛选，o.age().sum().filter(()->o.name().like("123"))
-        link: https://theme-hope.vuejs.press/zh/guide/feature/search.html
+        # link: https://theme-hope.vuejs.press/zh/guide/feature/search.html
 
   - header: 功能
     description: 一套完整的针对jdbc的关系型数据库查询解决方案
@@ -76,102 +76,102 @@ highlights:
       - title: code-first
         icon: clipboard-check
         details: 基于对象实体的数据库表结构快速生成与维护的解决方案
-        link: https://theme-hope.vuejs.press/zh/guide/markdown/others.html#link-check
+        # link: https://theme-hope.vuejs.press/zh/guide/markdown/others.html#link-check
 
       - title: 优雅的对象关系
         icon: box-archive
         details: 完美的将dsl和对象关系结合做到点点点即可实现数据库的数据库查询操作
-        link: https://theme-hope.vuejs.press/zh/guide/markdown/stylize/hint.html
+        # link: https://theme-hope.vuejs.press/zh/guide/markdown/stylize/hint.html
 
       - title: 任意sql片段
         icon: bell
         details: 支持在dsl中穿插任意sql片段来保证各种个性化sql的实现
-        link: https://theme-hope.vuejs.press/zh/guide/markdown/stylize/alert.html
+        # link: https://theme-hope.vuejs.press/zh/guide/markdown/stylize/alert.html
 
       - title: 基于POJO
         icon: table-columns
         details: 框架基于POJO实现与数据库之间的访问,可以保证与市面上大部分ORM兼容一套对象代码
-        link: https://theme-hope.vuejs.press/zh/guide/markdown/content/tabs.html
+        # link: https://theme-hope.vuejs.press/zh/guide/markdown/content/tabs.html
 
       - title: 零依赖
         icon: code
         details: 框架本身基于java8和org.jetbrains.annotations(编译时)真正做到了零依赖,完全基于jdbc的高性能开发orm完全自主可控
-        link: https://theme-hope.vuejs.press/zh/guide/markdown/code/code-tabs.html
+        # link: https://theme-hope.vuejs.press/zh/guide/markdown/code/code-tabs.html
 
       - title: 一套dsl
         icon: align-center
         details: 使用优雅的dsl将多个数据库方案进行高度抽象为'类'java方法,用户只需要一套代码便可在多个数据库之间运行
-        link: https://theme-hope.vuejs.press/zh/guide/markdown/stylize/hint.html
+        # link: https://theme-hope.vuejs.press/zh/guide/markdown/stylize/hint.html
 
       - title: 低学习成本
         icon: code
         details: 实现'类'stream api将操作数据库转换成操作java集合的方法来实现数据库的操作
-        link: https://theme-hope.vuejs.press/zh/guide/markdown/stylize/attrs.html
+        # link: https://theme-hope.vuejs.press/zh/guide/markdown/stylize/attrs.html
 
       - title: 原生分库分表
         icon: superscript
         details: 无需引入和部署任意中间件和引入任意jar包即可实现高性能分库分表和任意自定义分库分表
-        link: https://theme-hope.vuejs.press/zh/guide/markdown/stylize/sup-sub.html
+        # link: https://theme-hope.vuejs.press/zh/guide/markdown/stylize/sup-sub.html
 
       - title: 结构化对象拉取
         icon: quote-left
         details: 实现按数据库对象的映射关系快速创建dto并且拉取结构化数据
-        link: https://theme-hope.vuejs.press/zh/guide/markdown/content/footnote.html
+        # link: https://theme-hope.vuejs.press/zh/guide/markdown/content/footnote.html
 
       - title: 无感apt
         icon: highlighter
         details: 使用插件快速生成apt所需的类来实现idea下的无感apt,无需build||compile即可马上使用apt类
-        link: https://theme-hope.vuejs.press/zh/guide/markdown/stylize/mark.html
+        # link: https://theme-hope.vuejs.press/zh/guide/markdown/stylize/mark.html
 
       - title: 快速lambda入参
         icon: eraser
         details: 基于插件快速实现lambda入参参数并且可以以最快速度实现dsl的编写
-        link: https://theme-hope.vuejs.press/zh/guide/markdown/stylize/spoiler.html
+        # link: https://theme-hope.vuejs.press/zh/guide/markdown/stylize/spoiler.html
 
       - title: group感知
         icon: square-check
         details: java下唯一一款支持group感知的orm能够做到数据在编写dsl的时候由扁平转向结构化的变化
-        link: https://theme-hope.vuejs.press/zh/guide/markdown/grammar/tasklist.html
+        # link: https://theme-hope.vuejs.press/zh/guide/markdown/grammar/tasklist.html
 
       - title: 丰富的api
         icon: image
         details: 提供了常用的返回集合、返回单个对象、返回分页并且提供动态条件、动态排序等一些列功能
-        link: https://theme-hope.vuejs.press/zh/guide/markdown/grammar/image.html
+        # link: https://theme-hope.vuejs.press/zh/guide/markdown/grammar/image.html
 
       - title: 计算属性
         icon: puzzle-piece
         details: 提供了强大的内存计算属性和数据库计算属性,其中数据库计算属性还支持dsl内的筛选、排序和返回
-        link: https://theme-hope.vuejs.press/zh/guide/component/grammar.html
+        # link: https://theme-hope.vuejs.press/zh/guide/component/grammar.html
 
       - title: 无限的扩展性
         icon: puzzle-piece
         details: eq框架是一个基于多例的由ioc容器提供服务隔离的框架,内部所有服务都可以被用户自行替换,并且用户还可以自行注入任意服务来达到和eq的配合
-        link: https://theme-hope.vuejs.press/zh/guide/component/built-in.html
+        # link: https://theme-hope.vuejs.press/zh/guide/component/built-in.html
 
       - title: DTO、VO直接返回
         icon: chart-simple
         details: 直接由数据库结果集映射到DTO、VO支持显式或者隐式赋值达到数据拉取的目的完全不需要map-struct之类的框架辅助entity到dto、vo
-        link: https://theme-hope.vuejs.press/zh/guide/markdown/chart/chartjs.html
+        # link: https://theme-hope.vuejs.press/zh/guide/markdown/chart/chartjs.html
 
       - title: 企业级数据库列加密
         icon: route
         details: 支持企业级数据库列加密和解密,让脱库后的数据安全性提升，并且支持高性能的数据库加密列的like检索
-        link: https://theme-hope.vuejs.press/zh/guide/markdown/chart/flowchart.html
+        # link: https://theme-hope.vuejs.press/zh/guide/markdown/chart/flowchart.html
 
       - title: 乐观锁
         icon: chart-pie
         details: 原生支持乐观锁来实现数据库的数据并发安全性保证业务逻辑的准确性
-        link: https://theme-hope.vuejs.press/zh/guide/markdown/chart/mermaid.html
+        # link: https://theme-hope.vuejs.press/zh/guide/markdown/chart/mermaid.html
 
       - title: 数据追踪
         icon: diagram-project
         details: 基于aop实现数据库的数据在查询的时候进行数据库变更的追踪来实现最小颗粒的update生成
-        link: https://theme-hope.vuejs.press/zh/guide/markdown/chart/plantuml.html
+        # link: https://theme-hope.vuejs.press/zh/guide/markdown/chart/plantuml.html
 
       - title: 逻辑删除
         icon: square-root-variable
         details: 原生支持逻辑删除和个性化逻辑删除支持记录删除时间删除人和删除原因等一些列自定义功能
-        link: https://theme-hope.vuejs.press/zh/guide/markdown/grammar/math.html
+        # link: https://theme-hope.vuejs.press/zh/guide/markdown/grammar/math.html
 
 
   # - header: 特性
@@ -248,28 +248,28 @@ highlights:
       - title: json计算属性
         icon: dumbbell
         details: 将对象映射到数据库列使用json的方式
-        link: https://theme-hope.vuejs.press/zh/guide/advanced/seo.html
+        # link: https://theme-hope.vuejs.press/zh/guide/advanced/seo.html
 
       - title: 枚举计算属性
         icon: sitemap
         details: 将枚举映射到数据库列,在java使用时通过枚举自带的提示可以清晰的了解值与其含义
-        link: https://theme-hope.vuejs.press/zh/guide/advanced/sitemap.html
+        # link: https://theme-hope.vuejs.press/zh/guide/advanced/sitemap.html
 
       - title: 列计算属性
         icon: rss
         details: 通过数据库函数让列进行特殊处理,比如存储到数据库使用数据库的base64 encode,取出来后也是数据库的base64 decode
-        link: https://theme-hope.vuejs.press/zh/guide/advanced/feed.html
+        # link: https://theme-hope.vuejs.press/zh/guide/advanced/feed.html
 
       - title: 无列计算属性
         icon: mobile-screen
         details: 数据库中并不存在当前列,比如age是通过当前时间和birthday计算出来的一种属性,并且可用于筛选、排序和返回
-        link: https://theme-hope.vuejs.press/zh/guide/advanced/pwa.html
+        # link: https://theme-hope.vuejs.press/zh/guide/advanced/pwa.html
 
 
       - title: 跨表计算属性
         icon: circle-info
         details: 当前属性是通过跨多张表组合得到的值,比如班级表在不冗余班级人数的情况下可以通过子查询来实现人数
-        link: https://theme-hope.vuejs.press/zh/guide/advanced/pwa.html
+        # link: https://theme-hope.vuejs.press/zh/guide/advanced/pwa.html
 
   - header: 联系我们
     # description: 通过主题创建个人博客
@@ -280,22 +280,22 @@ highlights:
       - title: 博客功能
         icon: blog
         details: 通过文章的日期、标签和分类展示文章
-        link: https://theme-hope.vuejs.press/zh/guide/blog/intro.html
+        # link: https://theme-hope.vuejs.press/zh/guide/blog/intro.html
 
       - title: 博客主页
         icon: house
         details: 全新博客主页
-        link: https://theme-hope.vuejs.press/zh/guide/blog/home.html
+        # link: https://theme-hope.vuejs.press/zh/guide/blog/home.html
 
       - title: 博主信息
         icon: circle-info
         details: 自定义名称、头像、座右铭和社交媒体链接
-        link: https://theme-hope.vuejs.press/zh/guide/blog/blogger.html
+        # link: https://theme-hope.vuejs.press/zh/guide/blog/blogger.html
 
       - title: 时间线
         icon: clock
         details: 在时间线中浏览和通读博文
-        link: https://theme-hope.vuejs.press/zh/guide/blog/timeline.html
+        # link: https://theme-hope.vuejs.press/zh/guide/blog/timeline.html
 
 copyright: false
 footer: Apache 2.0 协议, 版权所有 © 2022-至今 xuejmnet

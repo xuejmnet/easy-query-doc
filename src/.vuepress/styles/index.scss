@@ -35,12 +35,27 @@
 // .vp-highlight-info-wrapper{
 //     justify-content:flex-start
 // }
-.vp-hero-infos{
-    min-width: 1000px;
+// place your custom styles here
+@media (min-width: 1000px){
+    .vp-hero-infos{
+        min-width: 1000px;
+        display: block;
+    }
+    #main-description{
+        max-width: none;
+        height: 170px;
+    }
 }
-#main-description{
-    max-width: none;
-    height: 170px;
+@media (max-width: 959px){
+    .vuepress_typed{
+        display: none;
+    }
+    .typed-cursor{
+        display: none;
+    }
+    #main-description{
+        max-width: none;
+    }
 }
 
 
