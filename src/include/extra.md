@@ -77,8 +77,8 @@ public class SysBankCard implements ProxyEntityAvailable<SysBankCard , SysBankCa
     /**
      * 所属银行
      */
-    @Navigate(value = RelationTypeEnum.ManyToOne, selfProperty = {"bankId"}, targetProperty = {"id"})
-    @ForeignKey//可以不加 加了就是InnerJoin处理更多细节查看注解篇章
+    @Navigate(value = RelationTypeEnum.ManyToOne, selfProperty = {"bankId"}, targetProperty = {"id"}, required=true)
+    @ForeignKey//可以不加
     private SysBank bank;
 
     /**
