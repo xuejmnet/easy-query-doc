@@ -62,4 +62,38 @@ ValueConverter  | 将数据库和对象值进行互相转换的接口
 \<TProperty>  | 对象属性类型
 \<TProvider>  | 数据库对应的java类型
 
+
+
+
+```mermaid
+erDiagram
+    SysBankCard {
+        String id PK
+        String uid FK
+        String code
+        String type
+        String bankId FK
+        LocalDateTime openTime
+    }
+    
+    SysUser {
+        String id PK
+        String name
+        String phone
+        Integer age
+        LocalDateTime createTime
+    }
+    
+    SysBank {
+        String id PK
+        String name
+        LocalDateTime createTime
+    }
+
+    SysBankCard }o--|| SysUser : "Many-to-One (uid → id)"
+    SysBankCard }o--|| SysBank : "Many-to-One (bankId → id)"
+```
+
+
+
 -->
