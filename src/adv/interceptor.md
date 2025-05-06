@@ -349,7 +349,7 @@ public class MyTenantInterceptor implements EntityInterceptor,PredicateFilterInt
 
     @Override
     public void configure(Class<?> entityClass, LambdaEntityExpressionBuilder lambdaEntityExpressionBuilder, WherePredicate<Object> sqlWherePredicate) {
-        if(CurrentUserHelper.getUserId()!=null){x
+        if(CurrentUserHelper.getUserId()!=null){
             sqlWherePredicate.eq("tenantId", CurrentUserHelper.getTenantId());
         }
     }

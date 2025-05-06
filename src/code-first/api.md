@@ -206,6 +206,24 @@ CREATE TABLE IF NOT EXISTS `t_company` (
 ) Engine=InnoDB COMMENT='企业表';
 ```
 
+
+## 数据库默认值
+通过添加`dbDefault = CURRENT_TIMESTAMP(3)`来表明数据库对应的列为非空列
+```java
+  
+    @Column(nullable = false,dbDefault = "CURRENT_TIMESTAMP(3)")
+    private LocalDateTime createTime;
+```
+
+```sql
+CREATE TABLE IF NOT EXISTS `t_company` ( 
+`id` varchar(32) NOT NULL  COMMENT '企业id',
+`name` VARCHAR(255) NOT NULL  COMMENT '企业名称',
+`create_time` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) COMMENT '企业创建时间',
+`register_money` DECIMAL(16,2) NULL  COMMENT '注册资金', 
+ PRIMARY KEY (`id`)
+) Engine=InnoDB COMMENT='企业表';
+```
 ## 添加列
 我们在现有类里面添加一个列然后执行代码`执行syncTableCommand`
 ```java
@@ -234,4 +252,106 @@ check db sql:select 1 from information_schema.schemata where schema_name='eq_db'
 ==> Preparing: 
 ALTER TABLE `t_company` CHANGE `column` `column1` varchar(500) NULL COMMENT '测试列';
 <== Total: 0
+```
+
+
+## 数据库索引
+使用`@TableIndex`添加索引如果存在多个索引可以使用`@TableIndexes`注解
+
+`fields`表示有哪些列作为索引,`unique`是否是唯一约束索引,`name`索引名称默认`当前表_目标表_列_(u)idx`其中`idx`是普通索引`uidx`是唯一约束索引其中name的作用是jdbc会查询数据库表是否已经有改索引名称了如果没有则会添加默认可以不设置,`descendingFields`需要使用`desc`排序的列
+```java
+@Data
+@Table
+@EntityProxy
+@TableIndexes({
+        @TableIndex(fields = {"column1","column2"}),
+        @TableIndex(fields = {"column2"},unique = true)
+})
+public class M8TestIndex implements ProxyEntityAvailable<M8TestIndex , M8TestIndexProxy> {
+    @Column(primaryKey = true)
+    private String column1;
+    private String column2;
+    private String column3;
+    @Column(dbDefault = "''")
+    private String column4;
+
+    @Column(nullable = false,dbDefault = "CURRENT_TIMESTAMP(3)")
+    private LocalDateTime createTime;
+}
+
+CREATE TABLE IF NOT EXISTS `m8_test_index` ( 
+`column1` VARCHAR(255) NOT NULL ,
+`column2` VARCHAR(255) NULL ,
+`column3` VARCHAR(255) NULL ,
+`column4` VARCHAR(255) NULL  DEFAULT '',
+`create_time` DATETIME(3) NOT NULL  DEFAULT CURRENT_TIMESTAMP(3), 
+ PRIMARY KEY (`column1`)
+) Engine=InnoDB;
+CREATE INDEX m8_test_index_id_column1_column2_idx ON `m8_test_index` (`column1` ASC,`column2` ASC);
+CREATE UNIQUE INDEX m8_test_index_id_column2_uidx ON `m8_test_index` (`column2` ASC);
+```
+
+## 数据库外键
+使用`@ForeignKey`添加bank_card和bank之间的外键关系并且支持添加`action`如`ON DELETE CASCADE`
+```java
+
+@Table("t_bank_card")
+@EntityProxy
+@Data
+@FieldNameConstants
+@EasyAlias("bank_card")
+public class SysBankCard implements ProxyEntityAvailable<SysBankCard, SysBankCardProxy>, Serializable {
+    @Column(primaryKey = true)
+    private String id;
+    private String uid;
+    /**
+     * 银行卡号
+     */
+    private String code;
+    /**
+     * 银行卡类型借记卡 储蓄卡
+     */
+    private String type;
+    /**
+     * 所属银行
+     */
+    private String bankId;
+    /**
+     * 用户开户时间
+     */
+    private LocalDateTime openTime;
+
+    /**
+     * 所属银行
+     */
+    @Navigate(value = RelationTypeEnum.ManyToOne, selfProperty = {"bankId"}, targetProperty = {"id"}, required = true)
+    @ForeignKey
+    private SysBank bank;
+
+    /**
+     * 所属用户
+     */
+    @Navigate(value = RelationTypeEnum.ManyToOne, selfProperty = {"uid"}, targetProperty = {"id"})
+    private SysUser user;
+}
+```
+
+生成的sql
+```sql
+CREATE TABLE IF NOT EXISTS `t_bank` ( 
+`id` VARCHAR(255) NOT NULL ,
+`name` VARCHAR(255) NULL ,
+`create_time` DATETIME(3) NULL , 
+ PRIMARY KEY (`id`)
+) Engine=InnoDB;
+CREATE TABLE IF NOT EXISTS `t_bank_card` ( 
+`id` VARCHAR(255) NOT NULL ,
+`uid` VARCHAR(255) NULL ,
+`code` VARCHAR(255) NULL ,
+`type` VARCHAR(255) NULL ,
+`bank_id` VARCHAR(255) NULL ,
+`open_time` DATETIME(3) NULL , 
+ PRIMARY KEY (`id`)
+) Engine=InnoDB;
+ALTER TABLE `t_bank_card` ADD CONSTRAINT t_bank_card_t_bank_id_fk FOREIGN KEY (`bank_id`) REFERENCES `t_bank` (`id`);
 ```

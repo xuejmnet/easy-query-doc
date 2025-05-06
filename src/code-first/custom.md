@@ -7,7 +7,7 @@ order: 3
 `eq`默认框架注解提供了如何在运行时读取比如表或者列的备注信息,是否可为null或者自定义数据库类型等,但是有时候大家希望通过自己已有的注解或者在生成式进行预先干预解析元信息
 
 ## MigrationEntityParser
-`eq 2.5.7^`版本暴露该接口
+`eq 2.8.18^`版本对该接口的使用进行了修改可以通过set来对整个eq实例进行设置也可以通过依赖注入将`MigrationEntityParser`注入到整个框架
 ```java
 
         easyEntityQuery.setMigrationParser(xxxx);
