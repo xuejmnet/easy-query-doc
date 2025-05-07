@@ -272,6 +272,10 @@ WHERE
 
 筛选出用户拥有至少2张工商银行卡且还未在建设银行开户的用户
 
+- 配置子查询转`group join`框架`2.8.16^`支持在`@Navigate(subQueryToGroupJoin = true)`设置
+- 表达式配置` .subQueryToGroupJoin(u->u.bankCards())//启用隐式group`
+- 表达式配置全部都是用`.configure(o->{o.getBehavior().addBehavior(EasyBehaviorEnum.ALL_SUB_QUERY_GROUP_JOIN);})`
+
 
 超级的orm写法如下
 ```java
