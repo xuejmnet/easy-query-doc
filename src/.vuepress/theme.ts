@@ -13,7 +13,7 @@ export default hopeTheme({
 
   logo: "/images/logo.svg",
 
-  repo: "https://github.com/dromara/easy-query",
+  repo: "https://github.com/xuejmnet/easy-query-doc",
 
   docsDir: "src",
 
