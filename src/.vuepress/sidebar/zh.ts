@@ -127,6 +127,12 @@ export const zhSidebar = sidebar({
       children: "structure",
     },
     {
+      text: "性能",
+      prefix: "performance/",
+      collapsible:true,
+      children: "structure",
+    },
+    {
       text: "案例",
       prefix: "demo/",
       collapsible:true,
