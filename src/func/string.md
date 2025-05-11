@@ -13,10 +13,10 @@ order: 20
 
 数据库  | 方言  
 ---  | --- 
-MySQL  | IFNULL
-MSSQL  | ISNULL
-PGSQL  | COALESCE
-ORACLE  | NVL
+MySQL  | `CONCAT`
+MSSQL  | `+`
+PGSQL  | `\|\|`
+ORACLE  | `\|\|`
 
 
 用法

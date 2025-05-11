@@ -8,6 +8,8 @@ order: 3
 提供支持子查询包括`exists`、`not exists`、`in`、`not in`,并且有手动和自动两种方式
 
 以下是错误的演示❌
+以下是错误的演示❌
+以下是错误的演示❌
 ```java
 
 List<SysUser> cards = easyEntityQuery.queryable(SysUser.class)

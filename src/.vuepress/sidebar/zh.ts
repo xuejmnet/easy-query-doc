@@ -121,7 +121,7 @@ export const zhSidebar = sidebar({
       children: "structure",
     },
     {
-      text: "超级",
+      text: "分库分表",
       prefix: "super/",
       collapsible:true,
       children: "structure",

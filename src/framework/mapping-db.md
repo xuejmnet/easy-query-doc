@@ -1,6 +1,6 @@
 ---
 title: 对象映射数据库列规则
-order: 6
+order: 60
 ---
 
 # 对象映射数据库列规则
@@ -19,3 +19,27 @@ private Integer userAge;
 接口支持默认java属性转数据库列名
 
 默认java属性为小驼峰的情况下转换结果如下
+
+
+property  | nameConversion | column  
+---  | --- | --- 
+userAge  | DefaultNameConversion | userAge
+userAge  | UnderlinedNameConversion | user_age
+userAge  | UpperUnderlinedNameConversion | USER_AGE
+userAge  | LowerCamelCaseNameConversion | userAge
+userAge  | UpperCamelCaseNameConversion | UserAge
+
+```log
+property:userAge-->conversion:DefaultNameConversion-->column:userAge
+property:userAge-->conversion:UnderlinedNameConversion-->column:user_age
+property:userAge-->conversion:UpperUnderlinedNameConversion-->column:USER_AGE
+property:userAge-->conversion:LowerCamelCaseNameConversion-->column:userAge
+property:userAge-->conversion:UpperCamelCaseNameConversion-->column:UserAge
+```
+
+
+::: tip 说明!!!
+> 如果默认的转换都无法满足你的使用那么您可以自定义`NameConversion`来替[换默认框架的接口](/easy-query-doc/framework/replace-configure)
+:::
+
+
