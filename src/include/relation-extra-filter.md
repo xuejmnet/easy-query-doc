@@ -6,7 +6,7 @@ order: 15
 
 ## 对象关系
 
-::: code-tabs
+::: tabs
 @tab RelationUser
 ```java
 

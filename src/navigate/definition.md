@@ -20,6 +20,10 @@ order: 1
 
 ## Navigate
 
+::: danger 警告!!!
+> 如果你使用的是多对多带中间表请不要对目标表进行排序,框架为了准确性会牺牲性能来保证结果正确
+> 正确的做法应该是结果取出来后在内存中进行排序
+:::
 
 
 属性 | 类型   | 作用  
@@ -31,7 +35,7 @@ mappingClass  | Class<?>  | 多对多时使用的中间表,填写对应的中间
 selfMappingProperty  | String[]  | 多对多时使用的中间表属性和当前表的`selfProperty`关联的属性,支持多个，长度和`selfProperty`一样
 targetMappingProperty  | String[]  | 多对多时使用的中间表属性和当前表的`targetProperty`关联的属性,支持多个，长度和`targetProperty`一样
 propIsProxy  | boolean  | 设置为true即可,历史原因兼容非entity模式和entity模式
-orderByProps  | OrderByProperty[]  | toMany，用于拉取数据的时候对子表进行排序
+orderByProps  | OrderByProperty[]  | toMany，用于拉取数据的时候对子表进行排序,多对多有中间表的情况下请不要对其进行排序,框架为了准确性会牺牲性能来保证结果正确
 offset  | long  | toMany，用于拉取数据的时候对子表进行排序
 limit  | long  | toMany，用于拉取数据的时候对子表进行排序
 extraFilter  | Class<? extends NavigateExtraFilterStrategy>  | 额外筛选支持中间表和目标表

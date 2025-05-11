@@ -1,6 +1,6 @@
 ---
 title: 日志配置
-order: 5
+order: 50
 ---
 
 # 打印sql日志
