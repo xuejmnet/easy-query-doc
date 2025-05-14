@@ -149,3 +149,10 @@ userAge  | LOWER_CAMEL_CASE 小驼峰| userAge
 userAge  | UPPER_CAMEL_CASE 大驼峰| UserAge
 
 [关键字处理](/easy-query-doc/framework/key-word)
+
+## mvn clean package失效
+如果用户可以使用idea的clean和package打包但是无法使用命令行打包的情况下建议尝试以下方案
+- 1.先不要单独引入`sql-processor`
+- 2.外面的 lombok 需要版本号
+- 3.maven-compiler-plugin 里的 lombok 不能有版本号
+- 4.maven-compiler-plugin 里要增加 com.easy-query 的 sql-processor
