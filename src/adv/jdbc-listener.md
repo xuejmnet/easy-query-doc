@@ -367,3 +367,85 @@ public class App {
     }
 }
 ```
+
+## 实战LogSlowSQLListener
+```java
+
+public class LogSlowSQLListener implements JdbcExecutorListener {
+    private static final Logger log = LoggerFactory.getLogger(LogSlowSQLListener.class);
+    private final long slowMillis;
+
+    public LogSlowSQLListener(long slowMillis){
+
+        this.slowMillis = slowMillis;
+    }
+
+    @Override
+    public boolean enable() {
+        return true;
+    }
+
+    @Override
+    public void onExecuteBefore(JdbcExecuteBeforeArg arg) {
+
+    }
+
+    @Override
+    public void onExecuteAfter(JdbcExecuteAfterArg afterArg) {
+        JdbcExecuteBeforeArg beforeArg = afterArg.getBeforeArg();
+        //通过getState来获取before的参数
+//        Map<String, Object> state = beforeArg.getState();
+        //记录耗时操作
+        long elapsed = afterArg.getEnd() - beforeArg.getStart();
+        //耗时3秒以上的sql需要记录
+        //因为sqlParameters第一层大于1表示是批处理,批处理的时间一般是比较多的你可以选择
+        //不记录本次sql或者只记录sql不记录sql参数自行处理
+        if (elapsed >= slowMillis && beforeArg.getSqlParameters().size() <= 5) {
+            //发送http请求
+
+            String sql = beforeArg.getSql();
+            List<List<SQLParameter>> sqlParameters = beforeArg.getSqlParameters();
+            String sqlParameter = getSQLParameter(sqlParameters);
+            Exception exception = afterArg.getException();
+            if (exception == null) {
+                log.error("!!!!!!execute sql slow,elapsed:{}(ms),sql:{},parameters:{}", elapsed, sql, sqlParameter);
+            } else {
+                log.error("!!!!!!execute sql slow,elapsed:{}(ms),sql:{},parameters:{},error:{}", elapsed, sql, sqlParameter, exception.getMessage(), exception);
+            }
+        }
+    }
+
+    private String getSQLParameter(List<List<SQLParameter>> sqlParameters) {
+        if (EasyCollectionUtil.isEmpty(sqlParameters)) {
+            return null;
+        }
+        if (sqlParameters.size() == 1) {
+            return EasySQLUtil.sqlParameterToString(sqlParameters.get(0));
+        }
+        StringBuilder sb = new StringBuilder();
+        for (List<SQLParameter> sqlParameter : sqlParameters) {
+            sb.append(EasySQLUtil.sqlParameterToString(sqlParameter)).append("\n");
+        }
+        return sb.toString();
+    }
+}
+
+
+
+//依赖注入
+
+
+public class MyStarterConfigurer implements StarterConfigurer {
+    private final DbProperties dbProperties;
+
+    public MyStarterConfigurer(DbProperties dbProperties) {
+
+        this.dbProperties = dbProperties;
+    }
+
+    @Override
+    public void configure(ServiceCollection services) {
+        services.addService(JdbcExecutorListener.class, new LogSlowSQLListener(dbProperties.getSlowMillis()));
+    }
+}
+```
