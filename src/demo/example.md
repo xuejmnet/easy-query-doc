@@ -484,7 +484,7 @@ public class RelationTeacher implements ProxyEntityAvailable<RelationTeacher , R
 //@Component
 public class BookNavigateExtraFilterStrategy implements NavigateExtraFilterStrategy {
     @Override
-    public SQLExpression1<WherePredicate<?>> getPredicateFilterExpression(NavigateBuilder builder) {
+    public SQLActionExpression1<WherePredicate<?>> getPredicateFilterExpression(NavigateBuilder builder) {
         //parentType
         EntityMetadata entityMetadata = builder.getNavigateOption().getEntityMetadata();
         //导航属性类型
@@ -505,6 +505,13 @@ public class BookNavigateExtraFilterStrategy implements NavigateExtraFilterStrat
             return o->o.eq("bookType",2);
         }
         throw new RuntimeTimeException();
+    }
+    /**
+     * 过滤中间表常用于多对多
+     */
+    @Override
+    public SQLActionExpression1<WherePredicate<?>> getPredicateMappingClassFilterExpression(NavigateBuilder builder) {
+        return null;
     }
 }
 
