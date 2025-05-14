@@ -4,6 +4,9 @@ order: 15
 ---
 `easy-query`不单支持联级的筛选还支持联级额外条件的筛选
 
+用户有`books`这个集合但是可能在某些情况下用户还需要将`books`分为历史的或者科幻的和其他类目的，所以我们新建一个`historyBooks`关联属性然后对其添加`BookNavigateExtraFilterStrategy`一般我们将以一个属性一个自己的`ExtraFilterStrategy`
+这边我们采用复用的模式来实现
+
 ## 对象关系
 
 ::: tabs
@@ -81,6 +84,47 @@ public class RelationTeacher implements ProxyEntityAvailable<RelationTeacher , R
 
 ```
 
+@tab BookNavigateExtraFilterStrategy
+用户里面有两个书本导航属性,分别是用户有多本书和用户所拥有的历史书籍,其中因为书本分为学生版和老师版本所以在书本里面和当前用户关联的书籍只有`type=1`的才是，`type=2`的书籍是老师的书籍
+
+`BookNavigateExtraFilterStrategy`用来添加导航属性额外条件,如果我们不复用`NavigateExtraFilterStrategy`策略那么不需要再内部进行过多的判断
+
+```java
+//@Component
+public class BookNavigateExtraFilterStrategy implements NavigateExtraFilterStrategy {
+    @Override
+    public SQLActionExpression1<WherePredicate<?>> getPredicateFilterExpression(NavigateBuilder builder) {
+        //parentType
+        EntityMetadata entityMetadata = builder.getNavigateOption().getEntityMetadata();
+        //导航属性类型
+        Class<?> navigatePropertyType = builder.getNavigateOption().getNavigatePropertyType();
+        //导航属性名称
+        String propertyName = builder.getNavigateOption().getPropertyName();
+        //因为这个策略是他通用的所以可以在这边判断当然你也可以选择定义多个策略不通用
+        if(Objects.equals(RelationUser.class,entityMetadata.getEntityClass())){
+            //如果是历史书籍那么应该是2022年以前的书籍
+            if(Objects.equals("historyBooks",propertyName)){
+                LocalDateTime histroy = LocalDateTime.of(2022, 1, 1, 0, 0);
+                return o->o.le("createTime",histroy);
+            }
+            //否则就是用户的
+            return o->o.eq("bookType",1);
+        } else  if(Objects.equals(RelationTeacher.class,entityMetadata.getEntityClass())){
+            //老师的责应该是type=2的
+            return o->o.eq("bookType",2);
+        }
+        throw new RuntimeTimeException();
+    }
+    /**
+     * 过滤中间表常用于多对多
+     */
+    @Override
+    public SQLActionExpression1<WherePredicate<?>> getPredicateMappingClassFilterExpression(NavigateBuilder builder) {
+        return null;
+    }
+}
+
+```
 
 ::: 
 
