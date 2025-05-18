@@ -5,6 +5,15 @@ order: 10
 # 可配置参数选项
 在使用前希望用户可以首先查看一遍可选择配置项,有利于了解如何进行优化
 
+
+::: danger 破坏性变更!!!
+> 框架从v2-v3有一定的配置项进行了变动具体可以参考[v2升级v3](/easy-query-doc/framework/v2-v3)
+> 框架从v2-v3有一定的配置项进行了变动具体可以参考[v2升级v3](/easy-query-doc/framework/v2-v3)
+> 框架从v2-v3有一定的配置项进行了变动具体可以参考[v2升级v3](/easy-query-doc/framework/v2-v3)
+:::
+
+
+
 ## 默认配置项
 配置名称  | 默认值 | 描述  
 --- | --- | --- 
@@ -21,7 +30,7 @@ printSql | `true`  | 是否打印执行sql,这个和log不一样,因为考虑到
 defaultTrack | `false` | 默认是否使用追踪模式,如果为`true`那么只需要开启当前上下文追踪,或者`SpringBoot`下使用`@EasyQueryTrack`那么默认就会调用`asTracking()`
 relationGroupSize | 512 | include的关联查询单次查询最多支持的关联id,如果超出将会分为两个语句执行,比如大于等于1,可以单独在`.configure(o->o.setGroupSize(20))`处设置
 noVersionError | true | 当对象存在版本号并且是表达式更新的那么如果不添加版本号`withVersion`将会报错,必须要设置对应的版本号,如果不希望报错可以通过`ignoreVersion`来忽略
-keepNativeStyle | false | `false`:表示默认行为,`sqlNativeSegment`中如果纯在参数行为,那么默认单引号字符串模板需要改成双单引号,因为底层format采用的是`MessageFormat`.如果配置为`true`,那么默认将单引号改为双单引号,用户输入的表达式将会和执行的一致,当然可以在调用时调用`keepStyle`或者将单引号改为双单引号来处理
+keepNativeStyle | true | `false`:表示默认行为,`sqlNativeSegment`中如果纯在参数行为,那么默认单引号字符串模板需要改成双单引号,因为底层format采用的是`MessageFormat`.如果配置为`true`,那么默认将单引号改为双单引号,用户输入的表达式将会和执行的一致,当然可以在调用时调用`keepStyle`或者将单引号改为双单引号来处理
 warningColumnMiss| `true` | 当jdbc的resultSet对应的coluName无法映射到entity属性上时将会以log.warning进行日志输出，`true`:表示警告.`false`:表示不警告
 sqlParameterPrint| DEFAULT | sql参数打印可选MYBATIS模式多一个逗号后的空格
 mapToBeanStrict| true | jdbc结果集映射到bean是否使用属性严格模式
@@ -29,9 +38,9 @@ defaultSchema| null | 当entity的schema为空时切defaultSchema不为空时采
 resultSizeLimit| -1 | 限制全局拉取数据至多多少条,小于等于0时不生效,如果设置100后续有查询需要放大可以单独在`.configure(o->o.setResultSizeLimit(100000))`处设置
 mapKeyConversion| -  | 当使用map返回结果时resultSet转成map的key如何处理,默认支持全大写全小写去掉下划线也可以保留下划线
 printNavSql| true | 关联查询是否打印二次子查询的sql
-propertyMode| `PropertyModeEnum.FIRST_LOWER`  | 表示entity属性是首字母小写(为了兼容lambda和lambdakt的模式),还有一个就是`PropertyModeEnum.SAME_AS_ENTITY`如果你是entity模式那么建议使用这个
+propertyMode| `PropertyModeEnum.SAME_AS_ENTITY`  | 表示entity属性是首字母小写(为了兼容lambda和lambdakt的模式),还有一个就是`PropertyModeEnum.SAME_AS_ENTITY`如果你是entity模式那么建议使用这个
 relationTableAppend| `RelationTableAppendEnum.SMART` | `SMART`表示智能添加`relationTable`隐式join吗，`DEFAULT`则需要代码执行的时候不执行到导航属性需要`if`代码块包裹
-mappingStrategy| `EntityMappingStrategyEnum.COLUMN_ONLY` | 对象间的映射关系,默认以`列名`映射,可以选择`属性名`或者`列名+属性名`
+mappingStrategy| `EntityMappingStrategyEnum.PROPERTY_FIRST` | 对象间的映射关系,默认以`列名`映射,可以选择`属性名`或者`列名+属性名`
 includeLimitMode| `IncludeLimitModeEnum.UNION_ALL` | many子项拉取的时候如果子项设置了limit限制返回条数默认采用`union_all`,用户可以选择`partation`来提高性能但是部分数据库不支持
 
 ## 分表分库特有配置
