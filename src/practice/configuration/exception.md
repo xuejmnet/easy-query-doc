@@ -156,7 +156,6 @@ EasyQueryClient easyQueryClient = EasyQueryBootstrapper.defaultBuilderConfigurat
         .setDefaultDataSource(dataSource)
         .optionConfigure(op -> {
             op.setPrintSql(true);
-            op.setKeepNativeStyle(true);
         })
         .useDatabaseConfigure(new MySQLDatabaseConfiguration())
         .replaceService(AssertExceptionFactory.class, MyAssertExceptionFactory.class);//就会将默认的easy-query实例的异常断言接口进行替换

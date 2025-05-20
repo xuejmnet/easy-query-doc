@@ -386,7 +386,6 @@ public class EasyQueryConfiguration {
 //                    builder.setStartTimeJob(easyQueryProperties.isStartTimeJob());
 //                    builder.setDefaultTrack(easyQueryProperties.isDefaultTrack());
 //                    builder.setRelationGroupSize(easyQueryProperties.getRelationGroupSize());
-//                    builder.setKeepNativeStyle(easyQueryProperties.isKeepNativeStyle());
 //                    builder.setNoVersionError(easyQueryProperties.isNoVersionError());
 //                    builder.setReverseOffsetThreshold(easyQueryProperties.getReverseOffsetThreshold());
                 })

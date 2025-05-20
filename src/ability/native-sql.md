@@ -396,7 +396,7 @@ List<Topic> list3 = easyEntityQuery.queryable(Topic.class)
                     .orderBy(o -> {
                         o.createTime().format("yyyy-MM-dd HH:mm:ss" ).desc();
                         o.expression().sql("IFNULL({0},'') ASC" , c -> {
-                            c.keepStyle().expression(o.stars());
+                            c.expression(o.stars());
                         });
                     })
                     .select(o -> new TopicProxy().selectExpression(o.FETCHER.title().id(), o.createTime().format("yyyy-MM-dd HH:mm:ss" )))
@@ -412,7 +412,6 @@ List<Topic> list2 = easyEntityQuery.queryable(Topic.class)
             TopicProxy r = new TopicProxy();
             r.title().set(o.stars().nullOrDefault(0).toStr());
             r.alias().setSQL("IFNULL({0},'')", c -> {
-                c.keepStyle();
                 c.expression(o.id());
             });
             return r;
@@ -541,7 +540,7 @@ setAlias | 别名  | 用于设置列别名一般用户查询较多
 
 
 ::: warning 注意点及说明!!!
-> 如果`sqlNativeSegment`内部存在参数,那么整个表达式需要将单引号改成双引号,可以通过全局配置`keep-native-style:true`来全局将单引号默认替换为双引号,或者在使用的时候调用`.keepStyle()`
+> 如果`sqlNativeSegment`内部存在参数,框架默认会将表达式的单引号改成双引号
 :::
 
 ```java
@@ -637,7 +636,6 @@ WHERE regexp_like(t.price,?) AND regexp_like(t1.avatar,?)
 ```
 
 ## 注意 
-如果sqlNativeSegment中存在单引号,并且是模板模式存在变量,那么需要对其单引号变成双单引号,或者将单引号作为参数或者使用`keepStyle()`,也可以全局设置`keepStyle()`,
 
 内部采用`MessageFormat`来格式化参数,所以如果有大数字需要传入`format`请先`toString()`后传入
 ```java
@@ -650,8 +648,8 @@ WHERE regexp_like(t.price,?) AND regexp_like(t1.avatar,?)
                     c.expression(User::getCreateTime).format("'%Y-%m-%d'");
                 })
 
-.sqlNativeSegment("DATE_FORMAT({0}, '%Y-%m-%d')", c -> { //因为存在变量参数所需需要使用双单引号代替,可以调用keepStyle方法或者全局配置keep-native-style为true
-                    c.keepStyle().expression(User::getCreateTime);
+.sqlNativeSegment("DATE_FORMAT({0}, '%Y-%m-%d')", c -> { 
+                    c.expression(User::getCreateTime);
                 })
 
 

@@ -128,7 +128,6 @@ public class DefaultEasyMultiEntityQuery implements EasyMultiEntityQuery {
 				.optionConfigure(builder -> {
 					builder.setPrintSql(true);
 					builder.setDefaultTrack(true);
-					builder.setKeepNativeStyle(true);
 					builder.setDeleteThrowError(false);
 				});
 		// 判断数据库方言
@@ -194,7 +193,6 @@ public class DefaultEasyMultiEntityQuery implements EasyMultiEntityQuery {
 				.optionConfigure(builder -> {
 					builder.setPrintSql(true);
 					builder.setDefaultTrack(true);
-					builder.setKeepNativeStyle(true);
 					builder.setDeleteThrowError(false);
 				});
 		// 判断数据库方言
