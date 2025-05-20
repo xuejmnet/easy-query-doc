@@ -50,12 +50,13 @@ EasyPageResult<BlogEntity> page = easyQuery
 ```java
 EasyPageResult<BlogEntity> page = easyQuery
                 .queryable(Topic.class)
-                .innerJoin(BlogEntity.class, (t, t1) -> t.id().eq(t1.id()))
-                .where((t, t1) -> t1.title().isNotNull())
-                .groupBy((t, t1)-> GrouopKeys.of(t1.id()))
+                .innerJoin(BlogEntity.class, (t_topic, t_blog) -> t_topic.id().eq(t_blog.id()))
+                .where((t_topic, t_blog) -> t_blog.title().isNotNull())
+                .groupBy((t_topic, t_blog)-> GrouopKeys.of(t_blog.id()))
                 .select(BlogEntity.class, group -> Select.of(
                     group.key1().as("id"),
-                    group.score().sum().as("score")
+                    //group.sum(t->t.t2.score()).as("score")//上下写法一样就是集合方法和属性方法的区别
+                    group.groupTable().t2.score().sum().as("score")
                 ))//t1.column(BlogEntity::getId).columnSum(BlogEntity::getScore)
                 .toPageResult(1, 20);
 

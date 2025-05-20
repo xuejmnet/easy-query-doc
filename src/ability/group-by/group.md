@@ -106,6 +106,15 @@ List<TopicGroupTestDTO> list = easyQueryClient.queryable(Topic.class)
 EntityQuery `group` 多表2张表及以上,`group.groupTable()`无法表示为对应的表,需要通过`group.groupTable().t1......t10`来表示
 
 ```java
+
+
+@Data
+@EntityFileProxy
+public class BlogGroupIdAndName {
+    private String id;
+    private Long idCount;
+}
+
 List<BlogGroupIdAndName> list = easyEntityQuery.queryable(Topic.class)
                 .leftJoin(BlogEntity.class, (t, b2) -> t.id().eq(b2.id()))
                 .where((t, b2) -> {

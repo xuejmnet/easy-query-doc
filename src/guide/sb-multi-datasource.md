@@ -222,7 +222,6 @@ public class MultiDataSourceConfiguration {
                 .replaceService(NameConversion.class, new UnderlinedNameConversion())
                 .optionConfigure(builder -> {
                     builder.setPrintSql(true);
-                    builder.setKeepNativeStyle(true);
                 })
                 .useDatabaseConfigure(new MySQLDatabaseConfiguration())
                 .build();

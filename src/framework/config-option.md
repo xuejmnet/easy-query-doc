@@ -30,7 +30,6 @@ printSql | `true`  | 是否打印执行sql,这个和log不一样,因为考虑到
 defaultTrack | `false` | 默认是否使用追踪模式,如果为`true`那么只需要开启当前上下文追踪,或者`SpringBoot`下使用`@EasyQueryTrack`那么默认就会调用`asTracking()`
 relationGroupSize | 512 | include的关联查询单次查询最多支持的关联id,如果超出将会分为两个语句执行,比如大于等于1,可以单独在`.configure(o->o.setGroupSize(20))`处设置
 noVersionError | true | 当对象存在版本号并且是表达式更新的那么如果不添加版本号`withVersion`将会报错,必须要设置对应的版本号,如果不希望报错可以通过`ignoreVersion`来忽略
-keepNativeStyle | true | `false`:表示默认行为,`sqlNativeSegment`中如果纯在参数行为,那么默认单引号字符串模板需要改成双单引号,因为底层format采用的是`MessageFormat`.如果配置为`true`,那么默认将单引号改为双单引号,用户输入的表达式将会和执行的一致,当然可以在调用时调用`keepStyle`或者将单引号改为双单引号来处理
 warningColumnMiss| `true` | 当jdbc的resultSet对应的coluName无法映射到entity属性上时将会以log.warning进行日志输出，`true`:表示警告.`false`:表示不警告
 sqlParameterPrint| DEFAULT | sql参数打印可选MYBATIS模式多一个逗号后的空格
 mapToBeanStrict| true | jdbc结果集映射到bean是否使用属性严格模式
@@ -76,8 +75,6 @@ easy-query:
   delete-throw: true
   #打印sql显示(需要框架默认有日志以 log.info打印)
   print-sql: true
-  #sqlNativeSegment输入和格式化无需处理单引号会自动处理为双单引号
-  keep-native-style: true
   #entity映射到dto/vo使用属性匹配模式
   #支持 property_only column_only column_and_property property_first
   mapping-strategy: property_first

@@ -19,7 +19,14 @@ createDatabaseIfNotExists  | 如果数据库不存在则创建数据库(oracle�
 tableExists | 传入一个对象class,返回true表示存在，false表示不存在
 createTableCommand | 生成创建表命令
 dropTableCommand | 生成删除表命令
+dropTableIfExistsCommand | 生成删除表命令，如果表存在的话
 syncTableCommand | 自动同步表结构 如果数据库不存在则创建数据库(oracle不支持) 如果表不存在则创建表 如果表存在且class内的属性比数据库列多则自动生成添加列 如果列或者表添加`renameFrom`则自动生成rename命令
+
+
+::: tip 说明!!!
+> `syncTableCommand`永远只会新增表、新增列、新增索引、新增外键、修改列名(如果存在renameFrom),需要删除表那么需要手动执行`dropTableCommand`，暂时不对咧和索引提供删除
+:::
+
 
 
 ## CodeFirstCommand
@@ -208,7 +215,7 @@ CREATE TABLE IF NOT EXISTS `t_company` (
 
 
 ## 数据库默认值
-通过添加`dbDefault = CURRENT_TIMESTAMP(3)`来表明数据库对应的列为非空列
+通过添加`dbDefault = CURRENT_TIMESTAMP(3)`来表明数据库对应的列默认值,其中nullable为非空列
 ```java
   
     @Column(nullable = false,dbDefault = "CURRENT_TIMESTAMP(3)")
