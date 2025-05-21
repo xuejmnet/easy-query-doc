@@ -4,6 +4,7 @@ export const zhSidebar = sidebar({
   "/": [
     "",
     // "portfolio",
+    "v2-v3",
     {
       text: "快速开始",
       icon: "laptop-code",
