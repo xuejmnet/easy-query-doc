@@ -1,5 +1,6 @@
 ---
 title: 隐式Group
+order: 30
 ---
 
 `隐式Group`使用api`subQueryToGroupJoin`用来处理ORM在OLAP领域的最后一块短板,可以说这个功能是目前现有orm都不存在的一个功能

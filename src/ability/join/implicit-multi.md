@@ -1,5 +1,6 @@
 ---
 title: 隐式join查询
+order: 10
 ---
 
 
@@ -64,11 +65,11 @@ public class DocBankCard implements ProxyEntityAvailable<DocBankCard, DocBankCar
      */
     private String bankId;
 
-    @Navigate(value = RelationTypeEnum.ManyToOne, selfProperty = Fields.uid)
+    @Navigate(value = RelationTypeEnum.ManyToOne, selfProperty = Fields.uid, targetProperty=DocUser.Fields.id)
     private DocUser user;
 
 
-    @Navigate(value = RelationTypeEnum.ManyToOne, selfProperty = Fields.bankId)
+    @Navigate(value = RelationTypeEnum.ManyToOne, selfProperty = Fields.bankId, targetProperty=DocBank.Fields.id)
     private DocBank bank;
 }
 
@@ -89,7 +90,7 @@ public class DocUser implements ProxyEntityAvailable<DocUser , DocUserProxy> {
     private String phone;
     private Integer age;
 
-    @Navigate(value = RelationTypeEnum.OneToMany,targetProperty = DocBankCard.Fields.uid)
+    @Navigate(value = RelationTypeEnum.OneToMany, selfProperty = Fields.id,,targetProperty = DocBankCard.Fields.uid)
     private List<DocBankCard> bankCards;
 }
 ```
@@ -106,7 +107,7 @@ public class DocBank implements ProxyEntityAvailable<DocBank, DocBankProxy> {
     private String id;
     private String name;
 
-    @Navigate(value = RelationTypeEnum.OneToMany, targetProperty = DocBankCard.Fields.bankId)
+    @Navigate(value = RelationTypeEnum.OneToMany, selfProperty = Fields.id,, targetProperty = DocBankCard.Fields.bankId)
     private List<DocBankCard> bankCards;
 }
 ```
