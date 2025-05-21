@@ -68,7 +68,7 @@ SysUser u=query(SysUser.class).whereById("123").singleNotNull();//如果不写�
 ## 高阶
 前面我们通过拦截easy-query的异常来实现自定义响应那么有时候我们系统已经拦截了,我希望easy-query抛出我们自定义的异常怎么办
 
-这边`easy-query`提供了接口`AssertExceptionFactory`我们只需要参考`DefaultAssertExceptionFactory`然后替换框架默认行为即可[可以点击这边查看](/easy-query-doc/config/replace-configure)
+这边`easy-query`提供了接口`AssertExceptionFactory`我们只需要参考`DefaultAssertExceptionFactory`然后替换框架默认行为即可[可以点击这边查看](/easy-query-doc/framework/replace-configure)
 我们自定义实现类
 ```java
 

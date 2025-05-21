@@ -534,7 +534,7 @@ Assert.assertEquals("SELECT `id`,`create_time`,`update_time`,`create_by`,`update
 
 ### 如何替换框架行为
 
-[《替换框架行为 ❗️❗️❗️》](/easy-query-doc/config/replace-configure)
+[《替换框架行为 ❗️❗️❗️》](/easy-query-doc/framework/replace-configure)
 
 ### 接口
 
