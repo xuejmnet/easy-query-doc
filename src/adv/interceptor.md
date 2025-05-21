@@ -11,7 +11,7 @@ order: 3
 - 比如`/company/**`的web请求路径将当前企业id:`companyId`作为条件限制只允许操作当前企业
 
 
-如果不知道如何使用可以查看 [实战对象设计](/easy-query-doc/practice/entity/)
+如果不知道如何使用可以查看 [实战对象设计](/practice/configuration/entity)
 
 类  | 名称 | 描述  
 --- | --- | --- 

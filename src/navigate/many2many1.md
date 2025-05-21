@@ -32,7 +32,7 @@ public class SysUser implements ProxyEntityAvailable<SysUser , SysUserProxy> {
             selfProperty = "id",
             selfMappingProperty = "userId",
             targetMappingProperty = "roleId",
-            targetProperty = "id")
+            targetProperty = "id",subQueryToGroupJoin=true)//加上,subQueryToGroupJoin=true有助于提升性能用户自己选择
     private List<SysRole> roles;
 
 }
