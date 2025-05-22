@@ -69,7 +69,7 @@ order: 10
         t.`phone` LIKE CONCAT('186', '%')
 ```
 
-## PartationBy
+## PartitionBy
 
 ```java
 

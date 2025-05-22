@@ -7,9 +7,9 @@ order: 10
 
 
 ::: danger 破坏性变更!!!
-> 框架从v2-v3有一定的配置项进行了变动具体可以参考[v2升级v3](/easy-query-doc/framework/v2-v3)
-> 框架从v2-v3有一定的配置项进行了变动具体可以参考[v2升级v3](/easy-query-doc/framework/v2-v3)
-> 框架从v2-v3有一定的配置项进行了变动具体可以参考[v2升级v3](/easy-query-doc/framework/v2-v3)
+> 框架从v2-v3有一定的配置项进行了变动具体可以参考[v2升级v3](/easy-query-doc/v2-v3)
+> 框架从v2-v3有一定的配置项进行了变动具体可以参考[v2升级v3](/easy-query-doc/v2-v3)
+> 框架从v2-v3有一定的配置项进行了变动具体可以参考[v2升级v3](/easy-query-doc/v2-v3)
 :::
 
 

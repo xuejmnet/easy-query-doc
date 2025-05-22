@@ -329,7 +329,7 @@ WHERE
 
 使用数据库分析可以让原本10秒的双子查询迅速优化到只需要100ms,并且最重要的一点是比原生sql的可读性强百倍(dsl阅读)
 
-## partation by
+## partition by
 
 筛选用户条件为喜欢工商银行的(第一张开户的银行卡是工商银行的)
 ```java
@@ -337,7 +337,7 @@ WHERE
 List<SysUser> list = easyEntityQuery.queryable(SysUser.class)
         .where(user -> {
             //用户的银行卡中第一个开户银行卡是工商银行的
-            user.bankCards().orderBy(x->x.openTime().asc()).firstElement().bank().name().eq("工商银行");
+            user.bankCards().orderBy(x->x.openTime().asc()).first().bank().name().eq("工商银行");
         }).toList();
 
 
@@ -380,6 +380,18 @@ LEFT JOIN
             ON t5.`id` = t4.`bank_id` 
     WHERE
         t5.`name` = '工商银行'
+```
+
+如果存在多个条件那么可以定义局部变量
+```java
+
+List<SysUser> list = easyEntityQuery.queryable(SysUser.class)
+        .where(user -> {
+            //用户的银行卡中第一个开户银行卡是工商银行的
+            SysBankCardProxy first=user.bankCards().orderBy(x->x.openTime().asc()).first();
+            first.bank().name().eq("工商银行");
+            first.code().eq("123");
+        }).toList();
 ```
 
 ## select子查询
