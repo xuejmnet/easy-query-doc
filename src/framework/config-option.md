@@ -46,6 +46,7 @@ includeLimitMode| `IncludeLimitModeEnum.UNION_ALL` | many子项拉取的时候�
 
 配置名称  | 默认值 | 描述  
 --- | --- | --- 
+sharding | `false`  | 是否启用分片,默认不启用,3.0.3^新增配置
 connectionMode | `SYSTEM_AUTO`  | 默认框架将链接分片的链接模式改为自动,框架会自动处理,无需用户指定,当然链接模式用户也可以自行指定,1.`MEMORY_STRICTLY`内存严格模式,就是说如果存在跨表或者跨库查询那么本次查询将会严格控制内存,尽可能的一次性查询所有的表,那么针对单个库如果查询所有表每个表都需要一个`connection`所以可能会单次查询耗尽链接池的链接甚至不够,所以一般会和下面的配置参数`maxShardingQueryLimit`配合作为限制,2.`CONNECTION_STRICTLY`连接数限制,就是还是以`maxShardingQueryLimit`作为最大链接数尽可能少的使用连接数去执行跨分片的查询归并,主要是影响分片后的聚合模式,是采用流失聚合还是内存聚合，一般用户无需设置。
 maxShardingQueryLimit❗️ | `5`  | 假设单次查询涉及到跨13张表查询,因为查询未带分片键,所以本次查询会将13张同数据库下的表进行分组以没5张为一组分成3组最后一组为3张表,当前查询会一次性获取5个链接这5个链接会通过`defaultDataSourceMergePoolSize`参数进行限制，然后再本次查询完成后归还到`DataSource`连接池中,这个参数不可以设置的比`DataSource`的`pool-size`大,否则可能会导致程序假死,因为连接池为20如果单次查询需要21那么会一直等待直到超时也获取不到21个
 defaultDataSourceMergePoolSize❗️ | `0`  | 如果你的所有表中有分片表那么一定要设置这个值,且必须设置小于等于`DataSource`的连接池大小,假设连接池大小为100,那么这个值可以设置60,70，80甚至100,但是不可以比连接池大,且必须大于等于`maxShardingQueryLimit`,如果连接池100当前值设置为10,那么意味着所有线程只有10个连接池内的链接可以被用来进行分片聚合查询(每个数据源10个)
