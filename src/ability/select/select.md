@@ -54,7 +54,7 @@ where.....
 
 > 每次 select 会对之前的表达式进行汇总生成`内嵌视图`,对后续的 select 继续操作那么将对`内嵌视图`进行操作
 
-> 其中6和7可以互相调换,如果先`select`后`order`那么将会对匿名表进行排序,如果先`order`后`select`那么会先排序后生成匿名表但是因为匿名表后续没有操作所以会展开
+> 其中6和7可以互相调换,如果先`select`后`order`那么将会对`内嵌视图`进行排序,如果先`order`后`select`那么会先排序后生成`内嵌视图`但是因为`内嵌视图`后续没有操作所以会展开,即不生成`内嵌视图`
   :::
 
 `select`语句出现在`where`，`orderBy`，`groupBy`，`having`等之后,如果表达式调用了`select`那么这个 sql 就是确定了的如果再次调用`where`那么前面的表达式将被视为`派生表`或`内嵌视图`，比如`select .... from (select id,name from table ) t where t.id = ?`每次`select`会对当前表达式进行一次结果集包装(`派生表`或`内嵌视图`)
@@ -72,7 +72,7 @@ easyEntityQuery.queryable(HelpProvince.class)
                 .id().set(o.id())
                 .name().set(o.name())
         )
-        //本质就是如下写法 不建议使用双括号的初始化可能会造成内存泄露
+        //本质就是如下写法
         // .select(o->{
         //        HelpProvinceProxy province= new HelpProvinceProxy();
         //         province.id().set(o.id());
@@ -80,6 +80,10 @@ easyEntityQuery.queryable(HelpProvince.class)
         //         return province;
         // })
         //.select(o->o.FETCHER.id().name().fetchProxy())//如果返回结果一样可以用fetcher
+        // .select(o->new HelpProvinceProxy(){{//双大括号初始化方式返回
+        //         id().set(o.id());
+        //         name().set(o.name());
+        // }})
         .toList();
 ```
 
@@ -139,7 +143,7 @@ sql:select * from help_province where id='1' order by id asc
 
 sql:select id,name from help_province where id='1' order by id asc
 ```
-以`select`方法作为终结方法结束本次`sql`链式,后续的操作就是将`select`和之前的表达式转成`匿名sql`类似`select * from (select * from help_province) t`，其中`fetcher`是`select`的简化操作不支持返回VO，当且仅当返回结果为自身时用于快速选择列
+以`select`方法作为终结方法结束本次`sql`链式,后续的操作就是将`select`和之前的表达式转成`匿名sql`类似`select * from (select * from help_province) t`，其中`select`的简化操作`o->o.FETCHER.id().name()`不支持返回VO和后续链式，当且仅当返回结果为自身时用于快速选择列,如果需要支持后续链式请添加`.fetchProxy()`
 
 ### 5
 ```java
@@ -174,6 +178,6 @@ sql:select id from (select id,name from help_province where id='1' order by id a
 
 ::: tip 链式说明!!!
 > select之前的所有操作比如多个where,多个orderby都是对之前的追加,limit是替换前面的操作多次limit获取最后一次
-> 在entityQuery下groupBy不支持连续调用两个groupBy之间必须存在一个select指定要查询的结果才可以,其他api下多次调用行为也是追加
+> 在entityQuery下groupBy不支持连续调用两个，groupBy之间必须存在一个select指定要查询的结果才可以,其他api下多次调用行为也是追加
 :::
 
