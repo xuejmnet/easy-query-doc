@@ -26,26 +26,37 @@ order: 6
 
 ### 添加项目依赖
 ```xml
+<!-- 必须 -->
 <dependency>
     <groupId>com.easy-query</groupId>
     <artifactId>sql-solon-plugin</artifactId>
     <version>latest-version</version>
 </dependency>
+<!-- 如果您使用EasyEntityQuery那么需要引入该APT引用 -->
+<dependency>
+    <groupId>com.easy-query</groupId>
+    <artifactId>sql-processor</artifactId>
+    <version>latest-version</version>
+</dependency>
+<!-- 按实际引入数据源-->
 <dependency>
     <groupId>com.zaxxer</groupId>
     <artifactId>HikariCP</artifactId>
     <version>3.3.1</version>
 </dependency>
+<!-- 按实际引入对应数据库驱动 -->
 <dependency>
     <groupId>mysql</groupId>
     <artifactId>mysql-connector-java</artifactId>
     <version>8.0.31</version>
 </dependency>
+<!-- 可选 -->
 <dependency>
     <groupId>org.projectlombok</groupId>
     <artifactId>lombok</artifactId>
     <version>1.18.18</version>
 </dependency>
+<!-- 按实际框架引入对应版本 -->
 <dependency>
     <groupId>org.noear</groupId>
     <artifactId>solon-web</artifactId>
