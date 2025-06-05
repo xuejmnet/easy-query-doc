@@ -41,6 +41,7 @@ propertyMode| `PropertyModeEnum.SAME_AS_ENTITY`  | 表示entity属性是首字�
 relationTableAppend| `RelationTableAppendEnum.SMART` | `SMART`表示智能添加`relationTable`隐式join吗，`DEFAULT`则需要代码执行的时候不执行到导航属性需要`if`代码块包裹
 mappingStrategy| `EntityMappingStrategyEnum.PROPERTY_FIRST` | 对象间的映射关系,默认以`列名`映射,可以选择`属性名`或者`列名+属性名`
 includeLimitMode| `IncludeLimitModeEnum.UNION_ALL` | many子项拉取的时候如果子项设置了limit限制返回条数默认采用`union_all`,用户可以选择`partation`来提高性能但是部分数据库不支持
+saveComment| `false` | `true`:则保持`@Column(comment="...")`和`@Table(comment="...")`的注解到EntityMetadata和ColumnMetadata
 
 ## 分表分库特有配置
 
