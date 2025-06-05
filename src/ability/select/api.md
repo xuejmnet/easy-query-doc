@@ -21,6 +21,62 @@ order: 20
 
 <!-- ::: -->
 
+## 预览
+
+### 1.返回voproxy
+```java
+
+List<BankCardVO> list = easyEntityQuery.queryable(DocBankCard.class)
+        .leftJoin(DocUser.class, (bank_card, user) -> bank_card.uid().eq(user.id()))
+        .leftJoin(DocBank.class, (bank_card, user, bank) -> bank_card.bankId().eq(bank.id()))
+        .where((bank_card, user, bank) -> {
+            user.name().like("小明");
+            bank_card.type().eq("储蓄卡");
+        })
+        .select((bank_card, user, bank) -> {
+            BankCardVOProxy r = new BankCardVOProxy();
+            r.selectAll(bank_card);//相当于是查询所有的bankCard字段
+            r.userName().set(user.name());
+            r.bankName().set(bank.name());
+            return r;
+        }).toList();
+```
+
+### 2.返回部分列
+```java
+List<DocBankCard> list = easyEntityQuery.queryable(DocBankCard.class)
+        .where(bank_card -> bank_card.type().eq("储蓄卡"))
+        .select(bank_card -> bank_card.FETCHER.id().code())
+        .toList();
+```
+
+### 3.隐式映射
+```java
+List<BankCardVO> list = easyEntityQuery.queryable(DocBankCard.class)
+        .leftJoin(DocUser.class, (bank_card, user) -> bank_card.uid().eq(user.id()))
+        .leftJoin(DocBank.class, (bank_card, user, bank) -> bank_card.bankId().eq(bank.id()))
+        .where((bank_card, user, bank) -> {
+            user.name().like("小明");
+            bank_card.type().eq("储蓄卡");
+        })
+        .select(BankCardVO.class,(bank_card, user, bank) -> Select.of(
+                //自动映射bank_card全属性等于select t.*但是以结果为主
+                bank_card.FETCHER.allFields(),
+                //添加FieldNameConstants,也可以使用方法引用BankCardVO::getUserName如果属性符合java的bean规范
+                user.name().as(BankCardVO.Fields.userName),
+                bank.name().as(BankCardVO.Fields.bankName)
+        )).toList();
+```
+
+### 4.全自动映射
+```java
+
+List<SysBankDTO> list = easyEntityQuery.queryable(SysBank.class)
+        .selectAutoInclude(SysBankDTO.class)
+        .toList();
+```
+
+
 ## `select(o->proxy)`
 
 该 api 返回自定义`proxy`对象比如我们创建了如下返回结果
