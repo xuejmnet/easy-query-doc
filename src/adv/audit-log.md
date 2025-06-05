@@ -10,7 +10,7 @@ order: 160
 本章节[demo点击](https://github.com/xuejmnet/eq-aduitlog)
 
 
-本章节使用源码为3.0.4+
+本章节使用源码为3.0.18+
 ## EntityExpressionExecutor
 `EntityExpressionExecutor`是eq执行表达式和原生sql的对应接口
 
