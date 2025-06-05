@@ -4,9 +4,6 @@ order: 200
 ---
 `easy-query`提供了注解配置以外的自定义填充数据,主要是针对配置外的方法,具体api为`fillOne`、`fillMany`,可以再查询时自定义关联属性(各自一个),并且支持直接`select vo`
 
-::: warning 说明!!!
-> 暂时不支持`proxy`模式
-:::
 
 ## api说明
 默认fill查询结果不消费null也就是produce里面不会消费null值,如果要消费null对null处理可以在consumeNull处设置为true
@@ -27,7 +24,7 @@ consumeNull | 当关联结果为null是否也会调用produce  | 过滤null或�
 
 
 ::: warning 说明!!!
-> 如果希望`targetProperty`和`selfProperty`支持强类型可以通过lombok的`@FieldNameConstants`注解或者使用proxy模式下的`CityProxy.TABLE.provinceCode().getValue(), ProvinceProxy.TABLE.code().getValue()`
+> 如果希望`targetProperty`和`selfProperty`支持强类型可以通过lombok的`@FieldNameConstants`注解或者使用proxy模式下的`CityProxy.Fields.provinceCode, ProvinceProxy.Fields.code`
 :::
 
 
