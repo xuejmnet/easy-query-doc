@@ -141,6 +141,10 @@ easyEntityQuery.deletable(User.class).disableLogicDelete()allowDeleteStatement(t
 ```
 :::
 
+lombok + mapstruct + easy-query 可以尝试以下顺序
+
+<img :src="$withBase('/images/lombok_mapstruct_eq.png')">
+
 ## 关键字处理
 因为sql语句添加了双引号 反引号 等操作导致大小写敏感所以可以使用`nameConversion`让java属性正确的映射到数据库
 
