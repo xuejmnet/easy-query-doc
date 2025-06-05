@@ -171,25 +171,23 @@ public class DatabaseLoggingInterceptor implements DatabaseInterceptor {
     private <T> void addUpdateLog(List<T> entities, EntityExpressionBuilder expressionBuilder) {
         QueryRuntimeContext runtimeContext = expressionBuilder.getRuntimeContext();
         EntityMetadata entityMetadata = runtimeContext.getEntityMetadataManager().getEntityMetadata(expressionBuilder.getQueryClass());
-        Map<String, String> descriptions = getDescription(entityMetadata);
         String type = getTableName(entityMetadata) + " " + Oper.Modify;
         for (T entity : entities) {
-            String detail = getLogDetail(entity, entityMetadata, descriptions, runtimeContext);
+            String detail = getLogDetail(entity, entityMetadata, runtimeContext);
             log(type, getKey(entity, entityMetadata), detail);
         }
     }
 
     private <T> void addLog(List<T> entities, EntityExpressionBuilder expressionBuilder, Oper oper) {
         EntityMetadata entityMetadata = expressionBuilder.getRuntimeContext().getEntityMetadataManager().getEntityMetadata(expressionBuilder.getQueryClass());
-        Map<String, String> descriptions = getDescription(entityMetadata);
         String type = getTableName(entityMetadata) + " " + oper.name();
         for (T entity : entities) {
-            String detail = getLogDetail(entity, entityMetadata, descriptions);
+            String detail = getLogDetail(entity, entityMetadata);
             log(type, getKey(entity, entityMetadata), detail);
         }
     }
 
-    private static String getLogDetail(Object entity, EntityMetadata entityMetadata, Map<String, String> descriptions) {
+    private static String getLogDetail(Object entity, EntityMetadata entityMetadata) {
         Collection<ColumnMetadata> columns = entityMetadata.getColumns();
         StringBuilder sb = new StringBuilder();
         for (ColumnMetadata column : columns) {
@@ -197,7 +195,9 @@ public class DatabaseLoggingInterceptor implements DatabaseInterceptor {
             if (value == null) {
                 continue;
             }
-            String display = descriptions.getOrDefault(column.getFieldName(), column.getName());
+
+            String comment = column.getComment();
+            String display = getOrDefault(comment,column.getName());
             sb.append(display).append(":").append(value).append(LINE);
         }
         if (sb.length() > 0) {
@@ -205,17 +205,24 @@ public class DatabaseLoggingInterceptor implements DatabaseInterceptor {
         }
         return sb.toString();
     }
+    private static String getOrDefault(String comment,String def){
+        if(EasyStringUtil.isNotBlank(comment)){
+            return comment;
+        }
+        return def;
+    }
 
-    private static String getLogDetail(Object entity, EntityMetadata entityMetadata, Map<String, String> descriptions, QueryRuntimeContext runtimeContext) {
+    private static String getLogDetail(Object entity, EntityMetadata entityMetadata, QueryRuntimeContext runtimeContext) {
         EntityMetadataManager entityMetadataManager = runtimeContext.getEntityMetadataManager();
         EntityState entityState = runtimeContext.getTrackManager().getCurrentTrackContext().getTrackEntityState(entity);
         if (entityState == null) {
-            return getLogDetail(entity, entityMetadata, descriptions);
+            return getLogDetail(entity, entityMetadata);
         }
         StringBuilder sb = new StringBuilder();
         EntityTrackProperty entityTrackProperty = EasyTrackUtil.getTrackDiffProperty(entityMetadataManager, entityState);
         entityTrackProperty.getDiffProperties().forEach((name, state) -> {
-            String display = descriptions.getOrDefault(name, name);
+            String comment = state.getColumnMetadata().getComment();
+            String display = getOrDefault(comment,name);
             sb.append(display).append(":").append(state.getOriginal()).append("→").append(state.getCurrent()).append(LINE);
         });
         if (sb.length() > 0) {
@@ -229,20 +236,8 @@ public class DatabaseLoggingInterceptor implements DatabaseInterceptor {
     }
 
     private static String getTableName(EntityMetadata entityMetadata) {
-        Description description = entityMetadata.getEntityClass().getAnnotation(Description.class);
-        return description == null ? entityMetadata.getTableName() : description.value();
-    }
-
-    private static Map<String, String> getDescription(EntityMetadata entityMetadata) {
-        Field[] fields = entityMetadata.getEntityClass().getDeclaredFields();
-        Map<String, String> map = new HashMap<>();
-        for (Field field : fields) {
-            Description description = field.getAnnotation(Description.class);
-            if (description != null) {
-                map.put(field.getName(), description.value());
-            }
-        }
-        return map;
+        String comment = entityMetadata.getComment();
+        return EasyStringUtil.isBlank(comment) ? entityMetadata.getTableName() : comment;
     }
 
     private static String getKey(Object entity, EntityMetadata entityMetadata) {
@@ -290,7 +285,7 @@ public class DatabaseLoggingInterceptor implements DatabaseInterceptor {
         if (expression.getSetColumns().isEmpty()) {
             return getExpressionDetail(expression);
         }
-        Map<String, String> descriptions = getDescription(expression.getTable(0).getEntityMetadata());
+        EntityMetadata entityMetadata = expression.getTable(0).getEntityMetadata();
         ToSQLContext sqlContext = getToSQLContext(expression);
         String sql = expression.getSetColumns().toSQL(sqlContext);
         if (sqlContext.getParameters().isEmpty() || !StringUtils.hasText(sqlContext.getParameters().get(0).getPropertyNameOrNull())) {
@@ -300,7 +295,12 @@ public class DatabaseLoggingInterceptor implements DatabaseInterceptor {
         StringBuilder sb = new StringBuilder();
         sqlContext.getParameters().forEach(parameter -> {
             String name = parameter.getPropertyNameOrNull();
-            String display = descriptions.getOrDefault(name, name);
+            ColumnMetadata columnOrNull = entityMetadata.getColumnOrNull(name);
+            String display = name;
+            if(columnOrNull!=null){
+                String comment = columnOrNull.getComment();
+                display = getOrDefault(comment, name);
+            }
             sb.append(display).append(":").append(parameter.getValue()).append(LINE);
         });
         if (sb.length() > 0) {
