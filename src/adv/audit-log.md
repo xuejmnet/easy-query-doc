@@ -214,7 +214,11 @@ public class DatabaseLoggingInterceptor implements DatabaseInterceptor {
 
     private static String getLogDetail(Object entity, EntityMetadata entityMetadata, QueryRuntimeContext runtimeContext) {
         EntityMetadataManager entityMetadataManager = runtimeContext.getEntityMetadataManager();
-        EntityState entityState = runtimeContext.getTrackManager().getCurrentTrackContext().getTrackEntityState(entity);
+         TrackContext currentTrackContext = runtimeContext.getTrackManager().getCurrentTrackContext();
+        if(currentTrackContext==null){
+            return getLogDetail(entity, entityMetadata);
+        }
+        EntityState entityState = currentTrackContext.getTrackEntityState(entity);
         if (entityState == null) {
             return getLogDetail(entity, entityMetadata);
         }
