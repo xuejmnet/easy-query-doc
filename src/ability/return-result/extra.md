@@ -1,6 +1,6 @@
 ---
 title: 结构化对象额外操作
-order: 40
+order: 60
 ---
 
 当前章节主要描述`selectAutoInclude`是如何对结构对象进行筛选控制返回额外字段相关信息

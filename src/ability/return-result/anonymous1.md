@@ -5,6 +5,8 @@ order: 10
 
 ## Draft草稿类型
 返回元组类又叫做匿名类型,在无需定义实体的情况下可以直接返回带有类型的结果对象,用于业务在方法内部的中间变量,比如`group`后获取`key`和`count`因为结果集比较简单所以我们可以采用草稿类型来实现
+
+目前支持`Select.DRAFT`和`Select.TUPLE`两种
 ```java
 
         List<Draft2<String, String>> list1 = easyEntityQuery.queryable(SysUser.class)

@@ -1,6 +1,6 @@
 ---
-title: 动态排序
-order: 2
+title: OrderBy进阶
+order: 30
 ---
 
 # 动态排序
@@ -235,11 +235,34 @@ List<DocBankCard> list = easyEntityQuery.queryable(DocBankCard.class)
         })
         .orderBy(bank_card -> {
             for (Tuple3<String, Boolean, OrderByModeEnum> sort : sorts) {
-                bank_card.anyColumn(sort.t()).orderBy(sort.t1(), sort.t2());
+                bank_card.anyColumn(sort.t1()).orderBy(sort.t2(), sort.t3());
             }
         }).toList();
 
 
 ==> Preparing: SELECT t.`id`,t.`uid`,t.`code`,t.`type`,t.`bank_id` FROM `doc_bank_card` t LEFT JOIN `doc_user` t1 ON t1.`id` = t.`uid` WHERE IFNULL(t.`code`,?) = ? ORDER BY CASE WHEN t1.`age` IS NULL THEN 1 ELSE 0 END ASC,t1.`age` DESC,CASE WHEN t.`type` IS NULL THEN 1 ELSE 0 END ASC,t.`type` ASC
 ==> Parameters: 123(String),456(String)
+```
+
+## 动态asc或desc
+
+```java
+List<SysUser> users = easyEntityQuery.queryable(SysUser.class)
+        .where(m -> {
+            m.name().contains("zhang san");
+            m.age().gt(20);
+        }).orderBy(m -> {
+            m.age().orderBy(true);//true表示asc
+            //m.age().orderBy(false);//false表示desc
+        }).toList();
+```
+
+## 子查询数量排序
+```java
+List<SysBank> banks = easyEntityQuery.queryable(SysBank.class)
+        .where(bank -> {
+            bank.name().contains("123");
+        }).orderBy(bank -> {
+            bank.bankCards().where(bc -> bc.type().eq("储蓄卡")).count().asc();
+        }).toList();
 ```
