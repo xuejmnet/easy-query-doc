@@ -16,7 +16,7 @@ List<SysUser> users = easyEntityQuery.queryable(SysUser.class)
             m.age().gt(20);
 
             //原生sql断言
-            m.expression().sql("{0} != {1}"c->{
+            m.expression().sql("{0} != {1}",c->{
                 c.expression(m.name());
                 c.value("小明");
             });
