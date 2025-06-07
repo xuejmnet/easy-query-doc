@@ -1,11 +1,12 @@
 ---
-title: 介绍
+title: 表达式编写
 order: 10
 ---
 
-# 说明
+# 查询说明
 
 `easy-query`在 java 的静态语言特性下，参考众多 C# ORM(efcore,freesql,sqlsugar...),和 java ORM(mybatis-plus,beetlsql...)实现了支持单表多表，复杂，嵌套的 sql 表达式，并且拥有强类型语法提示，可以帮助不想写 sql 的用户，有洁癖的用户多一个选择.
+
 
 ## select
 

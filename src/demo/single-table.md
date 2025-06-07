@@ -29,7 +29,7 @@ List<Draft3<String, Integer, LocalDateTime>> myBlog = easyEntityQuery.queryable(
         //如果不添加orderBy则不会生成内嵌视图(t1表)sql
         //因为orderBy是对前面的select结果进行orderBy
         .orderBy(group -> group.value3().desc())
-        limit(2,2)//对结果进行限制返回
+        .limit(2,2)//对结果进行限制返回
         .toList();
 
 
