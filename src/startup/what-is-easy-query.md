@@ -45,3 +45,23 @@ EasyQuery官方QQ群: 170029046
 `eq`为了抽象在强类型api的下层使用了client模式,而client模式则可以支持任意弱类型,已有人通过client的api实现了一整套低代码框架,
 
 除了实现低代码框架外还兼容所有已经适配的数据库,对用户而言无需考虑方言带来的差异
+
+## 数据库支持
+
+
+| 数据库名称          | 包名            | springboot配置   | solon配置        |
+| ------------------- | --------------- | ---------------- | ---------------- |
+| MySQL               | sql-mysql       | mysql            | mysql            |
+| Oracle              | sql-oracle      | oracle           | oracle           |
+| PostgresSQL         | sql-pgsql       | pgsql            | pgsql            |
+| SqlServer           | sql-mssql       | mssql            | mssql            |
+| SqlServer RowNumber | sql-mssql       | mssql_row_number | mssql_row_number |
+| H2                  | sql-h2          | h2               | h2               |
+| SQLite              | sql-sqlite      | sqlite           | sqlite           |
+| ClickHouse          | sql-clickhouse  | clickhouse       | clickhouse       |
+| 达梦dameng          | sql-dameng      | dameng           | dameng           |
+| 人大金仓KingbaseES  | sql-kingbase-es | kingbase_es      | kingbase_es      |
+| 高斯  | sql-gauss-db | gauss-db      | gauss-db      |
+| DB2  | sql-db2 | db2     | db2     |
+
+`eq`目前已经抽象了表达式,所以原则上支持所有数据库,只需要自定义实现对应数据库的增删改查接口即可,也就是[`sql-db-support`open in new window](https://github.com/xuejmnet/easy-query/tree/main/sql-db-support) 。所以如果不支持对应的sql那么你可以自行扩展或者提交相应的issue
