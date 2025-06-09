@@ -595,7 +595,74 @@ for (UserGroup userGroup : userGroups) {
 }
 ```
 
-## 多表查询
+## 隐式join多表
+隐式join多表可以让用户的开发体验变得非常方便,我们认为a表和b表之所以能join那么肯定是有一定的关联关系,具体如何实现请看下下面
+```java
+
+public class SysUser implements ProxyEntityAvailable<SysUser , SysUserProxy> {
+    //省略其他字段
+
+    /**
+     * 用户所属企业id
+     */
+    @Column(comment = "用户所属企业id")
+    private String companyId;
+
+    /**
+     * 用户所属企业，将当前用户的companyId和企业表的id进行关联关系设置
+     */
+    @Navigate(value = RelationTypeEnum.ManyToOne,
+            selfProperty = {SysUser.Fields.companyId},
+            targetProperty = {Company.Fields.id})
+    private Company company;
+}
+```
+查询用户筛选条件为企业名称为xxx的
+```java
+List<SysUser> users = entityQuery.queryable(SysUser.class)
+        .where(s -> {
+            s.company().name().contains("xx有限公司");
+        }).toList();
+
+==> Preparing: SELECT t.`id`,t.`name`,t.`birthday`,t.`company_id` FROM `t_user` t LEFT JOIN `t_company` t1 ON t1.`id` = t.`company_id` WHERE t1.`name` LIKE CONCAT('%',?,'%')
+==> Parameters: xx有限公司(String)
+```
+我们看非常方便的生成了join操作如果你需要inner join那么在@Navigate处添加`required=true`告知框架用户表一定会有企业表
+```java
+
+    /**
+     * 用户所属企业
+     */
+    @Navigate(value = RelationTypeEnum.ManyToOne,
+            selfProperty = {SysUser.Fields.companyId},
+            targetProperty = {Company.Fields.id},required = true)
+    private Company company;
+```
+再次执行
+
+```java
+List<SysUser> users = entityQuery.queryable(SysUser.class)
+        .where(s -> {
+            s.company().name().contains("xx有限公司");
+        }).toList();
+
+==> Preparing: SELECT t.`id`,t.`name`,t.`birthday`,t.`company_id` FROM `t_user` t INNER JOIN `t_company` t1 ON t1.`id` = t.`company_id` WHERE t1.`name` LIKE CONCAT('%',?,'%')
+==> Parameters: xx有限公司(String)
+```
+## 隐式动态join
+当我们导航属性路径的条件不生效的时候那么jion将不会添加到表达式内
+```java
+List<SysUser> users = entityQuery.queryable(SysUser.class)
+        .where(s -> {
+            if(false){
+                s.company().name().contains("xx有限公司");
+            }
+        }).toList();
+
+==> Preparing: SELECT t.`id`,t.`name`,t.`birthday`,t.`company_id` FROM `t_user`
+```
+
+## 显式join多表
 
 ::: warning 说明!!!
 > `join`后原本的`where、orderBy、select`等都会有所变化,最直白的变化就是入参个数由原先的一个变成n个n就是主表数量+join表数量
