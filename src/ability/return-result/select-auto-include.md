@@ -585,7 +585,7 @@ public class StructSysUserDTO {
 
 
 
-## 穿透结构返回
+## 穿透结构返回 NavigateFlat
 快速返回用户拥有的菜单,因为用户和菜单中间由角色进行关联并且两者都是多对多所以如果需要自行实现那么是非常麻烦的一件事情
 
 用户和菜单之间隔着角色的多对多所以如果想要获取用户的菜单id直接可以通过这种方式快速筛选
@@ -613,11 +613,7 @@ public class SysUserFlatDTO {
     private LocalDateTime createTime;
     
     //穿透获取用户下的roles下的menus下的id 如果穿透获取的是非基本类型那么对象只能是数据库对象而不是dto对象
-    // @NavigateFlat(value = RelationMappingTypeEnum.ToMany,mappingPath = {
-    //         SysUser.Fields.roles,
-    //         SysRole.Fields.menus,
-    //         SysMenu.Fields.id
-    // })
+    // @NavigateFlat(pathAlias = "roles.menus.id")
     // private List<String> menuIds;
 
 //上下两种都可以 下面这种可以通过插件生成NavigatePathGenerate

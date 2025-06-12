@@ -14,4 +14,3 @@ order: 120
 --- | --- 
 kv |  采用k-v键值对拥有最高效的性能,仅支持对象缓存id查询仅支持返回单一对象
 all |  采用k-v+index模式
-multi |  多段k-v+index模式

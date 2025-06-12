@@ -1,9 +1,63 @@
 ---
-title: cte视图java封装
+title: CTE公共表表达式
 order: 170
 ---
 
-# cte视图java封装
+# CTE公共表表达式
+`公共表表达式 Common Table Expression`简称`cte`,eq支持显式和封装两种方法
+
+## 显式cte
+
+`WITH CTE AS()`使用这个api来实现将临时表在当前表达式复用的实现
+
+`toCteAs`将之前表达式转成一个`cte`的临时表
+```java
+EntityQueryable<TopicProxy, Topic> cteAs = easyEntityQuery.queryable(Topic.class)
+        .where(t_topic -> {
+            t_topic.id().eq("456");
+        }).toCteAs();//支持传入表名来实现自定义表名
+
+List<Topic> list1 = easyEntityQuery.queryable(Topic.class)
+        .leftJoin(cteAs, (t_topic, t2) -> t_topic.id().eq(t2.id()))
+        .leftJoin(cteAs, (t_topic, t_topic2, t3) -> t_topic.id().eq(t3.id()))
+        .where((t_topic, t_topic2, t_topic3) -> {
+            t_topic.id().eq("123");
+            t_topic3.id().eq("t2123");
+        }).toList();
+
+
+
+-- 第1条sql数据
+WITH `with_Topic` AS (SELECT
+    t1.`id`,
+    t1.`stars`,
+    t1.`title`,
+    t1.`create_time` 
+FROM
+    `t_topic` t1 
+WHERE
+    t1.`id` = '456')  
+
+SELECT
+    t.`id`,
+    t.`stars`,
+    t.`title`,
+    t.`create_time` 
+FROM
+    `t_topic` t 
+LEFT JOIN
+    `with_Topic` t2 
+        ON t.`id` = t2.`id` 
+LEFT JOIN
+    `with_Topic` t3 
+        ON t.`id` = t3.`id` 
+WHERE
+    t.`id` = '123' 
+    AND t3.`id` = 't2123'
+```
+
+
+## cte视图java封装
 使用cte定义临时变量表,通过实体对象进行封装实现视图的java层面的快速封装与实现
 
 ## EntityCteViewer
