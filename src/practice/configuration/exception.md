@@ -124,6 +124,12 @@ public class MyAssertExceptionFactory implements AssertExceptionFactory {
     public <T> RuntimeException createSingleMoreElementException(Query<T> query) {
         return new BusinessException("查询结果大于1条");
     }
+    
+    @Override
+    @NotNull
+    public RuntimeException createExecuteCurrentException(long expectRows,long realRows, String msg, String code) {
+        return new EasyQueryConcurrentException(msg, code);
+    }
 }
 ```
 

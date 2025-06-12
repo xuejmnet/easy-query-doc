@@ -70,7 +70,7 @@ public class LogSlowSQLListener implements JdbcExecutorListener {
             String sql = beforeArg.getSql();
             List<List<SQLParameter>> sqlParameters = beforeArg.getSqlParameters();
             if(sqlParameters.size()==1){
-                String params =  EasySQLUtil::sqlParameterToString(sqlParameters.get(0))
+                String params =  EasySQLUtil.sqlParameterToString(sqlParameters.get(0))
             }
             Exception exception = afterArg.getException();
         }
@@ -200,7 +200,7 @@ public class LogSlowSQLListener implements JdbcExecutorListener {
             String sql = beforeArg.getSql();
             List<List<SQLParameter>> sqlParameters = beforeArg.getSqlParameters();
             if(sqlParameters.size()==1){
-                String params =  EasySQLUtil::sqlParameterToString(sqlParameters.get(0))
+                String params =  EasySQLUtil.sqlParameterToString(sqlParameters.get(0))
             }
             Exception exception = afterArg.getException();
         }
@@ -275,7 +275,7 @@ public class LogSlowSQLListener implements JdbcExecutorListener {
             String sql = beforeArg.getSql();
             List<List<SQLParameter>> sqlParameters = beforeArg.getSqlParameters();
             if(sqlParameters.size()==1){
-                String params =  EasySQLUtil::sqlParameterToString(sqlParameters.get(0))
+                String params =  EasySQLUtil.sqlParameterToString(sqlParameters.get(0))
             }
             Exception exception = afterArg.getException();
         }
@@ -346,7 +346,7 @@ public class LogSlowSQLListener implements JdbcExecutorListener {
             String sql = beforeArg.getSql();
             List<List<SQLParameter>> sqlParameters = beforeArg.getSqlParameters();
             if(sqlParameters.size()==1){
-                String params =  EasySQLUtil::sqlParameterToString(sqlParameters.get(0))
+                String params =  EasySQLUtil.sqlParameterToString(sqlParameters.get(0))
             }
             Exception exception = afterArg.getException();
         }
