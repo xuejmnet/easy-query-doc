@@ -48,49 +48,49 @@ public class ValidUser implements ProxyEntityAvailable<ValidUser , ValidUserProx
 其中`@Length`和`@NotNull`是`org.hibernate.validator.constraints.Length`和`javax.validation.constraints.NotNull`
 
 ## 创建自定义解析器
+mysql继承重写`DefaultMigrationEntityParser`,比如`MsSQLMigrationEntityParser`
+
+具体继承重写哪个类可以 [参考源码](https://github.com/dromara/easy-query/blob/main/sql-db-support/sql-mssql/src/main/java/com/easy/query/mssql/migration/MsSQLMigrationEntityParser.java)
 ```java
 
-public class MyMyMigrationEntityParser implements MigrationEntityParser {
+public class MyMigrationEntityParser extends DefaultMigrationEntityParser {
+
     @Override
-    public @Nullable ColumnDbTypeResult getColumnDbType(EntityMigrationMetadata entityMetadata, ColumnMetadata columnMetadata) {
+    public @NotNull ColumnDbTypeResult getColumnDbType(EntityMigrationMetadata entityMetadata, ColumnMetadata columnMetadata) {
         if (String.class.equals(columnMetadata.getPropertyType())) {
-            Field field = entityMetadata.getFieldByName(columnMetadata);
+            Field field = entityMetadata.getFieldByColumnMetadata(columnMetadata);
             Length lengthAnnotation = field.getAnnotation(Length.class);
             if (lengthAnnotation != null) {
-                return new ColumnDbTypeResult(String.format("varchar(%s)", lengthAnnotation.max()), null);//第二个参数defValue目前还未使用生效
+                if(lengthAnnotation.max()>4000){
+                    return new ColumnDbTypeResult("TEXT", null);
+                }
+                return new ColumnDbTypeResult(String.format("varchar(%s)", lengthAnnotation.max()), null);
             }
         }
-        return null;
+        return super.getColumnDbType(entityMetadata, columnMetadata);
     }
 
     @Override
     public String getColumnComment(EntityMigrationMetadata entityMetadata, ColumnMetadata columnMetadata) {
-        return "";
-    }
-
-    @Override
-    public Boolean isNullable(EntityMigrationMetadata entityMetadata, ColumnMetadata columnMetadata) {
-        Field field = entityMetadata.getFieldByName(columnMetadata);
-        NotNull notNullAnnotation = field.getAnnotation(NotNull.class);
-        if (notNullAnnotation != null) {
-            return false;
+        Field field = entityMetadata.getFieldByColumnMetadata(columnMetadata);
+        ApiModelProperty apiModelProperty = field.getAnnotation(ApiModelProperty.class);
+        if (apiModelProperty != null) {
+            return apiModelProperty.value();
         }
         return null;
     }
 
     @Override
-    public Boolean columnExistInDb(EntityMigrationMetadata entityMetadata, ColumnMetadata columnMetadata) {
-        return null;
-    }
+    public boolean isNullable(EntityMigrationMetadata entityMetadata, ColumnMetadata columnMetadata) {
+        Field field = entityMetadata.getFieldByColumnMetadata(columnMetadata);
+        {
 
-    @Override
-    public String getTableComment(EntityMigrationMetadata entityMetadata) {
-        return "";
-    }
-
-    @Override
-    public String getColumnRenameFrom(EntityMigrationMetadata entityMetadata, ColumnMetadata columnMetadata) {
-        return "";
+            ApiModelProperty apiModelProperty = field.getAnnotation(ApiModelProperty.class);
+            if (apiModelProperty != null) {
+                return apiModelProperty.required();
+            }
+        }
+        return false;
     }
 }
 
