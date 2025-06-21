@@ -19,6 +19,14 @@ EasyQuery官方QQ群: 170029046
 ## easy-qeury 的发展
 `easy-query`是一款始于2023年2月份的一款国产orm,初衷是让java也可以拥有和.net一样的操作数据库,该框架同时支持`java`和`kotlin`,🚀 java下唯一一款同时支持强类型对象关系查询和强类型SQL语法查询的ORM,拥有对象模型筛选、隐式子查询、隐式join、显式子查询、显式join,后续我们对该框架简称`eq`
 
+## 特性
+
+- 1.支持任意对象关系查询(标准单列 多列甚至左匹配)
+- 2.支持隐式子查询转groupJoin的无敌优化性能
+- 3.支持隐式partation by 筛选子查询第一个或第n个
+- 4.支持任意对象关系的结构直接查询返回到前端selectAutoInclude
+- 5.当以上都不满足还支持显式sql,只要能写sql就能用eq写表达式
+
 ## 使用人群
 - 有`sql`基础，会`java stream`或者属性`java lambda`
 - `JPA`或者`Hibernate`用户
