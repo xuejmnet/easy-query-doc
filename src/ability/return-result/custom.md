@@ -10,12 +10,10 @@ order: 30
 - 2.显式赋值顾名思义是通过显式的编程式方式set到接受结果上
 
 ## 显式赋值
-`eq`的隐式赋值是相对简单的我们这边不在这边过多讲述,本章节主要讲述显式赋值，显式赋值也可以分为两大类
-- 1.支持链式的proxy赋值
-- 2.不支持链式的手动as赋值
+`eq`的隐式赋值是相对简单的我们这边不在这边过多讲述,本章节主要讲述显式赋值
 
 
-### 支持链式的proxy赋值
+### proxy赋值
 需要对DTO进行`@EntityProxy`注解的添加然后在select的时候返回对应的代理对象也就是比如`return new DTOProxy()`在select方法中对其进行set属性
 
 返回的DTO
@@ -49,8 +47,8 @@ public class GenericDTO {
         t.`phone` LIKE CONCAT('186', '%')
 ```
 
-### 不支持链式的手动as赋值
-不需要对DTO进行额外处理可以不添加`@EntityProxy`,直接使用Select.of()进行结果的返回
+### 通用proxy赋值
+不需要对DTO进行额外处理可以不添加`@EntityProxy`,直接使用`new ClassProxy(DTO.class)`进行结果的返回
 
 
 返回的DTO
@@ -70,11 +68,11 @@ public class GenericDTO {
                 .where(s -> {
                     s.phone().startsWith("186");
                 })
-                .select(GenericDTO.class, s -> Select.of(
-                        //s.FETCHER.allFields(),//如果需要全字段映射
-                        s.phone().as("value1"),
-                        s.address().subString(1, 10).as("value2")
-                )).toList();
+                .select(s -> new ClassProxy<>(GenericDTO.class)
+                    //.selectAll(s)//如果需要全字段映射
+                    .field("value1").set(s.phone())
+                    .field("value2").set(s.address().subString(1, 10))
+                ).toList();
 
 
     SELECT
@@ -86,7 +84,7 @@ public class GenericDTO {
         t.`phone` LIKE CONCAT('186', '%')
 ```
 
-如果你不想用字符串value1和value2来作为as的参数也可以使用lombok的另一个注解`@FieldNameConstants`
+如果你不想用字符串value1和value2来作为as的参数也可以使用lombok的另一个注解`@FieldNameConstants`或者方法引用`GenericDTO::getValue1`(方法引用需要属性名为标准java的bean属性名)
 
 
 
@@ -110,11 +108,11 @@ public class GenericDTO {
                 .where(s -> {
                     s.phone().startsWith("186");
                 })
-                .select(GenericDTO.class, s -> Select.of(
-//                        s.FETCHER.allFields(),//如果需要全字段映射
-                        s.phone().as(GenericDTO.Fields.value1),
-                        s.address().subString(1, 10).as(GenericDTO.Fields.value2)
-                )).toList();
+                .select(s -> new ClassProxy<>(GenericDTO.class)
+                    //.selectAll(s)//如果需要全字段映射
+                    .field(GenericDTO.Fields.value1).set(s.phone())
+                    .field(GenericDTO.Fields.value2).set(s.address().subString(1, 10))
+                ).toList();
 
 
     SELECT
@@ -183,17 +181,11 @@ easyEntityQuery
                     o.id().eq(true, "1234");//false表示不使用这个条件
 
                 })
-                .select(TopicTypeVO.class, (t, t1, t2) -> Select.of(
-                        t2.id().as(TopicTypeVOProxy.Fields.id),
-                        t1.title().as(TopicTypeVOProxy.Fields.title),
-                        t.createTime().as(TopicTypeVOProxy.Fields.createTime)
-                ));
-        //上下两种表达式都是一样的,上面更加符合bean设置,并且具有强类型推荐使用上面这种
-        // .select((t,t1,t2) -> {
-        //    TopicTypeVOProxy r = new TopicTypeVOProxy();
-        //    r.selectExpression(t2.id(),t1.name(),t2.title().as(r.content()));
-        //    return rl
-        // });
+                .select(s -> new ClassProxy<>(TopicTypeVO.class)
+                    .field(GenerTopicTypeVOProxy.Fields.id).set(t2.id())
+                    .field(TopicTypeVOProxy.Fields.title).set(t1.title())
+                    .field(TopicTypeVOProxy.Fields.createTime).set(t.createTime())
+                );
 
 ```
 :::

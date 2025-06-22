@@ -48,13 +48,13 @@ List<BankCardVO> list = easyEntityQuery.queryable(DocBankCard.class)
             user.name().like("小明");
             bank_card.type().eq("储蓄卡");
         })
-        .select(BankCardVO.class,(bank_card, user, bank) -> Select.of(
-                //自动映射bank_card全属性等于select t.*但是以结果为主
-                bank_card.FETCHER.allFields(),
-                ////可以使用字符串:"userName"或者lombok的@FieldNameConstant注解
-                user.name().as(BankCardVO.Fields.userName),
-                bank.name().as(BankCardVO.Fields.bankName)
-        )).toList();
+        .select((bank_card, user, bank) -> new ClassProxy<>(BankCardVO.class)
+            //自动映射bank_card全属性等于select t.*但是以结果为主
+            .selectAll(bank_card)
+            //可以使用字符串:"userName"或者lombok的@FieldNameConstant注解
+            .field("userName").set(user.name())
+            .field("bankName").set(bank.name())
+        ).toList();
 ```
 
 ## 4.全自动映射
