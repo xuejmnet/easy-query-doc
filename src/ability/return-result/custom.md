@@ -50,6 +50,8 @@ public class GenericDTO {
 ### 通用proxy赋值
 不需要对DTO进行额外处理可以不添加`@EntityProxy`,直接使用`new ClassProxy(DTO.class)`进行结果的返回
 
+`ClassProxy`通用的class对象映射构建体,对于不想添加`@EntityProxy`又想链式的用户可以选择使用该方式
+
 
 返回的DTO
 ```java
