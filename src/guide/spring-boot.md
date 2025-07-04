@@ -70,6 +70,11 @@ order: 3
         </dependency>
         <dependency>
             <groupId>com.easy-query</groupId>
+            <artifactId>sql-processor</artifactId>
+            <version>${easy-query.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.easy-query</groupId>
             <artifactId>sql-springboot-starter</artifactId>
             <version>${easy-query.version}</version>
         </dependency>
