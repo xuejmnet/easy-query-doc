@@ -328,19 +328,19 @@ public class SysUserDTO {
 
 List<SysUserDTO> users = easyEntityQuery.queryable(SysUser.class)
         .where(s -> s.name().like("小明"))
-        .select(SysUserDTO.class, s -> Select.of(
-                s.FETCHER.allFields(),//将s表的所有字段哦度映射到SysUserDTO中
-                s.address().addr().as("myAddress")//额外将用户地址映射到myAddress中
-        )).toList();
+        .select(s -> new ClassProxy<>(SysUserDTO.class)
+            .selectAll(s)//将s表的所有字段哦度映射到SysUserDTO中
+            .field("myAddress").set(s.address().addr())//额外将用户地址映射到myAddress中
+        ).toList();
 
 //如果你不想使用字符串那么可以在SysUserDTO中使用lombok注解@FieldNameConstants
 
 List<SysUserDTO> users = easyEntityQuery.queryable(SysUser.class)
         .where(s -> s.name().like("小明"))
-        .select(SysUserDTO.class, s -> Select.of(
-                s.FETCHER.allFields(),
-                s.address().addr().as(SysUserDTO.Fields.myAddress)//当然也可以使用SysUserDTO::getMyAddress
-        )).toList();
+        .select(s -> new ClassProxy<>(SysUserDTO.class)
+            .selectAll(s)//将s表的所有字段哦度映射到SysUserDTO中
+            .field(UserDTO.Fields.myAddress).set(s.address().addr())//当然也可以使用SysUserDTO::getMyAddress
+        ).toList();
 ```
 可能有些用户希望自己一个一个进行赋值那么我们可以这么处理
 ```java
