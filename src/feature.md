@@ -3,7 +3,24 @@ title: 新功能
 order: 110
 ---
 
+## partition by order
+`3.0.36^`支持navigate添加属性partitionOrder默认没有排序则报错
+```java
+    /**
+     * 用户拥有的银行卡数
+     */
+    @Navigate(value = RelationTypeEnum.OneToMany, selfProperty = {"id"}, targetProperty = {"uid"},orderByProps = {
+            @OrderByProperty(property = "openTime",asc = true),
+            @OrderByProperty(property = "code",asc = false,mode = OrderByPropertyModeEnum.NULLS_FIRST),
+    },partitionOrder = PartitionOrderEnum.NAVIGATE)
+    private List<SysBankCard> bankCard4s;
 
+```
+```sql
+
+-- 对应sql
+PARTITION BY t1.`uid` ORDER BY t1.`open_time` ASC,CASE WHEN t1.`code` IS NULL THEN 0 ELSE 1 END ASC,t1.`code` DESC
+```
 ## trigger
 `3.0.35^`增加表达式triiger
 ```java
