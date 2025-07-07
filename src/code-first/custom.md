@@ -104,9 +104,9 @@ public class MyMigrationEntityParser extends DefaultMigrationEntityParser {
         //如果不存在数据库则创建
         databaseCodeFirst.createDatabaseIfNotExists();
         //自动同步数据库表
-        CodeFirstCommand codeFirstExecutable = databaseCodeFirst.syncTableCommand(Arrays.asList(Company.class, SysUser.class, ValidUser.class));
+        CodeFirstCommand command = databaseCodeFirst.syncTableCommand(Arrays.asList(Company.class, SysUser.class, ValidUser.class));
         //执行命令
-        codeFirstExecutable.executeWithTransaction(arg -> {
+        command.executeWithTransaction(arg -> {
 //            System.out.println(arg.sql);
             arg.commit();
         });

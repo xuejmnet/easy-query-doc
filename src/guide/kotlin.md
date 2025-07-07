@@ -29,11 +29,11 @@ repositories {
 dependencies {
 
     implementation(kotlin("stdlib"))
-    implementation("com.easy-query:sql-core:2.5.5")
-    implementation("com.easy-query:sql-mysql:2.5.5")
-    implementation("com.easy-query:sql-api-proxy:2.5.5")
-//    annotationProcessor("com.easy-query:sql-processor:2.5.5")
-    ksp("com.easy-query:sql-ksp-processor:2.5.5")
+    implementation("com.easy-query:sql-core:3.0.41")
+    implementation("com.easy-query:sql-mysql:3.0.41")
+    implementation("com.easy-query:sql-api-proxy:3.0.41")
+//    annotationProcessor("com.easy-query:sql-processor:3.0.41")
+    ksp("com.easy-query:sql-ksp-processor:3.0.41")
     implementation("com.mysql:mysql-connector-j:9.2.0")
     implementation("com.zaxxer:HikariCP:3.3.1")
     testImplementation(kotlin("test"))
