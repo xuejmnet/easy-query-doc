@@ -35,6 +35,13 @@ value  | 功能
 > 适用于config或者省等相对全部表数据不多的对象
 :::
 
+## EasyCacheOption
+属性  | 功能  
+---  | --- 
+keyPrefix  | 缓存前缀默认CACHE
+cacheIndex  | AllCache缓存索引前缀默认INDEX
+expireMillisSeconds  | 缓存key过期时间
+valueNullExpireMillisSeconds  | 缓存未命中时null值缓存时间
 
 ## api
 
