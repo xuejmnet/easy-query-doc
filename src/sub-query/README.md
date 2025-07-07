@@ -40,7 +40,7 @@ configure(expression)   | 用来配置子查询相关参数比如是否启用逻
 distinct()   | 对结果进行去重比如`bankCards().distinct().count(x->x.type())`
 anyValue()   | 返回是否存在的true/false
 noneValue()   | 返回是否存在的true/false
-coount()   | 对结果进行数量统计
+count()   | 对结果进行数量统计
 sum(expression)   | 对结果进行求和,参数是统计的列表达式`bankCards().sum(card->card.amount())`对各个银行卡的余额求和
 avg(expression)   | 对结果进行取平均值
 max(expression)   | 对结果进行取最大值

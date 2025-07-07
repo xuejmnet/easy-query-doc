@@ -100,6 +100,12 @@ export const zhSidebar = sidebar({
       children: "structure",
     },
     {
+      text: "cache",
+      prefix: "cache/",
+      collapsible:true,
+      children: "structure",
+    },
+    {
       text: "高级",
       prefix: "adv/",
       collapsible:true,

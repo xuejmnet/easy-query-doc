@@ -53,7 +53,8 @@ order: 3
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <easy-query.version>2.4.14</easy-query.version>
+        <!-- 3.0.41 -->
+        <easy-query.version>latest-version</easy-query.version>
         <mysql.version>9.2.0</mysql.version>
         <hikaricp.version>3.3.1</hikaricp.version>
         <lombok.version>1.18.24</lombok.version>
@@ -228,9 +229,9 @@ public class AppConfiguration {
         //如果不存在数据库则创建
         databaseCodeFirst.createDatabaseIfNotExists();
         //自动同步数据库表
-        CodeFirstExecutable codeFirstExecutable = databaseCodeFirst.syncTables(Arrays.asList(Company.class, SysUser.class));
+        CodeFirstCommand command = databaseCodeFirst.syncTableCommand(Arrays.asList(Company.class, SysUser.class));
         //执行命令
-        codeFirstExecutable.executeWithTransaction(arg -> {
+        command.executeWithTransaction(arg -> {
             System.out.println(arg.sql);
             arg.commit();
         });

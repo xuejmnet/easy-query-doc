@@ -182,7 +182,7 @@ public class SysUser implements ProxyEntityAvailable<SysUser , SysUserProxy> {
 
 现在实体类`SysUser`关联的代理类`SysUserProxy`是不存在的，Idea是无法识别代理类，也无法进行编译，但是我们依然可以通过构建项目来触发`eq`的APT工具来生成代理类。`eq`的APT会为所有使用了`@EntityProxy`的实体类创建对应的代理类，代理类用于提供此对表别名，列名，列类型等等都提供了友好提示和类型判断，这些代理类可以帮助辅助我们更好设置条件查询和设值。
 
-真正开发时可以使用插件助手快速生成接口，请参考[快速生成接口](/easy-query-doc/config/plugin.html#快速生成接口)章节。
+真正开发时可以使用插件助手快速生成接口，请参考[快速生成接口](/easy-query-doc/plugin/easy-query-implement)章节。
 
 构建完项目后，代理类将会生成在指定的目录中。如下：
 

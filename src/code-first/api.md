@@ -55,7 +55,7 @@ codeFirstCommand.executeWithTransaction(arg -> {
 
 
 ::: danger 说明!!!
-> `syncTableCommand`里面出现两个类以上是`MySQL`连接字符串需要添加`&allowMultiQueries=true`参数,默认不加该参数则无法执行多条语句合并的sql
+> `syncTableCommand`里面出现两个类以上时`MySQL`连接字符串需要添加`&allowMultiQueries=true`参数,默认不加该参数则无法执行多条语句合并的sql
 > 比如`jdbc:mysql://127.0.0.1:3316/easy-query-db?serverTimezone=GMT%2B8&characterEncoding=utf-8&useSSL=false&allowMultiQueries=true&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true`
 :::
 
