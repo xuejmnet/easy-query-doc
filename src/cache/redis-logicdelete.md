@@ -6,6 +6,8 @@ order: 30
 # redis缓存逻辑删除
 该方案是另一种选择,如果您的数据库无法开启或者不支持cdc工具那么可以采用该方案
 
+本章节[demo](https://github.com/xuejmnet/eq-cache-sample) https://github.com/xuejmnet/eq-cache-sample
+
 ## 技术要求
 - 1.需要有redis也可以换成别的缓存
 - 2.表设计需要支持逻辑删除

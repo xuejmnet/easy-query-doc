@@ -6,7 +6,10 @@ order: 40
 # 多级缓存redis逻辑删除
 改方案是针对仅redis做缓存的增强因为redis做缓存无论如何还是要走io这一步所以速度上而言其实和db查询无太多变化可能会稍微变快但是整体还是网络io所以并不会有实质提升
 
-该文档需要配置《redis缓存逻辑删除》前一篇配置
+该文档需要配置《redis缓存逻辑删除》前一篇配置[redis缓存逻辑删除](/easy-query-doc/cache/redis-logicdelete)
+
+
+本章节[demo](https://github.com/xuejmnet/eq-cache-sample) https://github.com/xuejmnet/eq-cache-sample
 ## 性能
 
 ### 仅数据库查询1000次
