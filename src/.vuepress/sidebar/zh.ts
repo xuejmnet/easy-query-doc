@@ -7,6 +7,7 @@ export const zhSidebar = sidebar({
     "v2-v3",
     "catalog",
     "feature",
+    "best-practices",
     {
       text: "快速开始",
       icon: "laptop-code",
