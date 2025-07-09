@@ -42,6 +42,7 @@ relationTableAppend| `RelationTableAppendEnum.SMART` | `SMART`表示智能添加
 mappingStrategy| `EntityMappingStrategyEnum.PROPERTY_FIRST` | 对象间的映射关系,默认以`列名`映射,可以选择`属性名`或者`列名+属性名`
 includeLimitMode| `IncludeLimitModeEnum.UNION_ALL` | many子项拉取的时候如果子项设置了limit限制返回条数默认采用`union_all`,用户可以选择`partation`来提高性能但是部分数据库不支持
 saveComment| `false` | `true`:则保持`@Column(comment="...")`和`@Table(comment="...")`的注解到EntityMetadata和ColumnMetadata
+maxInClauseSize| `9999999` | 当`.where(o -> o.id().in(ids))`可以根据设置的`maxInClauseSize`形成 `(id in (:p1,:p2) or id in(:p3,:p4))`
 
 ## 分表分库特有配置
 
