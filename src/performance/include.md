@@ -1,5 +1,5 @@
 ---
-title: 分批查询忽略特殊值
+title: Include查询忽略特殊值
 order: 70
 ---
 `eq`的`include`和`selectAutoInclude`目前均以关联关系键二次查询,但是系统可能会存在`""、“_”、“-”、"/"`这种系统默认不需要关联关系的值

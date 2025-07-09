@@ -100,3 +100,7 @@ List<Draft1<Boolean>> list = easyEntityQuery.queryable(DocBankCard.class)
                     )).toList();
 
 ```
+
+
+## 数据库函数相关搜索
+IFNULL ISNULL COALESCE NVL COUNT MAX MIN

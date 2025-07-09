@@ -112,3 +112,7 @@ List<Draft2<BigDecimal, BigDecimal>> list = easyEntityQuery.queryable(BlogEntity
                 t_blog.score().divide(t_blog.score())
         )).toList();
 ```
+
+
+## 数据库函数相关搜索
+数据库加减乘除

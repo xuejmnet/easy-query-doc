@@ -227,7 +227,10 @@ List<BlogEntity> result = easyQueryClient.queryable(BlogEntity.class)
 
 `1.4.31^`以上版本支持`ValueFilter` 条件接收器,`Queryable`默认行为`AnyValueFilter.DEFAULT`所有的条件都接受,框架提供了一个可选`NotNullOrEmptyValueFilter.DEFAULT`当传入的条件参数值非 null 且字符串的情况下非空那么才会增加到条件里面,仅 where 条件生效。并且只有左侧是属性而非属性函数时才会生效如果左侧为函数那么将不会生效
 
+
 如果存在隐式 join 那么`2.3.0^`版本可以做到更加智能的处理
+
+`3.0.46^`版本新增`NotNullOrEmptyValueFilter.DEFAULT_PROPAGATION_SUPPORTS`支持传递到整个dsl包括隐式子查询和隐式groupJoin和隐式partation，如果用户需要自己实现可以通过实现接口由`ValueFilter`变成`PropagationValueFilter`
 
 用户也可以自定义实现接口
 

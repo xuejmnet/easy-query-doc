@@ -5,6 +5,7 @@ order: 20
 
 `字符串函数`指的是字符串类型下拥有的专用函数
 
+
 ## concat | stringFormat
 用来描述当值没有时使用默认值的函数
 
@@ -227,3 +228,7 @@ List<BlogEntity> list = easyEntityQuery.queryable(BlogEntity.class)
                     t_blog.title().indexOf("30%").gt(-1);
                 }).toList();
 ```
+
+## 数据库函数相关搜索
+
+CONCAT LOWER UPPER SUBSTR TRIM LTRIM RTRIM REPLACE GROUP_CONCAT STRING_AGG LISTAGG CHAR_LENGTH LEN LENGTH STRCMP LOCATE CHARINDEX STRPOS INSTR
