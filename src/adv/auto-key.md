@@ -56,11 +56,10 @@ public class UUIDPrimaryKeyGenerator implements PrimaryKeyGenerator {
 //     */
 //    @Override
 //    public void setPrimaryKey(Object entity, ColumnMetadata columnMetadata) {
-//        Serializable primaryKey = getPrimaryKey();
 //        Object oldValue = columnMetadata.getGetterCaller().apply(entity);
-//        if(oldValue!=null)
+//        if(oldValue == null)
 //        {
-//            columnMetadata.getSetterCaller().call(entity, primaryKey);
+//           PrimaryKeyGenerator.super.setPrimaryKey(entity,columnMetadata);
 //        }
 //    }
 }
@@ -93,11 +92,10 @@ public class SnowflakePrimaryKeyGenerator implements PrimaryKeyGenerator {
 //     */
 //    @Override
 //    public void setPrimaryKey(Object entity, ColumnMetadata columnMetadata) {
-//        Serializable primaryKey = getPrimaryKey();
 //        Object oldValue = columnMetadata.getGetterCaller().apply(entity);
-//        if(oldValue!=null)
+//        if(oldValue == ull)
 //        {
-//            columnMetadata.getSetterCaller().call(entity, primaryKey);
+//           PrimaryKeyGenerator.super.setPrimaryKey(entity,columnMetadata);
 //        }
 //    }
 }
