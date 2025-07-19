@@ -46,7 +46,8 @@ category:
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <easy-query.version>2.4.14</easy-query.version>
+        <!-- 请永远使用最新版 -->
+        <easy-query.version>3.0.57</easy-query.version>
         <hikari.version>3.3.1</hikari.version>
         <mysql.version>9.2.0</mysql.version>
         <lombok.version>1.18.36</lombok.version>

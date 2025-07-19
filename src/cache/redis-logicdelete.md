@@ -8,6 +8,21 @@ order: 30
 
 本章节[demo](https://github.com/xuejmnet/eq-cache-sample) https://github.com/xuejmnet/eq-cache-sample
 
+
+::: tip 说明!!!
+> 因为eq采用了延迟加载类的功能,所以在使用缓存的第一步建议在eq实例化完成后框架可以直接加载所有实体数据到eq,方便后续通过tableName获取对应的实体信息
+```java
+Set<String> scanClasses = EasyPackageUtil.scanClasses("com.ml.shop.domain", true, false);
+EntityMetadataManager entityMetadataManager = easyQueryClient.getRuntimeContext().getEntityMetadataManager();
+for (String scanClass : scanClasses) {
+    entityMetadataManager.getEntityMetadata(EasyClassUtil.getClassForName(scanClass));
+}
+```
+:::
+
+
+
+
 ## 技术要求
 - 1.需要有redis也可以换成别的缓存
 - 2.表设计需要支持逻辑删除
