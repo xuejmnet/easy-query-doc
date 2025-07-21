@@ -3,6 +3,65 @@ title: 新功能
 order: 110
 ---
 
+## sharding union all
+`3.0.57`支持分片使用union all这样可以保证大部分复杂sql都支持
+```java
+
+        List<Map<String, Object>> list = easyEntityQuery.queryable(TopicSharding.class)
+                .configure(s->s.getBehavior().addBehavior(EasyBehaviorEnum.SHARDING_UNION_ALL))
+                .where(t -> {
+                    t.id().in(Arrays.asList("20000","20001"));
+                })
+                .groupBy(t -> GroupKeys.of(t.createTime()))
+                .select(group -> {
+                    MapProxy mapProxy = new MapProxy();
+                    mapProxy.put("createTime", group.groupTable().createTime());
+                    mapProxy.put("idCount", group.count(t -> t.id()));
+                    return mapProxy;
+                }).toList();
+```
+
+## PropagationValueFilter
+`3.0.46`支持`filterConfigure`,实现`PropagationValueFilter`的接口支持filterConfigure传递
+```java
+
+        List<SysBank> list = easyEntityQuery.queryable(SysBank.class)
+                .filterConfigure(NotNullOrEmptyValueFilter.DEFAULT_PROPAGATION_SUPPORTS)
+                .where(bank -> {
+                    bank.name().eq("");
+                    bank.bankCards().any(s -> s.type().eq(""));
+                }).toList();
+```
+
+## offsetChunk
+`3.0.37`因为`toChunk`有时候会对返回结果进行处理,导致`chunk`不准确,所以用户可以自行进行偏移量处理
+```java
+
+        easyEntityQuery.queryable(BlogEntity.class)
+                .orderBy(b -> b.createTime().asc())
+                .orderBy(b -> b.id().asc())
+                .offsetChunk(3, chunk -> {
+                    for (BlogEntity blog : chunk.getValues()) {
+                        a.incrementAndGet();
+                    }
+                    //偏移量为本次查询到的结果
+                    return chunk.offset(chunk.getValues().size());
+                });
+
+
+
+        easyEntityQuery.queryable(BlogEntity.class)
+                .orderBy(b -> b.createTime().asc())
+                .orderBy(b -> b.id().asc())
+                .offsetChunk(100, chunk -> {
+                    for (BlogEntity blog : chunk.getValues()) {
+                        a.incrementAndGet();
+                    }
+                    //不进行偏移
+                    return chunk.offset(0);
+                });
+```
+
 ## partition by order
 `3.0.36^`支持navigate添加属性partitionOrder默认没有排序则报错
 ```java
