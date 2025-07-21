@@ -21,6 +21,40 @@ order: 110
                 }).toList();
 ```
 
+## filter
+`3.0.48` `o.user().filter(u->{})` `o.userList().filter(u->{})` 后续的隐式join增加on条件，后续的隐式子查询增加where，隐式group增加
+```java
+List<Draft2<String, Long>> list = easyEntityQuery.queryable(DocUser.class)
+                .subQueryToGroupJoin(o -> o.bankCards())
+                .where(user -> {
+                    //后续user下的bankCards自动携带对应的条件包括select和order里面
+                    user.bankCards().filter(x -> {
+                        //支持隐式join和普通属性筛选
+                        x.bank().name().eq("银行");
+                        x.type().like("45678");
+                    });
+
+                    user.bankCards().any();
+                }).select(user -> Select.DRAFT.of(
+                        user.name(),
+                        user.bankCards().count()
+                )).toList();
+
+
+            List<SysBankCard> list = easyEntityQuery.queryable(SysBankCard.class)
+                    .where(bank_card -> {
+                    //后续SysBankCard下的bank自动携带对应的条件包括select和order里面
+                        bank_card.bank().filter(t -> {
+                            t.or(() -> {
+                                t.name().like("工商银行");
+                                t.name().contains("建设银行");
+                            });
+                        });
+
+                        bank_card.bank().name().contains("123");
+                    }).toList();
+```
+
 ## PropagationValueFilter
 `3.0.46`支持`filterConfigure`,实现`PropagationValueFilter`的接口支持filterConfigure传递
 ```java
