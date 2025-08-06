@@ -13,7 +13,7 @@ tagline: 🚀 java下最强ORM没有之一(支持kotlin)</br><span class="vuepre
 actions:
   - text: 开始使用 →
     icon: lightbulb
-    link: ./startup/what-is-easy-query
+    link: ./what-is-easy-query
     type: primary
 
   - text: 爱心支持💡

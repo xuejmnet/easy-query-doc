@@ -3,9 +3,9 @@ import { sidebar } from "vuepress-theme-hope";
 export const zhSidebar = sidebar({
   "/": [
     "",
+    "what-is-easy-query",
+    "quick-query",
     // "portfolio",
-    "v2-v3",
-    "catalog",
     "feature",
     "best-practices",
     {
@@ -149,6 +149,9 @@ export const zhSidebar = sidebar({
         }
       ],
     },
-    "support","members"
+    "support","members",
+    "question",
+    "v2-v3",
+    "catalog",
   ],
 });
