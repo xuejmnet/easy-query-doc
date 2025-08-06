@@ -1,5 +1,5 @@
 ---
-title: easy-query 简介
+title: 什么是eq
 order: 1
 category:
   - Startup
@@ -39,6 +39,7 @@ EasyQuery官方QQ群: 170029046
 支持`dsl`模式编写数据库表达式查询数据也可以用`relation model`来实现数据模型关系筛选
 
 ## 为什么选择eq
+- 提供了强大的面向对象查询功能，将表关系以对象数据结构的关系进行映射提供简洁api给用户查询
 - 强类型 可以将大部分错误在编译时处理掉
 - 弱类型 允许用户可以在动态场景下使用字符串属性来配合强类型dsl达到组合使用效果
 - 高覆盖率单元测试 拥有2000+个单元测试
@@ -61,7 +62,7 @@ EasyQuery官方QQ群: 170029046
 | ------------------- | --------------- | ---------------- | ---------------- |
 | MySQL               | sql-mysql       | mysql            | mysql            |
 | Oracle              | sql-oracle      | oracle           | oracle           |
-| PostgresSQL         | sql-pgsql       | pgsql            | pgsql            |
+| PostgreSQL         | sql-pgsql       | pgsql            | pgsql            |
 | SqlServer           | sql-mssql       | mssql            | mssql            |
 | SqlServer RowNumber | sql-mssql       | mssql_row_number | mssql_row_number |
 | H2                  | sql-h2          | h2               | h2               |

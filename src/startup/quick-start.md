@@ -1,6 +1,6 @@
 ---
-title: 快速体验
-order: 2
+title: 小试牛刀
+order: 10
 category:
   - Startup
 ---
@@ -27,6 +27,11 @@ category:
 - 热心网友提供demo [github](https://github.com/Hoysing/easy-query-sample)或者[gitee](https://gitee.com/Hoysing/easy-query-sample)的案例项目
 
 ## 引入依赖
+当前文档只展示最简单的控制台demo,具体框架请参考下面的链接
+
+- [kotlin用户](/easy-query-doc/guide/kotlin)
+- [springboot用户](/easy-query-doc/guide/spring-boot)
+- [solon用户](/easy-query-doc/guide/solon)
 
 ### 1.简单环境
 

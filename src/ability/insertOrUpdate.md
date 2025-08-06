@@ -11,7 +11,7 @@ title: 插入或者更新
 --- | --- | ---  
 MySQL | sql-mysql  | ✅
 Oracle | sql-oracle  | ✅
-PostgresSQL | sql-pgsql  | ✅
+PostgreSQL | sql-pgsql  | ✅
 SqlServer | sql-mssql  | ✅
 H2 | sql-h2  | ✅
 SQLite | sql-sqlite  | ✅
