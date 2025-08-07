@@ -672,11 +672,22 @@ public List<PostDTO> selectAutoInclude(@RequestBody PostPage7Request request) {
 
 框架依然通过in来解决n+1的问题实现结构化的对象返回,框架支持任意结构化对象返回包括结构化对象扁平化
 
-### NavigateFlat 🔥
+- ①`selectAutoInclude`是`select`api和`include`的结合，会自动安装dto的要求将数据结构进行组装返回
+
+::: danger 说明!!!
+> 注意千万不要再`selectAutoInclude`中传入数据库对象,因为数据库对象的传入会导致`selectAutoInclude`将整个关系树连根拔起都查询出来
+> 注意千万不要再`selectAutoInclude`中传入数据库对象,因为数据库对象的传入会导致`selectAutoInclude`将整个关系树连根拔起都查询出来
+> 注意千万不要再`selectAutoInclude`中传入数据库对象,因为数据库对象的传入会导致`selectAutoInclude`将整个关系树连根拔起都查询出来
+:::
+
+
 
 ::: tip selectAutoInclude!!!
 > `selectAutoInclude`这个api是eq的核心数据查询api之一用户必须完全掌握可以提高1000%的效率,并且没有n+1问题支持后续一对一 一对多的任意数据穿透查询
 :::
+
+### NavigateFlat 🔥
+
 返回数据的时候我们如果不希望以结构化对象的形式返回,希望将user对象平铺到整个post中，又不希望使用set手动复制那么可以通过`@NavigateFlat`来实现额外属性的获取
 ```java
 
@@ -732,7 +743,6 @@ public class PostPage6Response {
 ==> Preparing: SELECT `id` FROM `t_user` WHERE `id` IN (?,?,?)
 ==> Parameters: 8510a91a-274e-494f-9325-f55c004706e5(String),23376c96-a315-4a3f-aeb8-2e29c02f330b(String),c529b9ba-a90d-490e-9bad-15ef7c4f33cc(String)
 ```
-`selectAutoInclude`是`select`api和`include`的结合，会自动安装dto的要求将数据结构进行组装返回
 
 ::: danger 说明!!!
 > 注意千万不要再`selectAutoInclude`中传入数据库对象,因为数据库对象的传入会导致`selectAutoInclude`将整个关系树连根拔起都查询出来
