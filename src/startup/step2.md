@@ -750,3 +750,827 @@ public class PostPage6Response {
 > 注意千万不要再`selectAutoInclude`中传入数据库对象,因为数据库对象的传入会导致`selectAutoInclude`将整个关系树连根拔起都查询出来
 :::
 
+
+`@NavigateFlat`支持任意级别对象关系获取,如果对象关系获取中间存在`toMany`无论是OneToMany还是`ManyToMany`那么最终都会变成`List<?>`集合
+
+## 帖子内容带评论
+简单的额外对象获取后我们希望实现返回给前端帖子内容并且携带上前三条相关评论，那么eq有几种方式呢
+
+- `NaviagteFlat`+`limit`+`union`
+- `NaviagteFlat`+`limit`+`partition by`
+- `subquery`+`limit`+`joining`
+### 评论关系添加
+```java
+
+@Data
+@Table("t_post")
+@EntityProxy
+@EasyAlias("t_post")
+@EasyAssertMessage("未找到对应的帖子信息")
+public class Post implements ProxyEntityAvailable<Post, PostProxy> {
+    //....业务字段
+
+    /**
+     * 发帖人
+     **/
+    @Navigate(value = RelationTypeEnum.ManyToOne,
+            selfProperty = {PostProxy.Fields.userId},
+            targetProperty = {UserProxy.Fields.id},
+            required = true)
+    private User user;
+
+
+    /**
+     * 评论信息
+     **/
+    @Navigate(value = RelationTypeEnum.OneToMany,
+            selfProperty = {PostProxy.Fields.id},
+            targetProperty = {CommentProxy.Fields.postId})
+    private List<Comment> commentList;
+}
+
+```
+
+因为帖子和评论的关系是一对多所以我们在帖子里面通过插件或者手动添加关联关系
+### limit+union
+首先我们定义好需要返回的对象
+
+```java
+
+/**
+ * create time 2025/8/6 22:45
+ * {@link com.eq.doc.domain.Post}
+ *
+ * @author xuejiaming
+ */
+@Data
+public class PostPage8Response {
+    private String id;
+    private String title;
+    private String content;
+    private String userId;
+    private LocalDateTime publishAt;
+
+    @NavigateFlat(pathAlias = "user.id")
+    private String userName;
+
+    /**
+     * 评论信息
+     **/
+    @Navigate(value = RelationTypeEnum.OneToMany,orderByProps = {
+            @OrderByProperty(property = "createAt",asc = true)
+    },limit = 3)
+    private List<InternalComment> commentList;
+
+    /**
+     * {@link Comment}
+     **/
+    @Data
+    public static class InternalComment {
+        private String id;
+        private String parentId;
+        private String content;
+        private LocalDateTime createAt;
+    }
+
+}
+```
+
+这样我们就设置好了要返回的数据并且支持额外返回3条评论
+```java
+
+    @PostMapping("/postWithCommentPage")
+    public List<PostPage8Response> postWithCommentPage(@RequestBody PostPage7Request request) {
+        return easyEntityQuery.queryable(Post.class)
+                .filterConfigure(NotNullOrEmptyValueFilter.DEFAULT_PROPAGATION_SUPPORTS)
+                .where(t_post -> {
+                    t_post.title().contains(request.getTitle());
+                    t_post.user().name().contains(request.getUserName());
+                })
+                .selectAutoInclude(PostPage8Response.class).toList();
+    }
+```
+```json
+
+    {
+        "id": "0c7fd05f-f999-4fcc-8c98-c0509b22b7f1",
+        "title": "健身计划分享",
+        "content": "# 这是用户用户D的帖子内容\n包含丰富的文本内容...",
+        "userId": "c529b9ba-a90d-490e-9bad-15ef7c4f33cc",
+        "publishAt": "2025-08-03T21:24:00.577",
+        "userName": "c529b9ba-a90d-490e-9bad-15ef7c4f33cc",
+        "commentList": [
+            {
+                "id": "67c9ceb0-3eef-44ba-8bbc-c0d1f15f00ad",
+                "parentId": "0",
+                "content": "期待更多这样的内容",
+                "createAt": "2025-08-05T17:24:00.579"
+            },
+            {
+                "id": "d7753586-4bb9-448b-bedb-b178df897bca",
+                "parentId": "fa80aaa0-9742-4a02-9209-a08d1bd979df",
+                "content": "@用户B 我也这么认为",
+                "createAt": "2025-08-06T00:24:00.579"
+            },
+            {
+                "id": "2b40e873-5c0d-41c4-bf10-a38461017300",
+                "parentId": "67c9ceb0-3eef-44ba-8bbc-c0d1f15f00ad",
+                "content": "@用户C 具体是指哪方面？",
+                "createAt": "2025-08-06T03:24:00.579"
+            }
+        ]
+    }
+```
+我们看到真的和编写的dto如出一辙的返回了查询结果
+```sql
+-- 第1条sql数据
+ SELECT
+        t.`id`,
+        t.`title`,
+        t.`content`,
+        t.`user_id`,
+        t.`publish_at` 
+    FROM
+        `t_post` t
+
+-- 第2条sql数据
+SELECT t1.`id`, t1.`parent_id`, t1.`content`, t1.`create_at`, t1.`post_id` AS `__relation__postId`
+FROM (
+	(SELECT t.`id`, t.`parent_id`, t.`content`, t.`user_id`, t.`post_id`
+		, t.`create_at`
+	FROM `t_comment` t
+	WHERE t.`post_id` = 'c529b9ba-a90d-490e-9bad-15ef7c4f33cc'
+	ORDER BY t.`create_at` ASC
+	LIMIT 3)
+	UNION ALL
+	(SELECT t.`id`, t.`parent_id`, t.`content`, t.`user_id`, t.`post_id`
+		, t.`create_at`
+	FROM `t_comment` t
+	WHERE t.`post_id` = '8510a91a-274e-494f-9325-f55c004706e5'
+	ORDER BY t.`create_at` ASC
+	LIMIT 3)
+	UNION ALL
+	(SELECT t.`id`, t.`parent_id`, t.`content`, t.`user_id`, t.`post_id`
+		, t.`create_at`
+	FROM `t_comment` t
+	WHERE t.`post_id` = '1b59fa07-1824-4e01-a491-c780d167cf44'
+	ORDER BY t.`create_at` ASC
+	LIMIT 3)
+	UNION ALL
+	(SELECT t.`id`, t.`parent_id`, t.`content`, t.`user_id`, t.`post_id`
+		, t.`create_at`
+	FROM `t_comment` t
+	WHERE t.`post_id` = '23376c96-a315-4a3f-aeb8-2e29c02f330b'
+	ORDER BY t.`create_at` ASC
+	LIMIT 3)
+	UNION ALL
+	(SELECT t.`id`, t.`parent_id`, t.`content`, t.`user_id`, t.`post_id`
+		, t.`create_at`
+	FROM `t_comment` t
+	WHERE t.`post_id` = '947ee5fd-5fd0-4889-94e3-03c5efff2c3a'
+	ORDER BY t.`create_at` ASC
+	LIMIT 3)
+	UNION ALL
+	(SELECT t.`id`, t.`parent_id`, t.`content`, t.`user_id`, t.`post_id`
+		, t.`create_at`
+	FROM `t_comment` t
+	WHERE t.`post_id` = ?
+	ORDER BY t.`create_at` ASC
+	LIMIT 3)
+	UNION ALL
+	(SELECT t.`id`, t.`parent_id`, t.`content`, t.`user_id`, t.`post_id`
+		, t.`create_at`
+	FROM `t_comment` t
+	WHERE t.`post_id` = ?
+	ORDER BY t.`create_at` ASC
+	LIMIT 3)
+	UNION ALL
+	(SELECT t.`id`, t.`parent_id`, t.`content`, t.`user_id`, t.`post_id`
+		, t.`create_at`
+	FROM `t_comment` t
+	WHERE t.`post_id` = ?
+	ORDER BY t.`create_at` ASC
+	LIMIT 3)
+	UNION ALL
+	(SELECT t.`id`, t.`parent_id`, t.`content`, t.`user_id`, t.`post_id`
+		, t.`create_at`
+	FROM `t_comment` t
+	WHERE t.`post_id` = ?
+	ORDER BY t.`create_at` ASC
+	LIMIT 3)
+	UNION ALL
+	(SELECT t.`id`, t.`parent_id`, t.`content`, t.`user_id`, t.`post_id`
+		, t.`create_at`
+	FROM `t_comment` t
+	WHERE t.`post_id` = ?
+	ORDER BY t.`create_at` ASC
+	LIMIT 3)
+	UNION ALL
+	(SELECT t.`id`, t.`parent_id`, t.`content`, t.`user_id`, t.`post_id`
+		, t.`create_at`
+	FROM `t_comment` t
+	WHERE t.`post_id` = ?
+	ORDER BY t.`create_at` ASC
+	LIMIT 3)
+	UNION ALL
+	(SELECT t.`id`, t.`parent_id`, t.`content`, t.`user_id`, t.`post_id`
+		, t.`create_at`
+	FROM `t_comment` t
+	WHERE t.`post_id` = ?
+	ORDER BY t.`create_at` ASC
+	LIMIT 3)
+) t1
+-- 第3条sql数据
+   SELECT
+        `id` 
+    FROM
+        `t_user` 
+    WHERE
+        `id` IN (?, ?, ?, ?, ?)
+```
+
+一个生成了三条sql，中limit+union是第二条sql,但是union相对sql会变得复杂并且冗余所以我们尝试eq提供的第二种方式
+
+### limit+partition by
+`springboot`的a`pplication.yml`增加配置项
+```yml
+easy-query:
+  #支持的数据库
+  database: mysql
+  #对象属性和数据库列名的转换器
+  name-conversion: underlined
+  default-track: true
+  include-limit-mode: partition
+```
+- `include-limit-mode: partition`这句话让原先的`union all`变成`partition`(后续`partition`可能会变成默认)
+
+接下来我们继续请求
+```sql
+
+-- 第1条sql数据
+
+    SELECT
+        t.`id`,
+        t.`title`,
+        t.`content`,
+        t.`user_id`,
+        t.`publish_at` 
+    FROM
+        `t_post` t
+
+
+-- 第2条sql数据
+
+    SELECT
+        t2.`id` AS `id`,
+        t2.`parent_id` AS `parent_id`,
+        t2.`content` AS `content`,
+        t2.`create_at` AS `create_at`,
+        t2.`post_id` AS `__relation__postId` 
+    FROM
+        (SELECT
+            t1.`id` AS `id`,
+            t1.`parent_id` AS `parent_id`,
+            t1.`content` AS `content`,
+            t1.`user_id` AS `user_id`,
+            t1.`post_id` AS `post_id`,
+            t1.`create_at` AS `create_at` 
+        FROM
+            (SELECT
+                t.`id`,
+                t.`parent_id`,
+                t.`content`,
+                t.`user_id`,
+                t.`post_id`,
+                t.`create_at`,
+                (ROW_NUMBER() OVER (PARTITION 
+            BY
+                t.`post_id` 
+            ORDER BY
+                t.`create_at` ASC)) AS `__row__` 
+            FROM
+                `t_comment` t 
+            WHERE
+                t.`post_id` IN ('09e8395e-b7f7-48b4-8227-fcbf96c35d1e', '5d40f560-af15-4566-93cd-9359e0a27501', '76cdba56-b1f8-4432-bc0e-764d491c6cd5', '81eb5fb7-ec57-45d3-b9b9-5e6217ec4d31', '8a6f16a6-b51e-4a39-9ea9-fda57502bb29', 'a6982186-afc5-4f49-977d-97ff8c25cd9f', 'b1eb997d-9cb0-40ca-9495-a9d41da21125', 'b4f74aeb-3868-4810-9845-cab9e882229b', 'bf7e62ee-d833-4f5a-9a0a-07b9634ba26a', 'c6d0631f-160a-4a8c-8401-62db614f87c8', 'd9629994-d9fa-46a3-bd7c-5982f0900a3d', 'ed01ea8a-4162-42ba-a632-dd6d67bf9d45', 'f27edcf7-0fd8-44e3-b3cc-cbba41427dfe')) t1 
+        WHERE
+            t1.`__row__` >= 1 
+            AND t1.`__row__` <= 3) t2
+
+
+
+-- 第3条sql数据
+
+    SELECT
+        `id` 
+    FROM
+        `t_user` 
+    WHERE
+        `id` IN ('15b6a7c1-3f27-4d21-b67c-9c05cd9bf4b6', '2ae21dfa-9330-4d8c-bbfa-6b4618c56c45', '6e50464d-17a7-4f12-8458-c896d55dd276', '1d2a9d56-63df-4413-bd83-ff9a0c0a2166', '2ede4599-8f1a-4d0c-a0af-0dd50d903b87')
+```
+```json
+{
+        "id": "5d40f560-af15-4566-93cd-9359e0a27501",
+        "title": "健身计划分享",
+        "content": "# 这是用户用户E的帖子内容\n包含丰富的文本内容...",
+        "userId": "2ae21dfa-9330-4d8c-bbfa-6b4618c56c45",
+        "publishAt": "2025-08-04T08:09:30.301",
+        "userName": "2ae21dfa-9330-4d8c-bbfa-6b4618c56c45",
+        "commentList": [
+            {
+                "id": "de5337b2-e13c-49f3-9b15-ac393784fc6f",
+                "parentId": "46da0914-b046-45ad-8847-1c65c82ac71c",
+                "content": "@用户C 有不同看法：",
+                "createAt": "2025-08-07T06:09:30.304"
+            },
+            {
+                "id": "daf5102c-b4dd-4f65-bee6-9b3df4f1b5d9",
+                "parentId": "0",
+                "content": "写得真详细",
+                "createAt": "2025-08-07T09:09:30.304"
+            },
+            {
+                "id": "46da0914-b046-45ad-8847-1c65c82ac71c",
+                "parentId": "0",
+                "content": "期待更多这样的内容",
+                "createAt": "2025-08-07T10:09:30.304"
+            }
+        ]
+    }
+```
+我们看到通过简单的配置我们将一对多返回前n条变动轻松简单并且可以快速实现支持分页,但是细心的朋友肯定发现了一个问题,我们需要的评论并不是平铺到整个post贴子的，帖子和评论虽然是一对多但是评论自己也是自关联，评论设计也是楼中楼为支持的那么我们应该如何设置让我们返回的评论支持返回第一层级呢
+
+### EXTRA_AUTO_INCLUDE_CONFIGURE
+使用eq的`EXTRA_AUTO_INCLUDE_CONFIGURE`可以对`selectAutoInclude`的查询添加额外字段或额外搜索排序等处理
+
+关于`EXTRA_AUTO_INCLUDE_CONFIGURE`的更多信息请[查看文档](/easy-query-doc/ability/return-result/extra)
+
+第一步对原始的dto对象进行插件快速提示插入`EXTRA_AUTO_INCLUDE_CONFIGURE`
+
+<img :src="$withBase('/images/extra-include-tip.jpg')">
+
+我们移除`select`操作因为我们不需要
+
+最终我们的返回dto如下
+```java
+
+/**
+ * create time 2025/8/6 22:45
+ * {@link com.eq.doc.domain.Post}
+ *
+ * @author xuejiaming
+ */
+@Data
+public class PostPage9Response {
+    private String id;
+    private String title;
+    private String content;
+    private String userId;
+    private LocalDateTime publishAt;
+
+    @NavigateFlat(pathAlias = "user.id")
+    private String userName;
+
+    /**
+     * 评论信息
+     **/
+    @Navigate(value = RelationTypeEnum.OneToMany,orderByProps = {
+            @OrderByProperty(property = "createAt",asc = true)
+    },limit = 3)
+    private List<InternalComment> commentList;
+
+    /**
+     * {@link Comment}
+     **/
+    @Data
+    public static class InternalComment {
+
+
+        private static final ExtraAutoIncludeConfigure EXTRA_AUTO_INCLUDE_CONFIGURE = CommentProxy.TABLE.EXTRA_AUTO_INCLUDE_CONFIGURE()
+                .where(t_comment -> {
+                    t_comment.parentId().eq("0");
+                });
+
+        private String id;
+        private String parentId;
+        private String content;
+        private LocalDateTime createAt;
+    }
+
+}
+```
+我们看中间sql如下
+```sql
+
+    SELECT
+        t2.`id` AS `id`,
+        t2.`parent_id` AS `parent_id`,
+        t2.`content` AS `content`,
+        t2.`create_at` AS `create_at`,
+        t2.`post_id` AS `__relation__postId` 
+    FROM
+        (SELECT
+            t1.`id` AS `id`,
+            t1.`parent_id` AS `parent_id`,
+            t1.`content` AS `content`,
+            t1.`user_id` AS `user_id`,
+            t1.`post_id` AS `post_id`,
+            t1.`create_at` AS `create_at` 
+        FROM
+            (SELECT
+                t.`id`,
+                t.`parent_id`,
+                t.`content`,
+                t.`user_id`,
+                t.`post_id`,
+                t.`create_at`,
+                (ROW_NUMBER() OVER (PARTITION 
+            BY
+                t.`post_id` 
+            ORDER BY
+                t.`create_at` ASC)) AS `__row__` 
+            FROM
+                `t_comment` t 
+            WHERE
+                t.`parent_id` = '0'  ①
+                AND t.`post_id` IN ('09e8395e-b7f7-48b4-8227-fcbf96c35d1e', '5d40f560-af15-4566-93cd-9359e0a27501', '76cdba56-b1f8-4432-bc0e-764d491c6cd5', '81eb5fb7-ec57-45d3-b9b9-5e6217ec4d31', '8a6f16a6-b51e-4a39-9ea9-fda57502bb29', 'a6982186-afc5-4f49-977d-97ff8c25cd9f', 'b1eb997d-9cb0-40ca-9495-a9d41da21125', 'b4f74aeb-3868-4810-9845-cab9e882229b', 'bf7e62ee-d833-4f5a-9a0a-07b9634ba26a', 'c6d0631f-160a-4a8c-8401-62db614f87c8', 'd9629994-d9fa-46a3-bd7c-5982f0900a3d', 'ed01ea8a-4162-42ba-a632-dd6d67bf9d45', 'f27edcf7-0fd8-44e3-b3cc-cbba41427dfe')) t1 
+        WHERE
+            t1.`__row__` >= 1 
+            AND t1.`__row__` <= 3) t2
+```
+- ①是我们通过额外配置添加上去的
+
+返回的json如下
+```json
+{
+        "id": "b4f74aeb-3868-4810-9845-cab9e882229b",
+        "title": "初探人工智能",
+        "content": "# 这是用户用户E的帖子内容\n包含丰富的文本内容...",
+        "userId": "2ae21dfa-9330-4d8c-bbfa-6b4618c56c45",
+        "publishAt": "2025-08-07T02:09:30.301",
+        "userName": "2ae21dfa-9330-4d8c-bbfa-6b4618c56c45",
+        "commentList": [
+            {
+                "id": "238fea11-c5d1-4485-977d-a0126cb74402",
+                "parentId": "0",
+                "content": "期待更多这样的内容",
+                "createAt": "2025-08-07T09:09:30.304"
+            },
+            {
+                "id": "e216eaf8-bf15-4eeb-aa4c-6489be83c355",
+                "parentId": "0",
+                "content": "内容很实用",
+                "createAt": "2025-08-07T16:09:30.304"
+            },
+            {
+                "id": "830bd1d9-1600-43a2-94b7-f6426a8a78c9",
+                "parentId": "0",
+                "content": "写得真详细",
+                "createAt": "2025-08-07T17:09:30.304"
+            }
+        ]
+    }
+```
+
+我们返回的post节点完美的符合我们内容
+
+但是有时候我们可能需要返回的是post信息和前三条内容并且将前三条内容合并到一个字段上去那么应该怎么做
+
+### joining逗号分割
+一如既往我们还是定义对应的dto
+```java
+
+@Data
+@EntityProxy
+public class PostPage10Response {
+    private String id;
+    private String title;
+    private String content;
+    private String userId;
+    private LocalDateTime publishAt;
+
+    private String userName;
+    
+    private String commentContent;
+
+}
+
+
+
+    @PostMapping("/postWithCommentPage3")
+    public List<PostPage10Response> postWithCommentPage3(@RequestBody PostPage7Request request) {
+        return easyEntityQuery.queryable(Post.class)
+                .filterConfigure(NotNullOrEmptyValueFilter.DEFAULT_PROPAGATION_SUPPORTS)
+                .where(t_post -> {
+                    t_post.title().contains(request.getTitle());
+                    t_post.user().name().contains(request.getUserName());
+                })
+                .select(t_post -> new PostPage10ResponseProxy()
+                        .selectAll(t_post)
+                        .userName().set(t_post.user().name())
+                        .commentContent().set(t_post.commentList().where(c->c.parentId().eq("0")).elements(0,2).joining(c->c.content()))
+                ).toList();
+    }
+```
+
+我们来看下表达式`t_post.commentList().where(c->c.parentId().eq("0")).joining(c->c.content())`这个表达式是将post下方的评论集合`commentList`通过where筛选取前三个的content内容合并
+
+```json
+{
+        "id": "09e8395e-b7f7-48b4-8227-fcbf96c35d1e",
+        "title": "夏日旅行攻略",
+        "content": "# 这是用户用户D的帖子内容\n包含丰富的文本内容...",
+        "userId": "15b6a7c1-3f27-4d21-b67c-9c05cd9bf4b6",
+        "publishAt": "2025-08-05T03:09:30.301",
+        "userName": "用户D",
+        "commentContent": "非常好的分享！,期待更多这样的内容,非常好的分享！"
+    },
+    {
+        "id": "5d40f560-af15-4566-93cd-9359e0a27501",
+        "title": "健身计划分享",
+        "content": "# 这是用户用户E的帖子内容\n包含丰富的文本内容...",
+        "userId": "2ae21dfa-9330-4d8c-bbfa-6b4618c56c45",
+        "publishAt": "2025-08-04T08:09:30.301",
+        "userName": "用户E",
+        "commentContent": "完全同意你的观点,期待更多这样的内容,写得真详细"
+    }
+```
+通过结果我们可以清晰地看到`commentContent`被`joining`函数通过逗号分割组合在一起了
+我们再来看对应的sql
+```sql
+
+    SELECT
+        t.`id`,
+        t.`title`,
+        t.`content`,
+        t.`user_id`,
+        t.`publish_at`,
+        t1.`name` AS `user_name`,
+        (SELECT
+            GROUP_CONCAT(t2.`content` SEPARATOR ',') 
+        FROM
+            `t_comment` t2 
+        WHERE
+            t2.`post_id` = t.`id` 
+            AND t2.`parent_id` = '0' 
+        LIMIT
+            3) AS `comment_content` 
+    FROM
+        `t_post` t 
+    INNER JOIN
+        `t_user` t1 
+            ON t1.`id` = t.`user_id`
+```
+
+框架通过`select子查询`将结果清晰的将结果集通过`group_concat`函数组装到了`comment_content`列上
+
+::: warning 性能!!!
+> 如果由用户嫌弃select子查询性能低下eq贴心的提供了子查询转`groupJoin`助力用户实现更高效的sql
+:::
+
+当然这边为了演示使用了内容逗号分割，其实本质而言应该是将类目逗号分割更加合适
+
+接下来我们创建帖子的类目关系表
+
+帖子和类目关系是多对多通过CategoryPost表进行关联
+
+```java
+
+@Data
+@Table("t_post")
+@EntityProxy
+@EasyAlias("t_post")
+@EasyAssertMessage("未找到对应的帖子信息")
+public class Post implements ProxyEntityAvailable<Post, PostProxy> {
+    //....其他业务字段和导航属性
+
+
+    /**
+     * 帖子类目信息
+     **/
+    @Navigate(value = RelationTypeEnum.ManyToMany,
+            selfProperty = {PostProxy.Fields.id},
+            selfMappingProperty = {CategoryPostProxy.Fields.postId},
+            mappingClass = CategoryPost.class, targetProperty = {CategoryProxy.Fields.id},
+            targetMappingProperty = {CategoryPostProxy.Fields.categoryId}, subQueryToGroupJoin = true) ①
+    private List<Category> categoryList;
+}
+```
+
+- 其中我们看到①`subQueryToGroupJoin = true`该配置项让原本的多对多子查询可以直接在使用的时候使用`groupJoin`来代替可以让生成的sql性能更加高效
+
+返回帖子内容+用户+评论前三个+所属类目逗号分割
+
+设置返回dto
+```java
+
+/**
+ * create time 2025/8/6 22:45
+ * {@link com.eq.doc.domain.Post}
+ *
+ * @author xuejiaming
+ */
+@Data
+public class PostPage11Response {
+
+    private static final ExtraAutoIncludeConfigure EXTRA_AUTO_INCLUDE_CONFIGURE = PostProxy.TABLE.EXTRA_AUTO_INCLUDE_CONFIGURE()
+            .select(t_post -> Select.of(
+                    t_post.categoryList().joining(cate->cate.name()).as("categoryNames")
+            ));
+        
+    private String id;
+    private String title;
+    private String content;
+    private String userId;
+    private LocalDateTime publishAt;
+
+    @NavigateFlat(pathAlias = "user.id")
+    private String userName;
+
+    @SuppressWarnings("EasyQueryFieldMissMatch")
+    private String categoryNames;
+
+    /**
+     * 评论信息
+     **/
+    @Navigate(value = RelationTypeEnum.OneToMany, orderByProps = {
+            @OrderByProperty(property = "createAt", asc = true)
+    }, limit = 3)
+    private List<InternalComment> commentList;
+
+    /**
+     * {@link Comment}
+     **/
+    @Data
+    public static class InternalComment {
+
+
+        private static final ExtraAutoIncludeConfigure EXTRA_AUTO_INCLUDE_CONFIGURE = CommentProxy.TABLE.EXTRA_AUTO_INCLUDE_CONFIGURE()
+                .where(t_comment -> {
+                    t_comment.parentId().eq("0");
+                });
+
+        private String id;
+        private String parentId;
+        private String content;
+        private LocalDateTime createAt;
+    }
+
+}
+
+
+
+
+@PostMapping("/postList4")
+public List<PostPage11Response> postList4(@RequestBody PostPage7Request request) {
+    return easyEntityQuery.queryable(Post.class)
+            .filterConfigure(NotNullOrEmptyValueFilter.DEFAULT_PROPAGATION_SUPPORTS)
+            .where(t_post -> {
+                t_post.title().contains(request.getTitle());
+                t_post.user().name().contains(request.getUserName());
+            })
+            .selectAutoInclude(PostPage11Response.class).toList();
+}
+```
+
+我们通过对主表进行额外字段的添加让其直接支持额外字段返回
+
+- `@SuppressWarnings("EasyQueryFieldMissMatch")`这个注解主要是用来抑制插件警告，您如果觉得警告无所谓那么可以不加该注解对结果没有影响
+
+```json
+
+    {
+        "id": "0c6ab3ab-29a4-4320-a08e-195bdac27095",
+        "title": "JVM调优实战",
+        "content": "# 这是用户用户C的帖子内容\n包含丰富的文本内容...",
+        "userId": "2e509ef4-0282-448f-ace0-43501d46ccf4",
+        "publishAt": "2025-08-04T23:42:43.525",
+        "userName": "2e509ef4-0282-448f-ace0-43501d46ccf4",
+        "categoryNames": "娱乐,教育",
+        "commentList": [
+            {
+                "id": "2d3643e6-8fb5-4a2b-a0bc-1c92030bfa34",
+                "parentId": "0",
+                "content": "完全同意你的观点",
+                "createAt": "2025-08-07T00:42:43.526"
+            },
+            {
+                "id": "5f7b2333-5578-40cd-940e-28e97d1b0aa1",
+                "parentId": "0",
+                "content": "完全同意你的观点",
+                "createAt": "2025-08-07T11:42:43.526"
+            },
+            {
+                "id": "0b1d0cbd-62a7-4922-b5fe-0ef4780e4c24",
+                "parentId": "0",
+                "content": "内容很实用",
+                "createAt": "2025-08-07T15:42:43.526"
+            }
+        ]
+    },
+    {
+        "id": "1a0e5854-c748-4c6b-a11d-d5bbb58326a1",
+        "title": "电影推荐合集",
+        "content": "# 这是用户用户B的帖子内容\n包含丰富的文本内容...",
+        "userId": "70ec5f9f-7e9b-4f57-b2a4-9a35a163bd3e",
+        "publishAt": "2025-08-03T02:42:43.525",
+        "userName": "70ec5f9f-7e9b-4f57-b2a4-9a35a163bd3e",
+        "categoryNames": "教育,科技",
+        "commentList": [
+            {
+                "id": "723a588c-0d95-4db7-be6b-1745bfcfc540",
+                "parentId": "0",
+                "content": "内容很实用",
+                "createAt": "2025-08-07T00:42:43.526"
+            },
+            {
+                "id": "116ab46b-9b61-4644-ac10-73e65f5a01b9",
+                "parentId": "0",
+                "content": "内容很实用",
+                "createAt": "2025-08-07T18:42:43.526"
+            },
+            {
+                "id": "65cb0f86-7076-46a6-b333-c9c50e9336ae",
+                "parentId": "0",
+                "content": "写得真详细",
+                "createAt": "2025-08-07T18:42:43.526"
+            }
+        ]
+    }
+
+```
+
+完全完美符合我们需要的结果
+```sql
+
+-- 第1条sql数据
+
+    SELECT
+        t5.`__joining2__` AS `category_names`,
+        t.`id`,
+        t.`title`,
+        t.`content`,
+        t.`user_id`,
+        t.`publish_at` 
+    FROM
+        `t_post` t 
+    LEFT JOIN
+        (SELECT
+            t3.`post_id` AS `post_id`, GROUP_CONCAT(t2.`name` SEPARATOR ',') AS `__joining2__` FROM `t_category` t2 
+        INNER JOIN
+            `t_category_post` t3 
+                ON t2.`id` = t3.`category_id` 
+        GROUP BY
+            t3.`post_id`) t5 
+            ON t5.`post_id` = t.`id`
+-- 第2条sql数据
+
+    SELECT
+        t2.`id` AS `id`,
+        t2.`parent_id` AS `parent_id`,
+        t2.`content` AS `content`,
+        t2.`create_at` AS `create_at`,
+        t2.`post_id` AS `__relation__postId` 
+    FROM
+        (SELECT
+            t1.`id` AS `id`,
+            t1.`parent_id` AS `parent_id`,
+            t1.`content` AS `content`,
+            t1.`user_id` AS `user_id`,
+            t1.`post_id` AS `post_id`,
+            t1.`create_at` AS `create_at` 
+        FROM
+            (SELECT
+                t.`id`,
+                t.`parent_id`,
+                t.`content`,
+                t.`user_id`,
+                t.`post_id`,
+                t.`create_at`,
+                (ROW_NUMBER() OVER (PARTITION 
+            BY
+                t.`post_id` 
+            ORDER BY
+                t.`create_at` ASC)) AS `__row__` 
+            FROM
+                `t_comment` t 
+            WHERE
+                t.`parent_id` = '0' 
+                AND t.`post_id` IN ('015c8538-0eaa-4afb-a1c7-4cca00dd6638', '0c6ab3ab-29a4-4320-a08e-195bdac27095', '1a0e5854-c748-4c6b-a11d-d5bbb58326a1', '31a955ba-04ec-4d07-a6d4-fac6c408ab7d', '36eba6b0-5dd4-41b3-a4af-d9c522a86b3a', '573ca56a-4575-458e-8258-7b76c2cfe959', '5f72b5bf-3ae6-4bd6-9df9-cf0c43abc37c', '63d5b82f-64e6-4985-ad4b-acf71d8368fc', '669ce2a5-abaf-49e8-bb7e-e498f7377b15', '73f5d341-c6df-43a1-afcd-e246c4d1fcc9', '89bf6652-0ae0-451a-8a16-d9b543898f81', '8dbcfcfe-44a7-45c2-9db9-d0302c5a9a94')) t1 
+        WHERE
+            t1.`__row__` >= 1 
+            AND t1.`__row__` <= 3) t2
+-- 第3条sql数据
+
+    SELECT
+        `id` 
+    FROM
+        `t_user` 
+    WHERE
+        `id` IN ('3b63ddd9-b038-4c24-969e-8b478fe862a5', '2e509ef4-0282-448f-ace0-43501d46ccf4', '70ec5f9f-7e9b-4f57-b2a4-9a35a163bd3e', 'f2bf383e-ee8d-44c5-968d-263191ab058e', 'eda79345-6fbf-4ca6-b9bf-4743a3f991e4')
+```
+
+- 第一条sql我们看到用来查询返回post信息和对应的categoryNames字段使用`groupJoin`来代替多对多自查
+- 第二条sql我们看到框架使用`patrtition by`让用户可以轻松的返回评论信息前n条
+- 第三条sql我们使用`NaviagteFlat`二次查询杜绝n+1来返回用户信息
+
+到此为止我们的帖子相关的查询已经结束 主要我们实现了框架对一对多 多对一和多对多下如何快速查询并且支持众多开窗函数的隐式使用
