@@ -3,6 +3,51 @@ title: 新功能
 order: 110
 ---
 
+## includeBy
+在多次include下嵌套结构很难编写所以eq提供了includeBy方便用户在多次调用下进行额外操作
+
+```java
+
+List<SchoolClass> list = easyEntityQuery.queryable(SchoolClass.class)
+        .includeBy(s -> Include.of(
+                s.schoolTeachers().flatElement().schoolClasses().asIncludeQueryable().where(a -> a.name().like("123")),
+                s.schoolStudents().flatElement().schoolClass().asIncludeQueryable().where(x -> x.schoolStudents().flatElement().name().eq("123")),
+                s.schoolStudents().asIncludeQueryable().where(x -> x.name().eq("123"))
+        ))
+        .toList();
+```
+
+比如`s.schoolTeachers().flatElement().schoolClasses().asIncludeQueryable()`会查询`schoolTeachers`和`schoolClasses`只要是路径上的都会被自动查询,如果需要对路径某个节点进行额外操作就单独处理该路径即可
+
+
+## cteviewer
+
+a表是一个自关联表,其中a表的pid在b表中,所以我们需要使用a join b来获取变成一张cteviewer然后进行自关联
+
+## whereObject
+支持对象筛选隐式关系
+```java
+@Data
+public class SysUserQueryDTO {
+
+    @EasyWhereCondition(propName = "bankCards.code")
+    private String bankCardCode;
+    @EasyWhereCondition(propName = "bankCards.type")
+    private String bankCardType;
+    @EasyWhereCondition(propName = "bankCards.bank.name", type = EasyWhereCondition.Condition.IN)
+    private List<String> bankCardBankNames;
+}
+
+ SysUserQueryDTO queryDTO = new SysUserQueryDTO();
+        queryDTO.setBankCardCode("123");
+        queryDTO.setBankCardType("储蓄卡");
+        queryDTO.setBankCardBankNames(Arrays.asList("工商银行","建设银行"));
+        List<SysUser> list = easyEntityQuery.queryable(SysUser.class)
+                .whereObject(queryDTO)
+                .toList();
+
+```
+
 ## sharding union all
 `3.0.57`支持分片使用union all这样可以保证大部分复杂sql都支持
 ```java
