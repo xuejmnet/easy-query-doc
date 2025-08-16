@@ -5,6 +5,32 @@ order: 10
 
 `easy-query`提供了高效,高性能的分片机制,完美的屏蔽分片带来的业务复杂度,不同于`sharding-jdbc`的sql的`antlr`解析采用自带的表达式解析性能高效,并且不同于`ShardingSphere-Proxy`的代理模式,导致未分片的对象也需要走代理,并且需要多次jdbc,`easy-query`采用客户端分片保证分片下的高性能查询结果返回,并且原生orm框架自带无需使用额外组件,更少的依赖来保证程序的健壮与可控
 
+## 注意3.x后分片需要手动开启
+springboot默认yml设置sharding: true
+控制台请替换服务
+```java
+
+        easyQueryClient = EasyQueryBootstrapper.defaultBuilderConfiguration()
+                .setDefaultDataSource(dataSource)
+                .optionConfigure(op -> {
+                    op.setDeleteThrowError(false);
+                    op.setExecutorCorePoolSize(1);
+                    op.setExecutorMaximumPoolSize(0);
+                    op.setMaxShardingQueryLimit(10);
+                    op.setShardingOption(easyQueryShardingOption);
+                    op.setDefaultDataSourceName("ds2020");
+                    op.setThrowIfRouteNotMatch(false);
+                    op.setMaxShardingRouteCount(512);
+                    op.setDefaultDataSourceMergePoolSize(20);
+                    op.setStartTimeJob(true);
+                    op.setReverseOffsetThreshold(10);
+                })
+                .useDatabaseConfigure(new MySQLDatabaseConfiguration())
+                //这一句
+                .replaceService(EntityExpressionExecutor.class, ShardingEntityExpressionExecutor.class)
+                .build();
+```
+
 ## 创建表
 我们以订单表为例来实现订单的简单取模分表,将订单表按5取模进行分表分为t_order_00、t_order_01....t_order_04
 
