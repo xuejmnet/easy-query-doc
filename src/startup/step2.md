@@ -6,6 +6,32 @@ order: 30
 # 帖子相关查询
 本章节主要已帖子为话题实战教用户如何使用eq进行相关业务开发
 
+## 查询帖子
+
+查询id为123的帖子
+```java
+Post post = easyEntityQuery.queryable(Post.class)
+        .whereById("123")
+        .singleOrNull();//如果不存在则返回null
+
+
+Post post1 = easyEntityQuery.queryable(Post.class)
+        .where(t_post -> {
+            t_post.id().eq("123");
+        })
+        .singleOrNull();
+```
+查询标题包含[故事]的第一个帖子
+```java
+List<Post> postList = easyEntityQuery.queryable(Post.class)
+        .where(t_post -> {
+            t_post.title().contains("故事");
+        }).toList();
+```
+
+我们可以看到我们使用`contains`为什么不使用`like`当然我们也可以使用`like`但是`like`和`contains`有一个区别
+
+当我们被查询的值包含通配符[%]或[_]那么like会将其适配通配符进行查询,但是contains会把这些通配符视为被查询的一部分不会以通配符的方式执行
 
 ## 帖子分页
 对Post表进行分页按`publishAt`倒序进行排序按`title`进行搜索

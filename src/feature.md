@@ -3,6 +3,12 @@ title: 新功能
 order: 110
 ---
 
+## WhereConditionProvider
+新增`WhereConditionProvider`接口支持用户自定义实现`@EasyWhereCondition`的查询的默认比较符
+
+## include+limit
+`3.0.78`默认将`include+limit`由`union all`变为`partition by`的实现
+
 ## includeBy
 在多次include下嵌套结构很难编写所以eq提供了includeBy方便用户在多次调用下进行额外操作
 
