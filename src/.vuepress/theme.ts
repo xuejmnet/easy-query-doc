@@ -72,6 +72,12 @@ export default hopeTheme({
 
   // These features are enabled for demo, only preserve features you need here
   markdown: {
+    highlighter: {
+      type: "shiki", // or "prismjs"
+      collapsedLines:30
+      // shiki 或 prismjs 选项
+      // ...
+    },
     mermaid: true,
     align: true,
     attrs: true,
