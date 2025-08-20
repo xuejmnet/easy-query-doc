@@ -6,6 +6,16 @@ order: 30
 # 帖子相关查询
 本章节主要已帖子为话题实战教用户如何使用eq进行相关业务开发
 
+
+## 本章节重点
+- 单表操作查询
+- 多表join查询
+- 子查询`subQuery`和隐式Group `subQueryToGroupJoin`
+- 结构化对象结构化集合返回结构化对象`selectAutoInclude`
+- 结构化对象平铺`selectAutoInclude`+`NavigateFlat`
+- 结构化集合`order`+`limit`返回
+
+
 ## 查询帖子
 
 查询id为123的帖子
@@ -31,7 +41,11 @@ List<Post> postList = easyEntityQuery.queryable(Post.class)
 
 我们可以看到我们使用`contains`为什么不使用`like`当然我们也可以使用`like`但是`like`和`contains`有一个区别
 
-当我们被查询的值包含通配符[%]或[_]那么like会将其适配通配符进行查询,但是contains会把这些通配符视为被查询的一部分不会以通配符的方式执行
+::: warning 区别!!!
+> 当我们被查询的值包含通配符[%]或[_]那么like会将其适配通配符进行查询,但是contains会把这些通配符视为被查询的一部分不会以通配符的方式执行
+>被查询的值为`10%`时`like("10%")`会查询出包含10的哪怕是100,但是`contains("10%")`会查出包含`10%`的`contains`函数会对通配符进行特殊处理
+:::
+
 
 ## 帖子分页
 对Post表进行分页按`publishAt`倒序进行排序按`title`进行搜索
@@ -441,7 +455,7 @@ public class PostPage4Response {
                 .toPageResult(request.getPageIndex(), request.getPageSize());
     }
 ```
-- ①通过@EntityProxy注解eq框架会生成代理对象，改对象支持dsl表达式赋值
+- ①通过@EntityProxy注解eq框架会生成代理对象，该对象支持dsl表达式赋值
 - ②通过使用隐式join的方式赋值到dto中
 
 ```sql
@@ -595,7 +609,7 @@ include函数存在多个重载其中第二参数用于描述前一个include和
 答案是有的时候dto来代替数据库对象在使用`selectAutoInclude`api
 
 
-### 结构化dto
+### 结构化对象转DTO
 结构化dto用来返回dto且形状确定适合生成文档和下游数据交互那么可以通过安装插件后进行如下操作
 
 第一步我们使用插件创建结构化dto
@@ -1262,6 +1276,48 @@ public class PostPage9Response {
 但是有时候我们可能需要返回的是post信息和前三条内容并且将前三条内容合并到一个字段上去那么应该怎么做
 
 ### joining逗号分割
+有时候我们希望返回比如今日用户发帖各个帖子内容和前三个评论逗号分割返回给前端显示到分页上面,这个时候我们有两种选择
+
+- 第一种我们可以通过eq的强大的表达式函数`joining`来返回
+- 第二种是返回结构化dto,让前端去处理
+```json
+{
+    "postId":"",
+    "title":"",
+    "comments":[
+        {
+            "content":""
+        },
+        {
+            "content":""
+        }
+    ]
+}
+```
+
+第一种通过表达式函数joining来实现返回一对多
+
+joining函数分成两种使用方法,分别是属性joining和标准集合joining
+
+#### 属性joining(一般不太常用)
+这个api主要常用户Group后可以通过`groupTable().name().joining(",",true)`
+
+参数  | 功能  
+---  | --- 
+参数一 | 使用哪个分隔符,默认`,`
+参数二  | 是否去重,默认`false`
+
+
+#### 标准集合joining
+
+参数  | 功能  
+---  | --- 
+参数一 | 需要被逗号或者其他字符分割的表达式比如`joining(o->o.name())`表示将集合的`name`属性逗号分割
+参数二  | 使用哪个分隔符,默认`,`
+
+那么在标准集合的`joining`下我们应该如何对内部的分割内容去重呢可以通过链式`post.comments().distinct().joining(o->o.content())`
+
+
 一如既往我们还是定义对应的dto
 ```java
 
@@ -1293,12 +1349,21 @@ public class PostPage10Response {
                 .select(t_post -> new PostPage10ResponseProxy()
                         .selectAll(t_post)
                         .userName().set(t_post.user().name())
-                        .commentContent().set(t_post.commentList().where(c->c.parentId().eq("0")).elements(0,2).joining(c->c.content()))
+                        .commentContent().set(
+                            t_post.commentList()①
+                                .where(c->c.parentId().eq("0"))②
+                                .elements(0,2)③
+                                .joining(c->c.content())④
+                            )
                 ).toList();
     }
 ```
 
 我们来看下表达式`t_post.commentList().where(c->c.parentId().eq("0")).joining(c->c.content())`这个表达式是将post下方的评论集合`commentList`通过where筛选取前三个的content内容合并
+- ①表示需要被返回的子查询集合项`commentList`
+- ②筛选该子查询集合项
+- ③选择元素索引[0...2]也就是前三个
+- ④聚合逗号分割`commentList.content`
 
 ```json
 {
