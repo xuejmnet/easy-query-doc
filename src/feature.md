@@ -2,6 +2,30 @@
 title: 新功能
 order: 110
 ---
+## groupJoin
+ 隐式Group，隐式Partition 性能再优化
+`3.0.90`将支持groupJoin如果存在单个关联key被外部筛选则会将该筛选条件穿透进子查询内部
+
+目前开启该功能需要自行替换服务
+```java
+.replaceService(SubQueryExtraPredicateProvider.class, DefaultSubQueryExtraPredicateProvider.class)
+```
+
+```java
+
+        List<M8Province> list = easyEntityQuery.queryable(M8Province.class)
+                .configure(s->s.getBehavior().add(EasyBehaviorEnum.ALL_SUB_QUERY_GROUP_JOIN))
+                .where(m -> {
+                    m.cities().any(c->{
+                        c.id().eq("c1");
+                        c.name().eq("杭州");
+
+                        c.areas().flatElement().name().eq("上城区");
+                    });
+                    m.id().eq("p1");
+                }).toList();
+```
+<img :src="$withBase('/images/subQuery-extra-where.png')">
 
 ## WhereConditionProvider
 新增`WhereConditionProvider`接口支持用户自定义实现`@EasyWhereCondition`的查询的默认比较符

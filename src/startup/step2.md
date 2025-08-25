@@ -42,7 +42,7 @@ List<Post> postList = easyEntityQuery.queryable(Post.class)
 我们可以看到我们使用`contains`为什么不使用`like`当然我们也可以使用`like`但是`like`和`contains`有一个区别
 
 ::: warning 区别!!!
-> 当我们被查询的值包含通配符[%]或[_]那么like会将其适配通配符进行查询,但是contains会把这些通配符视为被查询的一部分不会以通配符的方式执行
+> 当我们被查询的值包含通配符[%]或[_]那么like会将其视为通配符进行查询,但是contains会把这些通配符视为被查询的一部分不会以通配符的方式执行
 >被查询的值为`10%`时`like("10%")`会查询出包含10的哪怕是100,但是`contains("10%")`会查出包含`10%`的`contains`函数会对通配符进行特殊处理
 :::
 
@@ -124,7 +124,7 @@ public class PostPageRequest extends PageRequest {
 
 
 ::: tip 动态参数!!!
-> 正常我们推荐使用`filterConfigure`或者使用`if`函数包裹条件而不是使用方法参数的第一个`boolean`类型来控制，因为参数boolean类型重载相对会让表达式不够直观且难以阅读所以我们极力推荐另外几种方式
+> 正常我们推荐使用`filterConfigure`或者使用`if`函数包裹条件而不是使用方法参数的第一个`boolean`类型来控制，因为参数boolean类型重载相对会让表达式不够直观且难以阅读所以我们极力推荐`filterConfigure`或者使用`if`函数包裹条件
 :::
 
 我们学会了如何在单表查询分页下使用动态参数控制sql,那么接下来我们将学习如何使用参数外部控制动态排序
@@ -176,7 +176,7 @@ public EasyPageResult<Post> page3(@RequestBody PostPage3Request request) {
 <== Time Elapsed: 17(ms)
 ```
 
-支持我们已经支持了分页的动态排序,当然动态排序功能远不止此,[更多动态排序请点击链接](/easy-query-doc/ability/adv/order)
+现在我们已经支持了分页的动态排序,当然动态排序功能远不止此,[更多动态排序请点击链接](/easy-query-doc/ability/adv/order)
 
 ### 分页join筛选
 当然对于大部分业务而言实体对象不是一个孤单对象,当前的`Post`对象也是如此，我们经常会有连表或者子查询等操作，那么`eq`是如何快速便捷的实现`join`的呢
@@ -189,8 +189,13 @@ public EasyPageResult<Post> page3(@RequestBody PostPage3Request request) {
 
 #### 通过插件生成关联关系
 - 第一步呼出ui界面
+在`Post`类内部输入`nav`后会出现`nav2....`的提示
+
 <img :src="$withBase('/images/navigate2.jpg')">
+
 - 第二步设置关联关系
+因为用户会发布多个帖子所以用户和帖子之间是一对多,反之帖子和用户就是多对一
+
 <img :src="$withBase('/images/navigate-ui.jpg')">
 选择好对应的关联键后点击确认插件会帮你自动生成强类型属性|lombok属性或字符串
 

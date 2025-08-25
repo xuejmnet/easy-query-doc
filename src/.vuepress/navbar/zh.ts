@@ -20,6 +20,12 @@ export const zhNavbar = navbar([
         text: "gitee",
         icon: "gitee",
         link: "https://gitee.com/xuejm/easy-query"
+      },
+
+      {
+        text: "gitcode",
+        icon: "gitcode",
+        link: "https://gitee.com/xuejm/easy-query"
       }
     ]
   }
