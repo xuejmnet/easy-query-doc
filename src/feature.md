@@ -2,7 +2,7 @@
 title: 新功能
 order: 110
 ---
-## groupJoin
+## groupJoin智能条件
  隐式Group，隐式Partition 性能再优化
 `3.0.90`将支持groupJoin如果存在单个关联key被外部筛选则会将该筛选条件穿透进子查询内部
 
