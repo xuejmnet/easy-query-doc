@@ -580,7 +580,7 @@ public class StructSysUserDTO {
 }
 ```
 ::: tip 说明!!!
-> 在大部分情况我们可能已经够用了,但是在有些情况下可能用户还是需要动态来控制多层级下的列表条件之类的,那么我们应该如何来快速实现呢,请跳转至[配置SelectAutoInclude](/easy-query-doc/ability/select/select-auto-include-configurable)
+> 在大部分情况我们可能已经够用了,但是在有些情况下可能用户还是需要动态来控制多层级下的列表条件之类的,那么我们应该如何来快速实现呢,请跳转至[配置SelectAutoInclude](/easy-query-doc/ability/return-result/select-auto-include2)
 :::
 
 
