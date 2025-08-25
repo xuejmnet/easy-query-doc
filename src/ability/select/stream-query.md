@@ -76,7 +76,7 @@ fetchSize | 设置每次拉取的大小  | 用来放置流式拉取一次性拉�
     Optional<Topic> traceId1 = easyProxyQuery.queryable(TopicProxy.createTable())
                 .filterConfigure(NotNullOrEmptyValueFilter.DEFAULT)
                 .where(o -> o.eq(o.t().id(), "1"))
-                .fetch(o -> {
+                .streamBy(o -> {
                     return o.findFirst();
                 },1);
 
@@ -86,7 +86,7 @@ fetchSize | 设置每次拉取的大小  | 用来放置流式拉取一次性拉�
 
 Set<Topic> traceId1 = easyProxyQuery.queryable(TopicProxy.createTable())
             .where(o -> o.eq(o.t().id(), "1"))
-            .fetch(o -> {
+            .streamBy(o -> {
                 return o.peek(x -> x.setTitle(traceId)).collect(Collectors.toSet());
             },100);
 
