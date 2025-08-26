@@ -26,17 +26,17 @@ order: 8
 <dependency>
     <groupId>com.easy-query</groupId>
     <artifactId>sql-mysql</artifactId>
-    <version>${last-version}</version>
+    <version>使用最后一个版本号</version>
 </dependency>
 <dependency>
     <groupId>com.easy-query</groupId>
     <artifactId>sql-processor</artifactId>
-    <version>${last-version}</version>
+    <version>使用最后一个版本号</version>
 </dependency>
 <dependency>
     <groupId>com.easy-query</groupId>
     <artifactId>sql-api-proxy</artifactId>
-    <version>${last-version}</version>
+    <version>使用最后一个版本号</version>
 </dependency>
 ```
 
@@ -53,7 +53,7 @@ order: 8
             <path>
                 <groupId>com.easy-query</groupId>
                 <artifactId>sql-processor</artifactId>
-                <version>${last-version}</version>
+                <version>使用最后一个版本号</version>
             </path>
         </annotationProcessorPaths>
     </configuration>
@@ -193,7 +193,7 @@ java.sql.SQLSyntaxErrorException: Unknown column 'stars2' in 'field list'
                                 <path>
                                     <groupId>com.easy-query</groupId>
                                     <artifactId>sql-processor</artifactId>
-                                    <version>${last-version}</version>
+                                    <version>使用最后一个版本号</version>
                                 </path>
                             </annotationProcessorPaths>
                         </configuration>
@@ -248,17 +248,17 @@ java.sql.SQLSyntaxErrorException: Unknown column 'stars2' in 'field list'
         <dependency>
             <groupId>com.easy-query</groupId>
             <artifactId>sql-mysql</artifactId>
-            <version>${last-version}</version>
+            <version>使用最后一个版本号</version>
         </dependency>
         <dependency>
             <groupId>com.easy-query</groupId>
             <artifactId>sql-processor</artifactId>
-            <version>${last-version}</version>
+            <version>使用最后一个版本号</version>
         </dependency>
         <dependency>
             <groupId>com.easy-query</groupId>
             <artifactId>sql-api-proxy</artifactId>
-            <version>${last-version}</version>
+            <version>使用最后一个版本号</version>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
