@@ -30,13 +30,13 @@ order: 6
 <dependency>
     <groupId>com.easy-query</groupId>
     <artifactId>sql-solon-plugin</artifactId>
-    <version>latest-version</version>
+    <version>使用最后一个版本号</version>
 </dependency>
 <!-- 如果您使用EasyEntityQuery那么需要引入该APT引用 -->
 <dependency>
     <groupId>com.easy-query</groupId>
     <artifactId>sql-processor</artifactId>
-    <version>latest-version</version>
+    <version>使用最后一个版本号</version>
 </dependency>
 <!-- 按实际引入数据源-->
 <dependency>
