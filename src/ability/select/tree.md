@@ -6,9 +6,14 @@ order: 120
 ## cte
 递归树查询使用数据库方言`cte`来实现其功能,如果您是`mysql`那么请使用`mysql 8.x^`版本
 
+::: tip 总结!!!
+> `query().asTreeCTE()`这是一个标准结构,功能而言是对`query()`部分进行向上或者向下递归,比如`query()`部分查询出来是10条记录,那么就是对这10条记录进行递归,可以指定向上或者向下递归,并且支持`selectAutoInclude`
+:::
+
 ## api
 
 `asTreeCTE`和`asTreeCTECustom`
+
 
 ## asTreeCTE
 

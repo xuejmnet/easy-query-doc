@@ -48,6 +48,11 @@ public class User implements ProxyEntityAvailable<User, UserProxy> {
     private List<Like> likes;
 }
 ```
+因为我们之前已经创建了Post下的导航属性User,所以如果我们希望创建User下的Post反向导航属性只需要将光标放到已存在的导航属性上,通过快捷键`alt+insert(windows)`或者`command+n(mac)`呼出快捷菜单选择`MappedBy`
+
+
+<img :src="$withBase('/images/mapped-by-menu.png')">
+
 ## 请求响应参数
 创建用户请求参数和响应
 

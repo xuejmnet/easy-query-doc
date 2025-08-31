@@ -46,6 +46,15 @@ easy-query-track:
   enable: false
 ```
 
+
+## SpringBoot Solon启动报错
+```log
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'easyQueryClient' defined in class path resource [com/easy/query/sql/starter/EasyQueryStarterBuildAutoConfiguration.class]: Failed to instantiate [com.easy.query.core.api.client.EasyQueryClient]: Factory method 'easyQueryClient' threw exception with message: Please select the correct database dialect. For Spring-related configuration, set it in the yml file, for example:[easy-query.database: mysql]
+
+```
+
+`eq`高版本要求必须选择一个`database`不可以不选,自行构建的除外，所以只需要在yml里面明确数据库方言即可
+
 ## 没有生成Proxy
 如果没有生成`Proxy`请先确定是否引入`sql-api-proxy`包,如果使用`@EntityProxy`请确定是否引入`sql-processor`各个生成的模块都需要,如果是`@EntityFileProxy`请确认是否引用插件。
 插件可以有效的提升用户体验
@@ -165,3 +174,28 @@ userAge  | UPPER_CAMEL_CASE 大驼峰| UserAge
 - 2.外面的 lombok 需要版本号
 - 3.maven-compiler-plugin 里的 lombok 不能有版本号
 - 4.maven-compiler-plugin 里要增加 com.easy-query 的 sql-processor
+
+
+
+
+## 编译错误无法找到正确问题
+编译一直报错,无法正确找到具体的错误在哪里的解决方案  原本项目运行的好好的但是修改了什么后无法正确启动build了,编译错误一直是proxy相关的
+
+原因说明:因为编译时依赖导致idea无法正确输出错误信息,大范围的文件修改如:框架跨版本升级导致的一些错误idea无法正确返回具体信息
+
+通过以下步骤进行排查相关问题:
+
+- 1.复制一份当前项目到别的目录我们叫做projectb
+- 2.用idea打开projectb
+- 3.全局替换projectb的注解,将@EntityProxy替换成@EntityFileProxy
+- 4.maven clean一下将projectb的target全部清除掉
+- 5.打开插件选择compileAll因为你用了@EntityFileProxy所以会生成到src源码目录里面
+- 6.对projectb进行build吧对应的错误找到在你现在的projecta里面改掉
+- 7.projectb如果已经可以编译了但是projecta还不行那么把idea关闭重启一下，或者删除`.idea`的文件夹
+
+
+::: tip 说明!!!
+> 注意插件记得升级到最新版本❗️❗️❗️
+> 注意插件记得升级到最新版本❗️❗️❗️
+> 注意插件记得升级到最新版本❗️❗️❗️
+:::

@@ -63,26 +63,6 @@ public class EnumDeserializer {
     }
 }
 
-//每个枚举都需要添加ColumnConversion
-//枚举转换器
-public class EnumConverter implements ValueConverter<IEnum<?>,Number> {//泛型第二个参数建议使用Number,防止出现cast类型转换Long转Integer
-    @Override
-    public Number serialize(IEnum<?> iEnum, ColumnMetadata columnMetadata) {
-        if(iEnum=null){
-            return null;
-        }
-        return iEnum.getCode();
-    }
-
-    @Override
-    public IEnum<?> deserialize(Number code, ColumnMetadata columnMetadata) {
-        if(code=null){
-            return null;
-        }
-        return EnumDeserializer.deserialize(EasyObjectUtil.typeCast(columnMetadata.getPropertyType()),code.intValue());
-    }
-}
-
 //如果你希望当前枚举转换配置到全局可以使用 EnumValueAutoConverter
 //EnumValueAutoConverter第一个泛型参数 不可以是具体枚举类型除非整个系统就一个枚举类型
 public class EnumConverter implements EnumValueAutoConverter<IEnum<?>,Number> {//泛型第二个参数建议使用Number,防止出现cast类型转换Long转Integer
@@ -302,10 +282,12 @@ public class EnumValueDeserializer {
     }
 }
 
-//转换器
-public class EnumValueConverter implements ValueConverter<Enum<?>,Number> {
+
+//如果你希望当前枚举转换配置到全局可以使用 EnumValueAutoConverter
+//EnumValueAutoConverter第一个泛型参数 不可以是具体枚举类型除非整个系统就一个枚举类型
+public class EnumConverter implements EnumValueAutoConverter<IEnum<?>,Number> {//泛型第二个参数建议使用Number,防止出现cast类型转换Long转Integer
     @Override
-    public Number serialize(Enum<?> enumValue, ColumnMetadata columnMetadata) {
+    public Number serialize(IEnum<?> enumValue, ColumnMetadata columnMetadata) {
         if(enumValue == null){
             return null;
         }
@@ -313,11 +295,16 @@ public class EnumValueConverter implements ValueConverter<Enum<?>,Number> {
     }
 
     @Override
-    public Enum<?> deserialize(Number code, ColumnMetadata columnMetadata) {
+    public IEnum<?> deserialize(Number code, ColumnMetadata columnMetadata) {
         if(code == null){
             return null;
         }
         return EnumValueDeserializer.deserialize(EasyObjectUtil.typeCast(columnMetadata.getPropertyType()),code.intValue());
+    }
+    @Override
+    public boolean apply(Class<?> entityClass, Class<IEnum<?>> propertyType) {
+        return IEnum.class.isAssignableFrom(propertyType); //true表示如果对应的属性没有添加注解或者没有指定ValueConverter,并且是枚举Enum<?>,那么会进入当前方法如果返回true那么会默认将当前转换作用到属性上
+        //return true; //true表示如果对应的属性没有添加注解或者没有指定ValueConverter,并且是枚举Enum<?>,那么会进入当前方法如果返回true那么会默认将当前转换作用到属性上
     }
 }
 
