@@ -206,7 +206,7 @@ public class MyCommentDTO {
     /**
      * 子评论
      **/
-    @Navigate(value = RelationTypeEnum.OneToMany,selfProperty = "id",targetProperty = "parentId",supportNonEntity = true)
+    @Navigate(value = RelationTypeEnum.OneToMany)
     private List<MyCommentDTO> children;
 
 }
@@ -285,7 +285,7 @@ WHERE `id` IN ('3b63ddd9-b038-4c24-969e-8b478fe862a5', '2e509ef4-0282-448f-ace0-
 
 sql第一部分查询parentId='0'也就是根节点下面所有子节点的树形,并且通过二次查询查询处用户姓名
 
-- 首先我们定义了一个dto的对象并且设置自己为children,`@Navigate(value = RelationTypeEnum.OneToMany,selfProperty = "id",targetProperty = "parentId",supportNonEntity = true)`其中默认dto的元信息不会被过多解析和保留所以需要添加`supportNonEntity = true`，selectAutoInclude会将`Comment`表的`asTreeCTE`作为子节点的`children`忽略掉如果不添加`asTreeCTE`那么本次的children会被当做普通的一对多进行查询,也就是每条记录查询一次
+- 首先我们定义了一个dto的对象并且设置自己为children,`@Navigate(value = RelationTypeEnum.OneToMany)`，selectAutoInclude会将`Comment`表的`asTreeCTE`作为子节点的`children`忽略掉如果不添加`asTreeCTE`那么本次的children会被当做普通的一对多进行查询,也就是每条记录查询一次
 - 我们在`asTreeCTE`前需要先确定本次要查询的根节点，如果不添加任何条件那么会把数据库所有的记录都视为根节点从而导致结果不正确
 - `toTreeList`为内存组装树如果不需要用户可以自行toList然后自行组装
 
