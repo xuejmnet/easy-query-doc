@@ -372,8 +372,15 @@ Boolean leftEnable=true;
 
 ::: warning 注意点及说明!!!
 
-> 必须写到对应的`where`前面后续的`where`才会生效，用户可以自定义,比如满足的条件是优先满足`eq、ge、gt`等的第一个 boolean 条件,后续才会判断`valueFilter`，如果有多个`where`部分 where 需要自定义那么可以采用`filterConfigure(NotNullOrEmptyValueFilter.DEFAULT)`来恢复到所有参数都接受,一般用于查询时可以少写很多判断
+> 必须写到对应的`where`前面后续的`where`才会生效，用户可以自定义,比如满足的条件是优先满足`eq、ge、gt`等的第一个 boolean 条件,后续才会判断`valueFilter`，如果有多个`where`部分 where 需要自定义那么可以采用`filterConfigure(AnyValueFilter.DEFAULT)`来恢复到所有参数都接受,一般用于查询时可以少写很多判断
 > 
+:::
+
+条件接受默认接口`ValueFilter`如果你自定义的直接实现这个那么同一个表达式的子查询则不会生效,依然需要你手动去处理,为了让同一个表达式的子查询生效,请使用`PropagationValueFilter`接口来实现这个接口相关操作,默认`.filterConfigure(NotNullOrEmptyValueFilter.DEFAULT)`可以改为`.filterConfigure(NotNullOrEmptyValueFilter.DEFAULT_PROPAGATION_SUPPORTS)`那么同一个表达式的子查询也会对其参数null或空的使用忽略模式。
+
+::: warning 注意点及说明!!!
+
+什么是同一个表达式的子查询,就是非`easyEntityQuery`bean注入的子查询，譬如`o.userList()....`或者`o.expression().subQueryable(xxx.class)`这一类子查询我们认为是同一个表达式子查询,由`easyEntityQuery.queryable(xxx.class)`创建的我们认为是不同表达式的子查询这种子查询是独立配置
 :::
 
 ## 属性一对一查询
