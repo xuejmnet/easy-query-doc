@@ -4,7 +4,7 @@ order: 30
 ---
 
 # 帖子相关查询
-本章节主要已帖子为话题实战教用户如何使用eq进行相关业务开发
+本章节主要以帖子为话题实战教用户如何使用eq进行相关业务开发
 
 
 ## 本章节重点
@@ -103,7 +103,7 @@ public class PostPageRequest extends PageRequest {
 ```
 
 
-::: danger container还是like!!!
+::: danger contains还是like!!!
 > 细心地朋友会发现我们使用了contains函数而不是like函数,因为当传入的查询条件本身带有%时那么like会让%变成通配符，而contains会将%视为被查询的一部分,这是需要用户注意的,具体使用contains还是like应该有用户自行决断
 :::
 
@@ -300,7 +300,7 @@ public class PostPage4Request extends PageRequest {
 ==> Preparing: SELECT t.`id`,t.`title`,t.`content`,t.`user_id`,t.`publish_at` FROM `t_post` t LEFT JOIN `t_user` t1 ON t1.`id` = t.`user_id` ORDER BY t1.`create_at` DESC,t.`title` ASC LIMIT 5
 
 ```
-我们惊讶的发现eq非常智能的将分页中的`total`查询的所有`join`都去掉了,并且返回集合的那个sql任然保留,如果我们将`orderBy`也去掉会发现eq居然整个sql都不会添加`join`选项
+我们惊讶的发现eq非常智能的将分页中的`total`查询的所有`join`都去掉了,并且返回集合的那个sql仍然保留,如果我们将`orderBy`也去掉会发现eq居然整个sql都不会添加`join`选项
 ```sql
 ==> Preparing: SELECT COUNT(*) FROM `t_post` t
 <== Time Elapsed: 21(ms)
@@ -314,7 +314,7 @@ public class PostPage4Request extends PageRequest {
 ### 回顾一下
 - 首先我们添加了动态查询筛选器配置`filterConfigure(NotNullOrEmptyValueFilter.DEFAULT_PROPAGATION_SUPPORTS)`让所有条件参数非null非空的值支持加入条件，这样就做到了动态查询的特性
 - 第二点因为我们传递userName参数，所以表达式的`t_post.user().name().contains(request.getUserName());`会生效并且会自动根据对应的关系使用`leftJoin`将post和user关联起来并且查询post下的user下的姓名
-- 第三点因为我们没有传递userName参数，所以表达式的`t_post.user().name().contains(request.getUserName());`不会生效,但是`orderBy`的`user.createAt`还是会生效,所以page的时候`total`的哪一次查询因为没有使用`user`表所以不会`join`，但是toList的那一次因为`orderBy`用到了所以任然会进行`leftJoin`
+- 第三点因为我们没有传递userName参数，所以表达式的`t_post.user().name().contains(request.getUserName());`不会生效,但是`orderBy`的`user.createAt`还是会生效,所以page的时候`total`的哪一次查询因为没有使用`user`表所以不会`join`，但是toList的那一次因为`orderBy`用到了所以仍然会进行`leftJoin`
 
 
 ## 扩展篇
@@ -609,7 +609,7 @@ include函数存在多个重载其中第二参数用于描述前一个include和
 
 我们看到查询的时候仅查询id和name
 
-这种查询返回的任然是数据库对象所以无法再返回的形状上移除`phone`和`createAt`,那么是否有一种办法可以做到形状确定呢
+这种查询返回的仍然是数据库对象所以无法再返回的形状上移除`phone`和`createAt`,那么是否有一种办法可以做到形状确定呢
 
 答案是有的时候dto来代替数据库对象在使用`selectAutoInclude`api
 
@@ -801,8 +801,8 @@ public class PostPage6Response {
 ## 帖子内容带评论
 简单的额外对象获取后我们希望实现返回给前端帖子内容并且携带上前三条相关评论，那么eq有几种方式呢
 
-- `NaviagteFlat`+`limit`+`union`
-- `NaviagteFlat`+`limit`+`partition by`
+- `NavigateFlat`+`limit`+`union`
+- `NavigateFlat`+`limit`+`partition by`
 - `subquery`+`limit`+`joining`
 ### 评论关系添加
 ```java
@@ -1666,7 +1666,7 @@ public List<PostPage11Response> postList4(@RequestBody PostPage7Request request)
 ```
 
 - 第一条sql我们看到用来查询返回post信息和对应的categoryNames字段使用`groupJoin`来代替多对多自查
-- 第二条sql我们看到框架使用`patrtition by`让用户可以轻松的返回评论信息前n条
-- 第三条sql我们使用`NaviagteFlat`二次查询杜绝n+1来返回用户信息
+- 第二条sql我们看到框架使用`partition by`让用户可以轻松的返回评论信息前n条
+- 第三条sql我们使用`NavigateFlat`二次查询杜绝n+1来返回用户信息
 
 到此为止我们的帖子相关的查询已经结束 主要我们实现了框架对一对多 多对一和多对多下如何快速查询并且支持众多开窗函数的隐式使用
