@@ -309,7 +309,7 @@ public class PostPage4Request extends PageRequest {
 <== Time Elapsed: 18(ms)
 <== Total: 5
 ```
-你没有看错动态join就是这么简单，这就是真正的只能orm框架
+你没有看错动态join就是这么简单，这就是真正的智能orm框架
 
 ### 回顾一下
 - 首先我们添加了动态查询筛选器配置`filterConfigure(NotNullOrEmptyValueFilter.DEFAULT_PROPAGATION_SUPPORTS)`让所有条件参数非null非空的值支持加入条件，这样就做到了动态查询的特性
