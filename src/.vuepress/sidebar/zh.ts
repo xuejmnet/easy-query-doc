@@ -71,6 +71,12 @@ export const zhSidebar = sidebar({
       children: "structure",
     },
     {
+      text: "聚合根保存🔥🔥🔥",
+      prefix: "savable/",
+      collapsible:true,
+      children: "structure",
+    },
+    {
       text: "内置函数",
       prefix: "func/",
       collapsible:true,

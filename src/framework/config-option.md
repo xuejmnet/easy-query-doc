@@ -27,7 +27,6 @@ updateBatchThreshold | 1024  | 如果updatable一次性添加对象集合大于�
 logClass | -  | `spring-boot`下默认是`com.easy.query.sql.starter.logging.Slf4jImpl`实现如果你是非`spring-boot`可以自行实现或者使用控制台日志`LogFactory.useStdOutLogging()`
 queryLargeColumn | `true`  | 默认依然查询被标记为`@Column`下`large`的列，如果需要不查询建议在设置为`large`的前提下将对应列设置为`@UpdateIgnore`并且`updateSetInTrackDiff = true`防止在全列更新后导致未查询结果也被更新为null
 printSql | `true`  | 是否打印执行sql,这个和log不一样,因为考虑到有时候可能需要查看sql而不是将log输出,所以如歌设置为true,那么执行的sql和执行的结果将会以`log.info()`被记录到日志里面,如果您没有设置log那么一样看不到对应的执行sql
-defaultTrack | `false` | 默认是否使用追踪模式,如果为`true`那么只需要开启当前上下文追踪,或者`SpringBoot`下使用`@EasyQueryTrack`那么默认就会调用`asTracking()`
 relationGroupSize | 512 | include的关联查询单次查询最多支持的关联id,如果超出将会分为两个语句执行,比如大于等于1,可以单独在`.configure(o->o.setGroupSize(20))`处设置
 noVersionError | true | 当对象存在版本号并且是表达式更新的那么如果不添加版本号`withVersion`将会报错,必须要设置对应的版本号,如果不希望报错可以通过`ignoreVersion`来忽略
 warningColumnMiss| `true` | 当jdbc的resultSet对应的coluName无法映射到entity属性上时将会以log.warning进行日志输出，`true`:表示警告.`false`:表示不警告
@@ -40,7 +39,7 @@ printNavSql| true | 关联查询是否打印二次子查询的sql
 propertyMode| `PropertyModeEnum.SAME_AS_ENTITY`  | 表示entity属性是首字母小写(为了兼容lambda和lambdakt的模式),还有一个就是`PropertyModeEnum.SAME_AS_ENTITY`如果你是entity模式那么建议使用这个
 relationTableAppend| `RelationTableAppendEnum.SMART` | `SMART`表示智能添加`relationTable`隐式join吗，`DEFAULT`则需要代码执行的时候不执行到导航属性需要`if`代码块包裹
 mappingStrategy| `EntityMappingStrategyEnum.PROPERTY_FIRST` | 对象间的映射关系,默认以`列名`映射,可以选择`属性名`或者`列名+属性名`
-includeLimitMode| `IncludeLimitModeEnum.UNION_ALL` | many子项拉取的时候如果子项设置了limit限制返回条数默认采用`union_all`,用户可以选择`partation`来提高性能但是部分数据库不支持
+includeLimitMode| `IncludeLimitModeEnum.PARTITION` | many子项拉取的时候如果子项设置了limit限制返回条数默认采用`partation`提高性能但是部分数据库不支持,MYSQL5.7的用户可以选择`union_all`来支持include+limit
 saveComment| `false` | `true`:则保持`@Column(comment="...")`和`@Table(comment="...")`的注解到EntityMetadata和ColumnMetadata
 maxInClauseSize| `9999999` | 当`.where(o -> o.id().in(ids))`可以根据设置的`maxInClauseSize`形成 `(id in (:p1,:p2) or id in(:p3,:p4))`
 
