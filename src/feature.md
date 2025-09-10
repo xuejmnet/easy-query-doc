@@ -2,6 +2,34 @@
 title: 新功能
 order: 110
 ---
+
+## 聚合根保存
+`3.1.5+`版本支持完整的聚合根对象保存,用户可以实现无感聚合根保存对象树链路
+
+`springboot`或者`solon`需要在`@EasyQueryTrack`注解下开启追踪模式才可以非框架下可以手动开启追踪
+```java
+
+        TrackManager trackManager = easyEntityQuery.getRuntimeContext().getTrackManager();
+        try {
+            trackManager.begin();
+            M8SaveRoot root = new M8SaveRoot();
+            root.setName("rootname");
+            root.setCode("rootcode");
+            M8SaveRootOne rootOne = new M8SaveRootOne();
+            root.setM8SaveRootOne(rootOne);
+
+            try (Transaction transaction = easyEntityQuery.beginTransaction()) {
+                easyEntityQuery.savable(many2many).executeCommand();
+                easyEntityQuery.savable(root).executeCommand();
+                transaction.commit();
+            }
+
+        } finally {
+            trackManager.release();
+        }
+
+```
+
 ## groupJoin智能条件
  隐式Group，隐式Partition 性能再优化
 `3.0.90`将支持groupJoin如果存在单个关联key被外部筛选则会将该筛选条件穿透进子查询内部

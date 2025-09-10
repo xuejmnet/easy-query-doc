@@ -8,6 +8,7 @@ order: 120
 
 默认我们都会通过新建一个基类类满足公用的对象,并且会对数据库进行额外设计字段，比如`id`，`createTime`，`createBy`，`updateTime`，`updateBy`，`deleted`，`deleteTime`，`deleteBy`
 
+## 基类抽象
 
 更多主键设置模式可以参考 [不基于BaseEntity的其他模式](https://github.com/dromara/easy-query/issues/231) https://github.com/dromara/easy-query/issues/231
 
@@ -66,6 +67,10 @@ public abstract class BaseEntity implements Serializable, Cloneable {
 ```
 
 然后我们会添加对应的自动添加处理，新建拦截器,需要支持对象插入的时候可以进行创建人和创建时间的自动赋值,对象修改时可以进行修改人和修改时间的自动赋值，表达式更新的时候也可以对修改时间和修改人进行自动处理
+
+
+## 拦截器实现
+自动填充实体数据
 ```java
 
 
@@ -208,6 +213,9 @@ public class DefaultEntityInterceptor implements EntityInterceptor, UpdateSetInt
 ```
 
 创建时间和创建人和修改时间修改人已经添加的情况下我们还需要对删除时间删除人进行处理
+
+## 逻辑删除定义
+自定义逻辑删除实现删除人和删除时间的填充
 ```java
 
 @Component
