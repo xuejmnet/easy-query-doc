@@ -4,7 +4,7 @@ order: 110
 ---
 
 ## 聚合根保存
-`3.1.5+`版本支持完整的聚合根对象保存,用户可以实现无感聚合根保存对象树链路
+`3.1.10+`版本支持完整的聚合根对象保存,用户可以实现无感聚合根保存对象树链路
 
 `springboot`或者`solon`需要在`@EasyQueryTrack`注解下开启追踪模式才可以非框架下可以手动开启追踪
 ```java
@@ -19,8 +19,7 @@ order: 110
             root.setM8SaveRootOne(rootOne);
 
             try (Transaction transaction = easyEntityQuery.beginTransaction()) {
-                easyEntityQuery.savable(many2many).executeCommand();
-                easyEntityQuery.savable(root).executeCommand();
+                easyEntityQuery.savable(root).executeCommand();//自动保存M8SaveRoot和M8SaveRootOne，并且关联属性框架会自动处理
                 transaction.commit();
             }
 
