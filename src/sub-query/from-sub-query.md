@@ -4,7 +4,7 @@ order: 5
 ---
 
 
-在了解相关子查询前我希望您可以线观看一下select相关的子查询[内嵌视图的编写](/easy-query-doc/ability/select/select)
+在了解相关子查询前我希望您可以线观看一下select相关的子查询[内嵌视图的编写](/easy-query-doc/ability/adv/expression)
 
 
 如果你看了之前的`select`章节那么我相信你能很简单的写出`from子查询`,在`EasyEntityQuery`下用户只需要`select`的返回结果是一个`proxy对象`即可

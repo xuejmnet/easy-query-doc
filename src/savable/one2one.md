@@ -15,7 +15,7 @@ order: 10
 第二种情况和第一种情况有一些差异，当我们保持A表时B表也会被保存,当我们保存B表是A表将不受影响，受影响的B表的字段`aid`他会被修改为A的id,而A表不会因为`savable(B)`受影响，即两者无法互为聚合根、互为值对象
 
 
-## 主键生成器
+<!-- ## 主键生成器
 ```java
 @Component
 public class UUIDPrimaryKey implements PrimaryKeyGenerator {
@@ -39,7 +39,7 @@ public class UUIDPrimaryKey implements PrimaryKeyGenerator {
     }
 }
 
-```
+``` -->
 
 ::: tabs
 @tab 关系图
@@ -147,24 +147,34 @@ public class SaveUserAddress implements ProxyEntityAvailable<SaveUserAddress , S
 :::
 
 ## 一对一新增保存
-```java
 
+
+::: tabs
+
+@tab 流程图
+<img :src="$withBase('/images/one2onesave1.png')">
+
+@tab 插入代码
+```java
 
     @PostMapping("/create")
     @Transactional(rollbackFor = Exception.class)
     @EasyQueryTrack
     public Object create() {
         SaveUser saveUser = new SaveUser();
+        saveUser.setId("1");
         saveUser.setName("小明");
         saveUser.setAge(19);
         saveUser.setCreateTime(LocalDateTime.now());
 
         SaveUserExt saveUserExt = new SaveUserExt();
+        saveUserExt.setId("2");
         saveUserExt.setMoney(BigDecimal.ZERO);
         saveUserExt.setHealthy(true);
         saveUser.setSaveUserExt(saveUserExt);
 
         SaveUserAddress saveUserAddress = new SaveUserAddress();
+        saveUserAddress.setId("3");
         saveUserAddress.setProvince("浙江省");
         saveUserAddress.setCity("绍兴市");
         saveUserAddress.setArea("越城区");
@@ -173,26 +183,43 @@ public class SaveUserAddress implements ProxyEntityAvailable<SaveUserAddress , S
         easyEntityQuery.savable(saveUser).executeCommand();
         return "ok";
     }
-
 ```
-
-生成的sql
+@tab sql
 ```sql
--- 第1条sql数据
+
 INSERT INTO `t_save_user` (`id`, `name`, `age`, `create_time`)
-VALUES ('e3df533d738c4ea3be968911aec9b9cf', '小明', 19, '2025-09-14 15:20:47.843232')
--- 第2条sql数据
+VALUES ('1', '小明', 19, '2025-09-16 21:39:48.077398')
+
+
 INSERT INTO `t_save_user_ext` (`id`, `money`, `healthy`)
-VALUES ('e3df533d738c4ea3be968911aec9b9cf', 0, true)
--- 第3条sql数据
+VALUES ('1', 0, true)
+
 INSERT INTO `t_save_user_addr`
-	(`id`, `uid`, `province`, `city`, `area`, `address`)
-VALUES ('592df120e0a0496ca2b494e62b8f09a7', 'e3df533d738c4ea3be968911aec9b9cf', '浙江省', '绍兴市', '越城区'
-	, '鲁迅故居东面')
+        (`id`, `uid`, `province`, `city`, `area`
+        , `address`)
+VALUES ('3', '1', '浙江省', '绍兴市', '越城区'
+        , '鲁迅故居东面')
 ```
+
+:::
+
+
+本次新增操作我们只对当前数据进行了主键的赋值(有主键生成器可以不赋值),并没有对数据的关系键进行赋值,但是`savable`模式可以自动帮我们识别并且复制对应的数据，如`t_save_user_addr`的`uid`属性自动赋值为`1`
+
+注意:我们在`springboot`或者`solon`进行save操作必须要在`@EasyQueryTrack`范围内进行的查询才会被追踪，并且`include`或`loadInclude`都可以被视为用户需要被保存的路径,
+`@Transactional`事务注解只需要在`savable`调用执行时进行开启事务即可,否则会进行报错,并且可以不需要包含前面的那一部分查询操作
 
 ## 一对一级联修改
 修改用户年龄和删除用户地址
+
+
+
+::: tabs
+
+@tab 流程图
+<img :src="$withBase('/images/one2onesave2.png')">
+
+@tab 修改代码
 ```java
 
     @PostMapping("/updateRemove")
@@ -214,22 +241,47 @@ VALUES ('592df120e0a0496ca2b494e62b8f09a7', 'e3df533d738c4ea3be968911aec9b9cf', 
         return "ok";
     }
 ```
-查看本次操作sql
+
+@tab 生成的sql
+
 ```sql
 
+
+SELECT `id`, `name`, `age`, `create_time`
+FROM `t_save_user`
+WHERE `name` = '小明'
+
+SELECT t.`id`, t.`uid`, t.`province`, t.`city`, t.`area`
+        , t.`address`
+FROM `t_save_user_addr` t
+WHERE t.`uid` IN ('1')
+
 UPDATE `t_save_user`
-SET `age` = 38205492
-WHERE `id` = 'e3df533d738c4ea3be968911aec9b9cf'
+SET `age` = 180270105
+WHERE `id` = '1'
 
 UPDATE `t_save_user_addr`
 SET `address` = '鲁迅故居西面'
-WHERE `id` = '592df120e0a0496ca2b494e62b8f09a7'
+WHERE `id` = '3'
 ```
+
+:::
+
 
 - ①用户查询附带查询地址信息，告知框架本次保存路径需要检查user和address这个路径
 - ②修改值对象地址信息会差异生成对应的update操作
 
 ## 一对一级联脱钩
+
+
+
+::: tabs
+
+@tab 流程图
+<img :src="$withBase('/images/one2onesave3.png')">
+
+@tab 对象脱钩代码
+
 ```java
 
     @PostMapping("/remove1")
@@ -250,19 +302,42 @@ WHERE `id` = '592df120e0a0496ca2b494e62b8f09a7'
         return "ok";
     }
 ```
-默认脱钩是`auto`，框架自动处理使用`set null`，所以我们对`include`路径进行赋值null则会触发目标值对象脱钩
+@tab sql
 ```sql
+SELECT `id`, `name`, `age`, `create_time`
+FROM `t_save_user`
+WHERE `name` = '小明'
+
+SELECT t.`id`, t.`uid`, t.`province`, t.`city`, t.`area`
+        , t.`address`
+FROM `t_save_user_addr` t
+WHERE t.`uid` IN ('1')
 
 UPDATE `t_save_user`
-SET `age` = 1171348678
-WHERE `id` = 'e3df533d738c4ea3be968911aec9b9cf'
+SET `age` = 1077657513
+WHERE `id` = '1'
 
 UPDATE `t_save_user_addr`
 SET `uid` = NULL
-WHERE `id` = '592df120e0a0496ca2b494e62b8f09a7'
+WHERE `id` = '3'
 ```
 
+:::
+默认脱钩是`auto`，框架自动处理使用`set null`，所以我们对`include`路径进行赋值null则会触发目标值对象脱钩
+
+
+
 ## 值对象变更
+除了将目标对象设置为null外，我们还可以通过新创建一个对象来替换原来的对象,那么原来的对象就会对聚合进行脱钩,新的对象就会和聚合根进行关联
+
+
+::: tabs
+
+@tab 流程图
+<img :src="$withBase('/images/one2onesave4.png')">
+
+@tab 变更代码
+
 ```java
 
     @PostMapping("/change1")
@@ -278,6 +353,7 @@ WHERE `id` = '592df120e0a0496ca2b494e62b8f09a7'
                 .singleNotNull();
         saveUser.setAge(new Random().nextInt());
         SaveUserAddress saveUserAddress = new SaveUserAddress();
+        saveUserAddress.setId("4");
         saveUserAddress.setProvince("浙江省");
         saveUserAddress.setCity("绍兴市");
         saveUserAddress.setArea("越城区");
@@ -288,23 +364,36 @@ WHERE `id` = '592df120e0a0496ca2b494e62b8f09a7'
         return "ok";
     }
 ```
-原先的地址会议`set null`的方式脱钩，新的对象以insert方式进行关联
+@tab sql
 ```sql
 
+
+SELECT `id`, `name`, `age`, `create_time`
+FROM `t_save_user`
+WHERE `name` = '小明'
+
+SELECT t.`id`, t.`uid`, t.`province`, t.`city`, t.`area`
+        , t.`address`
+FROM `t_save_user_addr` t
+WHERE t.`uid` IN ('1')
+
 UPDATE `t_save_user`
-SET `age` = -1404610882
-WHERE `id` = 'd914e2cf30d543729126140e1217664d'
+SET `age` = 148600114
+WHERE `id` = '1'
 
 INSERT INTO `t_save_user_addr`
-	(`id`, `uid`, `province`, `city`, `area`
-	, `address`)
-VALUES ('06a0cbb5b8b443d7b0324c6f63335550', 'd914e2cf30d543729126140e1217664d', '浙江省', '绍兴市', '越城区'
-	, '鲁迅故居南面')
-    
+        (`id`, `uid`, `province`, `city`, `area`
+        , `address`)
+VALUES ('4', '1', '浙江省', '绍兴市', '越城区'
+        , '鲁迅故居南面')
+
 UPDATE `t_save_user_addr`
 SET `uid` = NULL
-WHERE `id` = 'b83cc1fce82f48d0867324777180a1c6'
+WHERE `id` = '3'
 ```
+:::
+
+原先的地址会议`set null`的方式脱钩，新的对象以insert方式进行关联
 
 ## 主键脱钩
 ```java
@@ -368,107 +457,16 @@ public class SaveUser implements ProxyEntityAvailable<SaveUser, SaveUserProxy> {
 可以看到`SaveUserExt`可以被正确的删除
 ```sql
 DELETE FROM `t_save_user_ext`
-WHERE `id` = '356645d67b924614bbdc20c4aa495b6e'
+WHERE `id` = '1'
 
 UPDATE `t_save_user`
 SET `age` = 1926895323
-WHERE `id` = '356645d67b924614bbdc20c4aa495b6e'
+WHERE `id` = '1'
 ```
+
 
 
 ## 值对象所属权变更
-```java
+`eq`的所属权变更支持不同聚合更之间同级对象树深度的值对象进行任意交换,来达到对象所属权变更,但是默认不允许对象所属权变更这种相对危险的操作需要用户手动允许后才可以支持
 
-    @PostMapping("/create2")
-    @Transactional(rollbackFor = Exception.class)
-    @EasyQueryTrack
-    public Object create2() {
-        ArrayList<SaveUser> users = new ArrayList<>();
-        {
-
-            SaveUser saveUser = new SaveUser();
-            users.add(saveUser);
-            saveUser.setId("小明1的id");
-            saveUser.setName("小明1");
-            saveUser.setAge(19);
-            saveUser.setCreateTime(LocalDateTime.now());
-
-            SaveUserExt saveUserExt = new SaveUserExt();
-            saveUserExt.setMoney(BigDecimal.ZERO);
-            saveUserExt.setHealthy(true);
-            saveUser.setSaveUserExt(saveUserExt);
-
-            SaveUserAddress saveUserAddress = new SaveUserAddress();
-            saveUserAddress.setId("小明1的家的id");
-            saveUserAddress.setProvince("浙江省");
-            saveUserAddress.setCity("绍兴市");
-            saveUserAddress.setArea("越城区");
-            saveUserAddress.setAddress("小明1的家");
-            saveUser.setSaveUserAddress(saveUserAddress);
-        }
-        {
-
-            SaveUser saveUser = new SaveUser();
-            users.add(saveUser);
-            saveUser.setId("小明2的id");
-            saveUser.setName("小明2");
-            saveUser.setAge(19);
-            saveUser.setCreateTime(LocalDateTime.now());
-
-            SaveUserExt saveUserExt = new SaveUserExt();
-            saveUserExt.setMoney(BigDecimal.ZERO);
-            saveUserExt.setHealthy(true);
-            saveUser.setSaveUserExt(saveUserExt);
-
-            SaveUserAddress saveUserAddress = new SaveUserAddress();
-            saveUserAddress.setId("小明2的家的id");
-            saveUserAddress.setProvince("浙江省");
-            saveUserAddress.setCity("绍兴市");
-            saveUserAddress.setArea("越城区");
-            saveUserAddress.setAddress("小明2的家");
-            saveUser.setSaveUserAddress(saveUserAddress);
-        }
-        easyEntityQuery.savable(users).executeCommand();
-        return "ok";
-    }
-
-
-    @PostMapping("/change2")
-    @Transactional(rollbackFor = Exception.class)
-    @EasyQueryTrack
-    public Object change2() {
-
-        List<SaveUser> list = easyEntityQuery.queryable(SaveUser.class)
-                .include(save_user -> save_user.saveUserAddress())
-                .toList();
-        SaveUser xm1 = list.get(0);
-        SaveUserAddress xm1address = xm1.getSaveUserAddress();
-        SaveUser xm2 = list.get(1);
-        SaveUserAddress xm2address = xm2.getSaveUserAddress();
-        xm1.setSaveUserAddress(xm2address);
-        xm2.setSaveUserAddress(xm1address);
-
-        easyEntityQuery.savable(list).executeCommand();
-        return "ok";
-    }
-```
-新增小明1和小明2两个对象,分别交换两个用户地址
-```java
-com.easy.query.core.exception.EasyQueryInvalidOperationException: relation value not equals,entity:[SaveUserAddress],property:[uid],value:[b8aefc1c7ef040379839d26af91765d3],should:[8f5a841478164e97b09db58107ace085]. Current OwnershipPolicy does not allow reassignment.
-```
-提示错误无法变更对象所有权,框架为了保证数据的误操作和正确性默认不允许用户变更对象的所有权,也就是值对象无法轻易变更所属的聚合根,我们可以通过配置让框架支持所有权变更
-```java
-easyEntityQuery.savable(list).ownershipPolicy(OwnershipPolicyEnum.AllowOwnershipChange).executeCommand();
-```
-通过添加`ownershipPolicy(OwnershipPolicyEnum.AllowOwnershipChange)`让框架支持值对象所有权的变更
-```sql
-
-UPDATE `t_save_user_addr`
-SET `uid` = '小明1的id'
-WHERE `id` = '小明2的家的id'
-
-UPDATE `t_save_user_addr`
-SET `uid` = '小明2的id'
-WHERE `id` = '小明1的家的id'
-
-```
+对象所属权变更相对复杂用户可以[跳转到对应的章节进行查看](/easy-query-doc/savable/ownership)
