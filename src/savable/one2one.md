@@ -210,7 +210,7 @@ VALUES ('3', '1', '浙江省', '绍兴市', '越城区'
 `@Transactional`事务注解只需要在`savable`调用执行时进行开启事务即可,否则会进行报错,并且可以不需要包含前面的那一部分查询操作
 
 ## 一对一级联修改
-修改用户年龄和删除用户地址
+修改用户年龄和修改用户地址
 
 
 
@@ -222,10 +222,10 @@ VALUES ('3', '1', '浙江省', '绍兴市', '越城区'
 @tab 修改代码
 ```java
 
-    @PostMapping("/updateRemove")
+    @PostMapping("/updateAddr")
     @Transactional(rollbackFor = Exception.class)
     @EasyQueryTrack
-    public Object updateRemove() {
+    public Object updateAddr() {
 
         SaveUser saveUser = easyEntityQuery.queryable(SaveUser.class)
                 .where(save_user -> {
