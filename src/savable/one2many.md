@@ -10,7 +10,7 @@ order: 20
 ::: tabs
 @tab 关系图
 
-<img :src="$withBase('/images/save121.png')">
+<img :src="$withBase('/images/saven2m.png')">
 
 @tab SaveUser
 ```java
@@ -116,7 +116,7 @@ INSERT INTO `t_save_bank_card` (`id`, `type`, `code`, `bank_id`)
 VALUES ('1b32678d234840e5b34ef855ff4aed9f', '信用卡', '456', 'dbadf934e3cb4666a5e7689f3a675e83')
 ```
 
-## 差异更新
+## 从表差异更新
 
 直接按存在的id进行查询,然后构建新的对象放到list内部替换被追踪的saveBank即可
 ```java
@@ -130,7 +130,7 @@ VALUES ('1b32678d234840e5b34ef855ff4aed9f', '信用卡', '456', 'dbadf934e3cb466
                 .includes(save_bank -> save_bank.saveBankCards())
                 .whereById("dbadf934e3cb4666a5e7689f3a675e83").singleNotNull();
 
-        //假如请求有3个bankcards,其中yi个有id另外yi个没有id
+        //假如请求有3个bankcards,其中y一个有id另外一个没有id
         List<SaveBankCard> list = easyEntityQuery.queryable(SaveBankCard.class)
                 .whereByIds(Arrays.asList("724929f91faf404caced57e18da50578"))
                 .toList();
