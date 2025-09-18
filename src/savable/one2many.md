@@ -79,6 +79,15 @@ public class SaveBankCard implements ProxyEntityAvailable<SaveBankCard , SaveBan
 这是一个非常常见的`User->BankCard`和`Bank->BankCard`两个聚合根同一个值对象,但是`User`和`BankCard`并不是正真意义上的聚合根和值对象,因为`BankCard`并不会因为和`User`的脱钩后被删除,但是`BankCard`会因为`Bank`的脱钩而被删除,所以在配置的时候我们可以选择`cascade = CascadeTypeEnum.DELETE`
 
 ## 一对多创建
+
+
+::: tabs
+
+@tab 流程图
+<img :src="$withBase('/images/one2manysave1.png')">
+
+@tab 创建对象
+
 ```java
 
     @PostMapping("/create")
@@ -87,78 +96,226 @@ public class SaveBankCard implements ProxyEntityAvailable<SaveBankCard , SaveBan
     public Object create() {
 
         SaveBank saveBank = new SaveBank();
+        saveBank.setId("1");
         saveBank.setName("工商银行");
         saveBank.setAddress("城市广场1号");
         ArrayList<SaveBankCard> saveBankCards = new ArrayList<>();
         saveBank.setSaveBankCards(saveBankCards);
         SaveBankCard card1 = new SaveBankCard();
+        card1.setId("2");
         card1.setType("储蓄卡");
         card1.setCode("123");
         saveBankCards.add(card1);
         SaveBankCard card2 = new SaveBankCard();
-        card1.setType("信用卡");
-        card1.setCode("456");
+        card1.setId("3");
+        card2.setType("信用卡");
+        card2.setCode("456");
         saveBankCards.add(card2);
 
         easyEntityQuery.savable(saveBank).executeCommand();
         return "ok";
     }
 ```
+@tab sql
+
 ```sql
+
 -- 第1条sql数据
 INSERT INTO `t_save_bank` (`id`, `name`, `address`)
-VALUES ('dbadf934e3cb4666a5e7689f3a675e83', '工商银行', '城市广场1号')
+VALUES ('1', '工商银行', '城市广场1号')
 -- 第2条sql数据
 INSERT INTO `t_save_bank_card` (`id`, `type`, `code`, `bank_id`)
-VALUES ('724929f91faf404caced57e18da50578', '储蓄卡', '123', 'dbadf934e3cb4666a5e7689f3a675e83')
+VALUES ('2', '储蓄卡', '123', '1')
 -- 第3条sql数据
 INSERT INTO `t_save_bank_card` (`id`, `type`, `code`, `bank_id`)
-VALUES ('1b32678d234840e5b34ef855ff4aed9f', '信用卡', '456', 'dbadf934e3cb4666a5e7689f3a675e83')
+VALUES ('3', '信用卡', '456', '1')
 ```
+
+:::
+
+只需要将子表数据装载到对应的对象集合中那么框架保存会自动处理其关联关系值,用户不需要手动赋值
 
 ## 从表差异更新
 
 直接按存在的id进行查询,然后构建新的对象放到list内部替换被追踪的saveBank即可
+
+
+
+::: tabs
+
+@tab 流程图
+<img :src="$withBase('/images/one2manysave2.png')">
+
+@tab 修改dto
+```java
+
+
+/**
+ * create time 2025/9/18 22:12
+ * {@link com.eq.doc.domain.save.SaveBank}
+ *
+ * @author xuejiaming
+ */
+@Data
+@SuppressWarnings("EasyQueryFieldMissMatch")
+public class BankUpdateRequest {
+    private String id;
+    private String name;
+    private String address;
+
+    /**
+     * 银行办法的银行卡
+     **/
+    private List<InternalSaveBankCards> saveBankCards;
+
+
+    /**
+     * {@link com.eq.doc.domain.save.SaveBankCard}
+     **/
+    @Data
+    public static class InternalSaveBankCards {
+        private String id;
+        private String type;
+        private String code;
+    }
+}
+```
+@tab 请求json
+```json
+{
+    "id":"1",
+    "name": "工商银行",
+    "address":"城市广场2号",
+    "saveBankCards":[
+        {
+            "id":"2",
+            "type":"储蓄卡",
+            "code":"1234"
+        },
+
+        {
+            "id":"4",
+            "type":"信用卡",
+            "code":"98765"
+        }
+    ]
+}
+```
+@tab 接口代码
 ```java
 
     @PostMapping("/update")
     @Transactional(rollbackFor = Exception.class)
     @EasyQueryTrack
-    public Object update() {
+    public Object update(@RequestBody BankUpdateRequest request) {
 
         SaveBank saveBank = easyEntityQuery.queryable(SaveBank.class)
                 .includes(save_bank -> save_bank.saveBankCards())
-                .whereById("dbadf934e3cb4666a5e7689f3a675e83").singleNotNull();
+                .whereById(request.getId()).singleNotNull();
+        
+        saveBank.setName(request.getName());
+        saveBank.setAddress(request.getAddress());
 
-        //假如请求有3个bankcards,其中y一个有id另外一个没有id
-        List<SaveBankCard> list = easyEntityQuery.queryable(SaveBankCard.class)
-                .whereByIds(Arrays.asList("724929f91faf404caced57e18da50578"))
-                .toList();
-        SaveBankCard saveBankCard = new SaveBankCard();//这个是新增的
-        saveBankCard.setType("储蓄卡");
-        saveBankCard.setCode("789");
-        list.add(saveBankCard);
+        Set<String> requestIds = request.getSaveBankCards().stream().map(o -> o.getId()).filter(o -> o != null).collect(Collectors.toSet());
+        //移除不需要的银行卡
+        saveBank.getSaveBankCards().removeIf(o -> !requestIds.contains(o.getId()));
+        Map<String, SaveBankCard> bankCardMap = saveBank.getSaveBankCards().stream().collect(Collectors.toMap(o -> o.getId(), o -> o));
+        ArrayList<SaveBankCard> newCards = new ArrayList<>();
+        for (BankUpdateRequest.InternalSaveBankCards saveBankCard : request.getSaveBankCards()) {
+            SaveBankCard dbBankCard = bankCardMap.get(saveBankCard.getId());
+            if(dbBankCard==null){
+                SaveBankCard bankCard = new SaveBankCard();
+                bankCard.setId(saveBankCard.getId());
+                bankCard.setType(saveBankCard.getType());
+                bankCard.setCode(saveBankCard.getCode());
+                newCards.add(bankCard);
+            }else{
+                dbBankCard.setType(saveBankCard.getType());
+                dbBankCard.setCode(saveBankCard.getCode());
+            }
+        }
+        saveBank.getSaveBankCards().addAll(newCards);
 
-        saveBank.setSaveBankCards(list);
         easyEntityQuery.savable(saveBank).executeCommand();
         return "ok";
     }
 ```
-
+@tab sql
 ```sql
+
+-- 第1条sql数据
+DELETE FROM `t_save_bank_card`
+WHERE `id` = '3'
+-- 第2条sql数据
+UPDATE `t_save_bank`
+SET `address` = '城市广场2号'
+WHERE `id` = '1'
+-- 第3条sql数据
+INSERT INTO `t_save_bank_card` (`id`, `type`, `code`, `bank_id`)
+VALUES ('4', '信用卡', '98765', '1')
+-- 第4条sql数据
+UPDATE `t_save_bank_card`
+SET `code` = '1234'
+WHERE `id` = '2'
+```
+:::
+
+框架正确的处理了子表`BankCard`，正确感知出了需要被删除和需要被新增的银行卡信息
+
+虽然框架正确的处理了这个操作但是在用户实现上面也是未免有些麻烦那么接下来将以简单的方式来实现，请求对象和请求json都不变我们改变api接口如下
+```java
+
+    @PostMapping("/update2")
+    @Transactional(rollbackFor = Exception.class)
+    @EasyQueryTrack
+    public Object update2(@RequestBody BankUpdateRequest request) {
+
+        SaveBank saveBank = easyEntityQuery.queryable(SaveBank.class)
+                .includes(save_bank -> save_bank.saveBankCards())
+                .whereById(request.getId()).singleNotNull();
+
+        saveBank.setName(request.getName());
+        saveBank.setAddress(request.getAddress());
+
+        ArrayList<SaveBankCard> requestBankCards = new ArrayList<>();
+        for (BankUpdateRequest.InternalSaveBankCards saveBankCard : request.getSaveBankCards()) {
+            SaveBankCard bankCard = new SaveBankCard();
+            bankCard.setId(saveBankCard.getId());
+            bankCard.setType(saveBankCard.getType());
+            bankCard.setCode(saveBankCard.getCode());
+            requestBankCards.add(bankCard);
+        }
+        //将右边的集合合并到左侧,左侧会自动根据主键或者自定义匹配值进行匹配，默认根据主键来进行匹配
+        easyEntityQuery.mergeCollection(saveBank.getSaveBankCards(), requestBankCards);
+        easyEntityQuery.savable(saveBank).executeCommand();
+        return "ok";
+    }
+```
+```sql
+
+SELECT `id`, `name`, `address`
+FROM `t_save_bank`
+WHERE `id` = '1'
 
 SELECT t.`id`, t.`type`, t.`code`, t.`uid`, t.`bank_id`
 FROM `t_save_bank_card` t
-WHERE t.`bank_id` IN ('dbadf934e3cb4666a5e7689f3a675e83')
-
-SELECT `id`, `type`, `code`, `uid`, `bank_id`
-FROM `t_save_bank_card`
-WHERE `id` IN ('724929f91faf404caced57e18da50578')
+WHERE t.`bank_id` IN ('1')
 
 DELETE FROM `t_save_bank_card`
-WHERE `id` = '1b32678d234840e5b34ef855ff4aed9f'
+WHERE `id` = '3'
 
-INSERT INTO `t_save_bank_card` (`id`, `type`, `code`, `bank_id`)
-VALUES ('f9884d49668d4dd3947e9b1eec3906d0', '储蓄卡', '789', 'dbadf934e3cb4666a5e7689f3a675e83')
+UPDATE `t_save_bank`
+SET `address` = '城市广场2号'
+WHERE `id` = '1'
+
+UPDATE `t_save_bank_card`
+SET `code` = '1234'
+WHERE `id` = '2'
 ```
-框架正确的处理了子表`BankCard`，正确感知出了需要被删除和需要被新增的银行卡信息
+通过请求接口创建出应该被保存的子表，后续通过`mergeCollection`将其差异化合并到导航属性上,然后通过`savable`可以差异化生成本次需要的保存命令
+
+前两条sql通过`includes`进行查询，后三条sql通过`savable`进行差异化处理
+
+::: danger 说明!!!
+> `savable`中的如果当对象是修改的那么必须使用被追踪的对象，不可以用用户自己new的对象。
+:::
