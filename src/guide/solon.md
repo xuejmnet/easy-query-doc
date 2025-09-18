@@ -54,7 +54,7 @@ order: 6
 <dependency>
     <groupId>org.projectlombok</groupId>
     <artifactId>lombok</artifactId>
-    <version>1.18.18</version>
+    <version>1.18.40</version>
 </dependency>
 <!-- 按实际框架引入对应版本 -->
 <dependency>

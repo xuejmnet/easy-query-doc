@@ -90,7 +90,9 @@ com.easy.query.core.exception.EasyQueryInvalidOperationException: relation value
 ```
 提示错误无法变更对象所有权,框架为了保证数据的误操作和正确性默认不允许用户变更对象的所有权,也就是值对象无法轻易变更所属的聚合根,我们可以通过配置让框架支持所有权变更
 ```java
-easyEntityQuery.savable(list).ownershipPolicy(OwnershipPolicyEnum.AllowOwnershipChange).executeCommand();
+easyEntityQuery.savable(list)
+                .configure(s->s.getSaveBehavior().add(SaveBehaviorEnum.ALLOW_OWNERSHIP_CHANGE))
+                .executeCommand();
 ```
 通过添加`ownershipPolicy(OwnershipPolicyEnum.AllowOwnershipChange)`让框架支持值对象所有权的变更
 ```sql

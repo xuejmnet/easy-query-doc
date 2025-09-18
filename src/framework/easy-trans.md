@@ -67,7 +67,7 @@ easy-trans.is-enable-global=true,默认`toPageResult`是`final`的结果,如果�
     <dependency>
         <groupId>org.projectlombok</groupId>
         <artifactId>lombok</artifactId>
-        <version>1.18.18</version>
+        <version>1.18.40</version>
     </dependency>
     <dependency>
         <groupId>org.springframework.boot</groupId>
