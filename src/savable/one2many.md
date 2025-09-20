@@ -285,8 +285,7 @@ WHERE `id` = '2'
             bankCard.setCode(saveBankCard.getCode());
             requestBankCards.add(bankCard);
         }
-        //将右边的集合合并到左侧,左侧会自动根据主键或者自定义匹配值进行匹配，默认根据主键来进行匹配
-        easyEntityQuery.mergeCollection(saveBank.getSaveBankCards(), requestBankCards);
+        saveBank.setSaveBankCards(requestBankCards);
         easyEntityQuery.savable(saveBank).executeCommand();
         return "ok";
     }
@@ -319,3 +318,169 @@ WHERE `id` = '2'
 ::: danger 说明!!!
 > `savable`中的如果当对象是修改的那么必须使用被追踪的对象，不可以用用户自己new的对象。
 :::
+
+## 业务key一对多保存
+有时候我们在一对多保存的时候可能会使用非业务id来作为保存的“唯一”键，而不是主键，当然这个唯一并不是数据库内唯一，框架认为是在聚合根下对于这个值对象而言是不会重复的，但是跨聚合根还是允许重复的。
+
+用户和银行卡的关系是一对多，这个关系我们在保存的时候完全可以用银行卡号作为key来实现保存的时候交互使用银行卡code而不是id这也是一种方式
+
+
+## SaveKey
+`SaveKey`的作用就是在保存数据的时候如果用户不提供主键信息，那么用户可以根据实体标记的`SaveKey`找到对应的原始记录，从而实现在逻辑层面让同一个聚合根下的`SaveKey`也是唯一的
+
+::: danger 说明!!!
+> `SaveKey`的值不能为null(默认),具体以`RelationValueFactory`为准用户也可以设置不能是空或者横杠之类的值
+:::
+
+修改银行卡实体，添加`SaveKey`
+```java
+
+@Table("t_save_bank_card")
+@Data
+@EntityProxy
+@FieldNameConstants
+@EasyAlias("save_bank_card")
+public class SaveBankCard implements ProxyEntityAvailable<SaveBankCard , SaveBankCardProxy> {
+    @Column(primaryKey = true, primaryKeyGenerator = UUIDPrimaryKey.class)
+    private String id;
+    private String type;
+    @SaveKey
+    private String code;
+    private String uid;
+    private String bankId;
+}
+```
+
+### 保存用户银行卡
+```java
+
+    @PostMapping("/createUser")
+    @Transactional(rollbackFor = Exception.class)
+    @EasyQueryTrack
+    public Object createUser() {
+
+        SaveUser saveUser = new SaveUser();
+        saveUser.setId("1");
+        saveUser.setName("小明");
+        saveUser.setAge(20);
+        List<SaveBankCard> saveBankCards = easyEntityQuery.queryable(SaveBankCard.class)
+                .whereByIds(Arrays.asList("2", "3"))
+                .toList();
+        saveUser.setSaveBankCards(saveBankCards);
+
+        easyEntityQuery.savable(saveUser).executeCommand();
+        return "ok";
+    }
+```
+```sql
+-- 第1条sql数据
+SELECT `id`, `type`, `code`, `uid`, `bank_id`
+FROM `t_save_bank_card`
+WHERE `id` IN ('2', '3')
+-- 第2条sql数据
+INSERT INTO `t_save_user` (`id`, `name`, `age`)
+VALUES ('1', '小明', 20)
+-- 第3条sql数据
+UPDATE `t_save_bank_card`
+SET `uid` = '1'
+WHERE `id` = '2'
+-- 第4条sql数据
+UPDATE `t_save_bank_card`
+SET `uid` = '1'
+WHERE `id` = '3'
+```
+
+### 请求变更用户银行卡
+
+::: tabs
+
+@tab 流程图
+<img :src="$withBase('/images/one2manysave3.png')">
+
+@tab DTO
+```java
+
+/**
+ * create time 2025/9/18 22:12
+ * {@link com.eq.doc.domain.save.SaveUser}
+ *
+ * @author xuejiaming
+ */
+@Data
+@SuppressWarnings("EasyQueryFieldMissMatch")
+public class UserUpdateRequest {
+    private String id;
+    private String name;
+    private Integer age;
+
+    /**
+     * 银行办法的银行卡
+     **/
+    private List<InternalSaveBankCards> saveBankCards;
+
+
+    /**
+     * {@link com.eq.doc.domain.save.SaveBankCard}
+     **/
+    @Data
+    public static class InternalSaveBankCards {
+        private String code;
+    }
+}
+```
+@tab 接口
+```java
+
+    @PostMapping("/update3")
+    @Transactional(rollbackFor = Exception.class)
+    @EasyQueryTrack
+    public Object update3(@RequestBody UserUpdateRequest request) {
+        SaveUser saveUser = easyEntityQuery.queryable(SaveUser.class)
+                .includes(save_user -> save_user.saveBankCards())
+                .singleNotNull();
+
+        saveUser.setName(request.getName());
+        saveUser.setAge(request.getAge());
+        List<String> codes = request.getSaveBankCards().stream().map(o -> o.getCode()).toList();
+        List<SaveBankCard> requestBankCards = easyEntityQuery.queryable(SaveBankCard.class)
+                .where(save_bank_card -> {
+                    save_bank_card.code().in(codes);
+                }).toList();
+
+        saveUser.setSaveBankCards(requestBankCards);
+        easyEntityQuery.savable(saveUser).executeCommand();
+        return "ok";
+    }
+```
+@tab sql
+```sql
+
+SELECT `id`, `name`, `age`, `create_time`
+FROM `t_save_user`
+
+SELECT t.`id`, t.`type`, t.`code`, t.`uid`, t.`bank_id`
+FROM `t_save_bank_card` t
+WHERE t.`uid` IN ('1')
+
+SELECT `id`, `type`, `code`, `uid`, `bank_id`
+FROM `t_save_bank_card`
+WHERE `code` IN ('123', '789')
+
+UPDATE `t_save_bank_card`
+SET `uid` = NULL
+WHERE `id` = '3'
+
+UPDATE `t_save_bank_card`
+SET `uid` = '1'
+WHERE `id` = '4'
+```
+
+:::
+
+
+这次我们发现框架能正确的反应出新增一个`code:789`然后脱钩`code:456`，但是用户会发现一个问题,其实我们应该以银行卡为聚合根来驱动，银行卡选择用户而不是用户为聚合根选择银行卡
+
+## 中间表一对多保存
+在用户角色多对多的模型结构中，`eq`也支持定义一对多的关系，譬如`user->user_role`,这种一对多是因为多对多某种意义上是两个一对多指向同一个中间表，所以我们可以通过直接处理中间表关系来实现对应的差异保存
+
+多对多关系转换成一对多保存可以让保存在性能上比完全使用多对多更加优秀,具体内容请[跳转到多对多章节查看](/easy-query-doc/savable/many2many)

@@ -28,6 +28,24 @@ syncTableCommand | 自动同步表结构 如果数据库不存在则创建数据
 :::
 
 
+没有数据库就创建数据库,如果已经创建了就忽略
+
+- `createDatabaseIfNotExists`会自动创建数据库如果不存在(oracle、dameng不支持),
+
+原理通过`DataSource`数据源解析对应的`jdbc url`、`username`和`password`,当程序无法正确解析出对应的数据时可以通过手动返回告知程序
+```java
+
+    DatabaseCodeFirst databaseCodeFirst = easyEntityQuery.getDatabaseCodeFirst();
+    //手动处理未知datasource
+    databaseCodeFirst.createDatabaseIfNotExists(ds->new Credentials(
+            "jdbc:mysql://127.0.0.1:3316/easy-query-test",
+            "root",
+            "root"
+    ));
+   
+```
+
+
 
 ## CodeFirstCommand
 
