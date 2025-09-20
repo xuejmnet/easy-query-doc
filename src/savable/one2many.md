@@ -391,7 +391,11 @@ WHERE `id` = '3'
 ```
 
 ### 请求变更用户银行卡
+请求上传的时候不传递已经存在的银行卡id（当然实际业务我们肯定是传递银行卡id的），只传递code也就是银行卡编号，来处理一对多保存
 
+- 先查询当前用户并且包含查询用户的银行卡信息
+- 查询请求的银行卡信息，然后set替换用户的银行卡
+- 保存框架会自动根据差异数据进行比对生成差异sql实现保存功能
 ::: tabs
 
 @tab 流程图
@@ -451,6 +455,25 @@ public class UserUpdateRequest {
         easyEntityQuery.savable(saveUser).executeCommand();
         return "ok";
     }
+```
+@tab JSON
+```json
+{
+    "id":"1",
+    "name": "小明",
+    "age": 20,
+    "saveBankCards":[
+        {
+            "type":"储蓄卡",
+            "code":"123"
+        },
+
+        {
+            "type":"信用卡",
+            "code":"789"
+        }
+    ]
+}
 ```
 @tab sql
 ```sql
