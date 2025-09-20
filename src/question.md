@@ -132,7 +132,7 @@ easyEntityQuery.deletable(User.class).disableLogicDelete()allowDeleteStatement(t
     <version>3.8.1</version>
     <configuration>
         <annotationProcessorPaths>
-        <!-- 注意顺序 -->
+        <!-- 注意顺序 如果不行将eq移到第一位 -->
             <path>
             <!-- lombok... -->
             </path>
