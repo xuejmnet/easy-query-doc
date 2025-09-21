@@ -330,6 +330,7 @@ WHERE `id` = '2'
 
 ::: danger 说明!!!
 > `SaveKey`的值不能为null(默认),具体以`RelationValueFactory`为准用户也可以设置不能是空或者横杠之类的值
+> 一个聚合根内导航属性内`SaveKey`不允许重复
 :::
 
 修改银行卡实体，添加`SaveKey`
