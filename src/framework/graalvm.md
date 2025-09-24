@@ -12,6 +12,11 @@ GraalVM 是一个高性能的多语言运行时（runtime），它支持以多�
 
 这是eq史上第一个native的demo,证明了在eq在native领域的可行性,具体是否使用用户自行选择参考
 
+
+::: warning 说明!!!
+> 本次demo是基于特定eq的版本,如果你是不同版本的eq那么反射声明可能需要注意因为后续版本可能扩展新的接口等处理具体可以[查看EasyQueryBuilderConfiguration](https://github.com/dromara/easy-query/blob/main/sql-core/src/main/java/com/easy/query/core/bootstrapper/EasyQueryBuilderConfiguration.java)
+:::
+
 ## demo
 本章节demo由[用户提供](https://github.com/wzszsw) 地址:https://github.com/wzszsw/easy-query-native-demo
 

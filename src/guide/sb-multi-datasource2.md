@@ -74,18 +74,12 @@ public class DefaultEasyMultiEntityQuery implements EasyMultiEntityQuery {
 	private final DynamicRoutingDataSource dynamicRoutingDataSource;
 
 	private final String primary;
-	private final JsonConverter jsonConverter;
-	private final SnowflakePrimaryKeyGenerator snowflakePrimaryKeyGenerator;
 	private final EasyEntityQuery defaultEasyEntityQuery;
 
 	public DefaultEasyMultiEntityQuery(DynamicRoutingDataSource dynamicRoutingDataSource,
-									   String primary,
-									   JsonConverter jsonConverter,
-									   SnowflakePrimaryKeyGenerator snowflakePrimaryKeyGenerator) {
+									   String primary) {
 		this.dynamicRoutingDataSource = dynamicRoutingDataSource;
 		this.primary = primary;
-		this.jsonConverter = jsonConverter;
-		this.snowflakePrimaryKeyGenerator = snowflakePrimaryKeyGenerator;
 		this.defaultEasyEntityQuery = buildDefaultEasyQuery(primary);
 		refreshDataSource();
 	}
@@ -240,10 +234,10 @@ public class DefaultEasyMultiEntityQuery implements EasyMultiEntityQuery {
 //         queryConfiguration.applyShardingInitializer(new TopicShardingTimeShardingInitializer());
 //         queryConfiguration.applyShardingInitializer(new DataSourceShardingInitializer());
 //         queryConfiguration.applyValueConverter(new EnumConverter());
-		queryConfiguration.applyValueConverter(jsonConverter);
+		// queryConfiguration.applyValueConverter(jsonConverter);
 //         queryConfiguration.applyValueUpdateAtomicTrack(new IntegerNotValueUpdateAtomicTrack());
 //         queryConfiguration.applyColumnValueSQLConverter(new MySQLAesEncryptColumnValueSQLConverter());
-		queryConfiguration.applyPrimaryKeyGenerator(snowflakePrimaryKeyGenerator);
+		// queryConfiguration.applyPrimaryKeyGenerator(snowflakePrimaryKeyGenerator);
 		return new DefaultEasyEntityQuery(easyQueryClient);
 	}
 
