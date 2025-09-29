@@ -23,3 +23,5 @@ title: 内置函数
 - joining
 
 各个函数之间支持链式调用,并且支持循环嵌套使用
+
+如果存在未知函数eq并没有实现的用户可以通过`NativeSQL`[原生sql片段自行实现或文档搜索`静态函数sql片段封装`](/easy-query-doc/ability/native-sql.html#静态函数sql片段封装)
