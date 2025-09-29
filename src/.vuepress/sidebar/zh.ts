@@ -8,6 +8,7 @@ export const zhSidebar = sidebar({
     // "portfolio",
     "feature",
     "best-practices",
+    "context-mode",
     {
       text: "快速开始",
       icon: "laptop-code",

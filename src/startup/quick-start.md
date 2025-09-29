@@ -183,6 +183,8 @@ public class SysUser implements ProxyEntityAvailable<SysUser , SysUserProxy> {
 > 其中`ProxyEntityAvailable<Company , CompanyProxy> `和`ProxyEntityAvailable<SysUser , SysUserProxy>`接口由插件快速生成具体请看下方操作
 :::
 
+那么如果我希望实体是相对干净的不希望添加`ProxyEntityAvailable`这个接口那么也是可以的,具体参考[GITHUB ISSUE](https://github.com/dromara/easy-query/issues/391) 或者跳转[dbcontext章节]
+
 
 ### 4.生成代理类
 

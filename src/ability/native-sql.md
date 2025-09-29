@@ -71,24 +71,36 @@ long l = easyQuery.sqlExecute("update t_blog set content=? where id=?", Arrays.a
 `easy-query`默认提供了数据库自定义`SQL`片段,其中 [《CaseWhen》](/easy-query-doc/query/case-when) 就是有数据库自定义片段来自行实现api
 
 如何设计api完全可以看用户自行实现。
-<!-- 
-## sqlSegmentAs
-最好是封装自行实现,譬如case-when的实现就是扩展实现,如果没有这个封装的必要可以用sqlNativeSegment,支持属性和参数化
 
-**建议参考 case when,如果临时使用建议使用 sqlNativeSegment** -->
+
 
 ## entityQuery
 因为entityQuery的特殊性原生sql片段有如下特殊规则
 
-- `where`、`join on`、`order`、`having`的原生sql片段是具体表的`o.expression().sqlSegment(......).executeSQL()`方法
-- `select`别名和`update set`为`setSQL`,`o.expression().sqlSegment(....)` 
-- `o.expression()`来获取表达式其中`expression().sqlSegment()`来执行sql用于`join、where、orderBy`需调用`executeSQL`,其中`expression().sqlSegment()`用来返回片段类型用于`select、groupBy`等
+- `where`、`join on`、`order`、`having`的原生sql片段是具体表的`o.expression().rawSQLStatement(......).executeSQL()`方法
+- `select`别名和`update set`为`setSQL`,`o.expression().rawSQLStatement(....)` 
+- `o.expression()`来获取表达式其中`expression().rawSQLStatement()`来执行sql用于`join、where、orderBy`需调用`executeSQL`,其中`expression().rawSQLStatement()`用来返回片段类型用于`select、groupBy`等
 
 
 
 ::: tip 说明!!!
-> `o.expression().sqlSegment(....)`表示返回一个sql片段如果您是在`join、where、orderBy`方法内部这个片段不会生效需要调用`executeSQL`也就是`o.expression().sqlSegment(....).executeSQL()`,如果您闲这个太麻烦可以使用`o.expression().sql(....)`内部自动调用`executeSQL`,如果您是在`select、groupBy`等方法中使用那么是返回当做一个片段使用无需调用执行sql方法
+> `o.expression().rawSQLStatement(....)`表示返回一个sql片段如果您是在`join、where、orderBy`方法内部这个片段不会生效需要调用`executeSQL`也就是`o.expression().rawSQLStatement(....).executeSQL()`,如果您闲这个太麻烦可以使用`o.expression().rawSQLCommand(....)`内部自动调用`executeSQL`,如果您是在`select、groupBy`等方法中使用那么是返回当做一个片段使用无需调用执行sql方法
 :::
+## rawSQLStatement
+自定义SQL类型片段，顾名思义是生成一个类型片段,需要用户使用才会生效
+
+参数  | 功能  
+---  | --- 
+sqlTemplate  | 第一个参数sql模板，支持变量用{0}....{n}
+parameters  | 第二个可变参数用于填充前面的参数占位
+
+## rawSQLCommand
+自定义SQL执行片段，顾名思义是生成一个执行片段,创建时即执行
+参数  | 功能  
+---  | --- 
+sqlTemplate  | 第一个参数sql模板，支持变量用{0}....{n}
+parameters  | 第二个可变参数用于填充前面的参数占位
+
 
 ## 随机排序
 
@@ -100,7 +112,8 @@ List<Topic> list = easyEntityQuery.queryable(Topic.class)
         .where(b -> {
             b.id().eq("123");
         }).orderBy(t -> {
-            t.expression().sqlSegment("RAND()").executeSQL();
+            //直接生成ORDER BY RAND() ASC
+            t.expression().rawSQLStatement("RAND()").asc();
         }).toList();
 
 //上下一样
@@ -108,7 +121,16 @@ List<Topic> list = easyEntityQuery.queryable(Topic.class)
         .where(b -> {
             b.id().eq("123");
         }).orderBy(t -> {
-            t.expression().sql("RAND()");
+            //直接生成ORDER BY RAND()
+            t.expression().rawSQLStatement("RAND()").executeSQL();
+        }).toList();
+
+//上下一样
+List<Topic> list = easyEntityQuery.queryable(Topic.class)
+        .where(b -> {
+            b.id().eq("123");
+        }).orderBy(t -> {
+            t.expression().rawSQLCommand("RAND()");
         }).toList();
 
 SELECT
@@ -161,10 +183,8 @@ List<Topic> list = easyEntityQuery.queryable(Topic.class)
         .where(b -> {
             b.id().eq("123");
         }).orderBy(t -> {
-            t.expression().sql("IFNULL({0},{1}) DESC",c->{
-                c.expression(t.stars()).value(1);
-            });
-            t.expression().sql("RAND()");
+            t.expression().rawSQLCommand("IFNULL({0},{1}) DESC", t.stars(), 1);
+            t.expression().rawSQLCommand("RAND()");
         }).toList();
 
 
@@ -186,14 +206,12 @@ ORDER BY
 List<Topic> list = easyEntityQuery.queryable(Topic.class)
         .where(b -> {
             b.id().eq("123");
-            b.expression().sql("{0}!={1}",c->{
+            b.expression().rawSQLCommand("{0}!={1}",c->{
                 c.expression(b.stars()).expression(b.createTime());
             });
         }).orderBy(t -> {
-            t.expression().sql("IFNULL({0},{1}) DESC",c->{
-                c.expression(t.stars()).value(1);
-            });
-            t.expression().sql("RAND()");
+            t.expression().rawSQLCommand("IFNULL({0},{1}) DESC", t.stars(), 1);
+            t.expression().rawSQLCommand("RAND()");
         }).toList();
 
 SELECT
@@ -273,17 +291,16 @@ ORDER BY
 ::: 
 
 ## 返回结果
-`entityQuery`使用`expression().sqlSegment(....)`其余几个`api`任然是`sqlNativeSegment`
+`entityQuery`使用`expression().rawSQLStatement(....)`其余几个`api`任然是`sqlNativeSegment`
 ```java
-//因为默认原生sql片段式Object类型所以无法精确指定类型可以通过setPropertyType来指定返回接受的类型
+//因为默认原生sql片段式Object类型所以无法精确指定类型可以通过asAnyType或者asXXX类型来快速编译时确定类型来指定返回接受的类型
+
 List<Draft2<Double, Integer>> list = easyEntityQuery.queryable(Topic.class)
         .where(b -> {
             b.id().eq("123");
         }).select(t -> Select.DRAFT.of(
-                t.expression().sqlSegment("RAND()").setPropertyType(Double.class),
-                t.expression().sqlSegment("IFNULL({0},{1})", c -> {
-                    c.expression(t.stars()).value(1);
-                },Integer.class)
+                t.expression().rawSQLStatement("RAND()").asAnyType(Double.class),
+                t.expression().rawSQLStatement("IFNULL({0},{1})", t.stars(), 1).asInteger()
         )).toList();
 
 
@@ -299,19 +316,13 @@ WHERE
 ```java
 
 
-List<Topic> list = easyEntityQuery.queryable(Topic.class)
-        .where(b -> {
-            b.id().eq("123");
-        }).select(Topic.class,t -> Select.of(
-                t.expression().sqlSegement("RAND()",c->{
-                    c.setAlias(t.stars());
-                },Double.class),
-                t.expression().sqlSegement("IFNULL({0},{1})", c -> {
-                    c.expression(t.stars());
-                    c.value(1);
-                    c.setAlias(t.createTime());
-                }).setPropertyType(Integer.class)
-        )).toList();
+        List<Topic> listx = easyEntityQuery.queryable(Topic.class)
+                .where(b -> {
+                    b.id().eq("123");
+                }).select(Topic.class,t -> Select.of(
+                        t.expression().rawSQLStatement("RAND()").asAnyType(Double.class).as("stars"),
+                        t.expression().rawSQLStatement("IFNULL({0},{1})", t.stars(), 1).asInteger().as("createTime")
+                )).toList();
 
 
 SELECT
@@ -323,132 +334,63 @@ WHERE
     t.`id` = '123'
 ```
 
+## 静态函数sql片段封装
+`NativeSQL`原生sql的封装我们可以通过静态函数来进行处理
 
+比如mysql的findInSet函数可能是mysql特有的，那么我们可以通过如下方法实现
 
 ```java
-//where
+    public static void findInSet(String value, PropTypeColumn<String> column) {
+        Expression expression = EasyProxyParamExpressionUtil.parseContextExpressionByParameters(column);
 
-           
-        List<Topic> list2 = easyEntityQuery.queryable(Topic.class)
-                .where(o -> {
-                    Expression expression = o.expression();
-                    o.createTime().format("yyyy/MM/dd" ).eq("2023/01/01" );
-                    o.or(() -> {
-                        o.stars().ne(1);
-                        o.createTime().le(LocalDateTime.of(2024, 1, 1, 1, 1));
-                        o.title().notLike("abc" );
-                    });
-                    o.createTime().format("yyyy/MM/dd" ).eq("2023/01/01" );
-                    o.id().nullOrDefault("yyyy/MM/dd" ).eq("xxx" );
-                    expression.sql("{0} != {1}" , c -> {
-                        c.expression(o.stars()).expression(o.createTime());
-                    });
-                    o.or(() -> {
-                        o.createTime().format("yyyy/MM/dd" ).eq("2023/01/01" );
-                        o.id().nullOrDefault("yyyy/MM/dd" ).eq("xxx" );
-                        expression.sql("{0} != {1}" , c -> {
-                            c.expression(o.stars()).expression(o.createTime());
-                        });
-                    });
-
-                    o.createTime().format("yyyy/MM/dd" ).eq("2023/01/02" );
-                    o.id().nullOrDefault("yyyy/MM/dd2" ).eq("xxx1" );
-                })
-                .select(o -> o.FETCHER
-                        .allFieldsExclude(o.id(), o.title())
-                        .id().as(o.title())
-                        .id().fetchProxy())
-                .toList();
+        expression.rawSQLCommand("FIND_IN_SET({0},{1})", value, column);
+    }
 
 
--- 第1条sql数据
-SELECT
-    t.`stars`,
-    t.`create_time`,
-    t.`id` AS `title`,
-    t.`id` 
-FROM
-    `t_topic` t 
-WHERE
-    DATE_FORMAT(t.`create_time`,'%Y/%m/%d') = '2023/01/01' 
-    AND (
-        t.`stars` <> 1 
-        OR t.`create_time` <= '2024-01-01 01:01' 
-        OR t.`title` NOT LIKE '%abc%'
-    ) 
-    AND DATE_FORMAT(t.`create_time`,'%Y/%m/%d') = '2023/01/01' 
-    AND IFNULL(t.`id`,'yyyy/MM/dd') = 'xxx' 
-    AND t.`stars` != t.`create_time` 
-    AND (
-        DATE_FORMAT(t.`create_time`,'%Y/%m/%d') = '2023/01/01' 
-        OR IFNULL(t.`id`,'yyyy/MM/dd') = 'xxx' 
-        OR t.`stars` != t.`create_time`
-    ) 
-    AND DATE_FORMAT(t.`create_time`,'%Y/%m/%d') = '2023/01/02' 
-    AND IFNULL(t.`id`,'yyyy/MM/dd2') = 'xxx1'
+    List<BlogEntity> list2 = easyEntityQuery.queryable(BlogEntity.class)
+            .where(t_blog -> {
 
-//order by
-List<Topic> list3 = easyEntityQuery.queryable(Topic.class)
-                    .where(o -> {
-                        o.title().eq("title" );
-                        o.id().eq("1" );
-                    })
-                    .orderBy(o -> {
-                        o.createTime().format("yyyy-MM-dd HH:mm:ss" ).desc();
-                        o.expression().sql("IFNULL({0},'') ASC" , c -> {
-                            c.expression(o.stars());
-                        });
-                    })
-                    .select(o -> new TopicProxy().selectExpression(o.FETCHER.title().id(), o.createTime().format("yyyy-MM-dd HH:mm:ss" )))
-                    .toList();
+                findInSet("123", t_blog.title().nullOrDefault("123"));
 
-SELECT t.`title`,t.`id`,DATE_FORMAT(t.`create_time`,'%Y-%m-%d %H:%i:%s') FROM `t_topic` t WHERE t.`title` = ? AND t.`id` = ? ORDER BY DATE_FORMAT(t.`create_time`,'%Y-%m-%d %H:%i:%s') DESC,IFNULL(t.`stars`,'') ASC
+            }).toList();
 
 
-//select
-List<Topic> list2 = easyEntityQuery.queryable(Topic.class)
-        .where(o -> o.createTime().format("yyyy/MM/dd").eq("2023/01/01"))
-        .select(o -> {
-            TopicProxy r = new TopicProxy();
-            r.title().set(o.stars().nullOrDefault(0).toStr());
-            r.alias().setSQL("IFNULL({0},'')", c -> {
-                c.expression(o.id());
-            });
-            return r;
-        })
-        .toList();
+SELECT `id`, `create_time`, `update_time`, `create_by`, `update_by`
+	, `deleted`, `title`, `content`, `url`, `star`
+	, `publish_time`, `score`, `status`, `order`, `is_top`
+	, `top`
+FROM `t_blog`
+WHERE `deleted` = false
+	AND FIND_IN_SET('123', IFNULL(`title`, '123'))
+```
+
+实现原理说明:通过请求参数来分析解析出当前表达式上下文然后通过表达式上下文调用`rawSQLCommand`函数，这边有一个缺点就是如果传入的参数都是基本类型比如String或者int那么是不可以的，因为无法通过这种类型来获取当前上下文，但是实际业务中不可能存在这种情况，所以基本上可以确定肯定能通过`parseContextExpressionByParameters`来解析当前sql上下文
 
 
-//上下凉鞋发一样通过expression来构建sql片段并且指定类型是String
+静态函数类型片段封装
+```java
+ public static AnyTypeExpression<String> subStr(PropTypeColumn<String> column, int begin, int end) {
+    Expression expression = EasyProxyParamExpressionUtil.parseContextExpressionByParameters(column);
 
-List<Topic> list4 = easyEntityQuery.queryable(Topic.class)
-        .where(o -> o.createTime().format("yyyy/MM/dd").eq("2023/01/01"))
-        .select(o -> {
-            TopicProxy r = new TopicProxy();
-            r.title().set(o.stars().nullOrDefault(0).toStr());
-            ColumnFunctionComparableAnyChainExpression<String> nullProperty = o.expression().sqlSegment("IFNULL({0},'')", c -> {
-                c.expression(o.id());
-            }, String.class);
-            r.alias().set(nullProperty);
-            return r;
-        })
-        .toList();
-
-SELECT CAST(IFNULL(t.`stars`,?) AS CHAR) AS `title`,IFNULL(t.`id`,'') AS `alias` FROM `t_topic` t WHERE DATE_FORMAT(t.`create_time`,'%Y/%m/%d') = ?
+    return expression.rawSQLStatement("SUBSTR({0},{1},{2})", column, begin, end).asAnyType(String.class);
+}
 
 
-//update set
-long rows = easyEntityQuery.updatable(Topic.class)
-                    .setColumns(o->{
-                        o.stars().setSQL("ifnull({0},0)+{1}", (context) -> {
-                            context.expression(o.stars())
-                                    .value(1);
-                        });
-                    })
-                    .where(o -> o.id().eq("2"))
-                    .executeRows();
+List<BlogEntity> list = easyEntityQuery.queryable(BlogEntity.class)
+        .where(t_blog -> {
 
-UPDATE `t_topic` SET `stars` = ifnull(`stars`,0)+? WHERE `id` = ?
+            findInSet("123", subStr(t_blog.title(), 1, 2));
+
+        }).toList();
+```
+通过封装静态函数类型片段可以做到将数据库片段表达式进行类型化，当然这边返回的是`AnyTypeExpression<String>`实际我们可以通过`asStr()`函数而不是`asAnyType(String.class)`
+
+```java
+public static StringTypeExpression<String> subStr(PropTypeColumn<String> column, int begin, int end) {
+    Expression expression = EasyProxyParamExpressionUtil.parseContextExpressionByParameters(column);
+
+    return expression.rawSQLStatement("SUBSTR({0},{1},{2})", column, begin, end).asStr();
+}
 ```
 
 ## 自定义原生sql查询
@@ -514,7 +456,7 @@ LEFT JOIN
 
 
 ## sqlNativeSegment
-无需编写复杂封装代码
+无需编写复杂封装代码，该函数主要是`EasyQueryClient`
 
 说明
 

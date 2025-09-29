@@ -1,4 +1,4 @@
----
+<!-- ---
 title: 表达式复用
 ---
 
@@ -26,4 +26,4 @@ Assert.assertEquals("SELECT t1.`id`,SUM(t1.`score`) AS `score` FROM `t_topic` t 
 //在对原先的进行操作发现select和limit并没有赋值上去,所以cloneQueryable生效
 String sql1 = blogEntityQueryable.select(Long.class, o -> o.columnCount(BlogEntity::getId)).toSQL();
 Assert.assertEquals("SELECT COUNT(t2.`id`) AS `id` FROM (SELECT t1.`id`,SUM(t1.`score`) AS `score` FROM `t_topic` t INNER JOIN `t_blog` t1 ON t1.`deleted` = ? AND t.`id` = t1.`id` WHERE t1.`title` IS NOT NULL GROUP BY t1.`id`) t2", sql1);
-```
+``` -->
