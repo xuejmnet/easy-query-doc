@@ -53,6 +53,8 @@ SQLite | sql-sqlite  | ✅
     }
 ```
 
+更新多个字段时使用链式调用 `.onConflictThen(o -> o.FETCHER.updateTime().otherField())`
+
 ## 不存在则插入,存在则忽略
 
 本例使用`conflictThen`方法，使用第二个参数传入主键字段来判断对象是否已存在，本例为不存在则插入全部字段。
