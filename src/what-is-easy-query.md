@@ -71,6 +71,7 @@ EasyQuery官方QQ群: 170029046
 | 达梦dameng          | sql-dameng      | dameng           | dameng           |
 | 人大金仓KingbaseES  | sql-kingbase-es | kingbase_es      | kingbase_es      |
 | 高斯  | sql-gauss-db | gauss-db      | gauss-db      |
+| duckdb  | sql-duckdb | duckdb      | duckdb      |
 | DB2  | sql-db2 | db2     | db2     |
 
 `eq`目前已经抽象了表达式,所以原则上支持所有数据库,只需要自定义实现对应数据库的增删改查接口即可,也就是[`sql-db-support`open in new window](https://github.com/xuejmnet/easy-query/tree/main/sql-db-support) 。所以如果不支持对应的sql那么你可以自行扩展或者提交相应的issue

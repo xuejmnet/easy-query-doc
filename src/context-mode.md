@@ -63,7 +63,7 @@ List<Topic> list = dbContext.topic().where(s -> {
         dbContext.topic().updatable(topic).executeRows();
         dbContext.topic().updatable(Arrays.asList(topic)).executeRows();
         //表达式修改
-        dbContext.topic().updatable()
+        dbContext.topic()
                 .setColumns(t_topic -> t_topic.title().set("123"))
                 .where(t_topic -> t_topic.id().eq("1123"))
                 .executeRows();
@@ -74,8 +74,8 @@ List<Topic> list = dbContext.topic().where(s -> {
         Topic topic = new Topic();
         dbContext.topic().deletable(topic).executeRows();
         dbContext.topic().deletable(Arrays.asList(topic)).executeRows();
-        dbContext.topic().deletable()
-                .where(t_topic -> t_topic.id().eq("1123"))
+        dbContext.topic()
+                .deleteBy(t_topic -> t_topic.id().eq("1123"))
                 .executeRows();
 ```
 保存
