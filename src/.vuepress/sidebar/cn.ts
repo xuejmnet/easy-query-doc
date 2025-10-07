@@ -57,7 +57,7 @@ export const cnSidebar = sidebar({
           prefix: "group-by/",
           collapsible:true,
           children: "structure",
-        },"insert","update","delete","transaction","insertOrUpdate","batch","dynamic-table-name","reuse","native-sql"
+        },"insert","update","delete","transaction","insertOrUpdate","batch","dynamic-table-name","native-sql"
       ],
     },
     {
