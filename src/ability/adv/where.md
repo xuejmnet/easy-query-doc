@@ -394,7 +394,7 @@ object 的一个属性对应数据库查询的一列
 | strict            | true   | 严格模式,如果属性没有映射到对象上报错,如果表`tableIndex`不在当前上下文中也报错            |
 | tableIndex        | 0      | 当前条件用于查询哪张表                                                                    |
 | allowEmptyStrings | false  | 是否允许空字符串,如果允许表示空也会加入到表达式内而不是忽略                               |
-| propName          | ""     | 当前属性映射到数据库对象的属性名称,为空表示使用当前属性名                                 |
+| propName          | ""     | 当前属性映射到数据库对象的属性名称,为空表示使用当前属性名,支持隐式join和隐式子查询        |
 | type              | LIKE   | 当前属性和数据库对象属性以哪种表达式构建条件                                              |
 | mode              | SINGLE | `SINGLE`:表示当前属性是一对一数据库列,`MULTI_OR`:表示当前值对多个数据库列并且用 or 来连接 |
 | propNames         | []     | 当前属性映射到哪两个属性列                                                                |
@@ -599,6 +599,68 @@ String sql = easyQuery.queryable(BlogEntity.class)
         .toSQL();
 Assert.assertEquals("SELECT `id`,`create_time`,`update_time`,`create_by`,`update_by`,`deleted`,`title`,`content`,`url`,`star`,`publish_time`,`score`,`status`,`order`,`is_top`,`top` FROM `t_blog` WHERE `deleted` = ? AND `title` LIKE ? AND (`title` LIKE ? OR `content` LIKE ?) AND (`id` = ? OR `content` = ?) AND `url` LIKE ? AND `star` = ? AND `publish_time` >= ? AND `publish_time` <= ? AND `score` >= ? AND `status` <= ? AND `order` > ? AND `is_top` <> ? ORDER BY `status` ASC,`score` ASC", sql);
 
+```
+
+## 属性隐式筛选
+`whereObject`使用隐式join和隐式子查询
+```java
+
+/**
+ * create time 2025/8/10 21:18
+ * {@link SysUser}
+ *
+ * @author xuejiaming
+ */
+@Data
+public class SysUserQueryDTO2 {
+
+    @EasyWhereCondition(propName = "bankCards.code",type = EasyWhereCondition.Condition.STARTS_WITH)
+    private String bankCardCode;
+    @EasyWhereCondition(propName = "bankCards.bank.name", type = EasyWhereCondition.Condition.IN)
+    private List<String> bankCardBankNames;
+    @EasyWhereCondition(propName = "bankCards.type",type = EasyWhereCondition.Condition.CONTAINS)
+    private String bankCardType;
+    @EasyWhereCondition(propName = "bankCards.type",type = EasyWhereCondition.Condition.ENDS_WITH)
+    private String bankCardType2;
+    @EasyWhereCondition(propName = "bankCards.type",type = EasyWhereCondition.Condition.CONTAINS)
+    private String bankCardType3;
+}
+```
+
+::: tip 说明!!!
+> 添加@link后，你在编写propName的时候会有对应的插件提示
+:::
+
+```java
+
+SysUserQueryDTO2 queryDTO = new SysUserQueryDTO2();
+queryDTO.setBankCardCode("123%");
+queryDTO.setBankCardType("储蓄_卡");
+queryDTO.setBankCardType2("储蓄卡");
+queryDTO.setBankCardType3("储蓄卡");
+queryDTO.setBankCardBankNames(Arrays.asList("工商银行","建设银行"));
+List<SysUser> list = easyEntityQuery.queryable(SysUser.class)
+        .configure(s->s.getBehavior().add(EasyBehaviorEnum.ALL_SUB_QUERY_GROUP_JOIN))
+        .whereObject(queryDTO)
+        .where(user -> {
+        })
+        .toList();
+
+SELECT t.`id`, t.`name`, t.`phone`, t.`age`, t.`create_time`
+FROM `t_sys_user` t
+	LEFT JOIN (
+		SELECT t1.`uid` AS `uid`, COUNT(1) > 0 AS `__any2__`
+		FROM `t_bank_card` t1
+			INNER JOIN `t_bank` t3 ON t3.`id` = t1.`bank_id`
+		WHERE LOCATE('123%', t1.`code`) = 1
+			AND t3.`name` IN ('工商银行', '建设银行')
+			AND LOCATE('储蓄_卡', t1.`type`) > 0
+			AND t1.`type` LIKE CONCAT('%', '储蓄卡')
+			AND t1.`type` LIKE CONCAT('%', '储蓄卡', '%')
+		GROUP BY t1.`uid`
+	) t2
+	ON t2.`uid` = t.`id`
+WHERE IFNULL(t2.`__any2__`, false) = true
 ```
 
 ## 动态条件多表 join

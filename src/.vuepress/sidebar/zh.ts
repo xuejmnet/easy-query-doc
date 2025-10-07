@@ -56,7 +56,7 @@ export const zhSidebar = sidebar({
           prefix: "adv/",
           collapsible:true,
           children: "structure",
-        },"insert","update","delete","transaction","insertOrUpdate","batch","dynamic-table-name","reuse","native-sql"
+        },"insert","update","delete","transaction","insertOrUpdate","batch","dynamic-table-name","native-sql"
       ],
     },
     {
