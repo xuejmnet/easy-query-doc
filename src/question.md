@@ -107,6 +107,7 @@ easyEntityQuery.deletable(User.class).disableLogicDelete()allowDeleteStatement(t
 
 easyEntityQuery.deletable(User.class).disableLogicDelete()allowDeleteStatement(true).where(u->u.expression().sql("1=1")).executeRows();
 ```
+当然你也可以设置配置`deleteThrow`为`false`这样删除就不会报错了
 
 ## proxy不存在
 
