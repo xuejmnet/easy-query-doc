@@ -4,9 +4,9 @@ order: 60
 ---
 
 # 偏移量函数
-`eq3.1.28+`版本才支持
+`eq3.1.29+`版本才支持
 
-`LAG`和`LEAD`函数支持获取偏移值，对应`eq`的函数`offset`
+`LAG`、`LEAD`、`FIRST_VALUE`、`LAST_VALUE`、`NTH_VALUE`函数支持获取偏移值，对应`eq`的函数`offset`
 
 sql语法如下
 ```sql
@@ -80,3 +80,34 @@ partitionBy | 分组分区键
 ---  | --- 
 参数1:offset偏移量  | 偏移量只支持正整数
 参数2:默认值 | 当没有偏移行的时候使用哪个值
+
+## first_value last_value nth_value
+
+```java
+easyEntityQuery.queryable(SysBankCard.class)
+                .select(bank_card -> Select.DRAFT.of(
+                        bank_card.type(),
+                        bank_card.type().offset(o -> {
+                            o.orderBy(bank_card.type()).orderByDescending(bank_card.code());
+                        }).prev(1),
+                        bank_card.openTime().offset(o -> {
+                            o.orderBy(bank_card.type()).orderByDescending(bank_card.code());
+                        }).firstValue(),
+                        bank_card.openTime().offset(o -> {
+                            o.partitionBy(bank_card.bankId());
+                            o.orderBy(bank_card.type()).orderByDescending(bank_card.code());
+                        }).lastValue(),
+                        bank_card.openTime().offset(o -> {
+                            o.partitionBy(bank_card.bankId());
+                            o.orderBy(bank_card.type()).orderByDescending(bank_card.code());
+                        }).nthValue(2)
+                )).toList();
+```
+
+```sql
+SELECT t.`type` AS `value1`, LAG(t.`type`, 1) OVER (ORDER BY t.`type` ASC, t.`code` DESC) AS `value2`
+	, FIRST_VALUE(t.`open_time`) OVER (ORDER BY t.`type` ASC, t.`code` DESC) AS `value3`
+	, LAST_VALUE(t.`open_time`) OVER (PARTITION BY t.`bank_id` ORDER BY t.`type` ASC, t.`code` DESC) AS `value4`
+	, NTH_VALUE(t.`open_time`, 2) OVER (PARTITION BY t.`bank_id` ORDER BY t.`type` ASC, t.`code` DESC) AS `value5`
+FROM `t_bank_card` t
+```
