@@ -2,6 +2,19 @@
 title: 新功能
 order: 110
 ---
+## 偏移量函数
+`3.1.30+`版本支持偏移量函数`LAG`、`LEAD`、`FIRST_VALUE`、`LAST_VALUE`、`NTH_VALUE`函数支持
+```java
+        easyEntityQuery.queryable(SysBankCard.class)
+                .orderBy(bank_card -> {
+                    bank_card.openTime().asc();
+                })
+                .select(bank_card -> Select.DRAFT.of(
+                        bank_card.type(),
+                        bank_card.type().offset().prev(1),
+                        bank_card.type().offset().firstValue()
+                )).toList();
+```
 
 ## 聚合根保存
 `3.1.24+`版本支持完整的聚合根对象保存,用户可以实现无感聚合根保存对象树链路

@@ -8,14 +8,6 @@ order: 60
 
 `LAG`、`LEAD`、`FIRST_VALUE`、`LAST_VALUE`、`NTH_VALUE`函数支持获取偏移值，对应`eq`的函数`offset`
 
-sql语法如下
-```sql
-LAG(expression [, offset [, default_value]]) 
-OVER (
-  [PARTITION BY partition_expression]
-  ORDER BY sort_expression
-)
-```
 ## 案例无参offset
 
 ::: danger 错误用法❌!!!
