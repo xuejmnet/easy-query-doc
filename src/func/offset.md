@@ -4,7 +4,7 @@ order: 60
 ---
 
 # 偏移量函数
-`eq3.1.29+`版本才支持
+`eq3.1.30+`版本才支持
 
 `LAG`、`LEAD`、`FIRST_VALUE`、`LAST_VALUE`、`NTH_VALUE`函数支持获取偏移值，对应`eq`的函数`offset`
 
@@ -15,6 +15,40 @@ OVER (
   [PARTITION BY partition_expression]
   ORDER BY sort_expression
 )
+```
+## 案例无参offset
+
+::: danger 错误用法❌!!!
+> 整体表达式没有对应的`orderBy`并且`offset`也不存在`orderBy`程序将会报错
+> `In a PARTITION BY clause, the ORDER BY expression must be explicitly specified; otherwise, referencing the expression is not supported. plz confirm expression has ORDER BY clause`
+:::
+```java
+easyEntityQuery.queryable(SysBankCard.class)
+                    .select(bank_card -> Select.DRAFT.of(
+                            bank_card.type(),
+                            bank_card.type().offset().prev(1)
+                    )).toList();
+                    
+```
+::: tip 正确用法✅!!!
+> 整体表达式有对应的`orderBy` `offset`可以不设置`orderBy`
+:::
+```java
+
+        easyEntityQuery.queryable(SysBankCard.class)
+                .orderBy(bank_card -> {
+                    bank_card.openTime().asc();
+                })
+                .select(bank_card -> Select.DRAFT.of(
+                        bank_card.type(),
+                        bank_card.type().offset().prev(1)
+                )).toList();
+```
+```sql
+
+SELECT t.`type` AS `value1`, LAG(t.`type`, 1) OVER (ORDER BY t.`open_time` ASC) AS `value2`
+FROM `t_bank_card` t
+ORDER BY t.`open_time` ASC
 ```
 
 ## 案例
@@ -111,3 +145,4 @@ SELECT t.`type` AS `value1`, LAG(t.`type`, 1) OVER (ORDER BY t.`type` ASC, t.`co
 	, NTH_VALUE(t.`open_time`, 2) OVER (PARTITION BY t.`bank_id` ORDER BY t.`type` ASC, t.`code` DESC) AS `value5`
 FROM `t_bank_card` t
 ```
+
