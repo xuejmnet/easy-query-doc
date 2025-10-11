@@ -53,8 +53,7 @@ order: 3
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <!-- 3.1.11 -->
-        <easy-query.version>使用最后一个版本号</easy-query.version>
+        <easy-query.version>3.1.27</easy-query.version>
         <mysql.version>9.2.0</mysql.version>
         <hikaricp.version>3.3.1</hikaricp.version>
         <lombok.version>1.18.40</lombok.version>

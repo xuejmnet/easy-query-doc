@@ -20,15 +20,11 @@ category:
 
 如果法看到`eq`的最新版本版本，可以在[github](https://github.com/dromara/easy-query)或者[gitee](https://gitee.com/dromara/easy-query)的标签处查看最新版本
 
-## 环境准备
-
-如果想要快速搭建环境，请克隆以下项目
-- 简单的控制台[demo](https://github.com/xuejmnet/easy-query-samples)
-- 热心网友提供demo [github](https://github.com/Hoysing/easy-query-sample)或者[gitee](https://gitee.com/Hoysing/easy-query-sample)的案例项目
 
 ## 引入依赖
 当前文档只展示最简单的控制台demo,具体框架请参考下面的链接
 
+- 简单的控制台[console demo](https://github.com/xuejmnet/easy-query-samples)
 - [kotlin用户](/easy-query-doc/guide/kotlin)
 - [springboot用户](/easy-query-doc/guide/spring-boot)
 - [solon用户](/easy-query-doc/guide/solon)
@@ -52,7 +48,7 @@ category:
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- 请永远使用最新版 -->
-        <easy-query.version>3.1.11</easy-query.version>
+        <easy-query.version>3.1.27</easy-query.version>
         <hikari.version>3.3.1</hikari.version>
         <mysql.version>9.2.0</mysql.version>
         <lombok.version>1.18.40</lombok.version>
