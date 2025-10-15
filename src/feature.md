@@ -2,6 +2,68 @@
 title: 新功能
 order: 110
 ---
+## duckdb查询excel
+`3.1.33+`版本支持duckdb读取excel并且支持隐式操作和join操作
+
+```java
+
+@Data
+@EntityProxy
+@Table(value = "read_xlsx('./ducktest.xlsx',sheet='Sheet1')", keyword = false)
+public class ExcelDuck implements ProxyEntityAvailable<ExcelDuck, ExcelDuckProxy> {
+
+    private String id;
+    private String name;
+    private Integer age;
+
+    /**
+     *
+     **/
+    @Navigate(value = RelationTypeEnum.OneToMany, selfProperty = {ExcelDuckProxy.Fields.id}, targetProperty = {ExcelDuck2Proxy.Fields.uid})
+    private List<ExcelDuck2> excelDuck2List;
+}
+
+
+@Data
+@EntityProxy
+@Table(value = "read_xlsx('./ducktest.xlsx',sheet='Sheet2')",keyword = false)
+public class ExcelDuck2 implements ProxyEntityAvailable<ExcelDuck2, ExcelDuck2Proxy> {
+
+    private String id;
+    private String uid;
+    private String name;
+    private Integer age;
+}
+
+
+List<ExcelDuck> list = easyEntityQuery.queryable(ExcelDuck.class)
+        .configure(s->s.getBehavior().add(EasyBehaviorEnum.ALL_SUB_QUERY_GROUP_JOIN))
+        .where(e -> {
+            e.excelDuck2List().any(s->s.id().eq("2"));
+        }).toList();
+
+SELECT t."id", t."name", t."age"
+FROM read_xlsx('./ducktest.xlsx', sheet = 'Sheet1') t
+	LEFT JOIN (
+		SELECT t1."uid" AS "uid", COUNT(1) > 0 AS "__any2__"
+		FROM read_xlsx('./ducktest.xlsx', sheet = 'Sheet2') t1
+		WHERE t1."id" = '2'
+		GROUP BY t1."uid"
+	) t2
+	ON t2."uid" = t."id"
+WHERE COALESCE(t2."__any2__", false) = true
+```
+
+## 最大(小)列
+`3.1.32+`版本支持同一行里面获取最大列,且默认忽略null
+
+支持`GREATEST`和`LEAST`且支持忽略null的则使用该函数,如果不支持或者不支持忽略null的则通过`case when`或其他方式来支持
+```java
+        List<DamengMyTopic> list = entityQuery.queryable(DamengMyTopic.class)
+                .where(d -> {
+                    d.expression().maxColumns(d.id(), d.title(), d.title().nullOrDefault(d.id())).eq("123");
+                }).toList();
+```
 ## 偏移量函数
 `3.1.30+`版本支持偏移量函数`LAG`、`LEAD`、`FIRST_VALUE`、`LAST_VALUE`、`NTH_VALUE`函数支持
 ```java

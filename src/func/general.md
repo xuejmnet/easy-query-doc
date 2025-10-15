@@ -83,6 +83,16 @@ ORACLE  | MAX | MIN
             )).toList();
 ```
 
+## maxColumns | minColumns
+支持`GREATEST`和`LEAST`且支持忽略null的则使用该函数,如果不支持或者不支持忽略null的则通过`case when`或其他方式来支持
+```java
+        List<DamengMyTopic> list = entityQuery.queryable(DamengMyTopic.class)
+                .where(d -> {
+                    d.expression().maxColumns(d.id(), d.title(), d.title().nullOrDefault(d.id())).eq("123");
+                }).toList();
+```
+该函数可以求出`id`、`title`和`ifnull(title)`的最大值是否等于`'123'`
+
 
 
 ## equalsWith
@@ -100,6 +110,9 @@ List<Draft1<Boolean>> list = easyEntityQuery.queryable(DocBankCard.class)
                     )).toList();
 
 ```
+
+
+
 
 
 ## 数据库函数相关搜索
