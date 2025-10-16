@@ -98,6 +98,18 @@ db1:
   password: root
   driver-class-name: com.mysql.cj.jdbc.Driver
 
+
+easy-query: 
+  # 配置自定义日志
+  # log-class: ...
+  db1:
+    # 支持mysql pgsql h2 mssql dameng mssql_row_number kingbase_es等其余数据库在适配中
+    database: mysql
+    # 支持underlined default lower_camel_case upper_camel_case upper_underlined
+    name-conversion: underlined
+    # 物理删除时抛出异常 不包括手写sql的情况
+    delete-throw: true
+
 # 记录器级别的配置示例
 solon.logging.logger:
   "root": #默认记录器配置
@@ -124,7 +136,8 @@ public class Main {
 ```java
 @Data
 @Table("t_topic")
-public class Topic {
+@EntityProxy
+public class Topic  implements ProxyEntityAvailable<Topic, TopicProxy> {
 
     @Column(primaryKey = true)
     private String id;
@@ -141,16 +154,16 @@ public class TestController {
     /**
      * 注意必须是配置多数据源的其中一个
      */
-    @Db("db1")
-    private EasyQuery easyQuery;
+    @Db("db1")//注意这边使用sql-solon-plugin包下的Db注解
+    private EasyEntityQuery easyEntityQuery;
     @Mapping(value = "/hello",method = MethodType.GET)
     public String hello(){
         return "Hello World";
     }
     @Mapping(value = "/queryTopic",method = MethodType.GET)
     public Object queryTopic(){
-        return easyQuery.queryable(Topic.class)
-                .where(o->o.ge(Topic::getStars,2))
+        return easyEntityQuery.queryable(Topic.class)
+                .where(o->o.stars().ge(2))
                 .toList();
     }
 }
@@ -229,6 +242,10 @@ solon.logging.logger:
 ```
 
 ### 额外配置
+
+::: danger 说明!!!
+> 因为solon是多数据源所以每个数据源可能存在不同的拦截器或者主键生成器或者枚举处理器，所以这边所有的组件都需要用户单独处理注册
+:::
 
 #### 逻辑删除
 ```java

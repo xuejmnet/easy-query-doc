@@ -2,6 +2,17 @@
 title: 新功能
 order: 110
 ---
+## savable
+`3.1.37+`新增配置主键保存insert操作时如何处理默认设置为null，也可以表达式设置
+```java
+ try (Transaction transaction = easyEntityQuery.beginTransaction()) {
+                easyEntityQuery.savable(roots)
+                .primaryKeyOnInsert(null)//null表示不处理
+                .executeCommand();
+                transaction.commit();
+}
+```
+
 ## duckdb查询excel
 `3.1.33+`版本支持duckdb读取excel并且支持隐式操作和join操作
 
