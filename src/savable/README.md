@@ -49,6 +49,15 @@ NO_ACTION  | 脱钩不做任何处理用户自行处理
 SET_NULL  | 脱钩处理设置targetProperty为null,对目标记录不进行删除
 DELETE | 脱钩处理设置时将目标对象删除比如`user`和`user_role`和`role`那么`user_role`可以设置为`delete`
 
+## API介绍
+
+API  | 功能  
+---  | --- 
+primaryKeyOnInsert  | 当保存对象为插入时主键如何处理,传递null表示不处理,或者返回对应的主键值
+configure  | 对当前保存表达式进行配置选项比如不处理根节点，让用户自行处理进行并发判断
+savePath  | 保存时明确只保存哪些对象路径
+ignoreRoot | 忽略更节点的保存插入和修改
+removeRoot | 移除根节点包括移除剩余的其他include节点
 
 ## savable能带来什么
 

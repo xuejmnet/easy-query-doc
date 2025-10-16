@@ -10,6 +10,10 @@ order: 40
 - 多对多无中间表，比如这种是一种强行关联，比如用户有多张银行卡，一个人也有多本书，但是银行卡和书本也可以强行通过userId进行多对多关联，这种关联是无中间表关联，当然我们也没办法保存
 
 
+::: danger 说明!!!
+> 为了演示id赋值，这边需要将默认配置改成`op.setPrimaryKeyOnSaveInsert(PrimaryKeyOnSaveInsertEnum.NO_ACTION);`
+:::
+
 ## 初始化
 
 

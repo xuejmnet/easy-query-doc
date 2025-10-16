@@ -9,6 +9,9 @@ order: 30
  多对一不允许savable的时候操作导航属性，也不允许对导航属性进行脱钩，脱钩必须有聚合根对象发起而不是值对象发起
 
 
+::: danger 说明!!!
+> 为了演示id赋值，这边需要将默认配置改成`op.setPrimaryKeyOnSaveInsert(PrimaryKeyOnSaveInsertEnum.NO_ACTION);`
+:::
 
 ::: danger 说明!!!
 > `ManyToOne`基本上都是值对象发起目标对象为当前对象的聚合根,所以只会触发脱钩或者关联操作,并且脱钩操作只允许是`set null`所以该模式下的保存基本只会触发`update`

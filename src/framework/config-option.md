@@ -42,6 +42,7 @@ mappingStrategy| `EntityMappingStrategyEnum.PROPERTY_FIRST` | 对象间的映射
 includeLimitMode| `IncludeLimitModeEnum.PARTITION` | many子项拉取的时候如果子项设置了limit限制返回条数默认采用`partation`提高性能但是部分数据库不支持,MYSQL5.7的用户可以选择`union_all`来支持include+limit
 saveComment| `false` | `true`:则保持`@Column(comment="...")`和`@Table(comment="...")`的注解到EntityMetadata和ColumnMetadata
 maxInClauseSize| `9999999` | 当`.where(o -> o.id().in(ids))`可以根据设置的`maxInClauseSize`形成 `(id in (:p1,:p2) or id in(:p3,:p4))`
+primary-key-on-save-insert| `set_null` | 当对象被保存时采取何种方式处理主键,(默认为set_null)因为考虑到主键会影响表的插入和索引碎片所以必须由后端生成
 
 ## 分表分库特有配置
 
