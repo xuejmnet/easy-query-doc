@@ -14,10 +14,6 @@ order: 10
 
 第二种情况和第一种情况有一些差异，当我们保持A表时B表也会被保存,当我们保存B表是A表将不受影响，受影响的B表的字段`aid`他会被修改为A的id,而A表不会因为`savable(B)`受影响，即两者无法互为聚合根、互为值对象
 
-
-::: danger 说明!!!
-> 为了演示id赋值，这边需要将默认配置改成`op.setPrimaryKeyOnSaveInsert(PrimaryKeyOnSaveInsertEnum.NO_ACTION);`
-:::
 <!-- ## 主键生成器
 ```java
 @Component

@@ -8,7 +8,7 @@ order: 99
 这里主要汇总了一些常见的问题
 
 ## Class cast
-出现以上错误大概率是你引入了spring-dev-tool或者其他热加载组件导致的,移除相关主键不是关闭是移除或者排除eq相关类
+出现以上错误大概率是你引入了spring-dev-tool或者其他热加载组件导致的,移除相关组件不是关闭是移除或者排除eq相关类
 相关文档参考 Spring 的官方网站：https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#using.devtools.restart.customizing-the-classload
 
 ## SpringBoot 启动报错

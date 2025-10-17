@@ -2,15 +2,21 @@
 title: 新功能
 order: 110
 ---
-## savable
-`3.1.37+`新增配置主键保存insert操作时如何处理默认设置为null，也可以表达式设置
+## forEach
+`3.1.38+`支持forEach迭代处理结果,场景:在多次include的时候可能需要根据根节点进行判断是否状态正确,基于性能原因应该先进行判断在进行include,而不是全部include完了后在进行判断
 ```java
- try (Transaction transaction = easyEntityQuery.beginTransaction()) {
-                easyEntityQuery.savable(roots)
-                .primaryKeyOnInsert(null)//null表示不处理
-                .executeCommand();
-                transaction.commit();
-}
+
+M8SaveA a1 = easyEntityQuery.queryable(M8SaveA.class).whereById("1")
+        .includeBy(m -> Include.of(
+                m.m8SaveB().m8SaveC().m8SaveD().asIncludeQueryable()
+        ))
+        .forEach(item -> {
+            if (item.getId().equals("1")) {
+                throw new RuntimeException("123123");
+            }
+        }).singleNotNull();
+
+该表达式会先进行断言然后在会进行`include`
 ```
 
 ## duckdb查询excel

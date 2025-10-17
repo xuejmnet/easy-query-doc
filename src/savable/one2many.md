@@ -6,11 +6,6 @@ order: 20
 # 一对多保存
 一种经常会用到的主从结构表,对于主从结构表的更新在没有很好地变更保存的时候，常用的是先删除后新增从表记录,但是如果遇到从表的id是参与业务逻辑的那么这种保存则会变得不合适,对于这种主从结构`eq`的`savable`可以轻松的应对实现
 
-
-::: danger 说明!!!
-> 为了演示id赋值，这边需要将默认配置改成`op.setPrimaryKeyOnSaveInsert(PrimaryKeyOnSaveInsertEnum.NO_ACTION);`
-:::
-
 ::: tabs
 @tab 关系图
 
