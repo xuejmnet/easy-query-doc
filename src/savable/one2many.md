@@ -279,7 +279,7 @@ WHERE `id` = '2'
         ArrayList<SaveBankCard> requestBankCards = new ArrayList<>();
         for (BankUpdateRequest.InternalSaveBankCards saveBankCard : request.getSaveBankCards()) {
             SaveBankCard bankCard = new SaveBankCard();
-            bankCard.setId(saveBankCard.getId());
+            bankCard.setId(saveBankCard.getId());//①当前处理欠妥具体情况下方
             bankCard.setType(saveBankCard.getType());
             bankCard.setCode(saveBankCard.getCode());
             requestBankCards.add(bankCard);
@@ -313,6 +313,11 @@ WHERE `id` = '2'
 通过请求接口创建出应该被保存的子表，后续通过`mergeCollection`将其差异化合并到导航属性上,然后通过`savable`可以差异化生成本次需要的保存命令
 
 前两条sql通过`includes`进行查询，后三条sql通过`savable`进行差异化处理
+
+
+::: warning 说明!!!
+> ①我们不清楚前端到底是否会传递正确的id，所以不应该直接插入应该用其他手段进行校验当前id是否符合具体[请看如何设置正确的保存主键](/easy-query-doc/savable/set-save-key)
+:::
 
 ::: danger 说明!!!
 > `savable`中的如果当对象是修改的那么必须使用被追踪的对象，不可以用用户自己new的对象。
