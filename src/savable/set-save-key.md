@@ -27,7 +27,7 @@ eq版本`3.1.41+`在使用savable的时候可以对子项进行设置正确的�
         ArrayList<SaveBankCard> requestBankCards = new ArrayList<>();
         for (BankUpdateRequest.InternalSaveBankCards saveBankCard : request.getSaveBankCards()) {
             SaveBankCard bankCard = new SaveBankCard();
-            bankCard.setId(saveBankCard.getId());
+            bankCard.setId(saveBankCard.getId());//无脑使用前端传递的id会带来极大的风险
             bankCard.setType(saveBankCard.getType());
             bankCard.setCode(saveBankCard.getCode());
             requestBankCards.add(bankCard);
@@ -88,3 +88,4 @@ public class MySaveEntitySetPrimaryKeyGenerator implements SaveEntitySetPrimaryK
         return "ok";
     }
 ```
+这样哪怕我们使用了雪花id，也不怕一对多子项前端上传的时候使用诸如`1`或者`2`这种id来破坏雪花id的单调性和数据库索引碎片问题
