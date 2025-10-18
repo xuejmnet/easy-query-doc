@@ -39,7 +39,7 @@ List<DocBankCard> list = easyEntityQuery.queryable(DocBankCard.class)
         .toList();
 ```
 
-## 3.隐式映射
+## 3.隐式映射1
 ```java
 List<BankCardVO> list = easyEntityQuery.queryable(DocBankCard.class)
         .leftJoin(DocUser.class, (bank_card, user) -> bank_card.uid().eq(user.id()))
@@ -57,7 +57,24 @@ List<BankCardVO> list = easyEntityQuery.queryable(DocBankCard.class)
         ).toList();
 ```
 
-## 4.全自动映射
+## 4.隐式映射2
+与第三张不同不需要创建Proxy
+```java
+List<BankCardVO> list = easyEntityQuery.queryable(DocBankCard.class)
+        .leftJoin(DocUser.class, (bank_card, user) -> bank_card.uid().eq(user.id()))
+        .leftJoin(DocBank.class, (bank_card, user, bank) -> bank_card.bankId().eq(bank.id()))
+        .where((bank_card, user, bank) -> {
+            user.name().like("小明");
+            bank_card.type().eq("储蓄卡");
+        })
+        .select(BankCardVO.class,(bank_card, user, bank) -> Select.of(
+            bank_card.FETCHER.allFields(),//自动映射bank_card全属性等于select t.*但是以结果为主
+            user.name().as("userName"),//可以使用字符串:"userName"或者lombok的@FieldNameConstant注解
+            bank.name().as("bankName")
+        )).toList();
+```
+
+## 5.全自动映射
 ```java
 
 List<SysBankDTO> list = easyEntityQuery.queryable(SysBank.class)
