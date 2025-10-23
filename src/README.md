@@ -13,11 +13,13 @@ tagline: 🚀 java下最强ORM没有之一(支持kotlin)</br><span class="vuepre
 actions:
   - text: 开始使用 →
     icon: lightbulb
-    link: ./what-is-easy-query
+    link: ./feature-map
     type: primary
 
-  - text: 爱心支持💡
-    link: ./support
+  # - text: 视频教程 💻
+  #   link: https://www.bilibili.com/video/BV17yWdzPE4M/
+  #   type: default
+
 
 highlights:
   # - header: 优雅的dsl

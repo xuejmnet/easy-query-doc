@@ -54,7 +54,7 @@ public class Company implements ProxyEntityAvailable<Company , CompanyProxy> {
     private BigDecimal registerMoney;
 
 
-    @Column(comment = "测试列",dbType = "varchar(500)",renameFrom = "column")
+    @Column(comment = "测试列",dbType = "varchar(500)",oldName = "column")
     private String column1;
 
 
@@ -136,7 +136,7 @@ public class CompanyDTO {
      */
     @Column(comment = "注册资金")
     private BigDecimal registerMoney;
-    @Column(dbType = "varchar(500)", comment = "测试列", renameFrom = "column")
+    @Column(dbType = "varchar(500)", comment = "测试列", oldName = "column")
     private String column1;
     /**
      * 企业拥有的用户

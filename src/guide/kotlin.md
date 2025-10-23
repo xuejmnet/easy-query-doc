@@ -141,3 +141,36 @@ fun main() {
 
 }
 ```
+
+## kotlin中缀表达式
+如果您希望使用中缀来进行操作符比较那么将`eq`升级到`3.1.43+`并且插件升级到`0.1.67+` 自己实现一个DSL中缀操作即可如下
+```kotlin
+package com.test.entity
+
+import com.easy.query.core.expression.parser.core.SQLTableOwner
+import com.easy.query.core.proxy.SQLColumn
+import com.easy.query.core.proxy.predicate.DSLColumnComparePredicate
+import com.easy.query.core.proxy.predicate.DSLFunctionComparePredicate
+import com.easy.query.core.proxy.predicate.DSLValuePredicate
+import com.easy.query.core.proxy.predicate.aggregate.DSLSQLFunctionAvailable
+
+
+infix fun <TProperty> DSLValuePredicate<TProperty>.eq(value: TProperty?) = this.eq(value)
+infix fun <TProperty, TProxy, TProp> DSLColumnComparePredicate<TProperty>.eq(
+    column: SQLColumn<TProxy, TProp>,
+) {
+    this.eq(column)
+}
+infix fun <TProperty, T> DSLFunctionComparePredicate<TProperty>.eq(column: T)
+        where T : SQLTableOwner, T : DSLSQLFunctionAvailable {
+    this.eq(column)
+}
+```
+这样上述表达式可以这么写
+```kotlin
+  var toList1 = entityQuery.queryable(Topic::class.java)
+        .where {
+            it.id eq "123"
+        }.toList()
+
+```

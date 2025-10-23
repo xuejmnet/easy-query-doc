@@ -36,7 +36,7 @@ select ... from
             key1,
             key2
     ) t1
-    left join table2 t2 on t.key1 = t2.key1
+    left join table2 t2 on t1.key1 = t2.key1
 where.....
 ```
 

@@ -28,7 +28,8 @@ export const zhNavbar = navbar([
         link: "https://gitee.com/xuejm/easy-query"
       }
     ]
-  }
+  },
+  "/support"
   // {
   //   text: "Guide",
   //   icon: "lightbulb",

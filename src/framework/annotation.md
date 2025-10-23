@@ -14,6 +14,9 @@ value | "" | 数据库表名为空表示 nameConversion.convert(class.getSimpleN
 schema | "" | 数据库schema 可以在运行时修改,默认jdbc连接串的database
 ignoreProperties | {} | 需要忽略的属性,一般用于继承父类需要忽略父类的属性
 shardingInitializer | UnShardingInitializer.class | 分片初始化器,当且仅当对象是分片对象是用来初始化分片对象,也可以不添加后续手动添加
+oldName | "" | 旧的表名用来code-first进行表名迁移
+comment | "" | 自动生成表时的备注信息
+keyword | true | 表名是否添加关键字处理比如mysql的``或者pgsql的""或者sqlserver的[],false场景:duckdb读取excel进行查询
 
 ```java
 
@@ -32,9 +35,26 @@ public class Topic {
 value | "" | 对应数据库表的列名,默认空为nameConversion.convert(属性名)
 primaryKey | false | 表示是否是主键,如果是那么在update对象delete对象将会以这个字段为id
 generatedKey | false | 是否是自增列,如果是true,那么在`insertable().executeRows(true)`后获取自增id后将会填充到里面
-large | false | 用来描述当前列是否是大列,如果是可以通过默认配置或者运行时指定是否需要查询出该列
-conversion | DefaultValueConverter.class | 值转换器,默认表示不转换,可以自定义枚举或者json等
-valueUpdateAtomicTrack | DefaultValueUpdateAtomicTrack.class | 原子更新,默认表示无原子更新
+conversion | DefaultValueConverter.class | 内存计算属性,值转换器,默认表示不转换,可以自定义枚举或者json等
+sqlConversion | DefaultColumnValueSQLConverter.class | db计算属性，值转换器,默认表示不转换,可以自定义复合列比如`fullName=Concat(firstName,lastName)`,如果vo、dto也有当前属性那么不需要标注该属性
+generatedSQLColumnGenerator | DefaultGeneratedKeySQLColumnGenerator.class | 数据库插入时使用的列生成器比如数据库函数`NEWID()`或其他自定义函数
+complexPropType | DefaultComplexPropType.class | 复杂类型用于json反序列化时处理
+autoSelect | true | 当前列是否需要自动查询,主要是用于直接toList时是否要返回当前列,false常用于数据库计算属性或者大字段列
+typeHandler | UnKnownTypeHandler.class | 当前列使用什么TypeHandler,未知类型特殊处理
+primaryKeyGenerator | UnsupportPrimaryKeyGenerator.class | 主键生成器用于插入时对象主键为null可以直接生成主键值
+exist | true | 表示当前字段是否存在于数据库中,false表示默认不查询也不对象插入和对象更新
+nullable | true | 表示当前字段映射的数据库列是否可为空,常用于code-first生成数据库ddl
+dbType | "" | 表示当前字段映射的数据库列指定类型
+dbDefault | "" | 表示当前字段映射的数据库列默认插入值
+exist | true | 表示当前字段是否存在于数据库中,false表示默认不查询也不插入更新
+comment | "" | 表示当前字段映射的数据库列的说明
+length | -1 | 表示当前字段映射的数据库列的长度
+scale | 0 | 表示当前字段映射的数据库列的精度
+sqlExpression | ColumnSQLExpression | 表示简单的数据库计算属性
+jdbcType | JDBCType.OTHER | 映射当前字段具体对应数据库实际jdbc类型 pgsql的uuid和mysql的uuid会用到当前字段类型
+
+
+<!-- valueUpdateAtomicTrack | DefaultValueUpdateAtomicTrack.class | 原子更新,默认表示无原子更新 -->
 
 
 ```java
@@ -60,6 +80,10 @@ public class Topic {
 ## UpdateIgnore
 添加这个注解的属性将不会再更新时被更新除非手动指定,比如`创建时间`、`创建人`、`逻辑删除字段`,`large column`,如果当前字段标记`update ignore`那么如果是非track更新那么将会直接忽略,如果属性`updateSetInTrackDiff = true`那么在track下更新那么还是有效的
 
+
+属性  | 默认值 | 描述  
+--- | --- | --- 
+updateSetInTrackDiff |false | 是否需要在追踪查询中加入update set
 
 ::: warning 说明!!!
 > `large column`添加`UpdateIgnore`是为了保证大字段被查询出来后如果进行entity全字段更新那么因为`title`没有被查询所以更新的时候就会把null更新掉(默认更新策略就是全字段),所以这边采用更新忽略,如果需要可以用表达式忽略 [当然您也可以选择更新策略为非null更新]

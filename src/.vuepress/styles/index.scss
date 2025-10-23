@@ -109,3 +109,12 @@
 .com-box-you a img:hover{transform: none;}
 .com-box-you a{flex: 0 0 14.5%; line-height: 60px; height: 60px; margin: 10px;}
 .com-box-you a img{min-width: 60%; max-width: 85%; vertical-align: middle; max-height: 100%;}
+.markmap-wrapper .markmap-svg{
+    min-height: 400px;
+}
+
+@media (min-width: 1000px){
+    .markmap-wrapper .markmap-svg{
+    min-height: 600px;
+}
+}
