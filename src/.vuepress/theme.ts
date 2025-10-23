@@ -78,6 +78,7 @@ export default hopeTheme({
       // shiki 或 prismjs 选项
       // ...
     },
+    markmap: true,
     mermaid: true,
     align: true,
     attrs: true,

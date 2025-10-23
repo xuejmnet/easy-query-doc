@@ -4,6 +4,7 @@ export const zhSidebar = sidebar({
   "/": [
     "",
     "what-is-easy-query",
+    "feature-map",
     "quick-query",
     // "portfolio",
     "feature",

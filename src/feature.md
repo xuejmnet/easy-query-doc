@@ -2,6 +2,26 @@
 title: 新功能
 order: 110
 ---
+## toResultSet
+`3.1.43+`eq添加了`toResultSet`方法支持用户自行处理`ResultSet`框架不做任何处理(不支持include等操作只适合单表)
+```java
+List<BlogEntity> resultSet = easyEntityQuery.queryable(SysUser.class)
+                    .where(s -> {
+                        s.id().isNotNull();
+                    }).toResultSet(context -> {
+                        ArrayList<BlogEntity> blogEntities = new ArrayList<>();
+                        StreamResultSet streamResultSet = context.getStreamResultSet();
+                        ResultSet resultSetResultSet = streamResultSet.getResultSet();
+                        while (resultSetResultSet.next()) {
+                            BlogEntity blogEntity = new BlogEntity();
+                            blogEntity.setId(resultSetResultSet.getString(1));
+                            blogEntities.add(blogEntity);
+                        }
+                        return blogEntities;
+                    });
+```
+## kotlin中缀
+`3.1.43+`kotlin支持中缀建议插件升级到`0.1.67`具体查看kotlin相关的eq文档
 ## forEach
 `3.1.38+`支持forEach迭代处理结果,场景:在多次include的时候可能需要根据根节点进行判断是否状态正确,基于性能原因应该先进行判断在进行include,而不是全部include完了后在进行判断
 ```java
