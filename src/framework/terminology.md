@@ -90,12 +90,11 @@ eq.queryable(SysUser.class)
 ## include 查询
 
 ::: tip 说明!!!
-
 > 该操作不会有 N+1 问题
 > `OneToOne`或`ManyToOne`使用`include`，`OneToMany`或`ManyToMany`使用`includes`
-> :::
-> `include`查询是对象关系建模后的二次查询,支持无限级嵌套"拔出萝卜带出泥"
+:::
 
+`include`查询是对象关系建模后的二次查询,支持无限级嵌套"拔出萝卜带出泥"
 ```java
 
         List<SysUser> list = eq.queryable(SysUser.class)
