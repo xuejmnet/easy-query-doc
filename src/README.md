@@ -16,9 +16,9 @@ actions:
     link: ./feature-map
     type: primary
 
-  # - text: 视频教程 💻
-  #   link: https://www.bilibili.com/video/BV17yWdzPE4M/
-  #   type: default
+  - text: 视频教程 💻
+    link: https://www.bilibili.com/video/BV17yWdzPE4M/
+    type: default
 
 
 highlights:

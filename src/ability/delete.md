@@ -118,12 +118,12 @@ Easy Query除了支持简单的逻辑删除字段，还支持自定义逻辑删�
 ```java
 public class CustomLogicDelStrategy extends AbstractLogicDeleteStrategy {
     @Override
-    protected SQLExpression1<WherePredicate<Object>> getPredicateFilterExpression(LogicDeleteBuilder builder, String propertyName) {
+    protected SQLActionExpression1<WherePredicate<Object>> getPredicateFilterExpression(LogicDeleteBuilder builder, String propertyName) {
         return o -> o.isNull(propertyName);
     }
 
     @Override
-    protected SQLExpression1<ColumnSetter<Object>> getDeletedSQLExpression(LogicDeleteBuilder builder, String propertyName) {
+    protected SQLActionExpression1<ColumnSetter<Object>> getDeletedSQLExpression(LogicDeleteBuilder builder, String propertyName) {
         return o -> o.set(propertyName, LocalDateTime.now())
                 .set("deletedUserId", 1);
     }
@@ -144,7 +144,7 @@ public class CustomLogicDelStrategy extends AbstractLogicDeleteStrategy {
 我们在调用多次使用了`CustomLogicDelStrategy`的删除方法时，Easy Query只会调用一次`CustomLogicDelStrategy`实例的接口方法，错误示例：
 ```java
     @Override
-    protected SQLExpression1<ColumnSetter<Object>> getDeletedSQLExpression(LogicDeleteBuilder builder, String propertyName) {
+    protected SQLActionExpression1<ColumnSetter<Object>> getDeletedSQLExpression(LogicDeleteBuilder builder, String propertyName) {
         //`getDeletedSQLExpression`方法只调用一次，返回的方法将会调用多次，因此now值获取后将是固定值而不是动态值
         LocalDateTime now = LocalDateTime.now();
         return o -> o.set(propertyName, now)

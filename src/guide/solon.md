@@ -256,12 +256,12 @@ public class MyLogicDelStrategy extends AbstractLogicDeleteStrategy {
      */
     private final Set<Class<?>> allowTypes=new HashSet<>(Arrays.asList(LocalDateTime.class));
     @Override
-    protected SQLExpression1<WherePredicate<Object>> getPredicateFilterExpression(LogicDeleteBuilder builder, String propertyName) {
+    protected SQLActionExpression1<WherePredicate<Object>> getPredicateFilterExpression(LogicDeleteBuilder builder, String propertyName) {
         return o->o.isNull(propertyName);
     }
 
     @Override
-    protected SQLExpression1<ColumnSetter<Object>> getDeletedSQLExpression(LogicDeleteBuilder builder, String propertyName) {
+    protected SQLActionExpression1<ColumnSetter<Object>> getDeletedSQLExpression(LogicDeleteBuilder builder, String propertyName) {
 //        LocalDateTime now = LocalDateTime.now();
 //        return o->o.set(propertyName,now);
         //上面的是错误用法,将now值获取后那么这个now就是个固定值而不是动态值
