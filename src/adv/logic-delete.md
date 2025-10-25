@@ -231,14 +231,14 @@ public class MyLogicDelStrategy extends AbstractLogicDeleteStrategy {
      */
     private static final Set<Class<?>> allowTypes=new HashSet<>(Arrays.asList(LocalDateTime.class));
     @Override
-    protected SQLExpression1<WherePredicate<Object>> getPredicateFilterExpression(LogicDeleteBuilder builder,String propertyName) {
+    protected SQLActionExpression1<WherePredicate<Object>> getPredicateFilterExpression(LogicDeleteBuilder builder,String propertyName) {
         //如果需要唯一索引请自行选择数据库是否支持null的唯一索引
         //如果不支持可以选择小于1900年或者一个固定年份来作为被删除
         return o->o.isNull(propertyName);
     }
 
     @Override
-    protected SQLExpression1<ColumnSetter<Object>> getDeletedSQLExpression(LogicDeleteBuilder builder, String propertyName) {
+    protected SQLActionExpression1<ColumnSetter<Object>> getDeletedSQLExpression(LogicDeleteBuilder builder, String propertyName) {
 //        LocalDateTime now = LocalDateTime.now();
 //        return o->o.set(propertyName,now);
         //上面的是错误用法,将now值获取后那么这个now就是个固定值而不是动态值

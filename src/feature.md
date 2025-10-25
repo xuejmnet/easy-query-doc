@@ -2,6 +2,21 @@
 title: 新功能
 order: 110
 ---
+## 子查询all函数
+`3.1.46+`eq添加了子查询`all`函数
+```java
+  LocalDateTime time = LocalDateTime.of(2020, 1, 1, 0, 0, 0);
+  List<SysUser> list = easyEntityQuery.queryable(SysUser.class)
+                .where(user -> {
+                    user.bankCards().where(bc -> bc.type().eq("储蓄卡")).all(bc -> bc.openTime().le(time));
+                }).toList();
+```
+该表达式是查询用户并且要求用户的所有储蓄卡都是`2020-01-01`之前的
+
+::: warning 说明!!!
+> `all`函数内的断言是一个独立的断言,他是对`all`函数之前的表达式进行断言,并不是将`all`之前的`where`和`all`进行简单的组合，是一种非常符合语义的表达式(空集合的`all`断言永远为`true`)
+:::
+
 ## toResultSet
 `3.1.43+`eq添加了`toResultSet`方法支持用户自行处理`ResultSet`框架不做任何处理(不支持include等操作只适合单表)
 ```java

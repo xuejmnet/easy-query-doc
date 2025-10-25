@@ -227,18 +227,18 @@ public class MyBooleanLogicDeleteStrategy extends AbstractLogicDeleteStrategy {
 
 
     @Override
-    protected SQLExpression1<WherePredicate<Object>> getPredicateFilterExpression(LogicDeleteBuilder builder, String propertyName) {
+    protected SQLActionExpression1<WherePredicate<Object>> getPredicateFilterExpression(LogicDeleteBuilder builder, String propertyName) {
         return o -> o.eq(propertyName, false);
     }
 
     @Override
-    protected SQLExpression1<ColumnSetter<Object>> getDeletedSQLExpression(LogicDeleteBuilder builder, String propertyName) {
+    protected SQLActionExpression1<ColumnSetter<Object>> getDeletedSQLExpression(LogicDeleteBuilder builder, String propertyName) {
         //表达式内部的参数不可以提取出来,如果提取出来那么就确定了,而不是实时的 如果一定要提取出来请参考下面的方法
         return o -> o.set(propertyName, true).set("deleteBy",currentUser.getUserId()).set("deleteTime", LocalDateTime.now());
     }
 
     //@Override
-    //protected SQLExpression1<ColumnSetter<Object>> getDeletedSQLExpression(LogicDeleteBuilder builder, String propertyName) {
+    //protected SQLActionExpression1<ColumnSetter<Object>> getDeletedSQLExpression(LogicDeleteBuilder builder, String propertyName) {
     //    //表达式内部的参数不可以提取出来,如果提取出来那么就确定了,而不是实时的
     //    return o -> {
     //        //如果判断动态条件过于复杂可以通过大括号来实现内部的编程而不是链式
