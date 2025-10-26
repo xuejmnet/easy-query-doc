@@ -6,7 +6,9 @@ category:
 俗话说工欲善其事必先利其器,一个好的武林高手可以没有趁手的兵器但是如果有那么将是事半功倍的,`EasyQueryAssistant`就像孙悟空的金箍棒,可以没有但是又不能没有，一款好用的助手插件可以帮助我们节省大量的时间去编写处理重复性劳动
 
 ## 作者
-本插件作者由我和另一位开源爱好者提供[link2fun]()
+本插件作者由我和另一位开源爱好者提供[link2fun](https://github.com/link2fun)
+
+插件地址源码:https://github.com/xuejmnet/easy-query-plugin
 
 
 ## 功能介绍
@@ -22,7 +24,7 @@ category:
 - mybatis-plus转easy-query注解
 
 
-::: tip 说明!!!
+::: danger 说明!!!
 > 及其不推荐用户使用`@EntityFileProxy`推荐使用`@EntityProxy`
 > 及其不推荐用户使用`@EntityFileProxy`推荐使用`@EntityProxy`
 > 及其不推荐用户使用`@EntityFileProxy`推荐使用`@EntityProxy`

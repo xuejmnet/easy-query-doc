@@ -1,5 +1,5 @@
 ---
-title: Compile
+title: 编译生成apt文件
 order: 20
 category:
   - plugin
