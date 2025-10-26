@@ -1,11 +1,11 @@
 ---
-title: SQLFormatPreview
+title: 格式化打印sql预览
 order: 30
 category:
   - plugin
 ---
 
-# 控制台日志sql格式化预览
+## 控制台日志sql格式化预览
 
 Easy Query插件支持将SQL和参数进行格式化成可以执行的SQL。
 
@@ -21,3 +21,6 @@ Easy Query插件支持将SQL和参数进行格式化成可以执行的SQL。
 ::: warning 注意点及说明!!!
 > 一个完成的日志必须包含`==> Preparing:`和`==> Parameters:`可以包含更多的但是必须包含这两个，格式化的时候按相近sql和参数进行分别填充
 :::
+
+## 相关搜索
+`SQLFormatPreview`

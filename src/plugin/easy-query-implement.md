@@ -1,11 +1,13 @@
 ---
-title: EasyQueryImplement
+title: 快速生成ProxyEntityAvailable
 order: 10
 category:
   - plugin
 ---
 
-# 代理对象自动实现
+# EasyQueryImplement
+
+## 代理对象自动实现
 `eq`使用了java的apt技术(kotlin下是ksp技术)利用编译时生成源代码的方式生成对象的代理对象,用户要操作的对象即为代理对象
 
 
@@ -70,7 +72,7 @@ category:
     <version>3.8.1</version>
     <configuration>
         <annotationProcessorPaths>
-        <!-- 注意顺序 -->
+        <!-- 注意顺序  如果不行将eq移到第一位-->
             <path>
             <!-- lombok... -->
             </path>

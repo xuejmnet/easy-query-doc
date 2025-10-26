@@ -26,7 +26,7 @@ markmap:
 
 
 
-## 概念
+## [框架内容](https://www.easy-query.com/easy-query-doc/framework/terminology)
 - [相关术语](https://www.easy-query.com/easy-query-doc/framework/terminology)
     - 隐式表达式
     - 显式表达式
@@ -42,18 +42,24 @@ markmap:
     - 所属权
     - cteViewer
     - code-first也叫auto-ddl
-- [注解](/easy-query-doc/framework/annotation)
-- [组件服务](/easy-query-doc/framework/replace-configure)
+- [参数配置](https://www.easy-query.com/easy-query-doc/framework/config-option)
+- [方言关键字](https://www.easy-query.com/easy-query-doc/framework/key-word)
+- [注解](https://www.easy-query.com/easy-query-doc/framework/annotation)
+- [组件服务](https://www.easy-query.com/easy-query-doc/framework/replace-configure)
+- [对象数据库映射规则](https://www.easy-query.com/easy-query-doc/framework/mapping-db)
 
-## 插件详解
-- 快速生成ProxyEntityAvailable
-- 编译生成apt文件
-- 数据库表生成实体
-- 格式化打印sql预览
-- dto查询
-- lambda表达式提示
-- dsl运算符提示
-- 配置项保存
+## [插件详解](https://www.easy-query.com/easy-query-doc/plugin/)
+- [配置项保存](https://www.easy-query.com/easy-query-doc/plugin/setting)
+- [快速生成ProxyEntityAvailable](https://www.easy-query.com/easy-query-doc/plugin/easy-query-implement)
+- [编译生成apt文件](https://www.easy-query.com/easy-query-doc/plugin/compile)
+- [格式化打印sql预览](https://www.easy-query.com/easy-query-doc/plugin/console-log-format)
+- [结构化DTO创建](https://www.easy-query.com/easy-query-doc/plugin/create-struct-dto)
+- [DTO结构智能提示](https://www.easy-query.com/easy-query-doc/plugin/struct-dto-tip)
+- [导航属性快速生成](https://www.easy-query.com/easy-query-doc/plugin/navigate-generate)
+- [导航属性反向生成](https://www.easy-query.com/easy-query-doc/plugin/navigate-mappedby)
+- [lambda表达式提示](https://www.easy-query.com/easy-query-doc/plugin/lambda-alias)
+- [dsl运算符提示](https://www.easy-query.com/easy-query-doc/plugin/dsl-compare-operator)
+- [数据库表生成实体](https://www.easy-query.com/easy-query-doc/plugin/table2entity)
 
 ## 快速入门
 - [控制台案例](/easy-query-doc/startup/quick-start)
@@ -78,6 +84,10 @@ markmap:
 - 显式子查询
 - 显式partition
 - 显式caseWhen
+- 原生SQL片段
+  - 执行SQL片段
+  - 类型SQL片段
+- 表达式编写说明🔥
 
 ## DTO查询🔥
 - 动态筛选

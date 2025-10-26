@@ -1,5 +1,5 @@
 ---
-title: CreateStructDTO
+title: 结构化DTO创建
 order: 40
 category:
   - plugin
@@ -13,6 +13,7 @@ category:
 
 ## 1.创建dto(必须)
 手动创建DTO是一件很麻烦的事情,可以在`easy-query:1.10.60^`+`插件0.0.48^`快速生成嵌套结构化对象模型,
+在需要创建DTO的包上面进行右键选择`CreateStructDTO`
 
 <img :src="$withBase('/images/EQDTO1.jpg')">
 

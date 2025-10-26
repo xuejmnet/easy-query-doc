@@ -197,7 +197,7 @@ public EasyPageResult<Post> page3(@RequestBody PostPage3Request request) {
 因为用户会发布多个帖子所以用户和帖子之间是一对多,反之帖子和用户就是多对一
 
 <img :src="$withBase('/images/navigate-ui.jpg')">
-选择好对应的关联键后点击确认插件会帮你自动生成强类型属性|lombok属性或字符串
+选择好对应的关联键后点击确认插件会帮你自动生成强类型属性或者lombok属性或字符串
 
 当然你也可以手写关联关系
 
