@@ -1,7 +1,7 @@
 import { hopeTheme } from "vuepress-theme-hope";
 
-import { cnNavbar, zhNavbar } from "./navbar/index.js";
-import { cnSidebar, zhSidebar } from "./sidebar/index.js";
+import { cnNavbar, zhNavbar, enNavbar } from "./navbar/index.js";
+import { cnSidebar, zhSidebar, enSidebar } from "./sidebar/index.js";
 
 export default hopeTheme({
   hostname: "https://github.com/dromara/easy-query",
@@ -32,29 +32,29 @@ export default hopeTheme({
       displayFooter: true,
 
       metaLocales: {
-        editLink: "Edit this page on GitHub",
+        editLink: "在 GitHub 上编辑此页",
       },
     },
 
-    // /**
-    //  * Chinese locale config
-    //  */
-    // "/zh/": {
-    //   // navbar
-    //   navbar: zhNavbar,
+    /**
+     * English locale config
+     */
+    "/en/": {
+      // navbar
+      navbar: enNavbar,
 
-    //   // sidebar
-    //   sidebar: zhSidebar,
+      // sidebar
+      sidebar: enSidebar,
 
-    //   footer: "默认页脚",
+      footer: "Default Footer",
 
-    //   displayFooter: true,
+      displayFooter: true,
 
-    //   // page meta
-    //   metaLocales: {
-    //     editLink: "在 GitHub 上编辑此页",
-    //   },
-    // },
+      // page meta
+      metaLocales: {
+        editLink: "Edit this page on GitHub",
+      },
+    },
   },
 
   encrypt: {
