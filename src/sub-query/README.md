@@ -30,6 +30,7 @@ api  | 说明
 ---   | --- 
 any(expression)   | 表示符合条件的至少有一个简单理解为`exists`
 none(expression)   | 表示符合条件的一个都没有 简单理解为`no exists`
+all(expression)   | 表示all前面的集合都需要满足all里面的条件，如果all前面的集合为空则默认为true
 where(expression)   | 对子查询增加条件
 orderBy(expression)   | 对子查询进行排序常用于和elements相关
 firstElement()   | 获取子查询的第一个
@@ -53,6 +54,7 @@ api  | 说明
 ---  | --- 
 `user->user.bankCards().any()`   | 用户至少有一张银行卡卡
 `user->user.bankCards().none()`  | 用户银行卡卡一张都没有
+`user->user.bankCards().all(bc->bc.type().eq("储蓄卡"))`  | 用户银行卡全部都是储蓄卡，如果用户用户没有银行卡那么也会查询出来
 `user->user.bankCards().where(card->card.type().eq("储蓄卡")).any()` | 用户拥有的银行卡里面至少有一张储蓄卡
 `user->user.bankCards().any(card->card.type().eq("储蓄卡"))`| 用户拥有的银行卡里面至少有一张储蓄卡,`where+any`可以简写为`any`
 `user->user.bankCards().where(card->card.type().eq("储蓄卡")).none()`  | 用户拥有的银行卡里面储蓄卡一张都没有

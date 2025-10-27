@@ -358,12 +358,12 @@ List<DocUserVO> list = easyEntityQuery.queryable(DocUser.class)
         })
         .select(DocUserVO.class,user -> Select.of(
                 user.FETCHER.allFields(),
-                user.expression().subQuery(()->{
-                    return easyEntityQuery.queryable(DocBankCard.class)
+                user.expression().subQuery(
+                   easyEntityQuery.queryable(DocBankCard.class)
                             .where(bank_card -> {
                                 bank_card.uid().eq(user.id());
-                            }).selectCount();
-                }).as(DocUserVO.Fields.cardCount)
+                            }).selectCount()
+                ).as(DocUserVO.Fields.cardCount)
         )).toList();
 
 

@@ -171,13 +171,13 @@ List<SysUser> users = easyEntityQuery.queryable(SysUser.class)
         .subQueryToGroupJoin(user -> user.bankCards())
         .where(user -> {
             
-            user.expression().exists(()->{
-                return user.expression().subQueryable(SysBankCard.class)
+            user.expression().exists(
+                user.expression().subQueryable(SysBankCard.class)
                         .where(bank_card -> {
                             bank_card.uid().eq(user.id());
                             bank_card.type().eq("储蓄卡");
-                        });
-            });
+                        })
+            );
         }).toList();
 
 
@@ -277,13 +277,13 @@ List<SysUser> users = easyEntityQuery.queryable(SysUser.class)
 List<SysUser> users = easyEntityQuery.queryable(SysUser.class)
         .where(user -> {
 
-            user.expression().subQuery(()->{
-                return user.expression().subQueryable(SysBankCard.class)
+            user.expression().subQuery(
+                user.expression().subQueryable(SysBankCard.class)
                         .where(bank_card -> {
                             bank_card.uid().eq(user.id());
                             bank_card.type().eq("储蓄卡");
-                        }).selectCount();
-            }).eq(2L);
+                        }).selectCount()
+            ).eq(2L);
 
 
         }).toList();
@@ -505,9 +505,9 @@ EntityQueryable<BlogEntityProxy, BlogEntity> subQueryable = easyEntityQuery.quer
         .where(o -> o.id().eq("1" ));
 
 List<Topic> list = easyEntityQuery.queryable(Topic.class)
-        .where(o -> o.expression().exists(() -> {
-                return subQueryable.where(q -> q.id().eq(o.id()));
-        })).toList();
+        .where(o -> o.expression().exists(
+            subQueryable.where(q -> q.id().eq(o.id()))
+        )).toList();
 
 
 ==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM `t_topic` t WHERE EXISTS (SELECT 1 FROM `t_blog` t1 WHERE t1.`deleted` = ? AND t1.`id` = ? AND t1.`id` = t.`id`)
@@ -530,9 +530,9 @@ List<Topic> list = easyEntityQuery.queryable(Topic.class)
                 .where(o -> o.id().eq("1" ));
 
         List<Topic> list = easyEntityQuery.queryable(Topic.class)
-                .where(o -> o.expression().notExists(() -> {
-                    return subQueryable.where(q -> q.id().eq(o.id()));
-                })).toList();
+                .where(o -> o.expression().notExists(
+                    subQueryable.where(q -> q.id().eq(o.id()))
+                )).toList();
 
 ==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM `t_topic` t WHERE NOT EXISTS (SELECT 1 FROM `t_blog` t1 WHERE t1.`deleted` = ? AND t1.`id` = ? AND t1.`id` = t.`id`)
 ==> Parameters: false(Boolean),1(String)
