@@ -5,61 +5,64 @@ order: 5
 
 # Related Terminology
 
-::: warning Key Points!!!
-> `Implicit Expression` and `DTO Query` are the key points in `eq`. If you master these two points, you'll understand 80% of `eq`.
+
+
+::: warning Key of the Keys!!!
+> `Implicit Expressions` and `DTO Queries` are the key of the keys in `eq`. You can say that if you master these two points, you've learned 80% of `eq`
 :::
 
-## Implicit Expression
 
-`Implicit Query` is a way to filter, assemble, and sort database data by writing expressions through object relationship descriptions. This is called implicit expression in eq.
+## Implicit Expressions
 
-Also known as `auto join` or `auto subquery`.
+`Implicit queries` refer to the way of writing expressions through object relationship descriptions to filter, assemble, and sort database data. In eq, this is called implicit expressions
+
+There's also a term called `automatic join` or `automatic subquery`
 
 ::: tip Note!!!
-> `Implicit Expression` is the top priority in `eq`. If you use eq without mastering implicit expression, then using `eq` is not much different from using other ORMs. 70% of `eq`'s power comes from implicit expressions.
+> `Implicit expressions` are the most important in `eq`. If you use eq without mastering implicit expressions, then using `eq` is not much different from using other ORMs. 70% of `eq`'s power comes from implicit expressions
 :::
 
-### Implicit Join
+### Implicit JOIN
 
-The following is an `implicit join` operation setting `user` and `company` as many-to-one relationship. The join operation is not reflected in the expression, but expression writing is achieved through the object relationship tree.
+The following is an `implicit join` operation, setting `user` and `company` as a many-to-one relationship. The join operation is not reflected in the expression but is implemented through the object relationship tree
 
 ```java
 eq.queryable(User.class)
     .where(u->{
-        u.company().name().eq("XX Company")
+        u.company().name().eq("xx公司")
     })
     .toList();
 ```
 
 ### Implicit Subquery
 
-The following is an `implicit subquery` operation setting `user` and `bankCard` as one-to-many relationship. The `exists` statement is not reflected in the expression, but the expression still queries users who have at least one savings card when the condition is met in a `stream`-like way.
+The following is an `implicit subquery` operation, setting `user` and `bankCard` as a one-to-many relationship. The `exists` statement is not reflected in the expression, but the expression still queries users who have at least one savings card when the condition is met through a `stream`-like approach
 
 ```java
 eq.queryable(User.class)
     .where(u->{
         u.bankCards().any(card->{
-            card.type().eq("Savings Card")
+            card.type().eq("储蓄卡")
         })
     })
     .toList();
 ```
 
-## Explicit Expression
+## Explicit Expressions
 
-`Explicit Query` manually joins two or more objects or generates subquery expressions.
+`Explicit queries` manually join two or more objects or generate subquery expressions
 
-Also known as `manual join` or `manual subquery`.
+There's also a term called `manual join` or `manual subquery`
 
-### Explicit Join
+### Explicit JOIN
 
-The following is an `explicit join` operation setting `SysUser` and `SysBankCard` manually joined together and querying all user fields and bankCard's type field.
+The following is an `explicit join` operation, setting `SysUser` and `SysBankCard` to be associated through manual join, and querying all of user and the type field of bankCard
 
 ```java
 eq.queryable(SysUser.class)
     .leftJoin(SysBankCard.class, (user, bank_card) -> user.id().eq(bank_card.uid()))
     .where((user, bank_card) -> {
-        user.username().contains("XiaoMing");
+        user.username().contains("小明");
     })
     .select((user, bank_card) -> Select.PART.of(
             user,
@@ -69,7 +72,7 @@ eq.queryable(SysUser.class)
 
 ### Explicit Subquery
 
-The following is an `explicit subquery` operation setting `user` and `bankCard` for subquery filtering, querying users who must have a savings card.
+The following is an `explicit subquery` operation, setting `user` and `bankCard` to perform subquery filtering, querying users who must have a savings card
 
 ```java
 eq.queryable(SysUser.class)
@@ -78,30 +81,30 @@ eq.queryable(SysUser.class)
                 eq.queryable(SysBankCard.class)
                         .where(bank_card -> {
                             bank_card.uid().eq(user.id());
-                            bank_card.type().eq("Savings Card");
+                            bank_card.type().eq("储蓄卡");
                         }).select(bank_card -> bank_card.uid())
         );
     }).toList();
 ```
 
-## Include Query
+## Include Queries
 
 ::: tip Note!!!
-> This operation will NOT have N+1 problem
+> This operation will not have N+1 problems
 > Use `include` for `OneToOne` or `ManyToOne`, use `includes` for `OneToMany` or `ManyToMany`
 :::
 
-`include` query is a secondary query after object relationship modeling, supports unlimited nested levels "pulling out radish brings out mud".
+`include` queries are secondary queries after object relationship modeling, supporting unlimited nested levels "pull out a carrot and bring out the mud"
 ```java
 
         List<SysUser> list = eq.queryable(SysUser.class)
                 .toList();
         List<SysUser> list1 = eq.queryable(SysUser.class)
-                .includes(user -> user.bankCards())//If returned object has no BankCards, collection is empty collection, object is null
+                .includes(user -> user.bankCards())//If the returned object doesn't have BankCards, the collection will be an empty collection, and the object will be null
                 .toList();
 ```
 
-The second operation will generate a second query. Through the first query of `SysUser`'s id, perform a second query of `SysBankCard` records. The return structure is as follows:
+The second operation above will produce a second query. Through the first query of `SysUser` IDs, a second query of `SysBankCard` records is performed. The following is the return structure
 
 ```json
 {
@@ -112,54 +115,53 @@ The second operation will generate a second query. Through the first query of `S
 }
 ```
 
-## Implicit Group, GroupJoin
-`eq` extends almost all subquery functions, allowing subqueries to cooperate with user business systems, not just simple fetch queries. Supports `where subquery`, `order subquery`, `select subquery`. However, too many subqueries will slow down SQL performance. So `eq` completed the last piece of the subquery puzzle in 3.x version - performance improvement by automatically converting subqueries to `Group Join`. We call this function `Implicit Group` or `GroupJoin`. In actual business, complex SQL query nesting multiple subqueries can greatly improve SQL performance.
+## Implicit GROUP, GroupJoin
+`eq` extends almost all subquery functions, allowing subqueries to be used with user business systems, not just simple pull queries. It supports `WHERE subqueries`, `ORDER subqueries`, `SELECT subqueries`. However, too many subqueries will make SQL performance very slow. So `eq` completed the last piece of the subquery puzzle in version 3.x - performance improvement by automatically converting subqueries into `Group Join`. This function is called `Implicit Group` or `GroupJoin`. In actual business, complex SQL queries with nested subqueries can greatly improve SQL performance
 
-## DTO Query🔥
-`DTO Query` is the collective name for `selectAutoInclude`, `whereObject`, `orderByObject`. These functions together build `DTO Query`. In our actual business, it can greatly improve user development efficiency. Can be viewed as strongly-typed version of `GraphQL`.
+## DTO Queries🔥
+`DTO queries` is a collective term for `selectAutoInclude`, `whereObject`, and `orderByObject`. Together these functions build `DTO queries`, which can greatly improve user development efficiency in our actual business. It can be viewed as a strongly-typed version of `GraphQL`
 
 ```java
-//Assume this is our requested JSON data
+//Suppose this is our requested JSON data
 QueryRequest request=new QueryRequest();
 eq.queryable(SysUser.class)
-    .whereObject(request)//Auto query by configured conditions
-    .orderByObject(request)//Auto sort by configuration
-    .selectAutoInclude(QueryResponse.class)//Auto return any structured object downward from SysUser as object tree root
+    .whereObject(request)//Automatically query according to configured conditions
+    .orderByObject(request)//Automatically sort according to configuration
+    .selectAutoInclude(QueryResponse.class)//Automatically return any structured object with SysUser as the object tree root downward
     .toList()
 ```
 
 ## Data Tracking
-Data tracking is commonly used for object update and object save operations. After enabling tracking for object update, eq can identify whether the tracked object's value has changed, thus generating differential update set columns. For object save, save allows objects to be saved in aggregate root form, with maximum range being the queried tracked object path and non-value type position data range boundary as save boundary, automatically sensing insert, update, delete, or set to null.
+Data tracking is commonly used for object update and save operations. After enabling tracking for object updates, eq can identify whether the value set of the tracked object has changed, thus generating differential update set columns. For object save, save can save objects in the form of aggregate roots, with the maximum range being the object path tracked at query time and the data range boundary at non-value type positions as the save boundary, automatically sensing insertion, addition, deletion, or setting to null
 
-## Computed Property
+## Computed Properties
 `eq` extends common data objects, divided into two types of computed properties:
-- In-memory computed property: such as enum, JSON map or JSON array
-- Database computed property: such as age, status, etc.
+- In-memory computed properties: such as enums, JSON maps or JSON arrays
+- Database computed properties: such as age, status, etc.
 
-In-memory computed property is only the type after computed property at business code level. Actual mapping to database is still basic type.
+In-memory computed properties are just the type after the computed property at the business code level, and are still basic types when mapped to the database
 
-Database computed property differs from in-memory computed property. Database computed property supports participating in any expression operations, equivalent to actual table properties except cannot be modified or inserted. Even object associations can use this property.
+Database computed properties differ from in-memory computed properties. Database computed properties support participating in any operation of expressions, equivalent to actual table properties except that they cannot be modified or inserted. Even object associations can use this property
 
 ## Auto Save
-`eq` provides an ORM object relationship save function that can automatically sense whether object is deleted, inserted, or modified, initiated from aggregate root as save root, implementing automatic sensing save of complex structured object trees.
+`eq` provides an ORM object relationship save function that can automatically sense whether an object is deleted, inserted, or modified, initiated with the aggregate root as the save root, implementing automatic sensing and saving of complex structured object trees
 
 ## Aggregate Root, Value Object
-A save root under eq save function. Any saved object is viewed as aggregate root, extending downward until encountering query tracking boundary or non-value object.
+A save root under eq save function. Any saved object is considered an aggregate root, extending downward until it encounters a query tracking boundary or a non-value object
 
-## Dissociate
-A relationship separation that occurs under save function. That is, we manually separate a and b two related objects so they no longer have relationship. We call this dissociate. There are three common types of dissociation:
+## Dissociation
+A kind of relationship disengagement that occurs under the save function, meaning we artificially make two related objects a and b no longer related. This operation is called dissociation. There are three common types of dissociation:
 - No processing
-- Set null by setting relationship key to null
-- Delete by deleting target object value object
-Framework default is set to auto processing. When encountering many-to-many, need to set dissociation cascade for intermediate table.
+- Set null: Set the relationship key to null
+- Delete: Delete the target object value object
+The framework default setting is auto automatic processing. When encountering many-to-many, the intermediate table needs dissociation cascade settings
 
 ## Ownership
-In object relationships, a and b two object relationships may swap with each other.
-Now there are a1, a2 objects and b1, b2 objects corresponding to a1 with b1, a2 with b2. If we save by swapping a1 with b2, a2 with b1, or only swapping one side, ownership change problem will occur. This behavior is prohibited by eq by default. But if this situation really exists, users can choose to enable ownership change configuration to allow this operation.
+In object relationships, the relationship between two objects a and b may swap with each other
+Now there are a1, a2 objects and b1, b2 objects, respectively a1 corresponds to b1, a2 corresponds to b2. If we swap a1 with b2, a2 with b1 during save, or only swap one side, ownership change problems will occur. This behavior is prohibited by default in eq, but if this situation really occurs, users can choose to enable ownership change configuration to allow this operation
 
 ## CteViewer
-A way to let users customize CTE view. Can define complex SQL to be viewed as a "table" in eq. This table just cannot be deleted, inserted, or modified, but has strong typing and no difference from actual business tables. Suitable for users to encapsulate some corresponding logic.
+A way for users to customize CTE views, can define complex SQL to be viewed as a "table" in eq. However, this table cannot be deleted, added to, or modified, but has strong typing and no difference from actual business tables, suitable for users to encapsulate some corresponding logic
 
 ## code-first
-`code-first` or `auto-ddl` is a code-first technology that generates databases and tables directly by writing business logic first and then running, rather than db-first technology selection. Suitable for code distribution under multi-database adaptation for small and medium-sized application projects, no need to maintain multiple database scripts, only need to configure strong database constraints on current entity objects.
-
+`code-first` or `auto-ddl` is a code-first technology that directly generates databases and tables by writing business logic first and then running it. It is a non-db-first technology choice, suitable for multi-database adaptation code distribution for small and medium-sized application projects, without the need to maintain multiple database scripts, only requiring strong database constraint configuration for current entity objects
