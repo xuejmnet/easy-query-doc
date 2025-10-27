@@ -1,6 +1,5 @@
 ---
-title: Design
+title: Introduction
 order: 0
 ---
-This chapter mainly focuses on pre-development object design and basic configuration for subsequent development.
-
+This chapter is mainly for designing the preliminary object design and basic configuration for subsequent development
