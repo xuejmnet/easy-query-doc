@@ -12,18 +12,18 @@ export default defineUserConfig({
       title: "文档演示",
       description: "easy-query的文档演示",
     },
-    // "/zh/": {
-    //   lang: "en-US",
-    //   title: "Docs Demo",
-    //   description: "A docs demo for easy-query",
-    // },
+    "/en/": {
+      lang: "en-US",
+      title: "Documentation",
+      description: "Documentation for easy-query",
+    },
   },
 
   theme,
   plugins:[
     vuepressPluginTypedjs2({
       // 路径白名单（默认是所有页面生效，如果配置了白名单，那么只有白名单页面才会生效，支持*通配符）
-      withePathList: ['/','/zh/'],
+      withePathList: ['/','/zh/','/en/'],
       // 对应的标签选择器
       selector: '.vuepress_typed',
       // 打字内容
