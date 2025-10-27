@@ -6,17 +6,17 @@ order: 30
 # Annotation Description
 
 ## Table
-Describes database table name corresponding to object. VO objects don't need it, non-database objects don't need it.
+Describes the database table name corresponding to the object. Not needed for VO objects or non-database objects.
 
-Property  | Default | Description  
+Attribute  | Default Value | Description  
 --- | --- | --- 
-value | "" | Database table name. Empty means nameConversion.convert(class.getSimpleName). Can be modified at runtime.
-schema | "" | Database schema. Can be modified at runtime. Default is jdbc connection string's database.
-ignoreProperties | {} | Properties to ignore. Generally used when inheriting parent class and need to ignore parent class properties.
-shardingInitializer | UnShardingInitializer.class | Sharding initializer. Only when object is sharding object, used to initialize sharding object. Can also not add and manually add later.
-oldName | "" | Old table name for code-first table name migration.
-comment | "" | Comment information when auto-generating table.
-keyword | true | Whether to add keyword handling to table name like mysql's `` or pgsql's "" or sqlserver's []. False scenario: duckdb reading excel for query.
+value | "" | Database table name. Empty means nameConversion.convert(class.getSimpleName), can be modified at runtime
+schema | "" | Database schema, can be modified at runtime. Defaults to the database in the JDBC connection string
+ignoreProperties | {} | Properties to ignore. Generally used for ignoring parent class properties when inheriting
+shardingInitializer | UnShardingInitializer.class | Sharding initializer. Used only when the object is a sharded object to initialize the sharded object. Can also be manually added later
+oldName | "" | Old table name used for table name migration in code-first
+comment | "" | Comment information when automatically generating tables
+keyword | true | Whether to add keyword handling to table names, such as MySQL's ``, PostgreSQL's "", or SQL Server's []. false scenario: duckdb reading Excel for queries
 
 ```java
 
@@ -28,30 +28,33 @@ public class Topic {
 ```
 
 ## Column
-Describes column name corresponding to property.
+Describes the column name corresponding to the property
 
-Property  | Default | Description  
+Attribute  | Default Value | Description  
 --- | --- | --- 
-value | "" | Column name in database table. Default empty is nameConversion.convert(propertyName).
-primaryKey | false | Whether it's primary key. If true, update object and delete object will use this field as id.
-generatedKey | false | Whether it's auto-increment column. If true, after `insertable().executeRows(true)`, auto-increment id will be filled in.
-conversion | DefaultValueConverter.class | In-memory computed property, value converter. Default means no conversion. Can customize enum or json, etc.
-sqlConversion | DefaultColumnValueSQLConverter.class | DB computed property, value converter. Default means no conversion. Can customize composite column like `fullName=Concat(firstName,lastName)`. If VO/DTO also has this property, no need to mark this property.
-generatedSQLColumnGenerator | DefaultGeneratedKeySQLColumnGenerator.class | Column generator used when inserting into database, like database function `NEWID()` or other custom functions.
-complexPropType | DefaultComplexPropType.class | Complex type for JSON deserialization handling.
-autoSelect | true | Whether current column needs auto query. Mainly for whether to return current column when directly toList. False commonly used for database computed properties or large field columns.
-typeHandler | UnKnownTypeHandler.class | What TypeHandler to use for current column. Unknown type special handling.
-primaryKeyGenerator | UnsupportPrimaryKeyGenerator.class | Primary key generator for generating primary key value when object primary key is null during insert.
-exist | true | Whether current field exists in database. False means not queried by default, also not inserted or updated.
-nullable | true | Whether database column mapped by current field is nullable. Commonly used in code-first to generate database DDL.
-dbType | "" | Specifies database column type mapped by current field.
-dbDefault | "" | Default insert value for database column mapped by current field.
-exist | true | Whether current field exists in database. False means not queried, inserted, or updated by default.
-comment | "" | Description of database column mapped by current field.
-length | -1 | Length of database column mapped by current field.
-scale | 0 | Precision of database column mapped by current field.
-sqlExpression | ColumnSQLExpression | Simple database computed property.
-jdbcType | JDBCType.OTHER | Maps current field to actual jdbc type in database. Used for pgsql uuid and mysql uuid with current field type.
+value | "" | Column name in the database table. Default empty means nameConversion.convert(property name)
+primaryKey | false | Indicates whether it's a primary key. If yes, will use this field as id in update object / delete object
+generatedKey | false | Whether it's an auto-increment column. If true, after `insertable().executeRows(true)`, the retrieved auto-increment id will be populated
+conversion | DefaultValueConverter.class | In-memory computed property, value converter. Default means no conversion. Can customize for enums or JSON
+sqlConversion | DefaultColumnValueSQLConverter.class | DB computed property, value converter. Default means no conversion. Can customize composite columns like `fullName=Concat(firstName,lastName)`. If vo/dto also has this property, no need to annotate it
+generatedSQLColumnGenerator | DefaultGeneratedKeySQLColumnGenerator.class | Column generator used when inserting into database, such as database function `NEWID()` or other custom functions
+complexPropType | DefaultComplexPropType.class | Complex type used for JSON deserialization handling
+autoSelect | true | Whether the current column needs automatic querying. Mainly for whether to return the current column when directly toList. false commonly used for database computed properties or large field columns
+typeHandler | UnKnownTypeHandler.class | What TypeHandler the current column uses, special handling for unknown types
+primaryKeyGenerator | UnsupportPrimaryKeyGenerator.class | Primary key generator used to directly generate primary key value when object primary key is null during insertion
+exist | true | Indicates whether the current field exists in the database. false means not queried by default and not inserted/updated
+nullable | true | Indicates whether the database column mapped to the current field can be null. Commonly used for code-first generation of database DDL
+dbType | "" | Indicates the specified type of the database column mapped to the current field
+dbDefault | "" | Indicates the default insert value for the database column mapped to the current field
+comment | "" | Indicates the description of the database column mapped to the current field
+length | -1 | Indicates the length of the database column mapped to the current field
+scale | 0 | Indicates the precision of the database column mapped to the current field
+sqlExpression | ColumnSQLExpression | Indicates simple database computed properties
+jdbcType | JDBCType.OTHER | Maps the current field to the actual JDBC type in the database. PostgreSQL's uuid and MySQL's uuid will use this field type
+
+
+<!-- valueUpdateAtomicTrack | DefaultValueUpdateAtomicTrack.class | Atomic update, default means no atomic update -->
+
 
 ```java
 @Data
@@ -68,20 +71,21 @@ public class Topic {
 ```
 
 ## ColumnIgnore
-Properties with this annotation will be directly ignored from mapping to database.
+Properties with this annotation will be directly ignored in database mapping
 
 ## InsertIgnore
-Properties with this annotation will not be assigned during insert.
+Properties with this annotation will not be assigned during insertion
 
 ## UpdateIgnore
-Properties with this annotation will not be updated during update unless manually specified, like `create time`, `creator`, `logical delete field`, `large column`. If current field is marked `update ignore`, then if it's non-track update, it will be directly ignored. If property `updateSetInTrackDiff = true`, then in track update it's still valid.
+Properties with this annotation will not be updated during updates unless manually specified, such as `creation time`, `creator`, `logical deletion field`, `large column`. If the current field is marked `update ignore`, it will be directly ignored in non-track updates. If the property `updateSetInTrackDiff = true`, it's still effective in track updates
 
-Property  | Default | Description  
+
+Attribute  | Default Value | Description  
 --- | --- | --- 
-updateSetInTrackDiff |false | Whether to include in update set in tracking query.
+updateSetInTrackDiff |false | Whether to include in update set in tracking queries
 
 ::: warning Note!!!
-> `large column` adds `UpdateIgnore` to ensure large field is not updated to null after being queried if entity full field update is performed (default update strategy is full field). So update ignore is used here. If needed, can use expression ignore [Of course you can also choose update strategy as non-null update].
+> Adding `UpdateIgnore` to `large column` is to ensure that when large fields are queried and then entity all-field update is performed, since `title` was not queried, the null will be updated during update (default update strategy is all fields). So update ignore is adopted here. If needed, you can use expression ignore [Of course you can also choose to update strategy as non-null update]
 :::
 
 ```java
@@ -93,29 +97,31 @@ public class Topic {
     private String id;
     private Integer stars;
     @Column(large=true)
-    @UpdateIgnore //Large field doesn't need update to prevent full field update from changing original field to null
+    @UpdateIgnore //Large field doesn't need update, prevents all-field update from changing original field to null
     private String title;
-    @UpdateIgnore //Create time field doesn't need update
+    @UpdateIgnore //Creation time field doesn't need update
     private LocalDateTime createTime;
     @LogicDelete(strategy = LogicDeleteStrategyEnum.BOOLEAN)
-    @UpdateIgnore //Logical delete field doesn't need update
+    @UpdateIgnore //Logical deletion field doesn't need update
     private Boolean deleted;
 }
 ```
 
 ## LogicDelete
-Logical deletion. Indicates current field corresponds to database as logical deletion representation. Select will filter, update will also filter, delete data will be rewritten as update.
+Logical deletion. Indicates that the current field corresponds to logical deletion representation in the database. SELECT will filter, UPDATE will also filter, DELETE data will be rewritten as UPDATE
 
-Property  | Default | Description  
+
+Attribute  | Default Value | Description  
 --- | --- | --- 
-value | BOOLEAN | Logical deletion strategy. Default true means deleted, false means not deleted.
-strategyName | "" | When logical deletion is custom logical deletion.
+value | BOOLEAN | Logical deletion strategy. Default true means deleted, false means not deleted
+strategyName | "" | When logical deletion is custom logical deletion
 
-- BOOLEAN: false means not deleted
-- DELETE_LONG_TIMESTAMP: 0 means not deleted
-- LOCAL_DATE_TIME: null means not deleted
-- LOCAL_DATE: null means not deleted
-- CUSTOM: User-defined
+- BOOLEAN false means not deleted
+- DELETE_LONG_TIMESTAMP 0 means not deleted
+- LOCAL_DATE_TIME null means not deleted
+- LOCAL_DATE null means not deleted
+- CUSTOM user-defined
+
 
 ```java
 @Data
@@ -126,22 +132,22 @@ public class Topic {
     private String id;
     private Integer stars;
     @Column(large=true)
-    @UpdateIgnore //Large field doesn't need update to prevent full field update from changing original field to null
+    @UpdateIgnore //Large field doesn't need update, prevents all-field update from changing original field to null
     private String title;
-    @UpdateIgnore //Create time field doesn't need update
+    @UpdateIgnore //Creation time field doesn't need update
     private LocalDateTime createTime;
     @LogicDelete(strategy = LogicDeleteStrategyEnum.BOOLEAN)
-    @UpdateIgnore //Logical delete field doesn't need update
+    @UpdateIgnore //Logical deletion field doesn't need update
     private Boolean deleted;
 }
 ```
-
 ## Version
-Optimistic lock, also known as version number.
+Optimistic lock, also known as version number
 
-Property  | Default | Description  
+
+Attribute  | Default Value | Description  
 --- | --- | --- 
-value | - | Define your own version number strategy.
+value | - | Define your own version number strategy
 
 ### Default Optimistic Lock Version Number Strategies
 - VersionIntStrategy
@@ -150,12 +156,12 @@ value | - | Define your own version number strategy.
 - VersionUUIDStrategy
 
 #### VersionIntStrategy
-//Here uses Version=2, can also use version+1 but actually the same because where clause restricts version=1
+//Here uses Version=2, can also use version+1 but actually it's the same because where clause limits version=1
 ```sql
 update table set version=2 where id=xxx and version=1
 ```
 #### VersionLongStrategy
-//Here uses Version=2, can also use version+1 but actually the same because where clause restricts version=1
+//Here uses Version=2, can also use version+1 but actually it's the same because where clause limits version=1
 ```sql
 update table set version=2 where id=xxx and version=1
 ```
@@ -165,44 +171,44 @@ update table set version=2 where id=xxx and version=1
 update table set version=xxxxxxasd where id=xxx and version=xxxxasdasd
 ```
 
+
 ## Encryption
-Column encryption. Supports custom data encryption storage, and supports like search at database level with very high performance. Not using database encryption/decryption functions.
+Column encryption. Supports custom data encryption storage and supports like search handling at the database layer with very high performance. Does not use database encryption/decryption functions
 
 ### EncryptionStrategy
-Used to handle how to encrypt and decrypt data strategy. Can customize implementation.
+Used to handle how to encrypt and decrypt data strategies. Can be customized
 
-Default implementation has an aes+base64 `AbstractAesBase64EncryptionStrategy` abstract class. Users need to return 16-bit vector and key.
+Default implementation has an AES+Base64 `AbstractAesBase64EncryptionStrategy` abstract class. Users need to return a 16-bit vector and key
 
 ### supportQueryLike
-Used to indicate whether like search is needed. If true, input parameters will be segmented for encryption.
+Used to indicate whether like search is needed. If true, it will segment encrypt the input parameters
 
 ## Navigate
-Navigation property. Used on database objects and return results to handle one-to-one, one-to-many, many-to-one, many-to-many.
+Navigation property. Used on database objects and return results for handling one-to-one, one-to-many, many-to-one, many-to-many
 
 ## ShardingDataSourceKey
-Used to identify which is current object's database sharding key.
+Used to identify which is the database sharding key for the current object
 
 ## ShardingExtraDataSourceKey
-Used to identify which is current object's database sharding extra key.
+Used to identify which is the additional database sharding key for the current object
 
 ## ShardingTableKey
-Used to identify which is current object's database table sharding key.
+Used to identify which is the table sharding key for the current object
 
 ## ShardingExtraTableKey
-Used to identify which is current object's database table sharding extra key.
+Used to identify which is the additional table sharding key for the current object
 
 ## EasyWhereCondition
-Default dynamic condition object query condition. Can replace with custom annotation for dynamic conditions.
+Default dynamic condition object query condition. Can replace with custom annotation to implement dynamic conditions
 
 ## EasyQueryTrack
-Default tracking context annotation. Can also customize. Used above methods.
+Default tracking context annotation, can also be customized. Used on methods
 
 ## EntityProxy
-Generate proxy object. Added to entity and DTO to auto-generate apt proxy class. Generated files are in target directory. Need to rebuild after clean.
+Generate proxy object. Added to entities and DTOs to automatically generate APT proxy classes. Generated files exist in the target directory. Need to rebuild after clean
 
 ## EntityFileProxy
-Same as `EntityProxy` but generated files are in source code.
+Same as `EntityProxy` but generated files exist in source code
 
 ## ProxyProperty
-Used to prevent generated apt properties from duplicating with system built-in. Can define alias on property.
-
+Used to prevent generated APT properties from duplicating with system built-in ones. Can define aliases on properties

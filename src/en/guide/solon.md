@@ -1,71 +1,62 @@
 ---
-title: Solon Integration
+title: Solon Related
 order: 6
 ---
 
-# Solon Framework Integration
 
-Easy-query officially supports Solon framework starting from version `^1.2.6`, adapting the ORM capabilities for this domestic framework.
+## Domestic Framework Solon Configuration
 
-## What is Solon?
+`easy-query` officially supports `Solon` adaptation of the ORM part of the domestic framework in `^1.2.6`.
 
-[Solon](https://solon.noear.org/) is **a new ecosystem-style Java application development framework: Faster, Smaller, Simpler.**
+## What is Solon
+[`Solon`](https://solon.noear.org/) **Java's new ecological application development framework: faster, smaller, simpler.**
 
-- Starts 5-10x faster
-- QPS 2-3x higher
-- Memory usage reduced by 1/3 to 1/2
-- Package size can shrink to 1/2 to 1/10
-- Supports JDK 8, 11, 17, 20, and GraalVM native image
+Starts 5 ~ 10 times faster; QPS 2 ~ 3 times higher; runtime memory savings of 1/3 ~ 1/2; packaging can be reduced to 1/2 ~ 1/10; supports JDK8, JDK11, JDK17, JDK20, and GraalVM native image.
 
-## Get Latest Version
 
-Search for `com.easy-query` on [Maven Central](https://central.sonatype.com/)
+
+## Getting the Latest
+
+Search for `com.easy-query` on [https://central.sonatype.com/](https://central.sonatype.com/) to get the latest packages
 
 ## Quick Start
-
-### Create Java Maven Project
+## Creating a New Java Maven Project
 
 <img :src="$withBase('/images/easy-qeury-solon-web-install.png')">
 
-### Add Dependencies
-
+### Adding Project Dependencies
 ```xml
 <!-- Required -->
 <dependency>
     <groupId>com.easy-query</groupId>
     <artifactId>sql-solon-plugin</artifactId>
-    <version>Use latest version</version>
+    <version>Use the latest version number</version>
 </dependency>
-
-<!-- If using EasyEntityQuery, include APT processor -->
+<!-- If you use EasyEntityQuery, you need to include this APT reference -->
 <dependency>
     <groupId>com.easy-query</groupId>
     <artifactId>sql-processor</artifactId>
-    <version>Use latest version</version>
+    <version>Use the latest version number</version>
 </dependency>
-
-<!-- Add datasource -->
+<!-- Include data source as needed-->
 <dependency>
     <groupId>com.zaxxer</groupId>
     <artifactId>HikariCP</artifactId>
     <version>3.3.1</version>
 </dependency>
-
-<!-- Add database driver -->
+<!-- Include corresponding database driver as needed -->
 <dependency>
     <groupId>mysql</groupId>
     <artifactId>mysql-connector-java</artifactId>
     <version>8.0.31</version>
 </dependency>
-
 <!-- Optional -->
 <dependency>
     <groupId>org.projectlombok</groupId>
     <artifactId>lombok</artifactId>
     <version>1.18.40</version>
 </dependency>
-
-<!-- Solon framework -->
+<!-- Include corresponding version as per actual framework -->
 <dependency>
     <groupId>org.noear</groupId>
     <artifactId>solon-web</artifactId>
@@ -73,168 +64,152 @@ Search for `com.easy-query` on [Maven Central](https://central.sonatype.com/)
 </dependency>
 ```
 
-### Configure DataSource
-
+### Creating DataSource Injection
 ```java
 @Configuration
 public class WebConfiguration {
-    @Bean(name = "db1", typed = true)
-    public DataSource db1DataSource(@Inject("${db1}") HikariDataSource dataSource) {
+    @Bean(name = "db1",typed=true)
+    public DataSource db1DataSource(@Inject("${db1}") HikariDataSource dataSource){
         return dataSource;
     }
 }
+
 ```
 
-### Create Controller
-
+### Adding Controller
 ```java
+
 @Controller
 @Mapping("/test")
 public class TestController {
-    @Mapping(value = "/hello", method = MethodType.GET)
-    public String hello() {
+    @Mapping(value = "/hello",method = MethodType.GET)
+    public String hello(){
         return "Hello World";
     }
 }
 ```
 
-### Configure application.yml
-
+### Solon Startup
 ```yml
-# Database configuration
+# Add configuration file
 db1:
   jdbcUrl: jdbc:mysql://127.0.0.1:3306/easy-query-test?serverTimezone=GMT%2B8&characterEncoding=utf-8&useSSL=false&allowMultiQueries=true&rewriteBatchedStatements=true
   username: root
   password: root
   driver-class-name: com.mysql.cj.jdbc.Driver
 
-# Easy-query configuration
-easy-query:
-  # Custom logger class (optional)
+
+easy-query: 
+  # Configure custom log
   # log-class: ...
   db1:
-    # Supported: mysql, pgsql, h2, mssql, dameng, mssql_row_number, kingbase_es
+    # Supports mysql pgsql h2 mssql dameng mssql_row_number kingbase_es, other databases are being adapted
     database: mysql
-    # Name conversion: underlined, default, lower_camel_case, upper_camel_case, upper_underlined
+    # Supports underlined default lower_camel_case upper_camel_case upper_underlined
     name-conversion: underlined
-    # Throw exception on physical delete (excluding manual SQL)
+    # Throw exception on physical deletion, not including manual SQL
     delete-throw: true
 
-# Logging configuration
+# Logger level configuration example
 solon.logging.logger:
-  "root": # Default logger config
+  "root": #Default logger configuration
     level: TRACE
   "com.zaxxer.hikari":
     level: WARN
 ```
 
-### Start Solon
-
 ```java
 public class Main {
     public static void main(String[] args) {
-        Solon.start(Main.class, args, (app) -> {
+        Solon.start(Main.class,args,(app)->{
             app.cfg().loadAdd("application.yml");
         });
     }
 }
 
-// Visit: http://localhost:8080/test/hello
-// Returns: Hello World
+//Access URL http://localhost:8080/test/hello
+
+//Returns Hello World
 ```
 
-## Query with Easy-query
-
-### Create Entity
-
+### easy-query Query
 ```java
 @Data
 @Table("t_topic")
 @EntityProxy
-public class Topic implements ProxyEntityAvailable<Topic, TopicProxy> {
+public class Topic  implements ProxyEntityAvailable<Topic, TopicProxy> {
+
     @Column(primaryKey = true)
     private String id;
     private Integer stars;
     private String title;
     private LocalDateTime createTime;
 }
-```
 
-### Use in Controller
 
-```java
 @Controller
 @Mapping("/test")
 public class TestController {
 
     /**
-     * Must be one of the configured data sources
+     * Note: Must be one of the configured multi-data sources
      */
-    @Db("db1")  // Use @Db from sql-solon-plugin
+    @Db("db1")//Note: Use the Db annotation from the sql-solon-plugin package here
     private EasyEntityQuery easyEntityQuery;
-    
-    @Mapping(value = "/hello", method = MethodType.GET)
-    public String hello() {
+    @Mapping(value = "/hello",method = MethodType.GET)
+    public String hello(){
         return "Hello World";
     }
-    
-    @Mapping(value = "/queryTopic", method = MethodType.GET)
-    public Object queryTopic() {
+    @Mapping(value = "/queryTopic",method = MethodType.GET)
+    public Object queryTopic(){
         return easyEntityQuery.queryable(Topic.class)
-            .where(o -> o.stars().ge(2))
-            .toList();
+                .where(o->o.stars().ge(2))
+                .toList();
     }
 }
 
-// SQL generated:
-// SELECT `id`, `stars`, `title`, `create_time` 
-// FROM `t_topic` 
-// WHERE `stars` >= ?
-// Parameters: 2(Integer)
-// Total: 101
+
+==> Preparing: SELECT `id`,`stars`,`title`,`create_time` FROM `t_topic` WHERE `stars` >= ?
+==> Parameters: 2(Integer)
+<== Time Elapsed: 17(ms)
+<== Total: 101
+
 ```
 
 <img :src="$withBase('/images/easy-query-solon-web-query-topic.png')" />
 
-## Advanced Configuration
 
-### Complete Configuration Options
-
+### Solon Configuration easy-query Personalization
 ```yml
+# Add configuration file
 db1:
   jdbcUrl: jdbc:mysql://127.0.0.1:3306/easy-query-test?serverTimezone=GMT%2B8&characterEncoding=utf-8&useSSL=false&allowMultiQueries=true&rewriteBatchedStatements=true
   username: root
   password: root
   driver-class-name: com.mysql.cj.jdbc.Driver
 
-easy-query:
-  # Custom logger class
+easy-query: 
+  # Configure custom log
   # log-class: ...
   db1:
-    # Database type: mysql, pgsql, h2, mssql, dameng, mssql_row_number, kingbase_es
+    # Supports mysql pgsql h2 mssql dameng mssql_row_number kingbase_es, other databases are being adapted
     database: mysql
-    # Name conversion: underlined, default, lower_camel_case, upper_camel_case, upper_underlined
+    # Supports underlined default lower_camel_case upper_camel_case upper_underlined
     name-conversion: underlined
-    # Throw exception on physical delete
+    # Throw exception on physical deletion, not including manual SQL
     delete-throw: true
-    
-    # Entity to DTO/VO mapping strategy
-    # Options: property_only, column_only, column_and_property, property_first
+    # Entity mapping to dto/vo uses property matching mode
+    # Supports property_only column_only column_and_property property_first
     mapping-strategy: property_first
-    
-    # Insert column strategy: all_columns, only_not_null_columns, only_null_columns
-    insert-strategy: only_not_null_columns
-    
-    # Update column strategy: all_columns, only_not_null_columns, only_null_columns
-    update-strategy: all_columns
-    
-    # Query large columns (LOB)
+    # Insert column strategy all_columns only_not_null_columns only_null_columns
+    insert-strategy: only_not_null_columns 
+    # Update column strategy all_columns only_not_null_columns only_null_columns
+    update-strategy: all_columns 
+    # Still query large fields. If not querying, it's recommended to set updateIgnore to prevent update allcolumn from changing it to null
     query-large-column: true
-    
-    # Error on update/delete without version
+    # Error on update/delete without version number
     no-version-error: true
-    
-    # Sharding connection mode: system_auto, memory_strictly, connection_strictly
+    # Sharding connection mode system_auto memory_strictly connection_strictly
     # connection-mode: ...
     # max-sharding-query-limit: ...
     # executor-maximum-pool-size: ...
@@ -255,53 +230,42 @@ easy-query:
     # relation-group-size: ...
     # warning-column-miss: ...
     # sharding-fetch-size: ...
-    
-    # Sharding query mode in transaction: serializable, concurrency
-    # sharding-query-in-transaction: ...
+    # Sharding query mode in transaction serializable concurrency
+    # sharding-query-in-transaction: ....
 
+# Logger level configuration example. If print-sql is configured but the corresponding log is not configured, it will not print
 solon.logging.logger:
-  "root":
+  "root": #Default logger configuration
     level: TRACE
   "com.zaxxer.hikari":
     level: WARN
 ```
 
-## Custom Components
+### Additional Configuration
 
-::: danger Important
-Since Solon supports multiple data sources, each data source may have different interceptors, key generators, or enum handlers. All components need to be registered separately for each data source.
+::: danger Note!!!
+> Because Solon supports multi-data sources, each data source may have different interceptors, primary key generators, or enum handlers, so all components need to be handled and registered separately by users
 :::
 
-### Custom Logical Delete Strategy
-
+#### Logical Deletion
 ```java
+
 public class MyLogicDelStrategy extends AbstractLogicDeleteStrategy {
     /**
      * Allow datetime type properties
      */
-    private final Set<Class<?>> allowTypes = new HashSet<>(
-        Arrays.asList(LocalDateTime.class)
-    );
-    
+    private final Set<Class<?>> allowTypes=new HashSet<>(Arrays.asList(LocalDateTime.class));
     @Override
-    protected SQLActionExpression1<WherePredicate<Object>> getPredicateFilterExpression(
-        LogicDeleteBuilder builder, 
-        String propertyName
-    ) {
-        return o -> o.isNull(propertyName);
+    protected SQLActionExpression1<WherePredicate<Object>> getPredicateFilterExpression(LogicDeleteBuilder builder, String propertyName) {
+        return o->o.isNull(propertyName);
     }
 
     @Override
-    protected SQLActionExpression1<ColumnSetter<Object>> getDeletedSQLExpression(
-        LogicDeleteBuilder builder, 
-        String propertyName
-    ) {
-        // ❌ Wrong: now is evaluated once
-        // LocalDateTime now = LocalDateTime.now();
-        // return o -> o.set(propertyName, now);
-        
-        // ✅ Correct: evaluated on each execution
-        return o -> o.set(propertyName, LocalDateTime.now());
+    protected SQLActionExpression1<ColumnSetter<Object>> getDeletedSQLExpression(LogicDeleteBuilder builder, String propertyName) {
+//        LocalDateTime now = LocalDateTime.now();
+//        return o->o.set(propertyName,now);
+        //The above is wrong usage. If the now value is obtained, then this now becomes a fixed value rather than a dynamic value
+        return o->o.set(propertyName, LocalDateTime.now());
     }
 
     @Override
@@ -315,87 +279,86 @@ public class MyLogicDelStrategy extends AbstractLogicDeleteStrategy {
     }
 }
 
+
 @Configuration
 public class DemoConfiguration {
-    @Bean(name = "db1", typed = true)
-    public DataSource db1DataSource(@Inject("${db1}") HikariDataSource dataSource) {
+    @Bean(name = "db1",typed=true)
+    public DataSource db1DataSource(@Inject("${db1}") HikariDataSource dataSource){
         return dataSource;
     }
-    
     @Bean
-    public void db1QueryConfiguration(@Db("db1") QueryConfiguration configuration) {
+    public void db1QueryConfiguration(@Db("db1") QueryConfiguration configuration){
         configuration.applyLogicDeleteStrategy(new MyLogicDelStrategy());
-        // configuration.applyEncryptionStrategy(...);
-        // configuration.applyInterceptor(...);
-        // configuration.applyShardingInitializer(...);
-        // configuration.applyValueConverter(...);
-        // configuration.applyValueUpdateAtomicTrack(...);
+//        configuration.applyEncryptionStrategy(...);
+//        configuration.applyInterceptor(...);
+//        configuration.applyShardingInitializer(...);
+//        configuration.applyValueConverter(...);
+//        configuration.applyValueUpdateAtomicTrack(...);
     }
+    
 }
+
 ```
 
-### Configure Single Data Source
+### All Solon Configurations
 
+Configure for a single data source. For affecting all data sources, see the section below on affecting all data sources
 ```java
 @Configuration
 public class DemoConfiguration {
-    @Bean(name = "db1", typed = true)
-    public DataSource db1DataSource(@Inject("${db1}") HikariDataSource dataSource) {
+    @Bean(name = "db1",typed=true)
+    public DataSource db1DataSource(@Inject("${db1}") HikariDataSource dataSource){
         return dataSource;
     }
 
-    /**
-     * Configure plugins: logical delete, encryption, interceptors, 
-     * sharding initializers, value converters, atomic updates
-     */
-    @Bean
-    public void db1QueryConfiguration(@Db("db1") QueryConfiguration configuration) {
-        configuration.applyLogicDeleteStrategy(new MyLogicDelStrategy());
-        configuration.applyEncryptionStrategy(...);
-        configuration.applyInterceptor(...);
-        configuration.applyShardingInitializer(...);
-        configuration.applyValueConverter(...);
-        configuration.applyValueUpdateAtomicTrack(...);
-    }
+//    /**
+//     * Configure additional plugins, such as custom logical deletion, encryption strategy, interceptor, sharding initializer, value converter, atomic update tracking
+//     * @param configuration
+//     */
+//    @Bean
+//    public void db1QueryConfiguration(@Db("db1") QueryConfiguration configuration){
+//        configuration.applyLogicDeleteStrategy(new MyLogicDelStrategy());
+//        configuration.applyEncryptionStrategy(...);
+//        configuration.applyInterceptor(...);
+//        configuration.applyShardingInitializer(...);
+//        configuration.applyValueConverter(...);
+//        configuration.applyValueUpdateAtomicTrack(...);
+//    }
 
-    /**
-     * Add table/database routing and data sources for sharding
-     */
-    @Bean
-    public void db1QueryRuntimeContext(@Db("db1") QueryRuntimeContext runtimeContext) {
-        TableRouteManager tableRouteManager = runtimeContext.getTableRouteManager();
-        DataSourceRouteManager dataSourceRouteManager = runtimeContext.getDataSourceRouteManager();
-        
-        tableRouteManager.addRoute(...);
-        dataSourceRouteManager.addRoute(...);
-
-        DataSourceManager dataSourceManager = runtimeContext.getDataSourceManager();
-        dataSourceManager.addDataSource(key, dataSource, poolSize);
-    }
+//    /**
+//     * Add sharding table or database routing, sharding data sources
+//     * @param runtimeContext
+//     */
+//    @Bean
+//    public void db1QueryRuntimeContext(@Db("db1") QueryRuntimeContext runtimeContext){
+//        TableRouteManager tableRouteManager = runtimeContext.getTableRouteManager();
+//        DataSourceRouteManager dataSourceRouteManager = runtimeContext.getDataSourceRouteManager();
+//        tableRouteManager.addRoute(...);
+//        dataSourceRouteManager.addRoute(...);
+//
+//        DataSourceManager dataSourceManager = runtimeContext.getDataSourceManager();
+//
+//        dataSourceManager.addDataSource(key, dataSource, poolSize);
+//    }
 }
 ```
 
-### Configure All Data Sources Globally
-
+### Configuration Affecting All Data Sources
 ```java
 public class App {
     public static void main(String[] args) {
-        Solon.start(App.class, args, app -> {
-            app.onEvent(EasyQueryBuilderConfiguration.class, e -> {
-                // Distinguish data sources by e.getName() if needed
-                e.replaceServiceFactory(QueryConfiguration.class, s -> {
-                    QueryConfiguration queryConfiguration = new QueryConfiguration(
-                        s.getService(EasyQueryOption.class),
-                        s.getService(Dialect.class),
-                        s.getService(NameConversion.class),
-                        s.getService(EasyTimeJobManager.class)
+        Solon.start(App.class,args,app->{
+            app.onEvent(EasyQueryBuilderConfiguration.class,e->{
+                //If you need to distinguish data sources, you can use e.getName()
+                e.replaceServiceFactory(QueryConfiguration.class, s->{
+                    QueryConfiguration queryConfiguration = new QueryConfiguration(s.getService(EasyQueryOption.class)
+                            ,s.getService(Dialect.class)
+                            ,s.getService(NameConversion.class)
+                            ,s.getService(EasyTimeJobManager.class)
                     );
-                    
-                    // Apply global configurations
-                    // queryConfiguration.applyInterceptor();
-                    // queryConfiguration.applyLogicDeleteStrategy();
-                    // queryConfiguration.applyValueConverter();
-                    
+//                    queryConfiguration.applyInterceptor();
+//                    queryConfiguration.applyLogicDeleteStrategy();
+//                    queryConfiguration.applyValueConverter();
                     return queryConfiguration;
                 });
             });
@@ -403,77 +366,3 @@ public class App {
     }
 }
 ```
-
-## Multi-Data Source Example
-
-### Configure Multiple Data Sources
-
-```yml
-db1:
-  jdbcUrl: jdbc:mysql://127.0.0.1:3306/database1?...
-  username: root
-  password: root
-  driver-class-name: com.mysql.cj.jdbc.Driver
-
-db2:
-  jdbcUrl: jdbc:mysql://127.0.0.1:3306/database2?...
-  username: root
-  password: root
-  driver-class-name: com.mysql.cj.jdbc.Driver
-
-easy-query:
-  db1:
-    database: mysql
-    name-conversion: underlined
-  db2:
-    database: mysql
-    name-conversion: underlined
-```
-
-### Use Different Data Sources
-
-```java
-@Configuration
-public class DataSourceConfiguration {
-    @Bean(name = "db1", typed = true)
-    public DataSource db1DataSource(@Inject("${db1}") HikariDataSource ds) {
-        return ds;
-    }
-    
-    @Bean(name = "db2", typed = true)
-    public DataSource db2DataSource(@Inject("${db2}") HikariDataSource ds) {
-        return ds;
-    }
-}
-
-@Controller
-@Mapping("/users")
-public class UserController {
-    @Db("db1")
-    private EasyEntityQuery db1Query;
-    
-    @Db("db2")
-    private EasyEntityQuery db2Query;
-    
-    @Mapping("/db1")
-    public List<User> getUsersFromDb1() {
-        return db1Query.queryable(User.class).toList();
-    }
-    
-    @Mapping("/db2")
-    public List<User> getUsersFromDb2() {
-        return db2Query.queryable(User.class).toList();
-    }
-}
-```
-
-## See Also
-
-- [Spring Boot Integration](./spring-boot.md)
-- [Multi-Data Source Configuration](./sb-multi-datasource.md)
-- [Quick Start](../startup/quick-start.md)
-
----
-
-If you encounter problems, feel free to join our QQ group: **170029046**
-
