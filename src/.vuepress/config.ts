@@ -21,9 +21,9 @@ export default defineUserConfig({
 
   theme,
   plugins:[
-    vuepressPluginTypedjs2({
+   vuepressPluginTypedjs2({
       // 路径白名单（默认是所有页面生效，如果配置了白名单，那么只有白名单页面才会生效，支持*通配符）
-      withePathList: ['/','/zh/','/en/'],
+      withePathList: ['/','/zh/'],
       // 对应的标签选择器
       selector: '.vuepress_typed',
       // 打字内容
