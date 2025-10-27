@@ -30,6 +30,7 @@ api  | Description
 ---   | --- 
 any(expression)   | Indicates at least one that meets the condition, simply understood as `exists`
 none(expression)   | Indicates none that meet the condition, simply understood as `no exists`
+all(expression)   | It means that all elements in the preceding collection must satisfy the conditions inside all. If the preceding collection is empty, the result defaults to true.
 where(expression)   | Add conditions to the subquery
 orderBy(expression)   | Sort the subquery, commonly used with elements
 firstElement()   | Get the first element of the subquery
@@ -53,10 +54,11 @@ api  | Description
 ---  | --- 
 `user->user.bankCards().any()`   | User has at least one bank card
 `user->user.bankCards().none()`  | User has no bank cards at all
-`user->user.bankCards().where(card->card.type().eq("储蓄卡")).any()` | User has at least one savings card among their bank cards
-`user->user.bankCards().any(card->card.type().eq("储蓄卡"))`| User has at least one savings card among their bank cards, `where+any` can be abbreviated as `any`
-`user->user.bankCards().where(card->card.type().eq("储蓄卡")).none()`  | User has no savings cards among their bank cards
-`user->user.bankCards().none(card->card.type().eq("储蓄卡"))` | User has no savings cards among their bank cards, `where+none` can be abbreviated as `none`
-`user->user.bankCards().where(card->card.type().eq("储蓄卡")).count()` | Number of savings cards the user has, supports assertions
-`user->user.bankCards().where(card->card.type().eq("储蓄卡")).count().eq(1L)` | User has exactly 1 savings card
-`user->user.bankCards().where(card->card.type().eq("储蓄卡")).elements(0,1).none(card->card.bank().name().eq("建设银行"))` | User's first two bank cards are not from China Construction Bank
+`user->user.bankCards().all(bc->bc.type().eq("savings card"))`  | All of the user’s bank cards are savings card. If the user has no bank cards, the user will still be included in the query.
+`user->user.bankCards().where(card->card.type().eq("savings card")).any()` | User has at least one savings card among their bank cards
+`user->user.bankCards().any(card->card.type().eq("savings card"))`| User has at least one savings card among their bank cards, `where+any` can be abbreviated as `any`
+`user->user.bankCards().where(card->card.type().eq("savings card")).none()`  | User has no savings cards among their bank cards
+`user->user.bankCards().none(card->card.type().eq("savings card"))` | User has no savings cards among their bank cards, `where+none` can be abbreviated as `none`
+`user->user.bankCards().where(card->card.type().eq("savings card")).count()` | Number of savings cards the user has, supports assertions
+`user->user.bankCards().where(card->card.type().eq("savings card")).count().eq(1L)` | User has exactly 1 savings card
+`user->user.bankCards().where(card->card.type().eq("savings card")).elements(0,1).none(card->card.bank().name().eq("建设银行"))` | User's first two bank cards are not from China Construction Bank

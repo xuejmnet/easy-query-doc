@@ -48,6 +48,11 @@ markmap:
 - [组件服务](https://www.easy-query.com/easy-query-doc/framework/replace-configure)
 - [对象数据库映射规则](https://www.easy-query.com/easy-query-doc/framework/mapping-db)
 
+## 快速入门
+- [控制台案例](/easy-query-doc/startup/quick-start)
+- [业务案例](/easy-query-doc/startup/step1)
+- [实体设计推荐](/easy-query-doc/best-practices)
+
 ## [插件详解](https://www.easy-query.com/easy-query-doc/plugin/)
 - [配置项保存](https://www.easy-query.com/easy-query-doc/plugin/setting)
 - [快速生成ProxyEntityAvailable](https://www.easy-query.com/easy-query-doc/plugin/easy-query-implement)
@@ -60,11 +65,6 @@ markmap:
 - [lambda表达式提示](https://www.easy-query.com/easy-query-doc/plugin/lambda-alias)
 - [dsl运算符提示](https://www.easy-query.com/easy-query-doc/plugin/dsl-compare-operator)
 - [数据库表生成实体](https://www.easy-query.com/easy-query-doc/plugin/table2entity)
-
-## 快速入门
-- [控制台案例](/easy-query-doc/startup/quick-start)
-- [业务案例](/easy-query-doc/startup/step1)
-- [实体设计推荐](/easy-query-doc/best-practices)
 
 
 

@@ -124,13 +124,13 @@ public class SysBank implements ProxyEntityAvailable<SysBank, SysBankProxy> {
 // exists
 List<SysUser> list = easyEntityQuery.queryable(SysUser.class)
         .where(user -> user.or(() -> {
-            user.expression().exists(() -> {
-                return easyEntityQuery.queryable(SysBankCard.class)
+            user.expression().exists(
+                easyEntityQuery.queryable(SysBankCard.class)
                         .where(bankCard -> {
                             bankCard.uid().eq(user.id());
                             bankCard.type().eq("储蓄卡");//Savings card
-                        });
-            });
+                        })
+            );
         })).toList();
         
 
@@ -191,13 +191,13 @@ List<SysUser> list = easyEntityQuery.queryable(SysUser.class)
 //not exists
 List<SysUser> list = easyEntityQuery.queryable(SysUser.class)
         .where(user -> user.or(() -> {
-            user.expression().notExists(() -> {
-                return easyEntityQuery.queryable(SysBankCard.class)
+            user.expression().notExists(
+                easyEntityQuery.queryable(SysBankCard.class)
                         .where(bankCard -> {
                             bankCard.uid().eq(user.id());
                             bankCard.type().eq("储蓄卡");//Savings card
-                        });
-            });
+                        })
+            );
         })).toList();
 
 

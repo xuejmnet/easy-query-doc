@@ -39,12 +39,12 @@ tag:
                 .where(o -> {
                     Expression expression = o.expression();
                     
-                    expression.exists(() -> {
-                        return expression.subQueryable(BlogEntity.class).where(q -> {
+                    expression.exists(
+                        expression.subQueryable(BlogEntity.class).where(q -> {
                             q.id().eq("1" );
                             q.id().eq(o.id());
-                        });
-                    });
+                        })
+                    );
                 }).toList();
 
 
@@ -53,9 +53,9 @@ tag:
 //         .where(o -> o.id().eq("1" ));
 
 // List<Topic> list = easyEntityQuery.queryable(Topic.class)
-//         .where(o -> o.expression().exists(() -> {
-//                 return subQueryable.where(q -> q.id().eq(o.id()));
-//         })).toList();
+//         .where(o -> o.expression().exists(
+//              subQueryable.where(q -> q.id().eq(o.id()))
+//         )).toList();
 
 
 ==> Preparing: SELECT t.`id`,t.`stars`,t.`title`,t.`create_time` FROM `t_topic` t WHERE EXISTS (SELECT 1 FROM `t_blog` t1 WHERE t1.`deleted` = ? AND t1.`id` = ? AND t1.`id` = t.`id`)
@@ -79,12 +79,12 @@ tag:
 List<Topic> list = easyEntityQuery.queryable(Topic.class)
         .where(o -> {
             Expression expression = o.expression();
-            expression.notExists(() -> {
-                return expression.subQueryable(BlogEntity.class).where(q -> {
+            expression.notExists(
+                expression.subQueryable(BlogEntity.class).where(q -> {
                     q.id().eq("1");
                     q.id().eq(o.id());
-                });
-            });
+                })
+            );
         }).toList();
 
 // EntityQueryable<BlogEntityProxy, BlogEntity> subQueryable = easyEntityQuery.queryable(BlogEntity.class)
