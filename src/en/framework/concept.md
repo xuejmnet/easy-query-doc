@@ -1,29 +1,31 @@
 ---
-title: Expression Concept
+title: Expression Concepts
 order: 100
 ---
 
-# Expression Concept
-Before using `eq`, you must understand some concepts. These concepts help you use `eq` and write related code.
+# Expression Concepts
+Before using `eq`, you must understand some concepts that will help you use `eq` and write related code
 
-In `eq`, expressions are mainly divided into two categories:
-- Execution Fragment Expression
-- Type Fragment Expression
+In `eq`, expressions are mainly divided into two major categories:
+- Execution Fragment Expressions
+- Type Fragment Expressions
+
+
 
 ::: tip Note!!!
-> `Execution Fragment Expression` can be directly appended to SQL when executed in code block
-> `Type Fragment Expression` needs to be used with assertion methods like `eq`, `ge`, `not` etc. in code block, or returned/passed as parameter in `select`, `groupBy`
+> `Execution Fragment Expressions` will be concatenated into SQL when the code block is run
+> `Type Fragment Expressions` need to be used with assertion methods like `eq ge not` etc. in code blocks, and need to be returned as type expressions or passed as parameters in `select groupBy`
 :::
 
-## Execution Fragment Expression
-Execution fragment expression, as the name suggests, is an executed fragment, meaning it's directly appended to SQL expression in method mode. Common execution fragment expressions often use `void` as method return, commonly found in `where`, `orderBy`, `join`, `on`, `having`, etc.
 
-For example:
+## Execution Fragment Expressions
+As the name suggests, execution fragment expressions are executed fragments, meaning they are directly concatenated into SQL expressions in method mode. Common execution fragment expressions often return `void` as the method return type, commonly seen in `where orderBy join on having` etc.
+For example
 ```java
 
 List<SysUser> users = easyEntityQuery.queryable(SysUser.class)
         .where(s -> {
-            s.username().contains("XiaoMing");
+            s.username().contains("小明");
             s.expression().sql("{0} > {1}", c -> {
                 c.expression(s.createTime()).value(LocalDateTime.now());
             });
@@ -39,25 +41,26 @@ List<SysUser> users = easyEntityQuery.queryable(SysUser.class)
     FROM
        `t_sys_user` 
     WHERE
-        `username` LIKE CONCAT('%', 'XiaoMing', '%') 
+        `username` LIKE CONCAT('%', '小明', '%') 
         AND `create_time` > '2025-05-10 22:24:41.668'
 ```
 
-We can see that both `contains` and `s.expression().sql()` are execution fragment expressions. As long as the method is called, the corresponding expression will appear in the SQL.
+We can see that both `contains` and `s.expression().sql()` are what we now call execution fragment expressions. As long as the method is called, the corresponding expression will appear in the SQL.
 
-## Type Fragment Expression
-Different from execution fragment expression, type fragment expression is commonly used in `select`, `groupBy`. This expression mainly returns a type fragment for subsequent chain execution. If you call type fragment alone in `where`, `orderBy`, `join`, `on`, `having`, the expression will NOT be appended to SQL.
+
+## Type Fragment Expressions
+Different from execution fragment expressions, type fragment expressions are commonly used in `select groupBy`. This expression mainly returns a type fragment for subsequent chained execution. If a type fragment is called alone in `where orderBy join on having`, the expression will not be concatenated into SQL
 
 ```java
 
     List<SysUser> users = easyEntityQuery.queryable(SysUser.class)
             .where(s -> {
                 //Wrong usage
-                s.username().nullOrDefault("XiaoHong1");
+                s.username().nullOrDefault("小红1");
                 s.expression().sqlSegment("RAND()");
 
                 //Correct usage
-                s.username().nullOrDefault("XiaoHong2").contains("XiaoMing");
+                s.username().nullOrDefault("小红2").contains("小明");
                 s.expression().sqlSegment("RAND()").eq(123);
 
             }).toList();
@@ -73,31 +76,32 @@ Different from execution fragment expression, type fragment expression is common
     FROM
         `easy-query-test`.`t_sys_user` 
     WHERE
-        IFNULL(`username`, 'XiaoHong2') LIKE CONCAT('%', 'XiaoMing', '%') 
+        IFNULL(`username`, '小红2') LIKE CONCAT('%', '小明', '%') 
         AND RAND() = 123
 ```
 
-Using type fragment expression alone in execution fragment code block will NOT add the expression to context. Must call `execution fragment expression` after `type fragment expression`.
+Using type fragment expressions alone in execution fragment code blocks will not add the expression to the context. You must call an `execution fragment expression` after the `type fragment expression`.
 
-If we need to return the corresponding fragment in select instead of using it.
+If in select we need to return the corresponding fragment instead of using
+
 
 ## valueOf
 
-**If we want to return user id and whether user name is "XiaoMing", what should we do?**
+**If we want to return the user ID and whether the user is named 小明, what should we do**
 
-Wrong expression usage ❌
+Wrong expression usage❌
 ```java
 
 
      easyEntityQuery.queryable(SysUser.class)
              .select(s -> Select.DRAFT.of(
                      s.id(),
-                     s.username().eq("XiaoMing");//This is execution fragment, we can't get specific type
+                     s.username().eq("小明");//This is an execution fragment, we cannot get the specific type
              )).toList()
 
 ```
 
-Correct usage ✅
+Correct usage✅
 ```java
 
 
@@ -106,29 +110,30 @@ Correct usage ✅
             .select(s -> Select.DRAFT.of(
                     s.id(),
                     s.expression().valueOf(() -> {
-                        s.username().eq("XiaoMing");
+                        s.username().eq("小明");
                     })
             )).toList();
 
 
     SELECT
         t.`id` AS `value1`,
-        (t.`username` = 'XiaoMing') AS `value2` 
+        (t.`username` = '小明') AS `value2` 
     FROM
         `easy-query-test`.`t_sys_user` t
 ```
-Using `valueOf` to wrap the corresponding execution expression can convert it to the corresponding `boolean` type expression for user use.
+After wrapping the corresponding execution expression with `valueOf`, it can be converted into a corresponding `boolean` type expression for user use
 
-## valueOf Advanced Usage
 
-`valueOf` is commonly used to convert some judgments to `boolean` type, but we can use subsequent assertions to negate or achieve other various effects.
+## Advanced valueOf Usage
+
+`valueOf` is commonly used to convert some judgments into `boolean` types, but we can use subsequent assertions to implement negation or achieve various other effects
 
 ```java
 
         List<SysUser> users = easyEntityQuery.queryable(SysUser.class)
                 .where(s -> {
                     s.expression().not(() -> {
-                        s.username().contains("XiaoMing");
+                        s.username().contains("小明");
                     });
                 })
                 .toList();
@@ -144,20 +149,20 @@ Using `valueOf` to wrap the corresponding execution expression can convert it to
         `easy-query-test`.`t_sys_user` 
     WHERE
         (
-            NOT (`username` LIKE CONCAT('%', 'XiaoMing', '%'))
+            NOT (`username` LIKE CONCAT('%', '小明', '%'))
         )
 ```
 
-The original query condition is to query users with filter condition `name contains XiaoMing`, but by adding the `not` function, the condition can be directly changed to `name does not contain XiaoMing`.
+The original query condition was to query users with the filter condition `name contains 小明`, but after adding the `not` function, the condition directly becomes `name does not contain 小明`
 
-Similarly, we can achieve this through `valueOf`:
+Similarly, we can implement this through `valueOf`
 
 ```java
 
         List<SysUser> users = easyEntityQuery.queryable(SysUser.class)
                 .where(s -> {
                     s.expression().valueOf(() -> {
-                        s.username().contains("XiaoMing");
+                        s.username().contains("小明");
                     }).eq(false);
                 })
                 .toList();
@@ -174,7 +179,7 @@ Similarly, we can achieve this through `valueOf`:
         `easy-query-test`.`t_sys_user` 
     WHERE
         (
-            `username` LIKE CONCAT('%', 'XiaoMing', '%')
+            `username` LIKE CONCAT('%', '小明', '%')
         ) = false
 ```
 
@@ -186,13 +191,13 @@ Similarly, we can achieve this through `valueOf`:
                     s.expression().not(() -> {
 
                         s.phone().startsWith("123");
-                        s.username().startsWith("Jin");
+                        s.username().startsWith("金");
                     });
                     s.expression().valueOf(() -> {
                         s.or(() -> {
 
                             s.phone().startsWith("123");
-                            s.username().startsWith("Jin");
+                            s.username().startsWith("金");
                         });
                     }).eq(true);
                 }).toList();
@@ -212,14 +217,13 @@ Similarly, we can achieve this through `valueOf`:
         (
             NOT (
                 `phone` LIKE CONCAT('123', '%') 
-            AND `username` LIKE CONCAT('Jin', '%')
+            AND `username` LIKE CONCAT('金', '%')
             )
         ) 
         AND (
             (
                 `phone` LIKE CONCAT('123', '%') 
-                OR `username` LIKE CONCAT('Jin', '%')
+                OR `username` LIKE CONCAT('金', '%')
             )
         ) = true
 ```
-

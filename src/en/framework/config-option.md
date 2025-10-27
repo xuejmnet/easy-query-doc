@@ -1,77 +1,80 @@
 ---
-title: Configuration Parameters (Important)❗️❗️❗️
+title: Configuration Parameter Options (Important)❗️❗️❗️
 order: 10
 ---
 # Configurable Parameter Options
-Before using, hope users can first review the optional configuration items once, which helps understand how to optimize.
+Before use, we hope users can first review the optional configuration items, which will help understand how to optimize
 
 ::: danger Breaking Changes!!!
-> Framework has some configuration changes from v2 to v3. For details, see [v2 to v3 upgrade](/en/easy-query-doc/v2-v3)
-> Framework has some configuration changes from v2 to v3. For details, see [v2 to v3 upgrade](/en/easy-query-doc/v2-v3)
-> Framework has some configuration changes from v2 to v3. For details, see [v2 to v3 upgrade](/en/easy-query-doc/v2-v3)
+> The framework has made some configuration changes from v2-v3. Please refer to [v2 upgrade to v3](/easy-query-doc/en/v2-v3)
+> The framework has made some configuration changes from v2-v3. Please refer to [v2 upgrade to v3](/easy-query-doc/en/v2-v3)
+> The framework has made some configuration changes from v2-v3. Please refer to [v2 upgrade to v3](/easy-query-doc/en/v2-v3)
 :::
 
+
+
 ## Default Configuration Items
-Configuration Name  | Default | Description  
+Configuration Name  | Default Value | Description  
 --- | --- | --- 
-database | `DatabaseEnum.DEFAULT`  | By default uses SQL92 compliant syntax. If your database is within `easy-query`'s supported database range, please select the correct database you're using.
-deleteThrow | `true`  | `easy-query` doesn't allow physical deletion by default for data security. This doesn't mean delete operations can't be executed, but delete statements can't be generated after executing delete. Recommend using logical deletion to avoid this. For example, `delete from t_user where uid=1` will become `update t_user set deleted=1 where uid=1` after using logical deletion. Framework implements this function by default with logical deletion, users still use `deletable` method to call execution.
-nameConversion | `underlined`  | Currently two choices, users can also implement `NameConversion` interface themselves. Currently optional: `default`, `underlined`, `upper_underlined`, `lower_camel_case`, `upper_camel_case`. Enabling `default` means default object-to-database mapping is property name, e.g. property name `userAge` corresponds to database `userAge` column. `underlined` means using underscore, `userAge` will correspond to database `user_age` column. After global setting, can also manually specify corresponding column name in `@Column` [Related content](/en/easy-query-doc/framework/mapping-db)
-insertStrategy | `ONLY_NOT_NULL_COLUMNS`  | `insert` command defaults to non-null column insertion. If a table has `id` and `name`, when `name` column is null, generated SQL won't specify `name` column like `insert into t_user (id) values(?)`. If `name` column is not null, generated SQL will be `insert into t_user (id,name) values(?,?)`. If inserting collection with some columns null and some non-null, calling batch will generate n SQLs, merging same SQLs together. So choose according to your needs (default configuration is already good).
-updateStrategy | `ALL_COLUMNS`  | By default, update command generated statement will update all columns of entire object, won't check if null. If needed, can set whether null, not null, or all columns update.
-insertBatchThreshold | 1024  | If insertable adds object collection ≥1024 at once, will merge same SQL to improve execution efficiency. Connection string needs to add `rewriteBatchedStatements=true` (mysql). Can manually use or disable by calling insert or update's batch method. E.g. ≥3. Don't ask why not default `batch`, because `batch` some jdbc drivers or databases won't return correct affected row count.
-updateBatchThreshold | 1024  | If updatable adds object collection ≥1024 at once, will merge same SQL to improve execution efficiency. Connection string needs to add `rewriteBatchedStatements=true` (mysql). Can manually use or disable by calling insert or update's batch method. E.g. ≥3. Don't ask why not default `batch`, because `batch` some jdbc drivers or databases won't return correct affected row count.
-logClass | -  | Under `spring-boot` default is `com.easy.query.sql.starter.logging.Slf4jImpl` implementation. If you're non-`spring-boot`, can implement yourself or use console logging `LogFactory.useStdOutLogging()`
-queryLargeColumn | `true`  | By default still queries columns marked as `large` under `@Column`. If don't want to query, suggest setting as `large` and setting corresponding column as `@UpdateIgnore` with `updateSetInTrackDiff = true` to prevent unqueried results from being updated to null after full column update.
-printSql | `true`  | Whether to print executed SQL. This is different from log, considering sometimes may need to view SQL without log output. So if set to true, executed SQL and results will be recorded in log as `log.info()`. If you haven't set log, still won't see corresponding executed SQL.
-relationGroupSize | 512 | Single query maximum supported association ids for include association query. If exceeded, will execute as two statements. E.g. ≥1. Can set separately in `.configure(o->o.setGroupSize(20))`.
-noVersionError | true | When object has version number and is expression update, if version number `withVersion` not added, will error. Must set corresponding version number. If don't want error, can use `ignoreVersion` to ignore.
-warningColumnMiss| `true` | When jdbc's resultSet's columnName can't map to entity property, will output log.warning. `true`: means warning. `false`: means no warning.
-sqlParameterPrint| DEFAULT | SQL parameter printing. Can choose MYBATIS mode with extra comma and space.
-mapToBeanStrict| true | Whether to use property strict mode when mapping jdbc result set to bean.
-defaultSchema| null | When entity's schema is empty and defaultSchema is not empty, use defaultSchema.
-resultSizeLimit| -1 | Limit global fetch data to at most how many rows. ≤0 not effective. If set to 100, subsequent queries need to increase can set separately in `.configure(o->o.setResultSizeLimit(100000))`.
-mapKeyConversion| -  | When using map to return results, how to handle resultSet to map key. Default supports all uppercase, all lowercase, remove underscore, can also keep underscore.
-printNavSql| true | Whether to print secondary subquery SQL for association query.
-propertyMode| `PropertyModeEnum.SAME_AS_ENTITY`  | Indicates entity property is lowercase first letter (to be compatible with lambda and lambdakt mode). Another is `PropertyModeEnum.SAME_AS_ENTITY`. If you're entity mode, suggest using this.
-relationTableAppend| `RelationTableAppendEnum.SMART` | `SMART` means intelligently add `relationTable` implicit join, `DEFAULT` needs code execution not executing to navigation property needs `if` code block wrapping.
-mappingStrategy| `EntityMappingStrategyEnum.PROPERTY_FIRST` | Mapping relationship between objects. Default maps by `column name`, can choose `property name` or `column name + property name`.
-includeLimitMode| `IncludeLimitModeEnum.PARTITION` | When many sub-items are fetched, if sub-item sets limit to restrict return count, default uses `partition` to improve performance but some databases don't support. MySQL5.7 users can choose `union_all` to support include+limit.
-saveComment| `false` | `true`: keeps `@Column(comment="...")` and `@Table(comment="...")` annotation to EntityMetadata and ColumnMetadata.
-maxInClauseSize| `9999999` | When `.where(o -> o.id().in(ids))` can form `(id in (:p1,:p2) or id in(:p3,:p4))` according to set `maxInClauseSize`.
+database | `DatabaseEnum.DEFAULT`  | Defaults to SQL92-compliant syntax. If your database is within `easy-query`'s supported database range, please select the correct database you're using
+deleteThrow | `true`  | `easy-query` defaults to not allowing physical deletion for data safety. This doesn't mean delete operations can't be executed, but that delete statements can't be generated after executing delete. It's recommended to use logical deletion to avoid this. For example, `delete from t_user where uid=1` will become `update t_user set deleted=1 where uid=1` after using logical deletion. The framework implements this function by default when using logical deletion, users still use the `deletable` method to call and execute
+nameConversion | `underlined`  | Currently has two options, though users can also implement the `NameConversion` interface themselves. Currently available: `default`, `underlined`, `upper_underlined`, `lower_camel_case`, `upper_camel_case`. Enabling `default` means the default object-to-database mapping relationship is by property name. For example, property name `userAge` corresponds to database column `userAge`. `underlined` means using underscore - `userAge` corresponds to database column `user_age`. Of course, after global settings, you can also manually specify the corresponding column name on `@Column` [Related content](/easy-query-doc/en/framework/mapping-db)
+insertStrategy | `ONLY_NOT_NULL_COLUMNS`  | `insert` command defaults to inserting non-null columns. If a table has `id` and `name`, when the `name` column is null, the generated SQL will not specify the `name` column, like `insert into t_user (id) values(?)`. If the `name` column is not null, the generated SQL will be `insert into t_user (id,name) values(?,?)`. If the inserted collection has some null columns and some non-null columns, calling batch will generate n SQLs, merging the same SQLs together. So choose according to your needs (the default configuration is very good)
+updateStrategy | `ALL_COLUMNS`  | Default update command generated statement will update all columns of the entire object, not judging whether it's null. If needed, you can set whether null, not null, or all columns update
+insertBatchThreshold | 1024  | If insertable adds an object collection of 1024 or more at once, it will merge the same SQL to improve execution efficiency. The connection string needs to add `rewriteBatchedStatements=true` (mysql). Can manually use or disable by calling the batch method of insert or update, like greater than or equal to 3. Don't ask why not default `batch` because `batch` some JDBC drivers or databases don't return the correct affected row count
+updateBatchThreshold | 1024  | If updatable adds an object collection of 1024 or more at once, it will merge the same SQL to improve execution efficiency. The connection string needs to add `rewriteBatchedStatements=true` (mysql). Can manually use or disable by calling the batch method of insert or update, like greater than or equal to 3. Don't ask why not default `batch` because `batch` some JDBC drivers or databases don't return the correct affected row count
+logClass | -  | Under `spring-boot`, defaults to `com.easy.query.sql.starter.logging.Slf4jImpl` implementation. If you're not using `spring-boot`, you can implement yourself or use console logging `LogFactory.useStdOutLogging()`
+queryLargeColumn | `true`  | Defaults to still querying columns marked as `large` under `@Column`. If you don't want to query, it's recommended to set the corresponding column to `@UpdateIgnore` with `updateSetInTrackDiff = true` under the premise of setting it as `large`, to prevent unqueried results from also being updated to null after all-column update
+printSql | `true`  | Whether to print executed SQL. This is different from log because considering sometimes you may need to view SQL rather than output log. So if set to true, the executed SQL and execution results will be recorded in logs as `log.info()`. If you haven't set log, you still can't see the corresponding executed SQL
+relationGroupSize | 512 | Maximum associated IDs supported per query for include's associated query. If exceeded, will be executed as two statements, like greater than or equal to 1. Can be set separately at `.configure(o->o.setGroupSize(20))`
+noVersionError | true | When an object has a version number and is an expression update, if the version number `withVersion` is not added, it will error. The corresponding version number must be set. If you don't want error, you can ignore it through `ignoreVersion`
+warningColumnMiss| `true` | When JDBC's resultSet's columnName cannot be mapped to entity property, will output log.warning. `true`: means warning. `false`: means no warning
+sqlParameterPrint| DEFAULT | SQL parameter printing optional MYBATIS mode with one more space after comma
+mapToBeanStrict| true | Whether JDBC result set mapping to bean uses property strict mode
+defaultSchema| null | When entity's schema is empty and defaultSchema is not empty, use defaultSchema
+resultSizeLimit| -1 | Limit global data fetch to at most how many rows. Not effective when less than or equal to 0. If set to 100 and subsequent queries need to expand, can set separately at `.configure(o->o.setResultSizeLimit(100000))`
+mapKeyConversion| -  | When using map to return results, how to handle resultSet converted to map keys. Defaults to supporting all uppercase, all lowercase, removing underscores, and can also keep underscores
+printNavSql| true | Whether associated queries print secondary subquery SQL
+propertyMode| `PropertyModeEnum.SAME_AS_ENTITY`  | Indicates entity properties are lowercase first letter (to be compatible with lambda and lambdakt modes). There's also `PropertyModeEnum.SAME_AS_ENTITY`. If you're in entity mode, it's recommended to use this
+relationTableAppend| `RelationTableAppendEnum.SMART` | `SMART` means intelligently add `relationTable` implicit join. `DEFAULT` requires wrapping in `if` code block when code execution doesn't execute to navigation property
+mappingStrategy| `EntityMappingStrategyEnum.PROPERTY_FIRST` | Mapping relationship between objects. Defaults to mapping by `column name`. Can choose `property name` or `column name + property name`
+includeLimitMode| `IncludeLimitModeEnum.PARTITION` | When fetching many sub-items, if sub-items have limit set to limit return count, defaults to `partition` to improve performance but some databases don't support it. MySQL5.7 users can choose `union_all` to support include+limit
+saveComment| `false` | `true`: then persist `@Column(comment="...")` and `@Table(comment="...")` annotations to EntityMetadata and ColumnMetadata
+maxInClauseSize| `9999999` | When `.where(o -> o.id().in(ids))` can form `(id in (:p1,:p2) or id in(:p3,:p4))` according to the set `maxInClauseSize`
 
-## Sharding Specific Configuration
+## Sharding-Specific Configuration
 
-Configuration Name  | Default | Description  
+Configuration Name  | Default Value | Description  
 --- | --- | --- 
-sharding | `false`  | Whether to enable sharding. Not enabled by default. 3.0.3^ new configuration.
-connectionMode | `SYSTEM_AUTO`  | By default framework changes sharding connection mode to auto, framework handles automatically, no need for users to specify. Of course users can specify connection mode themselves. 1. `MEMORY_STRICTLY` memory strict mode, means if cross-table or cross-database query exists, this query will strictly control memory, query all tables at once as much as possible. For single database querying all tables, each table needs one `connection`, so may exhaust connection pool connections in single query or even not enough. So generally used with below config parameter `maxShardingQueryLimit` as limit. 2. `CONNECTION_STRICTLY` connection count limit, still uses `maxShardingQueryLimit` as maximum connections, uses as few connections as possible to execute cross-shard query merge. Mainly affects aggregation mode after sharding, whether to use streaming aggregation or memory aggregation. Generally users don't need to set.
-maxShardingQueryLimit❗️ | `5`  | Assume single query involves 13 cross-table queries. Because query doesn't have sharding key, this query will group 13 tables in same database into groups of 5, forming 3 groups with last group of 3 tables. Current query will acquire 5 connections at once, these 5 connections will be limited by `defaultDataSourceMergePoolSize` parameter, then returned to `DataSource` connection pool after this query completes. This parameter can't be set larger than `DataSource`'s `pool-size`, otherwise may cause program deadlock. Because if connection pool is 20, if single query needs 21, will keep waiting until timeout and still can't acquire 21.
-defaultDataSourceMergePoolSize❗️ | `0`  | If your tables have sharding tables, must set this value, and must set ≤ `DataSource` connection pool size. Assume connection pool size is 100, this value can be set to 60, 70, 80, or even 100, but can't be larger than connection pool, and must be ≥ `maxShardingQueryLimit`. If connection pool 100 and current value set to 10, means all threads only have 10 connections in connection pool for sharding aggregation query (10 per data source).
-multiConnWaitTimeoutMillis | `5000`  | By default for sharding connection acquisition >1 operations, deduct from `defaultDataSourceMergePoolSize` total. Like above 100 connection pool with sharding set to 10. If 3 threads all need 5 sharding aggregations, definitely one thread can't acquire. Will wait for default 5 seconds. If exceeds this time and still can't acquire because first two haven't finished querying, will throw error.
-warningBusy | `true`  | When sharding aggregation needs to acquire multiple connections at once. Still above case, assume third thread acquired 5 connections but acquisition time exceeded 80% of `multiConnWaitTimeoutMillis` time, framework will print acquiring connection is busy. You may need to readjust `defaultDataSourceMergePoolSize` value and connection pool size.
-maxShardingRouteCount | `128`  | Error when condition sharding exceeds how many, default 128. For example select where, update where, delete where routes to too many tables will error. Entity operations like update object, insert, delete object won't check this condition.
-defaultDataSourceName | `ds0`  | Default sharding data source name. If you don't need sharding, no need to set this value.
-shardingExecuteTimeoutMillis | `60000`  | Sharding aggregation timeout default 60 seconds unit(ms), includes CRUD.
-throwIfRouteNotMatch | `true`  | Whether to error when query doesn't match route. Default is if don't choose save then return default value. For example shard by time, start shard table is January 2020. If you query 2019 or query future time, framework internally doesn't have this time yet so route acquired for this query is empty. You can choose not to error and return default value. E.g. toList returns empty collection, count returns 0, etc.
-executorMaximumPoolSize | `0`  | Sharding aggregation maximum thread count. Default 0 will use `Executors.newCachedThreadPool` thread pool. If need to set or customize, please set to at least maxShardingQueryLimit*shard count. After setting value will use bounded queue thread pool.
-executorCorePoolSize | `Math.min(processors, 4)`  | Only effective when `executorMaximumPoolSize`>0. Where `processors` is `Runtime.getRuntime().availableProcessors()`.
-executorQueueSize | `1024`  | Only effective when `executorMaximumPoolSize`>0. Thread pool bounded queue size.
-startTimeJob| `false` | When using system default time-based sharding, setting this config to `true`, framework will add corresponding system tables in memory. Principle is starting a scheduled task thread to execute.
-shardingFetchSize| `1000` | Default fetch size setting under sharding.
-shardingQueryInTransaction| serializable | `serializable` in-transaction query will set maxShardingQueryLimit to 1 for serial processing to prevent dirty reads because concurrent query under current transaction not possible. Can also use `concurrency` to ignore current transaction query. Performance-wise `concurrency` priority. `serializable` ensures relative data consistency. Can also manually set queryable().useMaxShardingQueryLimit(n).
+sharding | `false`  | Whether to enable sharding. Not enabled by default. New configuration in 3.0.3^
+connectionMode | `SYSTEM_AUTO`  | By default, the framework changes the connection mode for sharding connections to automatic. The framework will handle it automatically without user specification. Of course, users can also specify the connection mode themselves. 1. `MEMORY_STRICTLY` memory strict mode, meaning if cross-table or cross-database queries exist, this query will strictly control memory, querying all tables at once as much as possible. For a single database, if querying all tables, each table needs a `connection`, so a single query may exhaust the connection pool or even be insufficient. So usually works with the configuration parameter `maxShardingQueryLimit` as a limit. 2. `CONNECTION_STRICTLY` connection count limit, still using `maxShardingQueryLimit` as the maximum connection count, using as few connections as possible to execute cross-shard query merging. Mainly affects aggregation mode after sharding, whether to use stream aggregation or memory aggregation. Generally, users don't need to set.
+maxShardingQueryLimit❗️ | `5`  | Suppose a single query involves querying across 13 tables. Because the query doesn't have a sharding key, this query will group 13 tables under the same database into 5 per group, dividing into 3 groups with the last group having 3 tables. The current query will acquire 5 connections at once. These 5 connections will be limited by the `defaultDataSourceMergePoolSize` parameter, then returned to the `DataSource` connection pool after this query is completed. This parameter cannot be set larger than the `DataSource`'s `pool-size`, otherwise it may cause the program to freeze, because if the connection pool is 20 and a single query needs 21, it will keep waiting until timeout and still can't get 21
+defaultDataSourceMergePoolSize❗️ | `0`  | If any of your tables are sharded, you must set this value, and must be set less than or equal to the `DataSource` connection pool size. Suppose the connection pool size is 100, then this value can be set to 60, 70, 80, or even 100, but cannot be larger than the connection pool, and must be greater than or equal to `maxShardingQueryLimit`. If the connection pool is 100 and the current value is set to 10, it means all threads only have 10 connections within the connection pool that can be used for shard aggregation queries (10 per data source)
+multiConnWaitTimeoutMillis | `5000`  | By default, for shard connection acquisition operations greater than 1, deduct from the total of `defaultDataSourceMergePoolSize`. For example, with 100 connection pool and shard set to 10, if 3 threads all need 5 shard aggregations, one thread definitely can't acquire, so it will wait for the default 5 seconds. If after this time the first two still haven't finished querying, it will throw an error
+warningBusy | `true`  | During shard aggregation, because multiple connections need to be acquired at once, still using the above case, suppose the third thread acquired 5 connections but the acquisition time exceeded 80% of `multiConnWaitTimeoutMillis` time, the framework will print that acquiring connections is busy. You may need to readjust this value of `defaultDataSourceMergePoolSize` and adjust the connection pool size
+maxShardingRouteCount | `128`  | When conditional sharding exceeds how much to error, default 128. That is, for example, select where update where delete where routes to too many tables will error. For entity operations like update object, insert, delete object, this condition won't be judged
+defaultDataSourceName | `ds0`  | Default sharding datasource name. If you don't need database sharding, you don't need to set this value
+shardingExecuteTimeoutMillis | `60000`  | Shard aggregation timeout default 60 seconds in units (ms), including CRUD
+throwIfRouteNotMatch | `true`  | Whether to error when query doesn't match route. Default is if not choose to save, return default value. For example, sharding by time, if the starting shard table is January 2020, then if you query 2019 or query future time, the framework internally doesn't have this time yet, so the route obtained by this query is empty. You can choose not to error and return default value, like toList will be an empty collection, count will be 0, etc.
+executorMaximumPoolSize | `0`  | Maximum shard aggregation thread count. Default 0 will use `Executors.newCachedThreadPool` thread pool. If you need to set or customize, please set to at least maxShardingQueryLimit*shard count. After setting value, will use bounded queue thread pool
+executorCorePoolSize | `Math.min(processors, 4)`  | Only effective when `executorMaximumPoolSize`>0. Where `processors` is `Runtime.getRuntime().availableProcessors()`
+executorQueueSize | `1024`  | Only effective when `executorMaximumPoolSize`>0. Thread pool bounded queue size
+startTimeJob| `false` | When using the system default time-based sharding, setting this configuration to `true` will add corresponding system tables in memory. The principle is to start a scheduled task thread to execute
+shardingFetchSize| `1000` | Default fetch size setting under sharding
+shardingQueryInTransaction| serializable | `serializable` queries within transactions will set maxShardingQueryLimit to 1 to go serial to prevent dirty reads because current transactions are not allowed under concurrent queries. You can also use `concurrency` to ignore current transaction queries. Performance-wise, `concurrency` is prioritized. `serializable` will ensure relative data consistency. You can also manually set queryable().useMaxShardingQueryLimit(n)
+
 
 ## spring-boot
-Can directly configure above options through configuration file:
+Configuration file can directly configure the above options
 ```yml
 
 easy-query:
   enable: true
   name-conversion: underlined
   database: mysql
-  #Will error if executing physical delete statement. If change to false, can allow later through allowDeleteStatement
+  #If executing physical delete statement will error. If changed to false, can later allow through allowDeleteStatement
   delete-throw: true
-  #Print SQL display (needs framework default log to print with log.info)
+  #Print SQL display (requires framework to have default log to print with log.info)
   print-sql: true
   #Entity mapping to dto/vo uses property matching mode
   #Supports property_only column_only column_and_property property_first
@@ -84,12 +87,11 @@ easy-query:
  EasyQueryClient easyQueryClient = EasyQueryBootstrapper.defaultBuilderConfiguration()
                 .setDefaultDataSource(dataSource)
                 .optionConfigure(op -> {
-                    op.setDeleteThrowError(true);//Set not allow physical deletion
+                    op.setDeleteThrowError(true);//Set to not allow physical deletion
                     op.setPrintSql(true);//Set to print executed SQL info in log.info mode
-                    ......//Here for configuring system default configuration options
+                    ......//Here used to configure system default configuration options
                 })
                 .replaceService(NameConversion.class, UnderlinedNameConversion.class)//Replace framework internal property and column conversion mode to uppercase to underscore
-                .useDatabaseConfigure(new MySQLDatabaseConfiguration())//Set dialect syntax etc. to mysql's
+                .useDatabaseConfigure(new MySQLDatabaseConfiguration())//Set dialect syntax etc. to MySQL's
                 .build();
 ```
-
