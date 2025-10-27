@@ -1,8 +1,8 @@
 ---
-title: Practical Guide
+title: Practice
 order: 40
 ---
 
-# Practical Guide
-`easy-query` practical guide will try to bring you the design patterns we use in actual development process, and provide more solutions.
+# Practice
+The `easy-query` practice section will bring you the design types we adopt in the actual development process as much as possible, and provide you with more solutions.
 
