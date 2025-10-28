@@ -164,14 +164,13 @@ List<Part1<SysBank, Long>> bankAndCounts = easyEntityQuery.queryable(SysBank.cla
         })
         .select(bank -> Select.PART.of(
                 bank,
-                bank.expression().subQuery(()->{
-                    return bank.expression().subQueryable(SysBankCard.class)
+                bank.expression().subQuery(
+                    bank.expression().subQueryable(SysBankCard.class)
                             .where(bank_card -> {
                                 bank_card.bankId().eq(bank.id());
                             })
-                            .selectColumn(bank_card -> bank_card.id().count());
-                                //.selectCount()
-                })
+                            .selectColumn(bank_card -> bank_card.id().count())//.selectCount()
+               )
         )).toList();
 
 
@@ -284,24 +283,22 @@ List<Part2<SysBank, Long, Long>> bankAndCounts = easyEntityQuery.queryable(SysBa
                 })
                 .select(bank -> Select.PART.of(
                         bank,
-                        bank.expression().subQuery(()->{
-                            return bank.expression().subQueryable(SysBankCard.class)
+                        bank.expression().subQuery(
+                            bank.expression().subQueryable(SysBankCard.class)
                                     .where(bank_card -> {
                                         bank_card.bankId().eq(bank.id());
                                         bank_card.type().eq("储蓄卡");
                                     })
-                                    .selectColumn(bank_card -> bank_card.id().count());
-                            //.selectCount()
-                        }),
-                        bank.expression().subQuery(()->{
-                            return bank.expression().subQueryable(SysBankCard.class)
+                                    .selectColumn(bank_card -> bank_card.id().count())//.selectCount()
+                        ),
+                        bank.expression().subQuery(
+                            bank.expression().subQueryable(SysBankCard.class)
                                     .where(bank_card -> {
                                         bank_card.bankId().eq(bank.id());
                                         bank_card.type().eq("信用卡");
                                     })
-                                    .selectColumn(bank_card -> bank_card.id().count());
-                            //.selectCount()
-                        })
+                                    .selectColumn(bank_card -> bank_card.id().count())//.selectCount()
+                        )
                 )).toList();
 
 
