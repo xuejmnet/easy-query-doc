@@ -9,7 +9,7 @@ bgImageDark: /images/bg/6-dark.svg
 bgImageStyle:
   background-attachment: fixed
 heroText: easy-query
-tagline: 🚀 The most powerful ORM for Java (Kotlin supported)</br>
+tagline: 🚀 The most powerful ORM for Java (Kotlin supported)</br><span class="vuepress_typed"></span>
 actions:
   - text: Get Started →
     icon: lightbulb
