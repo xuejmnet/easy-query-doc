@@ -1,7 +1,7 @@
 import { hopeTheme } from "vuepress-theme-hope";
 
-import { cnNavbar, zhNavbar, enNavbar } from "./navbar/index.js";
-import { cnSidebar, zhSidebar, enSidebar } from "./sidebar/index.js";
+import { zhNavbar, enNavbar } from "./navbar/index.js";
+import { zhSidebar, enSidebar } from "./sidebar/index.js";
 
 export default hopeTheme({
   hostname: "https://github.com/dromara/easy-query",

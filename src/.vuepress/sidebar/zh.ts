@@ -97,12 +97,6 @@ export const zhSidebar = sidebar({
       children: "structure",
     },
     {
-      text: "性能相关",
-      prefix: "performance/",
-      collapsible:true,
-      children: "structure",
-    },
-    {
       text: "code-first",
       prefix: "code-first/",
       collapsible:true,

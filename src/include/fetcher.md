@@ -16,6 +16,14 @@ OneToMany | 一对多 | 班级和学生
 ManyToOne | 多对一  | 学生和班级
 ManyToMany | 多对多  | 班级和老师
 
+
+
+::: danger 说明!!!
+> `include`只可以对`eq`from表进行树形拉取对象结构查询
+:::
+
+
+
 ```java
 
 List<SchoolClass> classes = easyEntityQuery.queryable(SchoolClass.class)
@@ -108,6 +116,104 @@ List<SchoolStudent> list2 = easyEntityQuery.queryable(SchoolStudent.class)
 
 
 ::: 
+
+## include2
+`eq 3.1.47+`版本推出`include2`在复杂嵌套情况下可以代替默认的`include(s)`，其中`include2`是插件的提示代码并且include有原先的单参数变成双参数
+
+
+接口  | 功能  
+---  | --- 
+参数一 | include的上下文用于添加额外查询
+参数二  | 参数二为当前表达式的主表也就是from表
+
+```java
+                List<SchoolClass> list = easyEntityQuery.queryable(SchoolClass.class)
+                        .include((c,s)->{
+                            c.query(s.schoolTeachers().flatElement().schoolClasses()).where(a -> a.name().like("123"));
+                            c.query(s.schoolStudents().flatElement().schoolClass()).where(x -> x.schoolStudents().flatElement().name().eq("123"));
+                            c.query(s.schoolStudents()).where(x -> x.name().ne("123"));
+                        })
+                        .toList();
+```
+
+`query()`方法接受一个主表的导航属性，可以是对象也可以是集合，也可以是集合后穿透的集合。
+
+`c.query(s.schoolTeachers().flatElement().schoolClasses()).where(a -> a.name().like("123"))`该表达式说明用户需要查询主表然后二次查询带出`schoolTeachers.schoolClasses`两张表，并且对最后一张表使用了`where`进行额外过滤`name().like("123")`,条件过滤排序等操作可以在`query()`后面,如果你是集合也可以直接进行`where`、`orderBy`、`limit`等，`s.schoolStudents().flatElement().schoolClass()`表示既要查询返回`schoolStudents`也要查询返回`schoolClass`
+
+```sql
+
+-- 第1条sql数据
+
+    SELECT
+        `id`,
+        `name` 
+    FROM
+        `school_class`
+-- 第2条sql数据
+
+    SELECT
+        `class_id`,
+        `teacher_id` 
+    FROM
+        `school_class_teacher` 
+    WHERE
+        `class_id` IN ('teacher1', 'teacher2', ?)
+-- 第3条sql数据
+
+    SELECT
+        t.`id`,
+        t.`name` 
+    FROM
+        `school_teacher` t 
+    WHERE
+        t.`id` IN ('teacher1', 'teacher2')
+-- 第4条sql数据
+
+    SELECT
+        `teacher_id`,
+        `class_id` 
+    FROM
+        `school_class_teacher` 
+    WHERE
+        `teacher_id` IN ('%123%', 'class1')
+-- 第5条sql数据
+
+    SELECT
+        t.`id`,
+        t.`name` 
+    FROM
+        `school_class` t 
+    WHERE
+        t.`name` LIKE '123' 
+        AND t.`id` IN ('class1', 'class2')
+-- 第6条sql数据
+
+    SELECT
+        t.`id`,
+        t.`class_id`,
+        t.`name` 
+    FROM
+        `school_student` t 
+    WHERE
+        t.`name` <> '123' 
+        AND t.`class_id` IN ('class1', 'class2', ?)
+-- 第7条sql数据
+
+    SELECT
+        t.`id`,
+        t.`name` 
+    FROM
+        `school_class` t 
+    WHERE
+        EXISTS (SELECT
+            1 FROM `school_student` t1 
+        WHERE
+            t1.`class_id` = t.`id` 
+            AND t1.`name` = ? 
+        LIMIT
+            1) 
+        AND t.`id` IN (?, ?)
+```
 
 ## 忽略关联查询的value
 `eq`默认关联查询是使用`selfProperty`的值对目标属性的表进行二次关联查询,默认情况下`selfProperty`的值为`null`则不会对目标属性进行再次查询,那么有时候我们数据库可能存在其他值，在表现形式上等同于null，比如字符串`-`,`/`,或者空字符串,那么对于二次查询其实没有任何意义,那么我们应该如何去替换让框架支持呢。

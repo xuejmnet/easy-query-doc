@@ -16,6 +16,12 @@ OneToMany | One-to-Many | Class and students
 ManyToOne | Many-to-One  | Student and class
 ManyToMany | Many-to-Many  | Class and teachers
 
+
+::: danger note!!!
+> `include` can only be used with the eq source table for hierarchical (tree-structured) object fetching.
+:::
+
+
 ```java
 
 List<SchoolClass> classes = easyEntityQuery.queryable(SchoolClass.class)
@@ -108,6 +114,115 @@ List<SchoolStudent> list2 = easyEntityQuery.queryable(SchoolStudent.class)
 
 
 ::: 
+
+
+
+## include2
+Starting from version `eq 3.1.47+`, the include2 feature was introduced.
+In complex nested scenarios, include2 can replace the default include(s).
+include2 provides IDE-friendly code hints, and compared with the original include, it changes from a single-parameter to a dual-parameter form.
+
+
+Parameter  | Description  
+---  | --- 
+Parameter 1 | The include context used to add additional query logic
+Parameter 2  | The main (root) table of the current expression, i.e., the from table
+
+```java
+                List<SchoolClass> list = easyEntityQuery.queryable(SchoolClass.class)
+                        .include((c,s)->{
+                            c.query(s.schoolTeachers().flatElement().schoolClasses()).where(a -> a.name().like("123"));
+                            c.query(s.schoolStudents().flatElement().schoolClass()).where(x -> x.schoolStudents().flatElement().name().eq("123"));
+                            c.query(s.schoolStudents()).where(x -> x.name().ne("123"));
+                        })
+                        .toList();
+```
+The `query()` method accepts a navigation property from the main table.
+This property can be an object, a collection, or even a nested collection obtained through further navigation.
+
+For example:
+`c.query(s.schoolTeachers().flatElement().schoolClasses()).where(a -> a.name().like("123"))`
+means that the user wants to query from the main table, then perform a secondary query that brings in both schoolTeachers and schoolClasses.
+An additional filter condition name().like("123") is applied to the last table.
+Filtering, ordering, and pagination operations can all be chained after query().
+
+If the navigation property is a collection, you can directly use where, orderBy, limit, etc.
+ `s.schoolStudents().flatElement().schoolClass()` means that both schoolStudents and schoolClass are included in the query result.
+```sql
+
+-- SQL 1
+
+    SELECT
+        `id`,
+        `name` 
+    FROM
+        `school_class`
+-- SQL 2
+
+    SELECT
+        `class_id`,
+        `teacher_id` 
+    FROM
+        `school_class_teacher` 
+    WHERE
+        `class_id` IN ('teacher1', 'teacher2', ?)
+-- SQL 3
+
+    SELECT
+        t.`id`,
+        t.`name` 
+    FROM
+        `school_teacher` t 
+    WHERE
+        t.`id` IN ('teacher1', 'teacher2')
+-- SQL 4
+
+    SELECT
+        `teacher_id`,
+        `class_id` 
+    FROM
+        `school_class_teacher` 
+    WHERE
+        `teacher_id` IN ('%123%', 'class1')
+-- SQL 5
+
+    SELECT
+        t.`id`,
+        t.`name` 
+    FROM
+        `school_class` t 
+    WHERE
+        t.`name` LIKE '123' 
+        AND t.`id` IN ('class1', 'class2')
+-- SQL 6
+
+    SELECT
+        t.`id`,
+        t.`class_id`,
+        t.`name` 
+    FROM
+        `school_student` t 
+    WHERE
+        t.`name` <> '123' 
+        AND t.`class_id` IN ('class1', 'class2', ?)
+-- SQL 7
+
+    SELECT
+        t.`id`,
+        t.`name` 
+    FROM
+        `school_class` t 
+    WHERE
+        EXISTS (SELECT
+            1 FROM `school_student` t1 
+        WHERE
+            t1.`class_id` = t.`id` 
+            AND t1.`name` = ? 
+        LIMIT
+            1) 
+        AND t.`id` IN (?, ?)
+```
+
 
 ## Ignore Association Query Values
 By default, `eq` association queries use the value of `selfProperty` to perform a secondary association query on the target property's table. By default, if the value of `selfProperty` is `null`, the target property will not be queried again. Sometimes our database may have other values that are equivalent to null in representation, such as string `-`, `/`, or empty strings. For secondary queries, these are actually meaningless, so how should we replace them to make the framework support this?

@@ -48,6 +48,13 @@ markmap:
 - [Component Services](/easy-query-doc/en/framework/replace-configure)
 - [Object-Database Mapping Rules](/easy-query-doc/en/framework/mapping-db)
 
+## Quick Start
+- [Console Case](/easy-query-doc/en/startup/quick-start)
+- [Business Case](/easy-query-doc/en/startup/step1)
+- [Entity Design Recommendations](/easy-query-doc/en/best-practices)
+
+
+
 ## [Plugin Details](/easy-query-doc/en/plugin/)
 - [Configuration Saving](/easy-query-doc/en/plugin/setting)
 - [Quick Generate ProxyEntityAvailable](/easy-query-doc/en/plugin/easy-query-implement)
@@ -60,13 +67,6 @@ markmap:
 - [Lambda Expression Tips](/easy-query-doc/en/plugin/lambda-alias)
 - [DSL Operator Tips](/easy-query-doc/en/plugin/dsl-compare-operator)
 - [Database Table Generate Entity](/easy-query-doc/en/plugin/table2entity)
-
-## Quick Start
-- [Console Case](/easy-query-doc/en/startup/quick-start)
-- [Business Case](/easy-query-doc/en/startup/step1)
-- [Entity Design Recommendations](/easy-query-doc/en/best-practices)
-
-
 
 ## Expressions🔥
 - Single Table Query
