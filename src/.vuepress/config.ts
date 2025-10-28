@@ -19,11 +19,14 @@ export default defineUserConfig({
     },
   },
 
+  // 减少并发构建数量，降低内存使用
+  shouldPrefetch: false,
+
   theme,
   plugins:[
    vuepressPluginTypedjs2({
       // 路径白名单（默认是所有页面生效，如果配置了白名单，那么只有白名单页面才会生效，支持*通配符）
-      withePathList: ['/','/zh/'],
+      withePathList: ['*'],
       // 对应的标签选择器
       selector: '.vuepress_typed',
       // 打字内容
