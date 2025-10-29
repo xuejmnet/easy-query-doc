@@ -446,7 +446,7 @@ If the structured data we need to query requires extra filtering for correspondi
 //Can directly filter out structured DTO
 List<StructSysUserDTO> users = easyEntityQuery.queryable(SysUser.class)
         //Manual include(s) will override selectAutoInclude
-        .includes(s->s.roles(),roleQuery->roleQuery.where(role->role.name().eq("Administrator")))
+        .include(s->s.roles(),roleQuery->roleQuery.where(role->role.name().eq("Administrator")))
         .where(s -> s.name().like("XiaoMing"))
         .selectAutoInclude(StructSysUserDTO.class).toList();
 ```

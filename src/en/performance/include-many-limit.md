@@ -25,7 +25,7 @@ public class M8Comment implements ProxyEntityAvailable<M8Comment, M8CommentProxy
 ```java
 
 List<M8Comment> list = easyEntityQuery.queryable(M8Comment.class)
-        .includes(m -> m.subComments(), s -> s.limit(3))
+        .include(m -> m.subComments(), s -> s.limit(3))
         .toList();
 ```
 
@@ -100,7 +100,7 @@ You can configure `include-mode: partition` to use partition SQL to implement li
 ```java
 
 List<M8Comment> list = easyEntityQuery.queryable(M8Comment.class)
-        .includes(m -> m.subComments(), s -> s.limit(3))
+        .include(m -> m.subComments(), s -> s.limit(3))
         .toList();
 ```
 The same expression will generate the following SQL

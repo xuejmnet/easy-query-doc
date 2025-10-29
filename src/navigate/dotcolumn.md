@@ -270,7 +270,7 @@ WHERE
 ```java
 
 List<M8UserBookIds> list1 = easyEntityQuery.queryable(M8UserBookIds.class)
-        .includes(m -> m.books())
+        .include(m -> m.books())
         .toList();
 
 

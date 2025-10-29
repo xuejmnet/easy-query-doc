@@ -18,7 +18,7 @@ eq版本`3.1.41+`在使用savable的时候可以对子项进行设置正确的�
     public Object update2(@RequestBody BankUpdateRequest request) {
 
         SaveBank saveBank = easyEntityQuery.queryable(SaveBank.class)
-                .includes(save_bank -> save_bank.saveBankCards())
+                .include(save_bank -> save_bank.saveBankCards())
                 .whereById(request.getId()).singleNotNull();
 
         saveBank.setName(request.getName());
@@ -65,7 +65,7 @@ public class MySaveEntitySetPrimaryKeyGenerator implements SaveEntitySetPrimaryK
     public Object update3(@RequestBody BankUpdateRequest request) {
 
         SaveBank saveBank = easyEntityQuery.queryable(SaveBank.class)
-                .includes(save_bank -> save_bank.saveBankCards())
+                .include(save_bank -> save_bank.saveBankCards())
                 .whereById(request.getId()).singleNotNull();
 
         saveBank.setName(request.getName());
@@ -171,7 +171,7 @@ public class MySaveEntitySetPrimaryKeyGenerator implements SaveEntitySetPrimaryK
 这个时候我们再通过save方法来保存
 ```java
         SaveBank saveBank = easyEntityQuery.queryable(SaveBank.class)
-                .includes(save_bank -> save_bank.saveBankCards())
+                .include(save_bank -> save_bank.saveBankCards())
                 .whereById(request.getId()).singleNotNull();
 
         saveBank.setName(request.getName());
@@ -193,7 +193,7 @@ public class MySaveEntitySetPrimaryKeyGenerator implements SaveEntitySetPrimaryK
 将原先的代码修改为如下即可
 ```java
 SaveBank saveBank = easyEntityQuery.queryable(SaveBank.class)
-                .includes(save_bank -> save_bank.saveBankCards())
+                .include(save_bank -> save_bank.saveBankCards())
                 .whereById(request.getId()).singleNotNull();
 
         saveBank.setName(request.getName());

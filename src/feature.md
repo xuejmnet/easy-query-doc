@@ -2,6 +2,8 @@
 title: 新功能
 order: 110
 ---
+## include统一
+`3.1.49+`eq对所有的include进行了统一不需要再区分include还是includes
 ## 子查询all函数
 `3.1.46+`eq添加了子查询`all`函数
 ```java

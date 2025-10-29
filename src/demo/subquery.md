@@ -267,8 +267,8 @@ List<SchoolClass> list = easyEntityQuery.queryable(SchoolClass.class)
 ```java
 
 List<SchoolClass> list = easyEntityQuery.queryable(SchoolClass.class)
-//include和includes分别获取对一和对多的关系 include(s)的第二个参数可以筛选返回的数据结果如果不加就返回当前班级下的所有关联的老师
-        .includes(s -> s.schoolTeachers(),s->{
+//includ获取对一和对多的关系 include的第二个参数可以筛选返回的数据结果如果不加就返回当前班级下的所有关联的老师
+        .include(s -> s.schoolTeachers(),s->{
             //获取对多的老师的信息但是必须是姓金的才返回
             s.where(t->t.name().likeMatchLeft("金"));
         })
@@ -299,8 +299,8 @@ List<SchoolStudent> list = easyEntityQuery.queryable(SchoolStudent.class)
 
 ```java
      List<SchoolClass> list = easyEntityQuery.queryable(SchoolClass.class)
-                .includes(s -> s.schoolTeachers())
-                .includes(s -> s.schoolStudents(),x->{
+                .include(s -> s.schoolTeachers())
+                .include(s -> s.schoolStudents(),x->{
                     x.include(y->y.schoolStudentAddress());
                 })
                 .where(s -> {
@@ -313,8 +313,8 @@ List<SchoolStudent> list = easyEntityQuery.queryable(SchoolStudent.class)
 
 ```java
      List<SchoolClass> list = easyEntityQuery.queryable(SchoolClass.class)
-                .includes(s -> s.schoolTeachers())
-                .includes(s -> s.schoolStudents(),x->{
+                .include(s -> s.schoolTeachers())
+                .include(s -> s.schoolStudents(),x->{
                     x.include(y->y.schoolStudentAddress())
                     .orderBy(y->y.age().desc())
                     .limit(3);

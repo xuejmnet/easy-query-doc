@@ -209,7 +209,7 @@ public class BankUpdateRequest {
     public Object update(@RequestBody BankUpdateRequest request) {
 
         SaveBank saveBank = easyEntityQuery.queryable(SaveBank.class)
-                .includes(save_bank -> save_bank.saveBankCards())
+                .include(save_bank -> save_bank.saveBankCards())
                 .whereById(request.getId()).singleNotNull();
         
         saveBank.setName(request.getName());
@@ -270,7 +270,7 @@ Although the framework correctly handled this operation, the user implementation
     public Object update2(@RequestBody BankUpdateRequest request) {
 
         SaveBank saveBank = easyEntityQuery.queryable(SaveBank.class)
-                .includes(save_bank -> save_bank.saveBankCards())
+                .include(save_bank -> save_bank.saveBankCards())
                 .whereById(request.getId()).singleNotNull();
 
         saveBank.setName(request.getName());
@@ -445,7 +445,7 @@ public class UserUpdateRequest {
     @EasyQueryTrack
     public Object update3(@RequestBody UserUpdateRequest request) {
         SaveUser saveUser = easyEntityQuery.queryable(SaveUser.class)
-                .includes(save_user -> save_user.saveBankCards())
+                .include(save_user -> save_user.saveBankCards())
                 .singleNotNull();
 
         saveUser.setName(request.getName());

@@ -25,7 +25,7 @@ public class M8Comment implements ProxyEntityAvailable<M8Comment, M8CommentProxy
 ```java
 
 List<M8Comment> list = easyEntityQuery.queryable(M8Comment.class)
-        .includes(m -> m.subComments(), s -> s.limit(3))
+        .include(m -> m.subComments(), s -> s.limit(3))
         .toList();
 ```
 
@@ -100,7 +100,7 @@ List<M8Comment> list = easyEntityQuery.queryable(M8Comment.class)
 ```java
 
 List<M8Comment> list = easyEntityQuery.queryable(M8Comment.class)
-        .includes(m -> m.subComments(), s -> s.limit(3))
+        .include(m -> m.subComments(), s -> s.limit(3))
         .toList();
 ```
 还是一样的表达式将生成如下sql

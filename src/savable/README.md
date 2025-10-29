@@ -231,7 +231,7 @@ public class M8User implements ProxyEntityAvailable<M8User , M8UserProxy> {
 
 
         M8User m8User = easyEntityQuery.queryable(M8User.class)
-                .includes(m -> m.roles())
+                .include(m -> m.roles())
                 .singleNotNull();
         List<M8Role> list = easyEntityQuery.queryable(M8Role.class)
                 .where(m -> {

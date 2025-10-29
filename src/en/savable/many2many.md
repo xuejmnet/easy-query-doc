@@ -169,7 +169,7 @@ public class UserRoleRequest {
     @EasyQueryTrack
     public Object update(@RequestBody UserRoleRequest request) {
         SysUser sysUser = easyEntityQuery.queryable(SysUser.class)
-                .includes(user -> user.sysRoleList())
+                .include(user -> user.sysRoleList())
                 .whereById(request.getUserId()).singleNotNull();
 
         List<SysRole> list = easyEntityQuery.queryable(SysRole.class).whereByIds(request.getRoleIds())
@@ -287,7 +287,7 @@ Write API
     @EasyQueryTrack
     public Object update2(@RequestBody UserRoleRequest request) {
         SysUser sysUser = easyEntityQuery.queryable(SysUser.class)
-                .includes(user -> user.userRoleList())
+                .include(user -> user.userRoleList())
                 .whereById(request.getUserId()).singleNotNull();
 
         List<SysRole> list = easyEntityQuery.queryable(SysRole.class).whereByIds(request.getRoleIds())

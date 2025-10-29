@@ -257,8 +257,8 @@ Query classes that have teachers with surname "Jin" and get both class and teach
 ```java
 
 List<SchoolClass> list = easyEntityQuery.queryable(SchoolClass.class)
-//include and includes get to-one and to-many relationships respectively. The second parameter of include(s) can filter the returned data results. If not added, it returns all related teachers under the current class
-        .includes(s -> s.schoolTeachers(),s->{
+//include get to-one and to-many relationships respectively. The second parameter of include(s) can filter the returned data results. If not added, it returns all related teachers under the current class
+        .include(s -> s.schoolTeachers(),s->{
             //Get teacher information for to-many, but only return those with surname Jin
             s.where(t->t.name().likeMatchLeft("金"));
         })
@@ -289,8 +289,8 @@ Query the class named `Class One` along with the students in the class and retur
 
 ```java
      List<SchoolClass> list = easyEntityQuery.queryable(SchoolClass.class)
-                .includes(s -> s.schoolTeachers())
-                .includes(s -> s.schoolStudents(),x->{
+                .include(s -> s.schoolTeachers())
+                .include(s -> s.schoolStudents(),x->{
                     x.include(y->y.schoolStudentAddress());
                 })
                 .where(s -> {
@@ -303,8 +303,8 @@ Query the class named `Class One` along with the top three oldest students in th
 
 ```java
      List<SchoolClass> list = easyEntityQuery.queryable(SchoolClass.class)
-                .includes(s -> s.schoolTeachers())
-                .includes(s -> s.schoolStudents(),x->{
+                .include(s -> s.schoolTeachers())
+                .include(s -> s.schoolStudents(),x->{
                     x.include(y->y.schoolStudentAddress())
                     .orderBy(y->y.age().desc())
                     .limit(3);
