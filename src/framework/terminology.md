@@ -92,6 +92,7 @@ eq.queryable(SysUser.class)
 ::: tip 说明!!!
 > 该操作不会有 N+1 问题
 > `OneToOne`或`ManyToOne`使用`include`，`OneToMany`或`ManyToMany`使用`includes`
+> `3.1.49+`版本后全部使用`include`即可
 :::
 
 `include`查询是对象关系建模后的二次查询,支持无限级嵌套"拔出萝卜带出泥"
@@ -100,7 +101,7 @@ eq.queryable(SysUser.class)
         List<SysUser> list = eq.queryable(SysUser.class)
                 .toList();
         List<SysUser> list1 = eq.queryable(SysUser.class)
-                .includes(user -> user.bankCards())//返回的对象如果没有BankCards那么集合情况为空集合，对象为null
+                .include(user -> user.bankCards())//返回的对象如果没有BankCards那么集合情况为空集合，对象为null
                 .toList();
 ```
 

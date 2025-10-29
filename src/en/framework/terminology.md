@@ -92,6 +92,7 @@ eq.queryable(SysUser.class)
 ::: tip Note!!!
 > This operation will not have N+1 problems
 > Use `include` for `OneToOne` or `ManyToOne`, use `includes` for `OneToMany` or `ManyToMany`
+> After 3.1.49+ Use `include` for `OneToOne` or `ManyToOne` or `OneToMany` or `ManyToMany`
 :::
 
 `include` queries are secondary queries after object relationship modeling, supporting unlimited nested levels "pull out a carrot and bring out the mud"
@@ -100,7 +101,7 @@ eq.queryable(SysUser.class)
         List<SysUser> list = eq.queryable(SysUser.class)
                 .toList();
         List<SysUser> list1 = eq.queryable(SysUser.class)
-                .includes(user -> user.bankCards())//If the returned object doesn't have BankCards, the collection will be an empty collection, and the object will be null
+                .include(user -> user.bankCards())//If the returned object doesn't have BankCards, the collection will be an empty collection, and the object will be null
                 .toList();
 ```
 

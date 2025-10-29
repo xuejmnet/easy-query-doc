@@ -453,7 +453,7 @@ List<StructSysUserDTO> users = easyEntityQuery.queryable(SysUser.class)
 //可以直接筛选出结构化DTO
 List<StructSysUserDTO> users = easyEntityQuery.queryable(SysUser.class)
         //手动include(s)会覆盖掉selectAutoInclude
-        .includes(s->s.roles(),roleQuery->roleQuery.where(role->role.name().eq("管理员")))
+        .include(s->s.roles(),roleQuery->roleQuery.where(role->role.name().eq("管理员")))
         .where(s -> s.name().like("小明"))
         .selectAutoInclude(StructSysUserDTO.class).toList();
 ```

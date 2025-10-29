@@ -358,7 +358,7 @@ WHERE
 ## 案例5
 
 ::: warning 说明!!!
-> 如果你需要返回数据库表对象而不是自定义StructDTO那么需要自行`include/includes`否则框架不会返回对多的那一方
+> 如果你需要返回数据库表对象而不是自定义StructDTO那么需要自行`include/include`否则框架不会返回对多的那一方
 :::
 
 查询每个用户和前3个最早创建的角色(支持分页)适用于评论和评论子表前N个
@@ -366,7 +366,7 @@ WHERE
 
         List<SysUser> 收货员 = easyEntityQuery.queryable(SysUser.class)
                 //前面的表达式表示要返回roles后面的表示如何返回返回按时间正序的3个
-                .includes(s -> s.roles(),x->{
+                .include(s -> s.roles(),x->{
                     x.orderBy(r->r.createTime().asc()).limit(3);
                 })
                 .toList();

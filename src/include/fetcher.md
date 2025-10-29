@@ -28,7 +28,7 @@ ManyToMany | 多对多  | 班级和老师
 
 List<SchoolClass> classes = easyEntityQuery.queryable(SchoolClass.class)
                         //查询班级并且连带查询每个班级最先入学的前5位学生
-                        .includes(o -> o.schoolStudents(),x->x.orderBy(u->u.createTime().asc()).limit(5))
+                        .include(o -> o.schoolStudents(),x->x.orderBy(u->u.createTime().asc()).limit(5))
                         .toList();
 
 ```
@@ -65,15 +65,14 @@ List<SchoolClass> classes = easyEntityQuery.queryable(SchoolClass.class)
 > `include` 内部属于独立查询,如果您需要差异更新并且没有配置默认启动追踪查询那么需要独立进行`asTracking()`等,include的后one或者many的第二个参数表示以多少关联属性为一组进行获取
 :::
 
-对象模式`include/includes`参数说明 其中如果您的导航属性是`ToOne`那么请使用`include`如果是`ToMany`那么是`includes`
 
 包含的两个参数第一个参数表示你要返回的导航属性,第二个参数表示对返回导航属性如何进行增强
 ```java
 List<SchoolClass> list = easyEntityQuery.queryable(SchoolClass.class)
                 //表示查询学校班级的同时附带查询出班级的老师
-                .includes(s -> s.schoolTeachers())
+                .include(s -> s.schoolTeachers())
                 //查询学校班级的同时附带查询出班级的学生(这个学生是每个班级年龄最大的三个)并且返回的学生也需要返回学生地址
-                .includes(s -> s.schoolStudents(),x->{
+                .include(s -> s.schoolStudents(),x->{
                     x.include(y->y.schoolStudentAddress())
                     .orderBy(y->y.age().desc())
                     .limit(3);

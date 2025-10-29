@@ -358,7 +358,7 @@ WHERE
 ## Case 5
 
 ::: warning Note!!!
-> If you need to return database table objects instead of custom StructDTO, you need to manually `include/includes`, otherwise the framework will not return the to-many side
+> If you need to return database table objects instead of custom StructDTO, you need to manually `include`, otherwise the framework will not return the to-many side
 :::
 
 Query each user and their first 3 earliest created roles (supports pagination). Suitable for comments and the first N sub-comments
@@ -366,7 +366,7 @@ Query each user and their first 3 earliest created roles (supports pagination). 
 
         List<SysUser> 收货员 = easyEntityQuery.queryable(SysUser.class)
                 //The preceding expression indicates to return roles, the following indicates how to return, returning 3 in chronological order
-                .includes(s -> s.roles(),x->{
+                .include(s -> s.roles(),x->{
                     x.orderBy(r->r.createTime().asc()).limit(3);
                 })
                 .toList();

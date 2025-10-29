@@ -26,7 +26,7 @@ ManyToMany | Many-to-Many  | Class and teachers
 
 List<SchoolClass> classes = easyEntityQuery.queryable(SchoolClass.class)
                         //Query classes and also query the first 5 students enrolled earliest in each class
-                        .includes(o -> o.schoolStudents(),x->x.orderBy(u->u.createTime().asc()).limit(5))
+                        .include(o -> o.schoolStudents(),x->x.orderBy(u->u.createTime().asc()).limit(5))
                         .toList();
 
 ```
@@ -69,9 +69,9 @@ The two parameters included: the first parameter indicates the navigation proper
 ```java
 List<SchoolClass> list = easyEntityQuery.queryable(SchoolClass.class)
                 //Query school classes and also query the teachers of the class
-                .includes(s -> s.schoolTeachers())
+                .include(s -> s.schoolTeachers())
                 //Query school classes and also query the students of the class (these students are the 3 oldest in each class) and the returned students also need to return student addresses
-                .includes(s -> s.schoolStudents(),x->{
+                .include(s -> s.schoolStudents(),x->{
                     x.include(y->y.schoolStudentAddress())
                     .orderBy(y->y.age().desc())
                     .limit(3);

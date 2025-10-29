@@ -18,7 +18,7 @@ For the case of one-to-many save custom collection savable example, we modify
     public Object update2(@RequestBody BankUpdateRequest request) {
 
         SaveBank saveBank = easyEntityQuery.queryable(SaveBank.class)
-                .includes(save_bank -> save_bank.saveBankCards())
+                .include(save_bank -> save_bank.saveBankCards())
                 .whereById(request.getId()).singleNotNull();
 
         saveBank.setName(request.getName());
@@ -65,7 +65,7 @@ public class MySaveEntitySetPrimaryKeyGenerator implements SaveEntitySetPrimaryK
     public Object update3(@RequestBody BankUpdateRequest request) {
 
         SaveBank saveBank = easyEntityQuery.queryable(SaveBank.class)
-                .includes(save_bank -> save_bank.saveBankCards())
+                .include(save_bank -> save_bank.saveBankCards())
                 .whereById(request.getId()).singleNotNull();
 
         saveBank.setName(request.getName());
@@ -171,7 +171,7 @@ When we need to modify, we might delete 2, and then add a new one
 At this time, we save again through the save method
 ```java
         SaveBank saveBank = easyEntityQuery.queryable(SaveBank.class)
-                .includes(save_bank -> save_bank.saveBankCards())
+                .include(save_bank -> save_bank.saveBankCards())
                 .whereById(request.getId()).singleNotNull();
 
         saveBank.setName(request.getName());
@@ -193,7 +193,7 @@ We will see that we construct a new object collection from the request data. `ba
 Modify the original code as follows
 ```java
 SaveBank saveBank = easyEntityQuery.queryable(SaveBank.class)
-                .includes(save_bank -> save_bank.saveBankCards())
+                .include(save_bank -> save_bank.saveBankCards())
                 .whereById(request.getId()).singleNotNull();
 
         saveBank.setName(request.getName());
