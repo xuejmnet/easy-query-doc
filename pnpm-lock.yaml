@@ -7,6 +7,10 @@ settings:
 importers:
 
   .:
+    dependencies:
+      typed.js:
+        specifier: ^2.1.0
+        version: 2.1.0
     devDependencies:
       '@vuepress/bundler-vite':
         specifier: 2.0.0-rc.21
@@ -41,9 +45,6 @@ importers:
       vuepress:
         specifier: 2.0.0-rc.21
         version: 2.0.0-rc.21(@vuepress/bundler-vite@2.0.0-rc.21(@types/node@22.13.4)(sass-embedded@1.85.0)(yaml@2.8.1))(vue@3.5.13)
-      vuepress-plugin-typedjs2:
-        specifier: ^2.0.0
-        version: 2.0.0(@vuepress/bundler-vite@2.0.0-rc.21(@types/node@22.13.4)(sass-embedded@1.85.0)(yaml@2.8.1))(vue@3.5.13)
       vuepress-theme-hope:
         specifier: 2.0.0-rc.81
         version: 2.0.0-rc.81(@vuepress/plugin-docsearch@2.0.0-rc.95(@algolia/client-search@5.23.4)(search-insights@2.17.3)(vuepress@2.0.0-rc.21(@vuepress/bundler-vite@2.0.0-rc.21(@types/node@22.13.4)(sass-embedded@1.85.0)(yaml@2.8.1))(vue@3.5.13)))(katex@0.16.21)(markdown-it@14.1.0)(markmap-lib@0.18.12(markmap-common@0.18.9))(markmap-toolbar@0.18.12(markmap-common@0.18.9))(markmap-view@0.18.12(markmap-common@0.18.9))(mermaid@11.5.0)(sass-embedded@1.85.0)(vuepress@2.0.0-rc.21(@vuepress/bundler-vite@2.0.0-rc.21(@types/node@22.13.4)(sass-embedded@1.85.0)(yaml@2.8.1))(vue@3.5.13))
@@ -2701,9 +2702,6 @@ packages:
         optional: true
       sass-loader:
         optional: true
-
-  vuepress-plugin-typedjs2@2.0.0:
-    resolution: {integrity: sha512-5mOGThlUuRky0f9h+L0cbXpDrhnc7d7fO5OMNUKWsQTovLF41vr1Mh6WltP64yINbqgcUTowj/teU74L1WoQEA==}
 
   vuepress-shared@2.0.0-rc.81:
     resolution: {integrity: sha512-7Y9z6Ay9G11W6ftexZW6LRNd39GPu3JF3BSf48Gv5065aCCYJQqI0herDTZf6U9KnpIsQWHsEskfnnW0NsTKiQ==}
@@ -5613,17 +5611,6 @@ snapshots:
     transitivePeerDependencies:
       - markdown-it
       - typescript
-
-  vuepress-plugin-typedjs2@2.0.0(@vuepress/bundler-vite@2.0.0-rc.21(@types/node@22.13.4)(sass-embedded@1.85.0)(yaml@2.8.1))(vue@3.5.13):
-    dependencies:
-      typed.js: 2.1.0
-      vuepress: 2.0.0-rc.21(@vuepress/bundler-vite@2.0.0-rc.21(@types/node@22.13.4)(sass-embedded@1.85.0)(yaml@2.8.1))(vue@3.5.13)
-    transitivePeerDependencies:
-      - '@vuepress/bundler-vite'
-      - '@vuepress/bundler-webpack'
-      - supports-color
-      - typescript
-      - vue
 
   vuepress-shared@2.0.0-rc.81(vuepress@2.0.0-rc.21(@vuepress/bundler-vite@2.0.0-rc.21(@types/node@22.13.4)(sass-embedded@1.85.0)(yaml@2.8.1))(vue@3.5.13)):
     dependencies:
