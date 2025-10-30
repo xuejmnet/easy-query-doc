@@ -33,13 +33,20 @@ List<BankCardVO> list = easyEntityQuery.queryable(DocBankCard.class)
             user.name().like("小明");
             bank_card.type().eq("储蓄卡");
         })
-        .select((bank_card, user, bank) -> {
-            BankCardVOProxy r = new BankCardVOProxy();
-            r.selectAll(bank_card);//相当于是查询所有的bankCard字段
-            r.userName().set(user.name());
-            r.bankName().set(bank.name());
-            return r;
-        }).toList();
+        .select((bank_card, user, bank) -> new BankCardVOProxy()
+            .selectAll(bank_card)//相当于是查询所有的bankCard字段
+            .userName().set(user.name())
+            .bankName().set(bank.name())
+        )
+        //上下一样，下面的就是上面展开写法
+        // .select((bank_card, user, bank) -> {
+        //     BankCardVOProxy r = new BankCardVOProxy();
+        //     r.selectAll(bank_card);//相当于是查询所有的bankCard字段
+        //     r.userName().set(user.name());
+        //     r.bankName().set(bank.name());
+        //     return r;
+        // })
+        .toList();
 ```
 
 ### 2.返回部分列
@@ -59,10 +66,11 @@ List<BankCardVO> list = easyEntityQuery.queryable(DocBankCard.class)
             user.name().like("小明");
             bank_card.type().eq("储蓄卡");
         })
-        .select((bank_card, user, bank) -> new ClassProxy<>(BankCardVO.class)
+        .select((bank_card, user, bank) -> ClassProxy.of(BankCardVO.class)//老版本可以用new ClassProxy<>(BankCardVO.class)
             //自动映射bank_card全属性等于select t.*但是以结果为主
             .selectAll(bank_card)
             //可以使用字符串:"userName"或者lombok的@FieldNameConstant注解
+            //java用户可以用BankCardVO::getUserName 注意这种双引号用法属性命名要规范
             .field("userName").set(user.name())
             .field("bankName").set(bank.name())
         ).toList();

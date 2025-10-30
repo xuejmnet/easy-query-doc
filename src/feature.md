@@ -2,6 +2,17 @@
 title: 新功能
 order: 110
 ---
+## include2
+移除`includeBy`使用插件提示`icnlude2`(因为是include内部有两参数),用于处理复杂多链路结构化`include`
+```java
+                List<SchoolClass> list = easyEntityQuery.queryable(SchoolClass.class)
+                        .include((c,s)->{
+                            c.query(s.schoolTeachers().flatElement().schoolClasses()).where(a -> a.name().like("123"));
+                            c.query(s.schoolStudents().flatElement().schoolClass()).where(x -> x.schoolStudents().flatElement().name().eq("123"));
+                            c.query(s.schoolStudents()).where(x -> x.name().ne("123"));
+                        })
+                        .toList();
+```
 ## include统一
 `3.1.49+`eq对所有的include进行了统一不需要再区分include还是includes
 ## 子查询all函数

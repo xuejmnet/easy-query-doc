@@ -14,6 +14,6 @@ title: 关联查询
 
 
 ## 总结
-- 1.`include/includes`仅在返回数据库对象时使用
+- 1.`include`仅在返回数据库对象时使用
 - 2.`fillOne/fillMany`可以处理任意编程试嵌套,缺点是返回对象必须包含关系键比如A->B 查询B必须也查询`A.Id`和`B.AId`
 - 3.`selectAutoInclude`最强结构化返回,只需要实体建立对应的关系即可并且支持任意结构特殊化处理

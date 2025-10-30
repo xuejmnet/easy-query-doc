@@ -12,7 +12,8 @@ title: API预览
 
 # 查询映射
 
-## 1.返回voproxy
+## 1.返回voproxy🔥
+生成代理类select返回dto模式
 ```java
 
 List<BankCardVO> list = easyEntityQuery.queryable(DocBankCard.class)
@@ -22,13 +23,21 @@ List<BankCardVO> list = easyEntityQuery.queryable(DocBankCard.class)
             user.name().like("小明");
             bank_card.type().eq("储蓄卡");
         })
-        .select((bank_card, user, bank) -> {
-            BankCardVOProxy r = new BankCardVOProxy();//在BanCardVO上添加@EntityProxy注解build时会生成对应的Proxy对象
-            r.selectAll(bank_card);//相当于是查询所有的bankCard字段
-            r.userName().set(user.name());
-            r.bankName().set(bank.name());
-            return r;
-        }).toList();
+
+        .select((bank_card, user, bank) -> new BankCardVOProxy()//在BanCardVO上添加@EntityProxy注解build时会生成对应的Proxy对象
+            .selectAll(bank_card)//相当于是查询所有的bankCard字段
+            .userName().set(user.name())
+            .bankName().set(bank.name())
+        )
+        //上下一样，下面的就是上面展开写法
+        // .select((bank_card, user, bank) -> {
+        //     BankCardVOProxy r = new BankCardVOProxy();
+        //     r.selectAll(bank_card);//相当于是查询所有的bankCard字段
+        //     r.userName().set(user.name());
+        //     r.bankName().set(bank.name());
+        //     return r;
+        // })
+        .toList();
 ```
 
 ## 2.返回部分列
@@ -39,7 +48,8 @@ List<DocBankCard> list = easyEntityQuery.queryable(DocBankCard.class)
         .toList();
 ```
 
-## 3.隐式映射1
+## 3.隐式映射1🔥
+不希望生成代理类select返回dto模式
 ```java
 List<BankCardVO> list = easyEntityQuery.queryable(DocBankCard.class)
         .leftJoin(DocUser.class, (bank_card, user) -> bank_card.uid().eq(user.id()))
@@ -48,10 +58,11 @@ List<BankCardVO> list = easyEntityQuery.queryable(DocBankCard.class)
             user.name().like("小明");
             bank_card.type().eq("储蓄卡");
         })
-        .select((bank_card, user, bank) -> new ClassProxy<>(BankCardVO.class)
+        .select((bank_card, user, bank) -> ClassProxy.of(BankCardVO.class)//老版本可以用new ClassProxy<>(BankCardVO.class)
             //自动映射bank_card全属性等于select t.*但是以结果为主
             .selectAll(bank_card)
             //可以使用字符串:"userName"或者lombok的@FieldNameConstant注解
+            //java用户可以用BankCardVO::getUserName 注意这种双引号用法属性命名要规范
             .field("userName").set(user.name())
             .field("bankName").set(bank.name())
         ).toList();
@@ -71,7 +82,16 @@ List<BankCardVO> list = easyEntityQuery.queryable(DocBankCard.class)
             bank_card.FETCHER.allFields(),//自动映射bank_card全属性等于select t.*但是以结果为主
             user.name().as("userName"),//可以使用字符串:"userName"或者lombok的@FieldNameConstant注解
             bank.name().as("bankName")
-        )).toList();
+        ))
+        //上下写法一样就是把lambda用大括号展开了
+        // .select(BankCardVO.class,(bank_card, user, bank) -> {
+        //     return Select.of(
+        //         bank_card.FETCHER.allFields(),//自动映射bank_card全属性等于select t.*但是以结果为主
+        //         user.name().as("userName"),//可以使用字符串:"userName"或者lombok的@FieldNameConstant注解
+        //         bank.name().as("bankName")
+        //     );
+        // })
+        .toList();
 ```
 
 ## 5.全自动映射
