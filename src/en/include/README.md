@@ -14,6 +14,6 @@ Return DTOs with the same structure as database entity objects and support addin
 
 
 ## Summary
-- 1. `include/includes` are only used when returning database objects
+- 1. `include` are only used when returning database objects
 - 2. `fillOne/fillMany` can handle any programmatic nesting, the disadvantage is that the returned object must contain relationship keys, such as A->B, querying B must also query `A.Id` and `B.AId`
 - 3. `selectAutoInclude` is the most powerful structured return, only needs entities to establish corresponding relationships and supports any structure special handling
