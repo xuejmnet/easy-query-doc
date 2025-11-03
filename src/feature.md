@@ -2,6 +2,19 @@
 title: 新功能
 order: 110
 ---
+## selectAutoIncludeTable
+`3.1.51+`默认使用`selectAutoInclude`如果存在数据库实体(@Table)的实体那么就会默认报错可以选择警告或者忽略
+
+## notEmptyAll
+`3.1.51+`支持`all`函数并且要求集合不为空
+```java
+
+        List<SysUser> list = easyEntityQuery.queryable(SysUser.class)
+                .where(user -> {
+                    user.bankCards().where(bc -> bc.type().eq("储蓄卡")).notEmptyAll(bc -> bc.code().startsWith("33123"));
+                }).toList();
+```
+
 ## include2
 移除`includeBy`使用插件提示`icnlude2`(因为是include内部有两参数),用于处理复杂多链路结构化`include`
 ```java
