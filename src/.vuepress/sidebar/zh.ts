@@ -151,6 +151,12 @@ export const zhSidebar = sidebar({
         }
       ],
     },
+    {
+      text: "框架其他说明",
+      prefix: "other/",
+      collapsible:true,
+      children: "structure",
+    },
     "support","members",
     "context-mode",
     "v2-v3",
