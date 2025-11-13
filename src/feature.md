@@ -2,6 +2,17 @@
 title: 新功能
 order: 110
 ---
+## 静态内部类支持@EntityProxy
+`3.1.53+`支持静态内部类使用`@EntityProxy`可以作用于复杂中间对象且不想创建独立dto文件，并且支持显式声明生成包名(建议插件升级到0.1.72+)
+```java
+
+    @Data
+    @EntityProxy(value = "MyTestb",generatePackage = "com.easy.query.test1")
+    public static class MyTest2{
+        private String id;
+        private String name;
+    }
+```
 ## selectAutoIncludeTable
 `3.1.51+`默认使用`selectAutoInclude`如果存在数据库实体(@Table)的实体那么就会默认报错可以选择警告或者忽略
 

@@ -42,6 +42,7 @@ mappingStrategy| `EntityMappingStrategyEnum.PROPERTY_FIRST` | 对象间的映射
 includeLimitMode| `IncludeLimitModeEnum.PARTITION` | many子项拉取的时候如果子项设置了limit限制返回条数默认采用`partation`提高性能但是部分数据库不支持,MYSQL5.7的用户可以选择`union_all`来支持include+limit
 saveComment| `false` | `true`:则保持`@Column(comment="...")`和`@Table(comment="...")`的注解到EntityMetadata和ColumnMetadata
 maxInClauseSize| `9999999` | 当`.where(o -> o.id().in(ids))`可以根据设置的`maxInClauseSize`形成 `(id in (:p1,:p2) or id in(:p3,:p4))`
+autoIncludeTable| `throw` | 当用户在`selectAutoInclude`中使用数据库表对象会抛出错误，用户也可以选择`warning`或者`ignore`(建议`throw`)
 
 ## 分表分库特有配置
 

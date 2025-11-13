@@ -15,6 +15,7 @@ order: 120
 ```java
 
 @Data
+@FieldNameConstants
 public abstract class BaseEntity implements Serializable, Cloneable {
 
     private static final long serialVersionUID = -1L;
