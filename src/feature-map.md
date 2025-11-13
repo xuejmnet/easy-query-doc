@@ -48,7 +48,7 @@ markmap:
 - [组件服务](https://www.easy-query.com/easy-query-doc/framework/replace-configure)
 - [对象数据库映射规则](https://www.easy-query.com/easy-query-doc/framework/mapping-db)
 
-## 快速入门
+## [快速入门](https://www.easy-query.com/easy-query-doc/startup/quick-start)
 - [控制台案例](/easy-query-doc/startup/quick-start)
 - [业务案例](/easy-query-doc/startup/step1)
 - [实体设计推荐](/easy-query-doc/best-practices)

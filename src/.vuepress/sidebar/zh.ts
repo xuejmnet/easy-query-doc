@@ -73,8 +73,14 @@ export const zhSidebar = sidebar({
       children: "structure",
     },
     {
-      text: "聚合根保存🔥🔥🔥",
+      text: "聚合根保存🔥",
       prefix: "savable/",
+      collapsible:true,
+      children: "structure",
+    },
+    {
+      text: "DTO查询🔥🔥🔥",
+      prefix: "dto-query/",
       collapsible:true,
       children: "structure",
     },

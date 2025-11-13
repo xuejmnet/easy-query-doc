@@ -1,5 +1,5 @@
 ---
-title: 小试牛刀
+title: 快速入门
 order: 10
 category:
   - Startup

@@ -327,7 +327,7 @@ long l2 = easyQuery.updatable(TopicInterceptor.class)
 --- | --- | --- 
 configure | 无  | 配置表达式where条件,查询,修改(对象/表达式),删除(对象/表达式)
 
-### 租户模式实现
+### 租户 多租户 模式实现
 - [x] 添加租户id
 - [x] 查询过滤租户id
 - [x] 更新添加租户id条件

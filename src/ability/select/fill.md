@@ -17,10 +17,8 @@ order: 200
 参数  | 描述 | 场景 
 --- | --- | --- 
 fillSetterExpression | 填充数据如何查询 | 自定义填充数据
-targetProperty | 目标表就是fill返回的表的属性  | 用于关联 
-selfProperty | 当前主表的属性  | 用于关联
+fillContext | 用于设置selfProperty和targetProperty和是否消费null值  | 用于关联 
 produce | 如何填充  | 自定义填充数据
-consumeNull | 当关联结果为null是否也会调用produce  | 过滤null或者不过滤
 
 
 ::: warning 说明!!!
@@ -32,7 +30,7 @@ consumeNull | 当关联结果为null是否也会调用produce  | 过滤null或�
  List<Province> list =  easyQuery.queryable(Province.class)
                 .fillMany(()->{
                     return easyQuery.queryable(City.class);
-                },"provinceCode", "code", (x, y) -> {
+                },c->c.self_target("code", "provinceCode"), (x, y) -> {
                     x.setCities(new ArrayList<>(y));
                 }).toList();
 
@@ -40,7 +38,7 @@ consumeNull | 当关联结果为null是否也会调用produce  | 过滤null或�
         List<City> list1 = easyQuery.queryable(City.class)
                 .fillOne(()->{
                     return easyQuery.queryable(Province.class);
-                },"code","provinceCode", (x, y) -> {
+                },c->c.self_target("code", "provinceCode"), (x, y) -> {
                     x.setProvince(y);
                 })
                 .toList();
@@ -49,10 +47,8 @@ consumeNull | 当关联结果为null是否也会调用produce  | 过滤null或�
 vo转换
 ```java
     EasyPageResult<Province> pageResult1 = easyQuery.queryable(Province.class)
-                .fillMany(x -> x.consumeNull(true).with(City.class).where(y -> y.eq(City::getCode, "3306")).select(CityVO.class)//填充数据转成CityVO,
-                        , "provinceCode"
-                        , "code"
-                        , (x, y) -> {
+                .fillMany(x -> easyQuery.queryable(City.class).where(y -> y.code().eq("3306")).select(CityVO.class)//填充数据转成CityVO,
+                        ,c->c.self_target("code", "provinceCode"), (x, y) -> {
                             if (EasyCollectionUtil.isNotEmpty(y)) {
                                 CityVO first = EasyCollectionUtil.first(y);//获取第一条city并且赋值
                                 x.setFirstCityName(first.getName());

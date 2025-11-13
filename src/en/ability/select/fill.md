@@ -16,6 +16,7 @@ By default, fill query results don't consume null, meaning produce won't consume
 Parameter  | Description | Scenario 
 --- | --- | --- 
 fillSetterExpression | How to query filled data | Custom filled data
+fillContext | set `selfProperty` and `targetProperty` and consume null value  | in relation 
 targetProperty | Property of target table (fill return table)  | For association 
 selfProperty | Property of current main table  | For association
 produce | How to fill  | Custom filled data
@@ -29,7 +30,7 @@ consumeNull | Whether to call produce when association result is null  | Filter 
  List<Province> list =  easyQuery.queryable(Province.class)
                 .fillMany(()->{
                     return easyQuery.queryable(City.class);
-                },"provinceCode", "code", (x, y) -> {
+                },c->c.self_target("code", "provinceCode"), (x, y) -> {
                     x.setCities(new ArrayList<>(y));
                 }).toList();
 
@@ -37,7 +38,7 @@ consumeNull | Whether to call produce when association result is null  | Filter 
         List<City> list1 = easyQuery.queryable(City.class)
                 .fillOne(()->{
                     return easyQuery.queryable(Province.class);
-                },"code","provinceCode", (x, y) -> {
+                },c->c.self_target("provinceCode", "code"), (x, y) -> {
                     x.setProvince(y);
                 })
                 .toList();
@@ -47,8 +48,7 @@ VO conversion:
 ```java
     EasyPageResult<Province> pageResult1 = easyQuery.queryable(Province.class)
                 .fillMany(x -> x.consumeNull(true).with(City.class).where(y -> y.eq(City::getCode, "3306")).select(CityVO.class)//Convert filled data to CityVO,
-                        , "provinceCode"
-                        , "code"
+                        , c->c.self_target("code", "provinceCode")
                         , (x, y) -> {
                             if (EasyCollectionUtil.isNotEmpty(y)) {
                                 CityVO first = EasyCollectionUtil.first(y);//Get first city and assign
