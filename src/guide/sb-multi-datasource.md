@@ -5,6 +5,8 @@ order: 4
 
 本章节针对springboot进行如何多数据源,动态多数据源进行封装处理。框架内部本身不想对该处理进行过多的封装尽可能保证需要多数据源的用户自行处理而不是提供默认的这边提供一个思路
 
+当前文档相关案例代码由 群友[LYX9527](https://github.com/LYX9527)提供
+
 ## 排除默认数据源
 因为`springboot`默认是单数据源，并且使用了自动数据源配置，所以我们首先把`springboot`的自动数据源排除掉
 
@@ -361,7 +363,9 @@ public class MultiDataSourceConfiguration {
         this.props = props;
         props.getDynamic().keySet().forEach(key -> {
             DataSourceProperties kp = props.getDynamic().get(key);
-            DataSource source = DataSourceBuilder.create().driverClassName(kp.getDriverClassName())
+            DataSource source = DataSourceBuilder.create()
+                    .type(kp.getType())
+                    .driverClassName(kp.getDriverClassName())
                     .url(kp.getUrl())
                     .username(kp.getUsername())
                     .password(kp.getPassword()).build();
