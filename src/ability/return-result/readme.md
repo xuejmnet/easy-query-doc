@@ -56,7 +56,7 @@ List<BankCardVO> list = easyEntityQuery.queryable(DocBankCard.class)
                 //bank_card.FETCHER.allFileds() 这个等同于selectAll(bank_card)
                 user.name().as("userName"),//如果映射的别名和当前属性名一样则可以不需要as
                 bank.name().as("bankName"),
-                bank.myName().as("myName")//这边as可以省略bank.myName()即可
+                bank.myName()//这边as可以省略等同于bank.myName().as("myName")
             )
         )
         .toList();
