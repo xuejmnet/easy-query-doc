@@ -6,7 +6,7 @@ order: 20
 # dto属性同步
 有时候我们希望dto可以和实体对象属性同步，也就是实体添加了一个字段后dto也可以增加相应的字段,所以我们需要对dto属性进行一种同步机制让实体增加新字段可以同步到dto上
 
-[本章节demo][https://github.com/xuejmnet/eq-apt]
+[本章节demo](https://github.com/xuejmnet/eq-apt)
 
 
 ::: warning 说明!!!
