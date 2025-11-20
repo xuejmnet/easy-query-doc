@@ -69,7 +69,7 @@ public class DocBlog implements ProxyEntityAvailable<DocBlog , DocBlogProxy> {
 List<Partition1<DocBlog, Long>> list = easyEntityQuery.queryable(DocBlog.class)
         .where(d -> {
             d.publishTime().gt(LocalDateTime.of(2024, 1, 1, 0, 0));
-        }).select(d -> Select.PARTITION.of(
+        }).select(d -> Select.PART.of(
                 d,
                 d.expression().rowNumberOver().partitionBy(d.topic()).orderByDescending(d.score())
         )).toList();
@@ -99,7 +99,7 @@ WHERE
   List<DocBlog> list = easyEntityQuery.queryable(DocBlog.class)
                 .where(d -> {
                     d.publishTime().gt(LocalDateTime.of(2024, 1, 1, 0, 0));
-                }).select(d -> Select.PARTITION.of(
+                }).select(d -> Select.PART.of(
                         d,
                         d.expression().rowNumberOver().partitionBy(d.topic()).orderByDescending(d.score().nullOrDefault(BigDecimal.ZERO)),
                         d.expression().rowNumberOver().partitionBy(d.topic()).orderBy(d.star().nullOrDefault(0))
@@ -146,7 +146,7 @@ WHERE
         List<Partition2<DocBlog, Long, Long>> list = easyEntityQuery.queryable(DocBlog.class)
                 .where(d -> {
                     d.publishTime().gt(LocalDateTime.of(2024, 1, 1, 0, 0));
-                }).select(d -> Select.PARTITION.of(
+                }).select(d -> Select.PART.of(
                         d,
                         d.expression().rowNumberOver().partitionBy(d.topic()).orderByDescending(d.score().nullOrDefault(BigDecimal.ZERO)),
                         d.expression().rowNumberOver().partitionBy(d.topic()).orderBy(d.star().nullOrDefault(0))
