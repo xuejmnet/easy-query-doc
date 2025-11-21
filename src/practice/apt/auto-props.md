@@ -104,10 +104,13 @@ public abstract class BaseEntity implements Serializable, Cloneable {
 }
 
 
-//使用
-@AutoProperty(value=SysUser.class,excludes=BaseEntity.AUTO_PROPERTIES_IGNORE)
 ```
 
+如何使用
+```java
+@AutoProperty(value=SysUser.class,excludes=BaseEntity.AUTO_PROPERTIES_IGNORE)
+```
+excludes支持`{"id","name"}`也支持`{"id,name","age"}`这两种模式,`includes`也是如此
 
 ## 依赖
 `pops-process`模块的pom.xml文件内容
