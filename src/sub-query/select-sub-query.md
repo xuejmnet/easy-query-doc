@@ -462,7 +462,7 @@ List<Draft3<String, String, String>> list = easyEntityQuery.queryable(SysUser.cl
 
 
 List<Part1<SysBank, Boolean>> bankCardTop2s = easyEntityQuery.queryable(SysBank.class)
-        .subQueryToGroupJoin(s->s.bankCards())
+        .configure(s->s.getBehavior().add(EasyBehaviorEnum.ALL_SUB_QUERY_GROUP_JOIN))
         .where(bank -> {
             bank.name().like("银行");
         })
@@ -474,33 +474,28 @@ List<Part1<SysBank, Boolean>> bankCardTop2s = easyEntityQuery.queryable(SysBank.
         )).toList();
 
 
-    SELECT
-        t.`id`,
-        t.`name`,
-        t.`create_time`,
-        IFNULL(t3.`__none2__`, true) AS `__part__column1` 
-    FROM
-        `t_bank` t 
-    LEFT JOIN
-        (SELECT
-            t2.`bank_id` AS `bankId`, (CASE 
-                WHEN COUNT((CASE 
-                    WHEN t2.`open_time` >= '2002-01-01 00:00' 
-                        THEN 1 
-                    ELSE NULL 
-            END)) > 0 
-                THEN false 
-            ELSE true 
-    END) AS `__none2__` FROM (SELECT
-        t1.`id`, t1.`uid`, t1.`code`, t1.`type`, t1.`bank_id`, t1.`open_time` FROM `t_bank_card` t1 
-    ORDER BY
-        t1.`open_time` ASC 
-    LIMIT
-        2) t2 
-GROUP BY
-    t2.`bank_id`) t3 
-    ON t3.`bankId` = t.`id` 
-WHERE
-    t.`name` LIKE '%银行%'
+
+-- 第1条sql数据
+SELECT t.`id`, t.`name`, t.`create_time`
+	, IFNULL(t4.`__none2__`, true) AS `__part__column1`
+FROM `t_bank` t
+	LEFT JOIN (
+		SELECT t3.`bank_id` AS `__group_key1__`, COUNT(1) <= 0 AS `__none2__`
+		FROM (
+			SELECT t2.`id` AS `id`, t2.`uid` AS `uid`, t2.`code` AS `code`, t2.`type` AS `type`, t2.`bank_id` AS `bank_id`
+				, t2.`open_time` AS `open_time`, t2.`__row__` AS `__row__`
+			FROM (
+				SELECT t1.`id` AS `id`, t1.`uid` AS `uid`, t1.`code` AS `code`, t1.`type` AS `type`, t1.`bank_id` AS `bank_id`
+					, t1.`open_time` AS `open_time`, ROW_NUMBER() OVER (PARTITION BY t1.`bank_id` ORDER BY t1.`open_time` ASC) AS `__row__`
+				FROM `t_bank_card` t1
+			) t2
+			WHERE t2.`__row__` >= 1
+				AND t2.`__row__` <= 2
+		) t3
+		WHERE t3.`open_time` >= '2002-01-01 00:00'
+		GROUP BY t3.`bank_id`
+	) t4
+	ON t4.`__group_key1__` = t.`id`
+WHERE t.`name` LIKE '%银行%'
 ```
 :::

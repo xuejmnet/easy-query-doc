@@ -485,7 +485,7 @@ Filter users whose name contains Xiaoming, and all the first three savings cards
 
 
 List<Draft2<String, String>> list = easyEntityQuery.queryable(SysUser.class)
-        .subQueryToGroupJoin(x -> x.bankCards())
+        .configure(s->s.getBehavior().add(EasyBehaviorEnum.ALL_SUB_QUERY_GROUP_JOIN))
         .where(user -> {
             user.name().like("小明");
 
@@ -503,42 +503,31 @@ List<Draft2<String, String>> list = easyEntityQuery.queryable(SysUser.class)
         )).toList();
 
 
-
--- 1st SQL
-SELECT
-    t.`name` AS `value1`,
-    t3.`__joining3__` AS `value2` 
-FROM
-    `t_sys_user` t 
-LEFT JOIN
-    (
-        SELECT
-            t2.`uid` AS `uid`,
-            (CASE 
-                WHEN COUNT((CASE WHEN t4.`create_time` >= '2000-01-01 00:00' THEN 1 ELSE NULL END)) > 0 THEN false ELSE true 
-            END) AS `__none2__`,
-            GROUP_CONCAT(t4.`name` SEPARATOR ',') AS `__joining3__` 
-        FROM
-            (SELECT
-                t1.`id`,
-                t1.`uid`,
-                t1.`code`,
-                t1.`type`,
-                t1.`bank_id`,
-                t1.`open_time` 
-            FROM
-                `t_bank_card` t1 
-            WHERE
-                t1.`type` = '储蓄卡' 
-            ORDER BY
-                t1.`open_time` ASC LIMIT 3) t2 
-        INNER JOIN
-            `t_bank` t4 
-                ON t4.`id` = t2.`bank_id` 
-        GROUP BY
-            t2.`uid`) t3 
-                ON t3.`uid` = t.`id` 
-        WHERE
-            t.`name` LIKE '%小明%' 
-            AND IFNULL(t3.`__none2__`,true) = true
+SELECT t.`name` AS `value1`, t4.`__joining3__` AS `value2`
+FROM `t_sys_user` t
+	LEFT JOIN (
+		SELECT t3.`uid` AS `__group_key1__`
+			, COUNT(CASE 
+				WHEN t5.`create_time` >= '2000-01-01 00:00' THEN 1
+				ELSE NULL
+			END) <= 0 AS `__none2__`
+			, GROUP_CONCAT(t5.`name` SEPARATOR ',') AS `__joining3__`
+		FROM (
+			SELECT t2.`id` AS `id`, t2.`uid` AS `uid`, t2.`code` AS `code`, t2.`type` AS `type`, t2.`bank_id` AS `bank_id`
+				, t2.`open_time` AS `open_time`, t2.`__row__` AS `__row__`
+			FROM (
+				SELECT t1.`id` AS `id`, t1.`uid` AS `uid`, t1.`code` AS `code`, t1.`type` AS `type`, t1.`bank_id` AS `bank_id`
+					, t1.`open_time` AS `open_time`, ROW_NUMBER() OVER (PARTITION BY t1.`uid` ORDER BY t1.`open_time` ASC) AS `__row__`
+				FROM `t_bank_card` t1
+				WHERE t1.`type` = '储蓄卡'
+			) t2
+			WHERE t2.`__row__` >= 1
+				AND t2.`__row__` <= 3
+		) t3
+			INNER JOIN `t_bank` t5 ON t5.`id` = t3.`bank_id`
+		GROUP BY t3.`uid`
+	) t4
+	ON t4.`__group_key1__` = t.`id`
+WHERE t.`name` LIKE '%小明%'
+	AND IFNULL(t4.`__none2__`, true) = true
 ```
