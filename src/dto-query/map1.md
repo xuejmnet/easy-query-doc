@@ -1,10 +1,10 @@
 ---
-title: 结构化对象
-order: 40
+title: DTO映射基础
+order: 30
 ---
 
 
-## 快速预览
+## DTO映射基础
 `selectAutoInclude`
 
 
@@ -339,7 +339,9 @@ List<SysUserDTO> users = easyEntityQuery.queryable(SysUser.class)
         .where(s -> s.name().like("小明"))
         .select(s -> new ClassProxy<>(SysUserDTO.class)
             .selectAll(s)//将s表的所有字段哦度映射到SysUserDTO中
-            .field(UserDTO.Fields.myAddress).set(s.address().addr())//当然也可以使用SysUserDTO::getMyAddress
+            .columns(
+                s.address().addr().as(UserDTO.Fields.myAddress)//当然也可以使用SysUserDTO::getMyAddress
+            )
         ).toList();
 ```
 可能有些用户希望自己一个一个进行赋值那么我们可以这么处理
@@ -512,7 +514,7 @@ public class StructSysUserDTO {
 }
 
 
-
+//也可以通过@NavigateFlat或者EXTRA_AUTO_INCLUDE_CONFIGURE 后续章节会讲到
 List<StructSysUserDTO> users = easyEntityQuery.queryable(SysUser.class)
         .leftJoin(Topic.class,(s, t2) -> s.id().eq(t2.id()))
         .where(s -> s.name().like("小明"))
@@ -580,7 +582,7 @@ public class StructSysUserDTO {
 }
 ```
 ::: tip 说明!!!
-> 在大部分情况我们可能已经够用了,但是在有些情况下可能用户还是需要动态来控制多层级下的列表条件之类的,那么我们应该如何来快速实现呢,请跳转至[配置SelectAutoInclude](/easy-query-doc/ability/return-result/select-auto-include2)
+> 在大部分情况我们可能已经够用了,但是在有些情况下可能用户还是需要动态来控制多层级下的列表条件之类的,那么我们应该如何来快速实现呢,请跳转至[配置SelectAutoInclude](/easy-query-doc/dto-query/map2)
 :::
 
 
@@ -605,7 +607,9 @@ List<SysMenu> menuIdNames = easyEntityQuery.queryable(SysUser.class)
 ```
 方式三返回用户DTO和用户拥有的菜单id集合和角色id集合
 ```java
-
+/**
+ * {@link SysUser}
+ */
 @Data
 public class SysUserFlatDTO {
     private String id;
@@ -613,26 +617,12 @@ public class SysUserFlatDTO {
     private LocalDateTime createTime;
     
     //穿透获取用户下的roles下的menus下的id 如果穿透获取的是非基本类型那么对象只能是数据库对象而不是dto对象
-    // @NavigateFlat(pathAlias = "roles.menus.id")
-    // private List<String> menuIds;
-
-//上下两种都可以 下面这种可以通过插件生成NavigatePathGenerate
-    private static final MappingPath MENU_IDS_PATH= SysUserProxy.TABLE.roles().flatElement().menus().flatElement().id();
-
-    @NavigateFlat(pathAlias = "MENU_IDS_PATH")
+    @NavigateFlat(pathAlias = "roles.menus.id")//dto上添加注释 {@link SysUser}指向实体后插件支持智能提示
     private List<String> menuIds;
 
-//非基本对象也可以直接返回数据库对象
-//    @NavigateFlat(value = RelationMappingTypeEnum.ToMany,mappingPath = {
-//            SysUser.Fields.roles,
-//            SysRole.Fields.menus
-//    })
-//    private List<SysMenu> menu;
 
-    @NavigateFlat(value = RelationMappingTypeEnum.ToMany,mappingPath = {
-            SysUser.Fields.roles,
-            SysMenu.Fields.id
-    })
+
+    @NavigateFlat(pathAlias = "roles.id")
     private List<String> roleIds;
 }
 
