@@ -573,7 +573,7 @@ public class StructSysUserDTO {
 }
 ```
 ::: tip Note!!!
-> In most cases this may be enough, but in some cases users may still need to dynamically control multi-level list conditions. How should we quickly implement this? Please jump to [Configure SelectAutoInclude](/en/easy-query-doc/ability/return-result/select-auto-include2)
+> In most cases this may be enough, but in some cases users may still need to dynamically control multi-level list conditions. How should we quickly implement this? Please jump to [Configure SelectAutoInclude](/easy-query-doc/dto-query/map2)
 :::
 
 ## Penetrating Structure Return NavigateFlat

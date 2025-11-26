@@ -51,13 +51,7 @@ export const zhSidebar = sidebar({
           prefix: "return-result/",
           collapsible:true,
           children: "structure",
-        },
-        {
-          text: "CRUD进阶",
-          prefix: "adv/",
-          collapsible:true,
-          children: "structure",
-        },"insert","update","delete","transaction","insertOrUpdate","batch","dynamic-table-name","native-sql"
+        },"select","where","insert","update","delete","transaction","insertOrUpdate","batch","dynamic-table-name","native-sql"
       ],
     },
     {

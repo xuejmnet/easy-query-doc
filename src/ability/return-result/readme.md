@@ -7,10 +7,16 @@ title: API预览
 - 显式赋值自定义结果`select(o -> new proxy()...)`
 - 系统自带元组草稿类型`select(o -> Select.DRAFT.of(...))`或`select(o -> Select.TUPLE.of(...))`
 - 系统自带部分元组类型`select(o -> Select.PART.of(...))`
+- 查询返回任意符合表对象关系的结构数据`selectAutoInlcude(DTO.class)`
 
 
+
+::: tip 说明!!!
+> `selectAutoInlcude`[DTO映射基础](/easy-query-doc/dto-query/map1)
+:::
 
 # 查询映射
+
 
 ## 1.返回voproxy🔥
 生成代理类select返回dto模式

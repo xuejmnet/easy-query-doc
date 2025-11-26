@@ -89,7 +89,7 @@ markmap:
   - 类型SQL片段
 - 表达式编写说明🔥
 
-## DTO查询🔥
+## [DTO查询🔥](/easy-query-doc/dto-query/)
 - 动态筛选
 - 动态排序
 - 结构化映射

@@ -380,5 +380,5 @@ List<DocUserVO> list = easyEntityQuery.queryable(DocUser.class)
 
 
 ## `selectAutoInclude(Class<TR>,expression)`
-Because `selectAutoInclude` has too much content, it's recommended you jump to the link [Structured Result Query Return](/easy-query-doc/ability/return-result/select-auto-include)
+Because `selectAutoInclude` has too much content, it's recommended you jump to the link [Structured Result Query Return](/easy-query-doc/dto-query/map1)
 

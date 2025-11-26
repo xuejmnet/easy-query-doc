@@ -147,6 +147,7 @@ List<DocBankCard> list = easyEntityQuery.queryable(DocBankCard.class)
 ---  | --- 
 delimiter  | 分隔符比如`,`或者`\|`
 distinct  | 是否去重(部分数据库不支持)
+orderBy | 支持对需要逗号分割的字段进行先排序(需要数据库支持)
 
 ```java
 

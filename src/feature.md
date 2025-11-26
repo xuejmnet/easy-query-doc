@@ -2,6 +2,35 @@
 title: 新功能
 order: 110
 ---
+## joining支持排序
+`3.1.60+`joining函数支持逗号分割和排序(如果数据库支持)
+```java
+
+        easyEntityQuery.queryable(SysBank.class)
+                .configure(s -> s.getBehavior().add(EasyBehaviorEnum.ALL_SUB_QUERY_GROUP_JOIN))
+                .where(bank -> {
+                    bank.name().like("银行");
+                })
+                .select(bank -> Select.PART.of(
+                        bank,
+                        bank.bankCards()
+                                .orderBy(o -> o.openTime().asc())
+                                .orderBy(o -> o.type().desc())
+                                .distinct()
+                                .joining(s -> s.type())
+                )).toList();
+
+
+SELECT t.`id`, t.`name`, t.`create_time`, t2.`__joining2__` AS `__part__column1`
+FROM `t_bank` t
+	LEFT JOIN (
+		SELECT t1.`bank_id` AS `__group_key1__`, GROUP_CONCAT(DISTINCT t1.`type` ORDER BY t1.`open_time` ASC, t1.`type` DESC SEPARATOR ',') AS `__joining2__`
+		FROM `t_bank_card` t1
+		GROUP BY t1.`bank_id`
+	) t2
+	ON t2.`__group_key1__` = t.`id`
+WHERE t.`name` LIKE '%银行%'
+```
 ## 静态内部类支持@EntityProxy
 `3.1.53+`支持静态内部类使用`@EntityProxy`可以作用于复杂中间对象且不想创建独立dto文件，并且支持显式声明生成包名(建议插件升级到0.1.72+)
 ```java

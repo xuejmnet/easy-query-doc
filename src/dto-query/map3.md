@@ -1,11 +1,14 @@
 ---
-title: 结构化对象额外操作
-order: 60
+title: DTO映射高级
+order: 50
 ---
+
+
+## DTO映射高级
 
 当前章节主要描述`selectAutoInclude`是如何对结构对象进行筛选控制返回额外字段相关信息
 
-建议eq升级到`2.8.10+` 使用该功能可以让`selectAutoInclude`的任意层级表达式都由你进行掌控
+建议eq升级到`3.1.60+` 使用该功能可以让`selectAutoInclude`的任意层级表达式都由你进行掌控
 
 
 我们依然使用银行 银行卡 用户这个案例
