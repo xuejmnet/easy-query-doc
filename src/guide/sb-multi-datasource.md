@@ -14,6 +14,7 @@ order: 4
 [本章节源码](https://github.com/xuejmnet/eq-multi-datasource)
 ```java
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})//排除数据源自动配置
+@EnableTransactionManagement//启用事务
 public class MDSApplication {
     public static void main(String[] args) {
         SpringApplication.run(MDSApplication.class, args);
