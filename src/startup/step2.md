@@ -1037,9 +1037,9 @@ FROM (
 一个生成了三条sql，中limit+union是第二条sql,但是union相对sql会变得复杂并且冗余所以我们尝试eq提供的第二种方式
 
 ### limit+partition by
-`springboot`的a`pplication.yml`增加配置项
+`springboot`的`application.yml`增加配置项
 ```yml
-easy-query:
+easy-query: 
   #支持的数据库
   database: mysql
   #对象属性和数据库列名的转换器
