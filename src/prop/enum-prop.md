@@ -50,14 +50,14 @@ configuration.applyValueConverter(new EnumConverter());
 //枚举接口
 public interface IEnum<TEnum extends IEnum<TEnum>> {
     Integer getCode();
-    TEnum valueOf(Integer enumValue);
+    TEnum enumOf(Integer enumValue);
 }
 //获取枚举值
 public class EnumDeserializer {
     public static <T extends IEnum<T>> T deserialize(Class<T> enumClass, Integer integer) {
         T[] enumConstants = enumClass.getEnumConstants();
         if(enumConstants.length>0){
-            return enumConstants[0].valueOf(integer);
+            return enumConstants[0].enumOf(integer);
         }
         throw new IllegalArgumentException("Invalid integer value for enum: " + integer);
     }
@@ -108,7 +108,7 @@ public enum TopicTypeEnum implements IEnum<TopicTypeEnum> {
     }
 
     @Override
-    public TopicTypeEnum valueOf(Integer enumValue) {
+    public TopicTypeEnum enumOf(Integer enumValue) {
         switch (enumValue){
             case 1:return TopicTypeEnum.STUDENT;
             case 3:return TopicTypeEnum.TEACHER;
