@@ -1,6 +1,13 @@
-// place your custom styles here
-@media (min-width: 997px){
-    :root{--content-width:1000px}
+@media (min-width: 1280px) {
+  html {
+    --content-width: calc(100vw - 18rem)
+  }
+}
+
+@media (min-width: 1440px) {
+  html {
+    --content-width: calc(100vw - 40rem) !important
+  }
 }
 .margin-right-home{
     margin-right: 250px;
