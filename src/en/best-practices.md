@@ -15,6 +15,7 @@ For more primary key setting modes, see [Other modes not based on BaseEntity](ht
 ```java
 
 @Data
+@FieldNameConstants
 public abstract class BaseEntity implements Serializable, Cloneable {
 
     private static final long serialVersionUID = -1L;

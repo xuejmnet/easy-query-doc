@@ -147,6 +147,7 @@ Parameter  | Description
 ---  | --- 
 delimiter  | Separator such as `,` or `\|`
 distinct  | Whether to deduplicate (not supported by some databases)
+orderBy | Supports sorting the fields that need comma separation first (requires database support)
 
 ```java
 

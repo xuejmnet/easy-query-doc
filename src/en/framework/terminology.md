@@ -92,7 +92,7 @@ eq.queryable(SysUser.class)
 ::: tip Note!!!
 > This operation will not have N+1 problems
 > Use `include` for `OneToOne` or `ManyToOne`, use `includes` for `OneToMany` or `ManyToMany`
-> After 3.1.49+ Use `include` for `OneToOne` or `ManyToOne` or `OneToMany` or `ManyToMany`
+> After version `3.1.49+`, use `include` for all relationships
 :::
 
 `include` queries are secondary queries after object relationship modeling, supporting unlimited nested levels "pull out a carrot and bring out the mud"
