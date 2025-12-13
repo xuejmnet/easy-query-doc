@@ -103,9 +103,9 @@ Huawei Cloud:
 This error is because eq does not allow deletion without explicitly specifying where by default. You can perform the following operations
 ```java
 //Just add any condition
-easyEntityQuery.deletable(User.class).disableLogicDelete()allowDeleteStatement(true).where(u->u.id().isNotNull()).executeRows();
+easyEntityQuery.deletable(User.class).disableLogicDelete().allowDeleteStatement(true).where(u->u.id().isNotNull()).executeRows();
 
-easyEntityQuery.deletable(User.class).disableLogicDelete()allowDeleteStatement(true).where(u->u.expression().sql("1=1")).executeRows();
+easyEntityQuery.deletable(User.class).disableLogicDelete().allowDeleteStatement(true).where(u->u.expression().sql("1=1")).executeRows();
 ```
 Of course, you can also set the configuration `deleteThrow` to `false`, so deletion will not report an error
 

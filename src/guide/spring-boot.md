@@ -21,6 +21,10 @@ order: 3
 ## 依赖
 我们目前使用jdk17的springboot 3.1.0版本当然根据实际情况请选择自己合适的版本即可，eq的`com.easy-query.sql-springboot-starter`依赖支持`springboot2和springboot3`
 
+::: tip SpringBoot4!!!
+> 如果你是`springboot4`那么请使用`com.easy-query.sql-springboot4-starter`，相关的[项目demosb4](https://github.com/xuejmnet/demosb4)
+:::
+
 
 ::: tabs
 

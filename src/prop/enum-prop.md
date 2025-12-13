@@ -128,7 +128,6 @@ public class TopicTypeTest1 {
     private String id;
     private Integer stars;
     private String title;
-    @Column(conversion = EnumConverter.class)
     private TopicTypeEnum topicType;
     private LocalDateTime createTime;
 }
@@ -187,7 +186,7 @@ public class TopicTypeVO {
     private String id;
     private Integer stars;
     private String title;
-    @Column(value = "topic_type",conversion = EnumConverter.class)
+    @Column(value = "topic_type")
     private TopicTypeEnum topicType1;
     private LocalDateTime createTime;
 }
@@ -338,7 +337,7 @@ public class TopicTypeTest2 {
     private String id;
     private Integer stars;
     private String title;
-    @Column(value = "topic_type",conversion = EnumValueConverter.class)
+    @Column(value = "topic_type")
     private TopicTypeEnum topicType;
     private LocalDateTime createTime;
 }
