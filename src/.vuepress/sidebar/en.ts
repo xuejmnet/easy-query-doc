@@ -49,12 +49,6 @@ export const enSidebar = sidebar({
           prefix: "return-result/",
           collapsible:true,
           children: "structure",
-        },
-        {
-          text: "CRUD Advanced",
-          prefix: "adv/",
-          collapsible:true,
-          children: "structure",
         },"select","where","insert","update","delete","transaction","insertOrUpdate","batch","dynamic-table-name","native-sql"
       ],
     },
@@ -71,7 +65,7 @@ export const enSidebar = sidebar({
       children: "structure",
     },
     {
-      text: "Aggregate Root Saving🔥🔥🔥",
+      text: "Aggregate Root Saving🔥",
       prefix: "savable/",
       collapsible:true,
       children: "structure",
@@ -101,12 +95,6 @@ export const enSidebar = sidebar({
       children: "structure",
     },
     {
-      text: "Performance Related",
-      prefix: "performance/",
-      collapsible:true,
-      children: "structure",
-    },
-    {
       text: "Code-First",
       prefix: "code-first/",
       collapsible:true,
@@ -127,6 +115,12 @@ export const enSidebar = sidebar({
     {
       text: "Sharding",
       prefix: "super/",
+      collapsible:true,
+      children: "structure",
+    },
+    {
+      text: "Performance",
+      prefix: "performance/",
       collapsible:true,
       children: "structure",
     },
