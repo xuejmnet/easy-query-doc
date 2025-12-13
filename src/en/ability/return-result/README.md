@@ -3,7 +3,7 @@ title: API Overview
 ---
 
 `easy-query` not only returns database entities as results but also supports custom return results `VO, DTO` without manual memory mapping conversion:
-- Implicit assignment for custom results `select(vo.class, o -> Select.of(...))`
+- Implicit assignment for custom results `select(o -> Select.of(vo.class,...))` or `select(vo.class, o -> Select.of(...))`
 - Explicit assignment for custom results `select(o -> new proxy()...)`
 - Built-in draft tuple types `select(o -> Select.DRAFT.of(...))` or `select(o -> Select.TUPLE.of(...))`
 - Built-in partial tuple types `select(o -> Select.PART.of(...))`
@@ -52,6 +52,16 @@ List<BankCardVO> list = easyEntityQuery.queryable(DocBankCard.class)
             //Can use string: "userName" or lombok's @FieldNameConstant annotation
             .field("userName").set(user.name())
             .field("bankName").set(bank.name())
+        )
+        .select((bank_card, user, bank) -> 
+            Select.of(
+                BankCardVO.class,// first parameter is result type VO.class
+                //Auto-map all bank_card properties, equivalent to select t.* but result-based
+                bank_card.FETCHER.allFileds(),//bank_card.FETCHER.allFileds() 这个等同于selectAll(bank_card)
+                user.name().as("userName"),//Can use string: "userName" or lombok's @FieldNameConstant annotation
+                bank.name().as("bankName"),
+                bank.myName()// auto mapp same fieldName
+            )
         ).toList();
 ```
 

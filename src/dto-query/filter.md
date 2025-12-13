@@ -270,7 +270,7 @@ queryDTO.setBankCardType2("储蓄卡");
 queryDTO.setBankCardType3("储蓄卡");
 queryDTO.setBankCardBankNames(Arrays.asList("工商银行","建设银行"));
 List<SysUser> list = easyEntityQuery.queryable(SysUser.class)
-        .configure(s->s.getBehavior().add(EasyBehaviorEnum.ALL_SUB_QUERY_GROUP_JOIN))
+        .configure(s->s.getBehavior().add(EasyBehaviorEnum.ALL_SUB_QUERY_GROUP_JOIN))//依然支持groupJoin合并子查询
         .whereObject(queryDTO)
         .where(user -> {
         })

@@ -58,7 +58,7 @@ public class EnumDeserializer {
 public class EnumConverter implements ValueConverter<IEnum<?>,Number> {
     @Override
     public Number serialize(IEnum<?> iEnum, ColumnMetadata columnMetadata) {
-        if(iEnum=null){
+        if(iEnum==null){
             return null;
         }
         return iEnum.getCode();
@@ -66,7 +66,7 @@ public class EnumConverter implements ValueConverter<IEnum<?>,Number> {
 
     @Override
     public IEnum<?> deserialize(Number code, ColumnMetadata columnMetadata) {
-        if(code=null){
+        if(code==null){
             return null;
         }
         return EnumDeserializer.deserialize(EasyObjectUtil.typeCast(columnMetadata.getPropertyType()),code.intValue());

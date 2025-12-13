@@ -131,7 +131,7 @@ Parameter 2  | The main (root) table of the current expression, i.e., the from t
 
 ```java
                 List<SchoolClass> list = easyEntityQuery.queryable(SchoolClass.class)
-                        .include((c,s)->{
+                        .include2((c,s)->{
                             c.query(s.schoolTeachers().flatElement().schoolClasses()).where(a -> a.name().like("123"));
                             c.query(s.schoolStudents().flatElement().schoolClass()).where(x -> x.schoolStudents().flatElement().name().eq("123"));
                             c.query(s.schoolStudents()).where(x -> x.name().ne("123"));
