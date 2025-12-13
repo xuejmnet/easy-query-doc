@@ -48,7 +48,7 @@ markmap:
 - [Component Services](/easy-query-doc/en/framework/replace-configure)
 - [Object-Database Mapping Rules](/easy-query-doc/en/framework/mapping-db)
 
-## Quick Start
+## [Quick Start](/easy-query-doc/en/startup/quick-start)
 - [Console Case](/easy-query-doc/en/startup/quick-start)
 - [Business Case](/easy-query-doc/en/startup/step1)
 - [Entity Design Recommendations](/easy-query-doc/en/best-practices)
@@ -89,7 +89,7 @@ markmap:
   - Type SQL Fragments
 - Expression Writing Instructions🔥
 
-## DTO Query🔥
+## [DTO Query🔥](/easy-query-doc/en/dto-query/)
 - Dynamic Filtering
 - Dynamic Sorting
 - Structured Mapping
