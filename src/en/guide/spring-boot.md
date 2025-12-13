@@ -21,6 +21,9 @@ If you are using kotlin, it is recommended to use gradle and ksp (`com.easy-quer
 ## Dependencies
 We currently use springboot 3.1.0 with jdk17. Of course, please choose the appropriate version according to your actual situation. eq's `com.easy-query.sql-springboot-starter` dependency supports both `springboot2 and springboot3`
 
+::: tip SpringBoot4!!!
+> If you are using `springboot4`, then please use`com.easy-query.sql-springboot4-starter`，The related project demo is available at[项目demosb4](https://github.com/xuejmnet/demosb4)
+:::
 
 ::: tabs
 

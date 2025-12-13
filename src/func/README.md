@@ -9,8 +9,8 @@ title: 内置函数
 - `DateTime` 对应java的 `LocalDateTime`、`LocalDate`、`Date`...
 - `Boolean` 对应java的 `Boolean`
 - `Any` 对应java的 `List`或者其他未知类型
-- `JsonMap`(未实现)
-- `JsonArray`(未实现)
+- `JSONObject`以部分实现
+- `JSONArray`以部分实现
 
 不同系统之间拥有不同的函数和编译时类型接受比如`String`的比较只能是`String`，每个系统都拥有自己的函数,当然也可以使用`toStr`,`toNumber`等函数转成对应函数或者使用`asAny`转成任意类型后可以使用任意函数，区别是`toxxxx`是数据库层面的函数`asAny()`或`asAnyType(Long.class)`是编译时欺骗编译器行为
 

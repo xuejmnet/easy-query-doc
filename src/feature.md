@@ -2,6 +2,15 @@
 title: 新功能
 order: 110
 ---
+## json api
+`eq3.1.68+`支持json对应api
+```java
+
+        List<PgTopicJson> ages = entityQuery.queryable(PgTopicJson.class)
+                .where(t -> {
+                    t.extraJson().asJSONObject().getInteger("age").eq(18);
+                }).toList();
+```
 ## include2 api修改
 原本`include`双参数修改为`icnlude2` 因为kotlin太蠢导致idea下无法识别
 ```java
