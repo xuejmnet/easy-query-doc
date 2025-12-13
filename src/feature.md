@@ -2,6 +2,17 @@
 title: 新功能
 order: 110
 ---
+## include2 api修改
+原本`include`双参数修改为`icnlude2` 因为kotlin太蠢导致idea下无法识别
+```java
+                List<SchoolClass> list = easyEntityQuery.queryable(SchoolClass.class)
+                        .include2((c,s)->{
+                            c.query(s.schoolTeachers().flatElement().schoolClasses()).where(a -> a.name().like("123"));
+                            c.query(s.schoolStudents().flatElement().schoolClass()).where(x -> x.schoolStudents().flatElement().name().eq("123"));
+                            c.query(s.schoolStudents()).where(x -> x.name().ne("123"));
+                        })
+                        .toList();
+```
 ## joining支持排序
 `3.1.60+`joining函数支持逗号分割和排序(如果数据库支持)
 ```java
@@ -59,7 +70,7 @@ WHERE t.`name` LIKE '%银行%'
 移除`includeBy`使用插件提示`icnlude2`(因为是include内部有两参数),用于处理复杂多链路结构化`include`
 ```java
                 List<SchoolClass> list = easyEntityQuery.queryable(SchoolClass.class)
-                        .include((c,s)->{
+                        .include2((c,s)->{
                             c.query(s.schoolTeachers().flatElement().schoolClasses()).where(a -> a.name().like("123"));
                             c.query(s.schoolStudents().flatElement().schoolClass()).where(x -> x.schoolStudents().flatElement().name().eq("123"));
                             c.query(s.schoolStudents()).where(x -> x.name().ne("123"));
