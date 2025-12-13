@@ -55,7 +55,7 @@ export const enSidebar = sidebar({
           prefix: "adv/",
           collapsible:true,
           children: "structure",
-        },"insert","update","delete","transaction","insertOrUpdate","batch","dynamic-table-name","native-sql"
+        },"select","where","insert","update","delete","transaction","insertOrUpdate","batch","dynamic-table-name","native-sql"
       ],
     },
     {
@@ -73,6 +73,12 @@ export const enSidebar = sidebar({
     {
       text: "Aggregate Root Saving🔥🔥🔥",
       prefix: "savable/",
+      collapsible:true,
+      children: "structure",
+    },
+    {
+      text: "DTO Query🔥🔥🔥",
+      prefix: "dto-query/",
       collapsible:true,
       children: "structure",
     },
@@ -149,7 +155,14 @@ export const enSidebar = sidebar({
         }
       ],
     },
-    "support","members",
+    {
+      text: "Framework Other",
+      prefix: "other/",
+      collapsible:true,
+      children: "structure",
+    },
+    "support",
+    "members",
     "context-mode",
     "v2-v3",
     "catalog",
