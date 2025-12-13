@@ -41,6 +41,8 @@ mappingStrategy| `EntityMappingStrategyEnum.PROPERTY_FIRST` | Mapping relationsh
 includeLimitMode| `IncludeLimitModeEnum.PARTITION` | When fetching many sub-items, if sub-items have limit set to limit return count, defaults to `partition` to improve performance but some databases don't support it. MySQL5.7 users can choose `union_all` to support include+limit
 saveComment| `false` | `true`: then persist `@Column(comment="...")` and `@Table(comment="...")` annotations to EntityMetadata and ColumnMetadata
 maxInClauseSize| `9999999` | When `.where(o -> o.id().in(ids))` can form `(id in (:p1,:p2) or id in(:p3,:p4))` according to the set `maxInClauseSize`
+defaultCondition| `like` | Users can choose `like` or `contains`. The difference is that `like` treats the user's percent sign `%` as a wildcard, while `contains` treats the percent sign `%` as part of the searched content
+autoIncludeTable| `throw` | When users use database table objects in `selectAutoInclude`, an error will be thrown. Users can also choose `warning` or `ignore` (recommend `throw`)
 
 ## Sharding-Specific Configuration
 

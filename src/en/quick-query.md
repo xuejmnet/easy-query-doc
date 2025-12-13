@@ -269,24 +269,23 @@ WHERE
         AND t4.`name` = '建设银行' LIMIT 1))
 ```
 
-Many people believe that ORM-generated SQL is poor, leading to performance issues. Let's see `eq`'s most powerful subquery merge `implicit group, also known as subQueryToGroupJoin`
+Many people believe that ORM-generated SQL is poor, leading to performance issues. Let's see `eq`'s most powerful subquery merge `implicit group join`
 
 Same condition as above
 
 Filter users who have at least 2 ICBC bank cards and have not opened an account at CCB
 
 - Configure subquery to `group join`, supported since framework `2.8.16^` by setting `@Navigate(subQueryToGroupJoin = true)`
-- Expression configuration ` .subQueryToGroupJoin(u->u.bankCards())//Enable implicit group`
-- Expression configuration for all `.configure(o->{o.getBehavior().addBehavior(EasyBehaviorEnum.ALL_SUB_QUERY_GROUP_JOIN);})`
+- Expression configuration `.configure(s->s.getBehavior().add(EasyBehaviorEnum.ALL_SUB_QUERY_GROUP_JOIN))`
 
 
 Super ORM writing style:
 ```java
 
 List<SysUser> list = easyEntityQuery.queryable(SysUser.class)
-        .subQueryToGroupJoin(u->u.bankCards())//Enable implicit group
+        .configure(s->s.getBehavior().add(EasyBehaviorEnum.ALL_SUB_QUERY_GROUP_JOIN))//Enable implicit group join
         // .configure(o->{//When we have many subqueries, after upgrading to 2.8.14, you can configure the behavior to convert all subqueries to group join
-        //     o.getBehavior().addBehavior(EasyBehaviorEnum.ALL_SUB_QUERY_GROUP_JOIN);
+        //     o.getBehavior().add(EasyBehaviorEnum.ALL_SUB_QUERY_GROUP_JOIN);
         // })
         .where(user -> {
             //At least 2 ICBC bank cards

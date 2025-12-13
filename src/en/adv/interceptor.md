@@ -319,7 +319,7 @@ Method  | Default Implementation | Description
 --- | --- | --- 
 configure | None  | Configure expression where conditions for query, update (entity/expression), delete (entity/expression)
 
-### Tenant Mode Implementation
+### Tenant Multi-Tenant Mode Implementation
 - [x] Add tenant id
 - [x] Query filter tenant id
 - [x] Update add tenant id condition

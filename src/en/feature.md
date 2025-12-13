@@ -2,6 +2,72 @@
 title: New Features
 order: 110
 ---
+## joining Supports Sorting
+`3.1.60+` joining function supports comma separation and sorting (if database supports)
+```java
+
+        easyEntityQuery.queryable(SysBank.class)
+                .configure(s -> s.getBehavior().add(EasyBehaviorEnum.ALL_SUB_QUERY_GROUP_JOIN))
+                .where(bank -> {
+                    bank.name().like("Bank");
+                })
+                .select(bank -> Select.PART.of(
+                        bank,
+                        bank.bankCards()
+                                .orderBy(o -> o.openTime().asc())
+                                .orderBy(o -> o.type().desc())
+                                .distinct()
+                                .joining(s -> s.type())
+                )).toList();
+
+
+SELECT t.`id`, t.`name`, t.`create_time`, t2.`__joining2__` AS `__part__column1`
+FROM `t_bank` t
+	LEFT JOIN (
+		SELECT t1.`bank_id` AS `__group_key1__`, GROUP_CONCAT(DISTINCT t1.`type` ORDER BY t1.`open_time` ASC, t1.`type` DESC SEPARATOR ',') AS `__joining2__`
+		FROM `t_bank_card` t1
+		GROUP BY t1.`bank_id`
+	) t2
+	ON t2.`__group_key1__` = t.`id`
+WHERE t.`name` LIKE '%Bank%'
+```
+## Static Inner Class Supports @EntityProxy
+`3.1.53+` supports static inner classes using `@EntityProxy`, can be used for complex intermediate objects without creating independent dto files, and supports explicit package name declaration (recommend upgrading plugin to 0.1.72+)
+```java
+
+    @Data
+    @EntityProxy(value = "MyTestb",generatePackage = "com.easy.query.test1")
+    public static class MyTest2{
+        private String id;
+        private String name;
+    }
+```
+## selectAutoIncludeTable
+`3.1.51+` by default using `selectAutoInclude` if there is a database entity (@Table) entity, it will report an error by default, you can choose warning or ignore
+
+## notEmptyAll
+`3.1.51+` supports `all` function and requires collection not empty
+```java
+
+        List<SysUser> list = easyEntityQuery.queryable(SysUser.class)
+                .where(user -> {
+                    user.bankCards().where(bc -> bc.type().eq("Savings Card")).notEmptyAll(bc -> bc.code().startsWith("33123"));
+                }).toList();
+```
+
+## include2
+Remove `includeBy` use plugin hint `include2` (because there are two parameters inside include), used to handle complex multi-chain structured `include`
+```java
+                List<SchoolClass> list = easyEntityQuery.queryable(SchoolClass.class)
+                        .include((c,s)->{
+                            c.query(s.schoolTeachers().flatElement().schoolClasses()).where(a -> a.name().like("123"));
+                            c.query(s.schoolStudents().flatElement().schoolClass()).where(x -> x.schoolStudents().flatElement().name().eq("123"));
+                            c.query(s.schoolStudents()).where(x -> x.name().ne("123"));
+                        })
+                        .toList();
+```
+## include Unified
+`3.1.49+` eq unified all include, no need to distinguish between include or includes
 ## Subquery all Function
 `3.1.46+` eq added the subquery `all` function
 ```java
