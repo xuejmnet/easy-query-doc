@@ -17,8 +17,10 @@ ManyToOne | Many-to-One  | Student and class
 ManyToMany | Many-to-Many  | Class and teachers
 
 
-::: danger note!!!
-> `include` can only be used with the eq source table for hierarchical (tree-structured) object fetching.
+
+
+::: danger Note!!!
+> `include` can only be used for tree-structured object fetching from the `eq` from table
 :::
 
 
@@ -63,7 +65,6 @@ List<SchoolClass> classes = easyEntityQuery.queryable(SchoolClass.class)
 > `include` internally is an independent query. If you need differential updates and haven't configured default startup tracking queries, you need to independently perform `asTracking()`, etc. The second parameter of include's one or many indicates how many related properties are grouped for retrieval
 :::
 
-Object mode `include/includes` parameter description. If your navigation property is `ToOne`, please use `include`. If it's `ToMany`, use `includes`.
 
 The two parameters included: the first parameter indicates the navigation property you want to return, and the second parameter indicates how to enhance the returned navigation property
 ```java
