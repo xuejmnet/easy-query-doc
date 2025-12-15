@@ -388,8 +388,6 @@ public class EasyQueryConfiguration {
 //                    builder.setDefaultDataSourceMergePoolSize(easyQueryProperties.getDefaultDataSourceMergePoolSize());
 //                    builder.setMultiConnWaitTimeoutMillis(easyQueryProperties.getMultiConnWaitTimeoutMillis());
 //                    builder.setWarningBusy(easyQueryProperties.isWarningBusy());
-//                    builder.setInsertBatchThreshold(easyQueryProperties.getInsertBatchThreshold());
-//                    builder.setUpdateBatchThreshold(easyQueryProperties.getUpdateBatchThreshold());
 //                    builder.setPrintSql(easyQueryProperties.isPrintSql());
 //                    builder.setStartTimeJob(easyQueryProperties.isStartTimeJob());
 //                    builder.setDefaultTrack(easyQueryProperties.isDefaultTrack());

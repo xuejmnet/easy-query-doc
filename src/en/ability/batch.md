@@ -22,12 +22,12 @@ The connection string settings provided may not apply to all database versions. 
 jdbc:mysql://127.0.0.1:3306/easy-query-test?serverTimezone=GMT%2B8&characterEncoding=utf-8&useSSL=false&rewriteBatchedStatements=true
 ```
 
-## Configuration
+<!-- ## Configuration
 
 | Config Name | Default | Description |
 |-------------|---------|-------------|
 | `insertBatchThreshold` | 1024 | If insertable adds a collection with ≥1024 objects, automatically uses batch mode to merge same SQL for better performance. Requires `rewriteBatchedStatements=true` (MySQL). Can manually enable/disable with `batch()` method |
-| `updateBatchThreshold` | 1024 | If updatable adds a collection with ≥1024 objects, automatically uses batch mode to merge same SQL for better performance. Requires `rewriteBatchedStatements=true` (MySQL). Can manually enable/disable with `batch()` method |
+| `updateBatchThreshold` | 1024 | If updatable adds a collection with ≥1024 objects, automatically uses batch mode to merge same SQL for better performance. Requires `rewriteBatchedStatements=true` (MySQL). Can manually enable/disable with `batch()` method | -->
 
 ## Important Notes
 

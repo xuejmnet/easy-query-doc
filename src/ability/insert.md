@@ -62,7 +62,7 @@ long rows = easyEntityQuery.insertable(topics.get(0)).executeRows();
 
 ## 2.多条插入
 
-当对象集合数量大于默认设置的阈值`insertBatchThreshold`则会自动使用`batch`来插入数据,性能会大大提高,当然如果数量不足`insertBatchThreshold`阈值可以手动调用`batch`方法
+<!-- 当对象集合数量大于默认设置的阈值`insertBatchThreshold`则会自动使用`batch`来插入数据,性能会大大提高,当然如果数量不足`insertBatchThreshold`阈值可以手动调用`batch`方法 -->
 
 <!-- 批量插入需要jdbc链接字符串开启`&allowMultiQueries=true&rewriteBatchedStatements=true`开启后性能将会大幅提升,当然可以使用batch或者到了插入批处理阈值也是可以的 -->
 

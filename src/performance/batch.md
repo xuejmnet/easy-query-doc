@@ -15,10 +15,10 @@ order: 50
 ## 例如
 `jdbc:mysql://127.0.0.1:3306/easy-query-test?serverTimezone=GMT%2B8&characterEncoding=utf-8&useSSL=false&rewriteBatchedStatements=true`
 
-配置名称  | 默认值 | 描述  
+<!-- 配置名称  | 默认值 | 描述  
 --- | --- | --- 
 insertBatchThreshold | 1024  | 如果insertable一次性添加对象集合大于等于1024个那么会对其进行相同sql进行合并提高执行效率,链接字符串需要添加`rewriteBatchedStatements=true`(mysql),可以通过调用insert或者update的batch方法来手动使用或者禁用
-updateBatchThreshold | 1024  | 如果updatable一次性添加对象集合大于等于1024个那么会对其进行相同sql进行合并提高执行效率,链接字符串需要添加`rewriteBatchedStatements=true`(mysql),可以通过调用insert或者update的batch方法来手动使用或者禁用
+updateBatchThreshold | 1024  | 如果updatable一次性添加对象集合大于等于1024个那么会对其进行相同sql进行合并提高执行效率,链接字符串需要添加`rewriteBatchedStatements=true`(mysql),可以通过调用insert或者update的batch方法来手动使用或者禁用 -->
 
 
 ## 代码注意点

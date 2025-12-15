@@ -9,9 +9,9 @@ order: 30
 
 
 ::: danger 说明!!!
-> 默认`update(entity)`操作是更新对象全部列到数据库,不忽略`null`值,如果需要修改策略请进行[配置](/easy-query-doc/framework/config-optio)或手动设置策略
-> 默认`update(entity)`操作是更新对象全部列到数据库,不忽略`null`值,如果需要修改策略请进行[配置](/easy-query-doc/framework/config-optio)或手动设置策略
-> 默认`update(entity)`操作是更新对象全部列到数据库,不忽略`null`值,如果需要修改策略请进行[配置](/easy-query-doc/framework/config-optio)或手动设置策略
+> 默认`update(entity)`操作是更新对象全部列到数据库,不忽略`null`值,如果需要修改策略请进行[配置](/easy-query-doc/framework/config-option)或手动设置策略
+> 默认`update(entity)`操作是更新对象全部列到数据库,不忽略`null`值,如果需要修改策略请进行[配置](/easy-query-doc/framework/config-option)或手动设置策略
+> 默认`update(entity)`操作是更新对象全部列到数据库,不忽略`null`值,如果需要修改策略请进行[配置](/easy-query-doc/framework/config-option)或手动设置策略
 :::
 
 
