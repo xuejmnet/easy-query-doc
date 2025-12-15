@@ -63,7 +63,7 @@ If the table has an auto-increment ID, it will be filled back to the entity usin
 
 ## 2. Batch Insert
 
-When the collection size exceeds the default `insertBatchThreshold`, batch mode is automatically used for better performance. You can also manually call `batch()` method.
+<!-- When the collection size exceeds the default `insertBatchThreshold`, batch mode is automatically used for better performance. You can also manually call `batch()` method. -->
 
 ::: warning Note
 For MySQL, add `rewriteBatchedStatements=true` to your JDBC connection string for significantly improved performance.

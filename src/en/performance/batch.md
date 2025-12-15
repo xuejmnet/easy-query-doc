@@ -15,10 +15,10 @@ The connection string settings provided in the documentation may not be suitable
 ## Example
 `jdbc:mysql://127.0.0.1:3306/easy-query-test?serverTimezone=GMT%2B8&characterEncoding=utf-8&useSSL=false&rewriteBatchedStatements=true`
 
-Configuration Name  | Default Value | Description  
+<!-- Configuration Name  | Default Value | Description  
 --- | --- | --- 
 insertBatchThreshold | 1024  | If insertable adds an object collection at once with 1024 or more, it will merge the same SQL to improve execution efficiency. The connection string needs to add `rewriteBatchedStatements=true` (MySQL). You can manually use or disable it by calling the batch method of insert or update
-updateBatchThreshold | 1024  | If updatable adds an object collection at once with 1024 or more, it will merge the same SQL to improve execution efficiency. The connection string needs to add `rewriteBatchedStatements=true` (MySQL). You can manually use or disable it by calling the batch method of insert or update
+updateBatchThreshold | 1024  | If updatable adds an object collection at once with 1024 or more, it will merge the same SQL to improve execution efficiency. The connection string needs to add `rewriteBatchedStatements=true` (MySQL). You can manually use or disable it by calling the batch method of insert or update -->
 
 
 ## Code Considerations
