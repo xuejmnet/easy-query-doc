@@ -14,6 +14,8 @@ category:
 - 如果你希望数据库对象和数据库类型一致,但是还希望用枚举转换的或者其他属性转换的
 - 数据库对象属性本身就是枚举或者对象的
 
+如果您不想每个属性都添加`@Column(conversion=xxx.class)`那么可以查看[全局值转换器](/easy-query-doc/prop/global-value-converter)
+
 ## api
 
 接口  | 功能  

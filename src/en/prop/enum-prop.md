@@ -18,7 +18,7 @@ Two solutions are provided here
 
 Interface  | Function  
 ---  | --- 
-EnumValueAutoConverter  | Supports enum type global application to properties without `ValueConverter` annotation (as long as the corresponding apply method returns true), using this interface does not require adding `Column(conversion=xxxx.class)`
+ValueAutoConverter  | Supports enum type global application to properties without `ValueConverter` annotation (as long as the corresponding apply method returns true), using this interface does not require adding `Column(conversion=xxxx.class)`
 \<TProperty>  | Object property type
 \<TProvider>  | Java type corresponding to the database
 
@@ -41,9 +41,9 @@ Many times we may want to design enum values in database objects as Java enum ob
 ### Database Object Property Enum Values
 
 ::: warning Notice!!!
-> If your database has both numeric types and string types to store enums, it is recommended that you create `NumberEnumValueAutoConverter` converter + `INumberEnum` interface, `NumberEnumValueAutoConverter`'s `apply` checks if it implements `INumberEnum.class`,
-> Then create `StringEnumValueAutoConverter` converter + `IStringEnum` interface, `StringEnumValueAutoConverter`'s `apply` checks if it implements `IStringEnum.class`
-> If you don't want to create multiple converters, you can create an `Object` converter to handle it yourself `EnumConverter implements EnumValueAutoConverter<IEnum<?>,Object>`
+> If your database has both numeric types and string types to store enums, it is recommended that you create `NumberValueAutoConverter` converter + `INumberEnum` interface, `NumberValueAutoConverter`'s `apply` checks if it implements `INumberEnum.class`,
+> Then create `StringValueAutoConverter` converter + `IStringEnum` interface, `StringValueAutoConverter`'s `apply` checks if it implements `IStringEnum.class`
+> If you don't want to create multiple converters, you can create an `Object` converter to handle it yourself `EnumConverter implements ValueAutoConverter<IEnum<?>,Object>`
 :::
 
 ```java
@@ -63,9 +63,9 @@ public class EnumDeserializer {
     }
 }
 
-//If you want the current enum conversion configured globally, you can use EnumValueAutoConverter
-//EnumValueAutoConverter's first generic parameter cannot be a specific enum type unless the entire system has only one enum type
-public class EnumConverter implements EnumValueAutoConverter<IEnum<?>,Number> {//Generic second parameter is recommended to use Number to prevent cast type conversion Long to Integer
+//If you want the current enum conversion configured globally, you can use ValueAutoConverter
+//ValueAutoConverter's first generic parameter cannot be a specific enum type unless the entire system has only one enum type
+public class EnumConverter implements ValueAutoConverter<IEnum<?>,Number> {//Generic second parameter is recommended to use Number to prevent cast type conversion Long to Integer
     @Override
     public Number serialize(IEnum<?> iEnum, ColumnMetadata columnMetadata) {
         if(iEnum == null){
@@ -283,9 +283,9 @@ public class EnumValueDeserializer {
 }
 
 
-//If you want the current enum conversion configured globally, you can use EnumValueAutoConverter
-//EnumValueAutoConverter's first generic parameter cannot be a specific enum type unless the entire system has only one enum type
-public class EnumConverter implements EnumValueAutoConverter<IEnum<?>,Number> {//Generic second parameter is recommended to use Number to prevent cast type conversion Long to Integer
+//If you want the current enum conversion configured globally, you can use ValueAutoConverter
+//ValueAutoConverter's first generic parameter cannot be a specific enum type unless the entire system has only one enum type
+public class EnumConverter implements ValueAutoConverter<IEnum<?>,Number> {//Generic second parameter is recommended to use Number to prevent cast type conversion Long to Integer
     @Override
     public Number serialize(IEnum<?> enumValue, ColumnMetadata columnMetadata) {
         if(enumValue == null){

@@ -17,7 +17,7 @@ Two solutions are provided here
 Interface  | Function  
 ---  | --- 
 ValueConverter  | Interface for converting database and object values to each other
-EnumValueAutoConverter  | Supports enum types globally applying to properties without `ValueConverter` annotation (as long as the corresponding apply method returns true). Using this interface does not require adding `Column(conversion=xxxx.class)`
+ValueAutoConverter  | Supports enum types globally applying to properties without `ValueConverter` annotation (as long as the corresponding apply method returns true). Using this interface does not require adding `Column(conversion=xxxx.class)`
 \<TProperty>  | Object property type
 \<TProvider>  | Corresponding Java type for the database
 
@@ -73,9 +73,9 @@ public class EnumConverter implements ValueConverter<IEnum<?>,Number> {
     }
 }
 
-//If you want to configure this enum conversion globally, you can use EnumValueAutoConverter
-//EnumValueAutoConverter first generic parameter cannot be a specific enum type unless there is only one enum type in the entire system
-public class EnumConverter implements EnumValueAutoConverter<IEnum<?>,Number> {
+//If you want to configure this enum conversion globally, you can use ValueAutoConverter
+//ValueAutoConverter first generic parameter cannot be a specific enum type unless there is only one enum type in the entire system
+public class EnumConverter implements ValueAutoConverter<IEnum<?>,Number> {
     @Override
     public Number serialize(IEnum<?> iEnum, ColumnMetadata columnMetadata) {
         if(iEnum == null){
