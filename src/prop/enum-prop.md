@@ -18,7 +18,7 @@ category:
 
 接口  | 功能  
 ---  | --- 
-EnumValueAutoConverter  | 支持枚举类型全局作用到没有添加`ValueConverter`注解的属性上(只要对应的apply方法返回true),使用这个接口无需添加`Column(conversion=xxxx.class)`
+ValueAutoConverter  | 支持枚举类型全局作用到没有添加`ValueConverter`注解的属性上(只要对应的apply方法返回true),使用这个接口无需添加`Column(conversion=xxxx.class)`
 \<TProperty>  | 对象属性类型
 \<TProvider>  | 数据库对应的java类型
 
@@ -41,9 +41,9 @@ configuration.applyValueConverter(new EnumConverter());
 ### 数据库对象属性枚举值
 
 ::: warning 说明!!!
-> 如果您的数据库既有数字类型又有字符串类型来存储枚举,那么这边是建议你创建`NumberEnumValueAutoConverter`转换器 + `INumberEnum`接口,`NumberEnumValueAutoConverter`的`apply`校验是否实现`INumberEnum.class`，
-> 然后再创建`StringEnumValueAutoConverter`转换器 + `IStringEnum`接口,`StringEnumValueAutoConverter`的`apply`校验是否实现`IStringEnum.class`
-> 如果你不想创建多个转换器那么可以创建一个`Object`的转换器自己去处理`EnumConverter implements EnumValueAutoConverter<IEnum<?>,Object>`
+> 如果您的数据库既有数字类型又有字符串类型来存储枚举,那么这边是建议你创建`NumberValueAutoConverter`转换器 + `INumberEnum`接口,`NumberValueAutoConverter`的`apply`校验是否实现`INumberEnum.class`，
+> 然后再创建`StringValueAutoConverter`转换器 + `IStringEnum`接口,`StringValueAutoConverter`的`apply`校验是否实现`IStringEnum.class`
+> 如果你不想创建多个转换器那么可以创建一个`Object`的转换器自己去处理`EnumConverter implements ValueAutoConverter<IEnum<?>,Object>`
 :::
 
 ```java
@@ -63,9 +63,9 @@ public class EnumDeserializer {
     }
 }
 
-//如果你希望当前枚举转换配置到全局可以使用 EnumValueAutoConverter
-//EnumValueAutoConverter第一个泛型参数 不可以是具体枚举类型除非整个系统就一个枚举类型
-public class EnumConverter implements EnumValueAutoConverter<IEnum<?>,Number> {//泛型第二个参数建议使用Number,防止出现cast类型转换Long转Integer
+//如果你希望当前枚举转换配置到全局可以使用 ValueAutoConverter
+//ValueAutoConverter第一个泛型参数 不可以是具体枚举类型除非整个系统就一个枚举类型
+public class EnumConverter implements ValueAutoConverter<IEnum<?>,Number> {//泛型第二个参数建议使用Number,防止出现cast类型转换Long转Integer
     @Override
     public Number serialize(IEnum<?> iEnum, ColumnMetadata columnMetadata) {
         if(iEnum == null){
@@ -207,6 +207,10 @@ TopicTypeVO topicTypeVO = easyQuery.queryable(TopicType.class)
 TopicTypeVO(id=123, stars=123, title=title123, topicType1=TEACHER, createTime=2023-05-23T22:16:45)
 ```
 ## 注解模式
+
+::: warning 说明!!!
+> 性能没有`switch`高哪怕您使用map来实现性能还是不如上面那种高
+:::
 ```java
 //注解
 @Documented
@@ -282,9 +286,9 @@ public class EnumValueDeserializer {
 }
 
 
-//如果你希望当前枚举转换配置到全局可以使用 EnumValueAutoConverter
-//EnumValueAutoConverter第一个泛型参数 不可以是具体枚举类型除非整个系统就一个枚举类型
-public class EnumConverter implements EnumValueAutoConverter<IEnum<?>,Number> {//泛型第二个参数建议使用Number,防止出现cast类型转换Long转Integer
+//如果你希望当前枚举转换配置到全局可以使用 ValueAutoConverter
+//ValueAutoConverter第一个泛型参数 不可以是具体枚举类型除非整个系统就一个枚举类型
+public class EnumConverter implements ValueAutoConverter<IEnum<?>,Number> {//泛型第二个参数建议使用Number,防止出现cast类型转换Long转Integer
     @Override
     public Number serialize(IEnum<?> enumValue, ColumnMetadata columnMetadata) {
         if(enumValue == null){
