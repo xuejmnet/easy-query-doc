@@ -681,9 +681,9 @@ public class PostDTO {
 public List<PostDTO> selectAutoInclude(@RequestBody PostPage7Request request) {
     return easyEntityQuery.queryable(Post.class)
             .filterConfigure(NotNullOrEmptyValueFilter.DEFAULT_PROPAGATION_SUPPORTS)
-            .include(t_post -> t_post.user(),uq->{
-                uq.select(u->u.FETCHER.id().name());
-            })
+            //.include(t_post -> t_post.user(),uq->{//使用selectAutoInclude后不再需要include
+                //uq.select(u->u.FETCHER.id().name());
+            //})
             .where(t_post -> {
                 t_post.title().contains(request.getTitle());
                 t_post.user().name().contains(request.getUserName());
