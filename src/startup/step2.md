@@ -681,7 +681,7 @@ public class PostDTO {
 public List<PostDTO> selectAutoInclude(@RequestBody PostPage7Request request) {
     return easyEntityQuery.queryable(Post.class)
             .filterConfigure(NotNullOrEmptyValueFilter.DEFAULT_PROPAGATION_SUPPORTS)
-            //.include(t_post -> t_post.user(),uq->{//使用selectAutoInclude后不再需要include
+            //.include(t_post -> t_post.user(),uq->{//使用selectAutoInclude后不再需要include ②
                 //uq.select(u->u.FETCHER.id().name());
             //})
             .where(t_post -> {
@@ -718,6 +718,7 @@ public List<PostDTO> selectAutoInclude(@RequestBody PostPage7Request request) {
 框架依然通过in来解决n+1的问题实现结构化的对象返回,框架支持任意结构化对象返回包括结构化对象扁平化
 
 - ①`selectAutoInclude`是`select`api和`include`的结合，会自动安装dto的要求将数据结构进行组装返回
+- ②`selectAutoInclude`后原先的`inlcude`可以不使用了，框架会根据dto实体信息自动解析感知需要`include`的对象和部分列，如果显式编写那么还是以手写的include为准
 
 ::: danger 说明!!!
 > 注意千万不要再`selectAutoInclude`中传入数据库对象,因为数据库对象的传入会导致`selectAutoInclude`将整个关系树连根拔起都查询出来
