@@ -19,11 +19,17 @@ isSupport  | 当前类型是否支持`ValueAutoConverter`
 public class DefaultValueAutoConverterProvider implements ValueAutoConverterProvider{
     @Override
     public boolean isSupport(@NotNull Class<?> clazz, @NotNull Class<?> propertyType) {
-        return Enum.class.isAssignableFrom(propertyType);
+        return Enum.class.isAssignableFrom(propertyType) || !EasyClassUtil.isBasicType(propertyType);
     }
 }
 
 ```
+
+默认Provider行为已经将非基本类型全部排除在外，枚举类型也完全支持，如果你觉得默认的方法范围过大你希望自己控制哪些类型被注册那么可以使用下面的方案通过接口标识部分类型被注册为全局
+
+::: warning 说明!!!
+> 如无需要可以不实现`ValueAutoConverterProvider`接口
+:::
 
 
 ## ValueAutoConverter
