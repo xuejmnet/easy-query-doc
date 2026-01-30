@@ -222,15 +222,9 @@ Custom logical delete implementation to fill deleter and delete time
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class MyBooleanLogicDeleteStrategy extends AbstractLogicDeleteStrategy {
     private final CurrentUser currentUser;
-    private static final Set<Class<?>> allowedPropertyTypes =new HashSet<>(Arrays.asList(Boolean.class,boolean.class));
     @Override
     public String getStrategy() {
         return "DELETE_WITH_USER_TIME";//User specifies logical delete name using this name later
-    }
-
-    @Override
-    public Set<Class<?>> allowedPropertyTypes() {
-        return allowedPropertyTypes;
     }
 
 

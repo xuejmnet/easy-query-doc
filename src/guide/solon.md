@@ -251,10 +251,6 @@ solon.logging.logger:
 ```java
 
 public class MyLogicDelStrategy extends AbstractLogicDeleteStrategy {
-    /**
-     * 允许datetime类型的属性
-     */
-    private final Set<Class<?>> allowTypes=new HashSet<>(Arrays.asList(LocalDateTime.class));
     @Override
     protected SQLActionExpression1<WherePredicate<Object>> getPredicateFilterExpression(LogicDeleteBuilder builder, String propertyName) {
         return o->o.isNull(propertyName);
@@ -271,11 +267,6 @@ public class MyLogicDelStrategy extends AbstractLogicDeleteStrategy {
     @Override
     public String getStrategy() {
         return "MyLogicDelStrategy";
-    }
-
-    @Override
-    public Set<Class<?>> allowedPropertyTypes() {
-        return allowTypes;
     }
 }
 

@@ -226,10 +226,6 @@ QueryConfiguration configuration = runtimeContext.getQueryConfiguration();
 configuration.applyLogicDeleteStrategy(new MyLogicDelStrategy());
 
 public class MyLogicDelStrategy extends AbstractLogicDeleteStrategy {
-    /**
-     * 允许datetime类型的属性
-     */
-    private static final Set<Class<?>> allowTypes=new HashSet<>(Arrays.asList(LocalDateTime.class));
     @Override
     protected SQLActionExpression1<WherePredicate<Object>> getPredicateFilterExpression(LogicDeleteBuilder builder,String propertyName) {
         //如果需要唯一索引请自行选择数据库是否支持null的唯一索引
@@ -249,11 +245,6 @@ public class MyLogicDelStrategy extends AbstractLogicDeleteStrategy {
     @Override
     public String getStrategy() {
         return "MyLogicDelStrategy";
-    }
-
-    @Override
-    public Set<Class<?>> allowedPropertyTypes() {
-        return allowTypes;
     }
 }
 
@@ -339,5 +330,45 @@ List<SysMenu> menus = easyEntityQuery.queryable(SysMenu.class)
         }).toList();
 ```
 
+## 配置型逻辑删除
+`AbstractConfigurationLogicDeleteStrategy`，如果你继承了该抽象类则可以通过`apply`方法进行动态注册逻辑删除
+
+```java
+
+@Table("my_config_logic")
+@Data
+@EntityProxy
+public class MyConfigLogicDelete implements ProxyEntityAvailable<MyConfigLogicDelete , MyConfigLogicDeleteProxy> {
+    @Column(primaryKey = true)
+    private String id;
+    private String name;
+    private Boolean deleted;
+}
+
+public class ConfigurationLogicDelete extends AbstractConfigurationLogicDeleteStrategy {
+    @Override
+    protected SQLActionExpression1<WherePredicate<Object>> getPredicateFilterExpression() {
+        return o -> o.eq("deleted", false);
+    }
+
+    @Override
+    protected SQLActionExpression1<ColumnSetter<Object>> getDeletedSQLExpression() {
+        return o -> o.set("deleted", true);
+    }
+
+    @Override
+    public String getStrategy() {
+        return ConfigurationLogicDelete.class.getName();
+    }
+
+    @Override
+    public boolean apply(@NotNull Class<?> entityClass) {
+        return MyConfigLogicDelete.class.equals(entityClass);
+    }
+}
+
+```
+
+实体是否使用逻辑删除优先判断对应的字段上是否有注解，其次才是判断`apply`方法，如果通过`apply`方法找到两个逻辑删除组件则会报错
 ## 相关搜索
 `逻辑删除` `软删除` `soft delete` `logic delete`

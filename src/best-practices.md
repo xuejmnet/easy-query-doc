@@ -223,15 +223,9 @@ public class DefaultEntityInterceptor implements EntityInterceptor, UpdateSetInt
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class MyBooleanLogicDeleteStrategy extends AbstractLogicDeleteStrategy {
     private final CurrentUser currentUser;
-    private static final Set<Class<?>> allowedPropertyTypes =new HashSet<>(Arrays.asList(Boolean.class,boolean.class));
     @Override
     public String getStrategy() {
         return "DELETE_WITH_USER_TIME";//后续用户指定逻辑删除名称就是用这个名称即可
-    }
-
-    @Override
-    public Set<Class<?>> allowedPropertyTypes() {
-        return allowedPropertyTypes;
     }
 
 

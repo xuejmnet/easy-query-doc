@@ -132,11 +132,6 @@ public class CustomLogicDelStrategy extends AbstractLogicDeleteStrategy {
     public String getStrategy() {
         return "CustomLogicDelStrategy";
     }
-
-    @Override
-    public Set<Class<?>> allowedPropertyTypes() {
-        return new HashSet<>(Arrays.asList(LocalDateTime.class));
-    }
 }
 ```
 
