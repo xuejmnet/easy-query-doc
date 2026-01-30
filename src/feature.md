@@ -4,7 +4,10 @@ order: 110
 ---
 ## 逻辑删除
 `eq3.1.79+`逻辑删除破坏性变更和支持动态配置逻辑删除不需要@LogicDelete
-[动态逻辑删除](/easy-query-doc/adv/logic-delete)
+
+- 移除了逻辑删除的`allowedPropertyTypes`函数
+- [动态逻辑删除](/easy-query-doc/adv/logic-delete)
+
 ## json api
 `eq3.1.68+`支持json对应api
 ```java
