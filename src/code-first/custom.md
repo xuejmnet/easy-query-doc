@@ -52,7 +52,7 @@ mysql继承重写`DefaultMigrationEntityParser`,比如`MsSQLMigrationEntityParse
 
 具体继承重写哪个类可以 [参考源码](https://github.com/dromara/easy-query/blob/main/sql-db-support/sql-mssql/src/main/java/com/easy/query/mssql/migration/MsSQLMigrationEntityParser.java)
 ```java
-
+//请使用具体的父类比如PgSQLMigrationEntityParser或MySQLMigrationEntityParser
 public class MyMigrationEntityParser extends DefaultMigrationEntityParser {
 
     @Override
