@@ -285,23 +285,23 @@ This way we have implemented the corresponding database json storage and custom 
 
 public class JsonUtil {
     /**
-     * JSON object conversion class
+     * JSON对象转换类
      */
-    public static ObjectMapper jsonMapper = null; //Converter
+    public static ObjectMapper jsonMapper = null; //转换器
 
     private static final String DEFAULT_DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
     private static final String DEFAULT_DATE_PATTERN = "yyyy-MM-dd";
     private static final String DEFAULT_TIME_PATTERN = "HH:mm:ss";
 
     static {
-        jsonMapper = new ObjectMapper(); //Converter
-        jsonMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);//Ignore unknown fields
-        jsonMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);//If it is an empty object, ignore serialization errors
-        jsonMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);// Ignore field case
+        jsonMapper = new ObjectMapper(); //转换器
+        jsonMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);//忽略未知字段
+        jsonMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);//如果是空对象忽略序列化错误
+        jsonMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);// 忽略字段大小写
         jsonMapper.configure(JsonGenerator.Feature.WRITE_BIGDECIMAL_AS_PLAIN, true);
-        //Serialize all properties of the serialized object
+        //序列化的时候序列对象的所有属性
         jsonMapper.setSerializationInclusion(JsonInclude.Include.ALWAYS);
-        //Cancel time conversion format, default is timestamp, can be cancelled, and need to set the time format to be displayed
+        //取消时间的转化格式,默认是时间戳,可以取消,同时需要设置要表现的时间格式
         jsonMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
 
         JavaTimeModule javaTimeModule = new JavaTimeModule();
@@ -314,22 +314,22 @@ public class JsonUtil {
 
         jsonMapper.registerModule(javaTimeModule);
 
-        // Declare a simple Module object
+        // 声明一个简单Module 对象
         SimpleModule module = new SimpleModule();
-//        // Add a serializer to Module
-//        module.addSerializer(Enumerator.class, new JsonSerializer<Enumerator>() {
-//            @Override
-//            public void serialize(Enumerator value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-//                gen.writeNumber(value.getCode());
-//            }
-//        });
-//        module.addDeserializer(Enum.class, new EnumeratorDeserializer());
+       // 给Module 添加一个序列化器
+       module.addSerializer(IEnum.class, new JsonSerializer<IEnum>() {
+           @Override
+           public void serialize(IEnum value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+               gen.writeNumber(value.getCode());
+           }
+       });
+       module.addDeserializer(Enum.class, new EnumeratorDeserializer());
         jsonMapper.registerModule(module);
     }
 
 
     /**
-     * Convert object to JSON string
+     * 对象转JSON字符串
      * @param object
      * @return
      * @throws JsonSerialException
@@ -344,7 +344,7 @@ public class JsonUtil {
     }
 
     /**
-     * Convert JSON string to object
+     * JSONl字符串转对象
      * @param <T>
      * @param json
      * @param valueType
@@ -367,7 +367,7 @@ public class JsonUtil {
     }
 
     /**
-     * Convert JSON string to object
+     * JSON字符串转成对象
      * @param json
      * @param typeReference
      * @param <T>
@@ -383,7 +383,7 @@ public class JsonUtil {
     }
 
     /**
-     * Convert JSON string to object
+     * JSONl字符串转对象
      * @param <T>
      * @param json
      * @param typeReference
@@ -424,6 +424,7 @@ public class JsonSerialException extends RuntimeException{
 
 
 
+
 @Slf4j
 public class EnumeratorDeserializer extends JsonDeserializer<Enum> implements ContextualDeserializer {
     private Class clz;
@@ -438,7 +439,7 @@ public class EnumeratorDeserializer extends JsonDeserializer<Enum> implements Co
         if (StringUtils.isBlank(parserText)) {
             return null;
         }
-        if (Enumerator.class.isAssignableFrom(clz)) {
+        if (IEnum.class.isAssignableFrom(clz)) {
             boolean isInteger = MyStringUtil.isInteger(parserText);
             if (isInteger) {
                 int parseInt = Integer.parseInt(parserText);

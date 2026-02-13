@@ -316,14 +316,14 @@ public class JsonUtil {
 
         // 声明一个简单Module 对象
         SimpleModule module = new SimpleModule();
-//        // 给Module 添加一个序列化器
-//        module.addSerializer(Enumerator.class, new JsonSerializer<Enumerator>() {
-//            @Override
-//            public void serialize(Enumerator value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-//                gen.writeNumber(value.getCode());
-//            }
-//        });
-//        module.addDeserializer(Enum.class, new EnumeratorDeserializer());
+       // 给Module 添加一个序列化器
+       module.addSerializer(IEnum.class, new JsonSerializer<IEnum>() {
+           @Override
+           public void serialize(IEnum value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+               gen.writeNumber(value.getCode());
+           }
+       });
+       module.addDeserializer(Enum.class, new EnumeratorDeserializer());
         jsonMapper.registerModule(module);
     }
 
@@ -422,4 +422,48 @@ public class JsonSerialException extends RuntimeException{
     }
 }
 
+
+
+
+@Slf4j
+public class EnumeratorDeserializer extends JsonDeserializer<Enum> implements ContextualDeserializer {
+    private Class clz;
+
+    public void setClz(Class clz) {
+        this.clz = clz;
+    }
+
+    @Override
+    public Enum deserialize(JsonParser jsonParser, DeserializationContext ctx) throws IOException {
+        String parserText = jsonParser.getText();
+        if (StringUtils.isBlank(parserText)) {
+            return null;
+        }
+        if (IEnum.class.isAssignableFrom(clz)) {
+            boolean isInteger = MyStringUtil.isInteger(parserText);
+            if (isInteger) {
+                int parseInt = Integer.parseInt(parserText);
+                return EnumDeserializerHelper.deserialize(EnumDeserializerHelper.typeCastNullable(clz), parseInt);
+            }
+            throw new JsonSerialException("非法枚举值[" + EasyClassUtil.getSimpleName(clz) + "]:[" + parserText + "]");
+        }
+
+        return null;
+    }
+
+    /**
+     * 获取合适的解析器，把当前解析的属性Class对象存起来，以便反序列化的转换类型，为了避免线程安全问题，每次都new一个（通过threadLocal来存储更合理）
+     *
+     * @param ctx
+     * @param property
+     * @return
+     * @throws JsonMappingException
+     */
+    public JsonDeserializer createContextual(DeserializationContext ctx, BeanProperty property) throws JsonMappingException {
+        Class rawCls = ctx.getContextualType().getRawClass();
+        EnumeratorDeserializer clone = new EnumeratorDeserializer();
+        clone.setClz(rawCls);
+        return clone;
+    }
+}
 ```
