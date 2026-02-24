@@ -2,6 +2,10 @@
 title: 新功能
 order: 110
 ---
+## 聚合查询api
+`eq3.1.83+`版本增加无参数`groupBy`实现无key版本的聚合主要用于当前数据的统计聚合等一些列操作
+## 运行时schema
+`eq3.1.83+`版本通过替换`RuntimeSchemaProvider`函数来实现运行时schema指定
 ## 逻辑删除
 `eq3.1.79+`逻辑删除破坏性变更和支持动态配置逻辑删除不需要@LogicDelete
 
