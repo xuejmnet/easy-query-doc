@@ -14,10 +14,14 @@ If you don't know how to use it, check [Practice Object Design](/en/practice/con
 
 Class  | Name | Description  
 --- | --- | --- 
+ProtectedInterceptor | Protected Interceptor  | Protected interface used to mark interceptors that can only be removed by `noInterceptor(name)`, commonly used for multi-tenant interceptors
 EntityInterceptor | Entity Interceptor  | Used to intercept entities before insert and update
 PredicateFilterInterceptor | Condition Interceptor  | Used to dynamically add conditions during query, update, and delete, such as `tenant id`
 UpdateSetInterceptor | Update Column Interceptor  | Used to automatically append `set` column operations during update expressions
 UpdateEntityColumnInterceptor | Entity Column Update Interceptor  | `EntityInterceptor` mainly assigns values to entities, but when assigning values like `updateTime`, this field may not be updated. This interceptor handles adding the `updateTime` setting at the end
+
+## ProtectedInterceptor
+A protected interface used to mark protected interceptors that are not affected by `noInterceptor()` misuse, and can only be removed by `noInterceptor(name)`. Commonly used to mark multi-tenant interceptors.
 
 ## Interceptor API
 
@@ -152,7 +156,7 @@ public class MyEntityInterceptor implements EntityInterceptor {
     }
 }
 //Tenant interceptor
-public class MyTenantInterceptor implements EntityInterceptor,PredicateFilterInterceptor {
+public class MyTenantInterceptor implements EntityInterceptor,PredicateFilterInterceptor,ProtectedInterceptor {
     @Override
     public String name() {
         return "MyTenantInterceptor";
@@ -328,7 +332,7 @@ configure | None  | Configure expression where conditions for query, update (ent
 Here we create a new tenant interceptor, moving the auto-fill tenant id from the original interceptor to the tenant interceptor:
 ```java
 
-public class MyTenantInterceptor implements EntityInterceptor,PredicateFilterInterceptor {
+public class MyTenantInterceptor implements EntityInterceptor,PredicateFilterInterceptor,ProtectedInterceptor {
     @Override
     public String name() {
         return "MyTenantInterceptor";

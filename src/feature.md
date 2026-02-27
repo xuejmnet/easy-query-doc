@@ -2,6 +2,8 @@
 title: 新功能
 order: 110
 ---
+## 受保护的拦截器
+`eq3.1.86+`版本新增`ProtectedInterceptor`受保护的拦截器，用来防止拦截器被`noInterceptor()`误杀
 ## 聚合查询api
 `eq3.1.83+`版本增加无参数`groupBy`实现无key版本的聚合主要用于当前数据的统计聚合等一些列操作
 ## 运行时schema

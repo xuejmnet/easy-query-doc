@@ -2,6 +2,21 @@
 title: New Features
 order: 110
 ---
+## Protected Interceptor
+`eq3.1.86+` version adds `ProtectedInterceptor` protected interceptor, used to prevent interceptors from being mistakenly disabled by `noInterceptor()`
+
+## Aggregate Query API
+`eq3.1.83+` version adds parameterless `groupBy` to implement keyless aggregation, mainly used for statistical aggregation of current data and other operations
+
+## Runtime Schema
+`eq3.1.83+` version implements runtime schema specification by replacing the `RuntimeSchemaProvider` function
+
+## Logic Delete
+`eq3.1.79+` logic delete breaking changes and support for dynamic configuration of logic deletion without requiring @LogicDelete
+
+- Removed `allowedPropertyTypes` function for logic delete
+- [Dynamic Logic Delete](/en/easy-query-doc/adv/logic-delete)
+
 ## joining Supports Sorting
 `3.1.60+` joining function supports comma separation and sorting (if database supports)
 ```java
