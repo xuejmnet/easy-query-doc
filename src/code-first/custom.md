@@ -62,14 +62,23 @@ public class MyMigrationEntityParser extends DefaultMigrationEntityParser {
             Length lengthAnnotation = field.getAnnotation(Length.class);
             if (lengthAnnotation != null) {
                 if(lengthAnnotation.max()>4000){
-                    return new ColumnDbTypeResult("TEXT", null);
+                    return new ColumnDbTypeResult("TEXT", getDefaultValue(entityMetadata, columnMetadata));
                 }
-                return new ColumnDbTypeResult(String.format("varchar(%s)", lengthAnnotation.max()), null);
+                return new ColumnDbTypeResult(String.format("varchar(%s)", lengthAnnotation.max()), getDefaultValue(entityMetadata, columnMetadata));
             }
         }
         return super.getColumnDbType(entityMetadata, columnMetadata);
     }
 
+
+    private String getDefaultValue(EntityMigrationMetadata entityMetadata, ColumnMetadata columnMetadata) {
+        Field declaredField = entityMetadata.getFieldByColumnMetadata(columnMetadata);
+        Column annotation = declaredField.getAnnotation(Column.class);
+        if (annotation != null) {
+            return annotation.dbDefault();
+        }
+        return null;
+    }
     @Override
     public String getColumnComment(EntityMigrationMetadata entityMetadata, ColumnMetadata columnMetadata) {
         Field field = entityMetadata.getFieldByColumnMetadata(columnMetadata);
