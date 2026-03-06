@@ -20,6 +20,9 @@ PredicateFilterInterceptor | Condition Interceptor  | Used to dynamically add co
 UpdateSetInterceptor | Update Column Interceptor  | Used to automatically append `set` column operations during update expressions
 UpdateEntityColumnInterceptor | Entity Column Update Interceptor  | `EntityInterceptor` mainly assigns values to entities, but when assigning values like `updateTime`, this field may not be updated. This interceptor handles adding the `updateTime` setting at the end
 
+Expression Dynamic Interceptor Control
+`noInterceptor()` ignores all interceptors, `noInterceptor(name)` ignores a specific interceptor, `useInterceptor()` uses all interceptors, `useInterceptor(name)` uses a specific interceptor (if you want to use only one interceptor, you should use it with `noInterceptor()`, e.g., `noInterceptor().useInterceptor(name)`)
+
 ## ProtectedInterceptor
 A protected interface used to mark protected interceptors that are not affected by `noInterceptor()` misuse, and can only be removed by `noInterceptor(name)`. Commonly used to mark multi-tenant interceptors.
 

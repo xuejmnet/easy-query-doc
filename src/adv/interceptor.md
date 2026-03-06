@@ -21,6 +21,9 @@ PredicateFilterInterceptor | 条件拦截器  | 用户在查询,修改,删除的
 UpdateSetInterceptor | 更新列拦截器  | 用户在更新update表达式的时候可以通过当前拦截器自动追加`set`列操作
 UpdateEntityColumnInterceptor | 对象列的更新拦截器  | `EntityInterceptor`主要作用是给对象赋值,但是给对象赋值的的时候比如`updateTime`在更新的时候不一定会更新这个字段,这个时候这个拦截器就会在最后可以进行处理添加对`updateTime`进行设置
 
+表达式动态企业禁用拦截器
+`noInterceptor()`忽略所有拦截器,`noInterceptor(name)`忽略这个个拦截器,`useInterceptor()`使用所有拦截器,`useInterceptor(name)`使用这个拦截器(如果你希望只使用这个拦截器那么应该要配合`noInterceptor()`,比如`noInterceptor().useInterceptor(name)`)
+
 ## ProtectedInterceptor
 受保护的接口用于标记被保护的接口不受`noInterceptor()`误杀，只允许被`noInterceptor(name)`移除,常用于多租户拦截器上标记
 
