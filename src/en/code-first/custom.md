@@ -52,7 +52,7 @@ For MySQL, inherit and override `DefaultMigrationEntityParser`, such as `MsSQLMi
 
 For which class to inherit and override, you can [refer to the source code](https://github.com/dromara/easy-query/blob/main/sql-db-support/sql-mssql/src/main/java/com/easy/query/mssql/migration/MsSQLMigrationEntityParser.java)
 ```java
-
+//Please use specific parent class such as PgSQLMigrationEntityParser or MySQLMigrationEntityParser
 public class MyMigrationEntityParser extends DefaultMigrationEntityParser {
 
     @Override
@@ -62,14 +62,22 @@ public class MyMigrationEntityParser extends DefaultMigrationEntityParser {
             Length lengthAnnotation = field.getAnnotation(Length.class);
             if (lengthAnnotation != null) {
                 if(lengthAnnotation.max()>4000){
-                    return new ColumnDbTypeResult("TEXT", null);
+                    return new ColumnDbTypeResult("TEXT", getDefaultValue(entityMetadata, columnMetadata));
                 }
-                return new ColumnDbTypeResult(String.format("varchar(%s)", lengthAnnotation.max()), null);
+                return new ColumnDbTypeResult(String.format("varchar(%s)", lengthAnnotation.max()), getDefaultValue(entityMetadata, columnMetadata));
             }
         }
         return super.getColumnDbType(entityMetadata, columnMetadata);
     }
 
+    private String getDefaultValue(EntityMigrationMetadata entityMetadata, ColumnMetadata columnMetadata) {
+        Field declaredField = entityMetadata.getFieldByColumnMetadata(columnMetadata);
+        Column annotation = declaredField.getAnnotation(Column.class);
+        if (annotation != null) {
+            return annotation.dbDefault();
+        }
+        return null;
+    }
     @Override
     public String getColumnComment(EntityMigrationMetadata entityMetadata, ColumnMetadata columnMetadata) {
         Field field = entityMetadata.getFieldByColumnMetadata(columnMetadata);
