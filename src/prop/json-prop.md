@@ -16,6 +16,14 @@ category:
 
 如果您不想每个属性都添加`@Column(conversion=xxx.class)`那么可以查看[全局值转换器](/easy-query-doc/prop/global-value-converter)
 
+
+
+::: warning 说明!!!
+> 如果你是PgSQL并且希望存储jsonb,java字段使用`object`并且同时支持`jsonObject`和`jsonArray`可以[查看该issue](https://github.com/dromara/easy-query/issues/462)
+:::
+
+
+
 ## api
 
 接口  | 功能  

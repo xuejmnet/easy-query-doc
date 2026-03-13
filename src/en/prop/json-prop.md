@@ -16,6 +16,13 @@ Two solutions are provided here
 
 If you don't want to add `@Column(conversion=xxx.class)` to each property, you can check [Global Value Converter](/easy-query-doc/prop/global-value-converter)
 
+
+
+::: warning description!!!
+> If you are using PgSQL and want to store jsonb, use `object` as the Java field type and support both `jsonObject` and `jsonArray`, you can [check this issue](https://github.com/dromara/easy-query/issues/462)
+:::
+
+
 ## API
 
 Interface  | Function  
@@ -224,7 +231,7 @@ public class TopicTypeJsonValue{
     private Integer age;
 }
 
-Then the entity object is defined as
+Then define the entity object
 
 @Data
 @Table("t_topic_type_array")
