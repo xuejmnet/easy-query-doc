@@ -2,6 +2,14 @@
 title: 新功能
 order: 110
 ---
+## 3.2.1+破坏性变更
+
+`eq3.2.1+`有如下破坏性变更
+- `ValueAutoConverterProvider`的`apply`方法由两参数变成三个参数
+- `ValueAutoConverter`的`apply`方法由两参数变成三个参数
+- `LogicDeleteStrategy`逻辑删除方法`allowedPropertyTypes`
+- 移除`EnumValueAutoConverter`用`ValueAutoConverter`代替
+
 ## 受保护的拦截器
 `eq3.1.86+`版本新增`ProtectedInterceptor`受保护的拦截器，用来防止拦截器被`noInterceptor()`误杀
 ## 聚合查询api

@@ -475,3 +475,311 @@ public class EnumeratorDeserializer extends JsonDeserializer<Enum> implements Co
     }
 }
 ```
+
+## pgsql使用json
+
+`eq3.2.1+`我们希望在使用pgsql的时候使用jsonb存储json数据，并且可以进行筛选，并且实体对应的字段是java对象而不是String类型，那么我们应该如何处理呢`ValueAutoConverter + TypeHandler`
+### 定义json接口
+```java
+public interface JsonObject {
+}
+```
+
+### 定义json数据
+```java
+
+@Data
+public class TopicExtraJson implements JsonObject {
+    private Boolean success;
+    private Integer age;
+    private String code;
+    private String name;
+}
+```
+
+### 新增实体
+```java
+@Table("t_test_json2")
+@Data
+@EntityProxy
+public class PgTopicJson2 implements ProxyEntityAvailable<PgTopicJson2, PgTopicJson2Proxy> {
+    @Column(primaryKey = true)
+    private String id;
+    private String name;
+    //如果不使用code-first那么可以不添加该注解和数据库类型
+    @Column(dbType = "jsonb")
+    private TopicExtraJson extraJson;
+    //如果不使用code-first那么可以不添加该注解和数据库类型
+    @Column(dbType = "jsonb")
+    private List<TopicExtraJson> extraJsonArray;
+}
+
+```
+
+### json转换器
+这边是jackson，fastjson就用上面的其实是一样的
+
+
+::: warning 说明!!!
+> 泛型为什么都是Object是因为PGSQL的驱动写入时序列化成String,但是读取的时候是PGObject,所以写入和读取都是用Object就不会有问题
+:::
+```java
+//别忘了当前组件需要注册到eq实例里面
+public class JsonObjectAutoConverter implements ValueAutoConverter<Object, Object> {
+    private static final Map<ColumnMetadata, JavaType> cacheMap = new ConcurrentHashMap<>();
+
+    @Override
+    public boolean apply(@NotNull Class<?> entityClass, @NotNull Class<Object> propertyType, String property) {
+        return FieldUtil.isJsonObjectOrArray(entityClass, propertyType, property);
+    }
+
+    @Override
+    public Object serialize(Object o, @NotNull ColumnMetadata columnMetadata) {
+        if (o == null) {
+            return null;
+        }
+        return JsonUtil.object2JsonStr(o);
+    }
+
+    @Override
+    public Object deserialize(Object s, @NotNull ColumnMetadata columnMetadata) {
+        if (s instanceof PGobject) {
+            String value = ((PGobject) s).getValue();
+            if (EasyStringUtil.isBlank(value)) {
+                return null;
+            }
+
+            JavaType filedType = getFiledType(columnMetadata);
+
+            return JsonUtil.jsonStr2Object(value, filedType);
+        }
+        throw new UnsupportedOperationException("not support");
+    }
+
+
+    private JavaType getFiledType(ColumnMetadata columnMetadata) {
+        return EasyMapUtil.computeIfAbsent(cacheMap, columnMetadata, key -> {
+            return getFiledType0(key);
+        });
+    }
+
+    private JavaType getFiledType0(ColumnMetadata columnMetadata) {
+        Class<?> entityClass = columnMetadata.getEntityMetadata().getEntityClass();
+        Field declaredField = EasyClassUtil.getFieldByName(entityClass, columnMetadata.getPropertyName());
+        return JsonUtil.jsonMapper.getTypeFactory()
+                .constructType(declaredField.getGenericType());
+    }
+}
+
+```
+
+
+### 工具类
+用来判断当前类型的字段是否是json属性
+```java
+
+public class FieldUtil {
+
+    private static final Map<FieldKey, Boolean> cacheMap = new ConcurrentHashMap<>();
+
+    public static boolean isJsonObjectOrArray(Class<?> clazz, Class<?> propertyType, String property) {
+
+        return EasyMapUtil.computeIfAbsent(cacheMap, new FieldKey(clazz, propertyType, property), FieldUtil::isJsonObjectOrArray);
+    }
+
+    private static boolean isJsonObjectOrArray(FieldKey fieldKey) {
+        if (JsonObject.class.isAssignableFrom(fieldKey.propertyType)) {
+            return true;
+        }
+
+        if (List.class.isAssignableFrom(fieldKey.propertyType)) {
+            Field field = EasyClassUtil.getFieldByName(fieldKey.clazz, fieldKey.property);
+            Type genericType = field.getGenericType();
+
+            if (genericType instanceof ParameterizedType) {
+                ParameterizedType parameterizedType = (ParameterizedType) genericType;
+                Type[] typeArguments = parameterizedType.getActualTypeArguments();
+
+                if (typeArguments.length > 0) {
+                    Type elementType = typeArguments[0];
+                    if (elementType instanceof Class) {
+                        return JsonObject.class.isAssignableFrom((Class<?>) elementType);
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+
+    static class FieldKey {
+        private final Class<?> clazz;
+        private final Class<?> propertyType;
+        private final String property;
+
+        FieldKey(Class<?> clazz, Class<?> propertyType, String property) {
+            this.clazz = clazz;
+            this.propertyType = propertyType;
+            this.property = property;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == null || getClass() != o.getClass()) return false;
+            FieldKey fieldKey = (FieldKey) o;
+            return Objects.equals(clazz, fieldKey.clazz) && Objects.equals(property, fieldKey.property);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(clazz, property);
+        }
+    }
+}
+
+```
+
+### 重写StringTypeHandler
+因为json到最后框架获取到的还是字符串格式，所以保存的时候会选择`StringTypeHandler`
+```java
+
+public class PgSQLStringSupportJsonbTypeHandler implements JdbcTypeHandler {
+    public static final PgSQLStringSupportJsonbTypeHandler INSTANCE = new PgSQLStringSupportJsonbTypeHandler();
+
+    @Override
+    public Object getValue(JdbcProperty jdbcProperty, StreamResultSet streamResultSet) throws SQLException {
+        return streamResultSet.getString(jdbcProperty.getJdbcIndex());
+    }
+
+    private void setJsonParameter(EasyParameter parameter) throws SQLException {
+
+        PGobject pGobject = new PGobject();
+        pGobject.setType("jsonb");
+        pGobject.setValue((String) parameter.getValue());
+        parameter.getPs().setObject(parameter.getIndex(), pGobject);
+    }
+
+    @Override
+    public void setParameter(EasyParameter parameter) throws SQLException {
+
+        JDBCType jdbcType = parameter.getSQLParameter().getJdbcType();
+//
+        if (jdbcType == JDBCType.JAVA_OBJECT) {
+            setJsonParameter(parameter);
+        } else {
+            boolean json = isJsonOrJsonArray(parameter);
+            if (json) {
+                setJsonParameter(parameter);
+            } else {
+                parameter.getPs().setString(parameter.getIndex(), (String) parameter.getValue());
+            }
+        }
+    }
+
+    private boolean isJsonOrJsonArray(EasyParameter parameter) {
+        ColumnMetadata columnMetadata = parameter.getSQLParameter().getColumnMetadata();
+        if (columnMetadata != null) {
+            return FieldUtil.isJsonObjectOrArray(columnMetadata.getEntityMetadata().getEntityClass(), columnMetadata.getPropertyType(), columnMetadata.getPropertyName());
+        }
+        return false;
+    }
+
+}
+
+```
+
+当前`StringTypeHandler`需要替换掉框架默认的
+```java
+
+        JdbcTypeHandlerManager jdbcTypeHandlerManager = runtimeContext.getJdbcTypeHandlerManager();
+        jdbcTypeHandlerManager.appendHandler(String.class,PgSQLStringSupportJsonbTypeHandler.INSTANCE,true);
+```
+
+### 愉快地CRUD
+创建表结构
+```java
+        DatabaseCodeFirst databaseCodeFirst = entityQuery.getDatabaseCodeFirst();
+        databaseCodeFirst.createDatabaseIfNotExists();
+        CodeFirstCommand codeFirstCommand = databaseCodeFirst.syncTableCommand(Arrays.asList(PgTopicJson2.class));
+        codeFirstCommand.executeWithTransaction(s -> s.commit());
+```
+
+插入数据
+```java
+            PgTopicJson2 topicJson = new PgTopicJson2();
+            topicJson.setId("1");
+            topicJson.setName("名称");
+            {
+
+                TopicExtraJson topicExtraJson = new TopicExtraJson();
+                topicExtraJson.setSuccess(true);
+                topicExtraJson.setCode("200");
+                topicExtraJson.setAge(18);
+                topicJson.setExtraJson(topicExtraJson);
+            }
+            ArrayList<TopicExtraJson> topicExtraJsons = new ArrayList<>();
+            {
+
+                TopicExtraJson topicExtraJson = new TopicExtraJson();
+                topicExtraJson.setSuccess(true);
+                topicExtraJson.setName("Jack");
+                topicExtraJson.setCode("202");
+                topicExtraJson.setAge(18);
+                topicExtraJsons.add(topicExtraJson);
+            }
+            {
+
+                TopicExtraJson topicExtraJson = new TopicExtraJson();
+                topicExtraJson.setSuccess(false);
+                topicExtraJson.setName("Tom");
+                topicExtraJson.setCode("200");
+                topicExtraJson.setAge(20);
+                topicExtraJsons.add(topicExtraJson);
+            }
+            topicJson.setExtraJsonArray(topicExtraJsons);
+            entityQuery.insertable(topicJson).executeRows();
+```
+
+查询筛选
+
+`asJSONObject()`将字段以JSONObject模式进行处理，用户可以获取某个属性，如果该属性是对象则可以使用`.asJSONObject().getJSONObject("user").getString("name").eq("小明")`，如果该节点是`JSONArray`就通过`getJSONArray`
+```java
+
+List<Draft1<Boolean>> list1 = entityQuery.queryable(PgTopicJson2.class)
+        .where(t -> {
+            t.extraJson().asJSONObject().getBoolean("success").eq(true);
+        }).select(t -> Select.DRAFT.of(
+                t.extraJson().asJSONObject().getBoolean("success")
+        )).toList();
+
+
+
+List<PgTopicJson2> ages = entityQuery.queryable(PgTopicJson2.class)
+        .where(t -> {
+            t.extraJson().asJSONObject().getInteger("age").eq(18);
+        }).toList();
+
+
+
+List<PgTopicJson2> ages = entityQuery.queryable(PgTopicJson2.class)
+        .where(t -> {
+            t.extraJsonArray().asJSONArray().getJSONObject(0).getString("name").eq("Jack");
+        }).toList();
+```
+
+定义VO进行映射查询
+```java
+
+@Data
+public class TopicJson2VO {
+    private String id;
+    private String name;
+    private TopicExtraJson extraJson;
+    private List<TopicExtraJson> extraJsonArray;
+}
+
+List<TopicJson2VO> ages = entityQuery.queryable(PgTopicJson2.class)
+        .where(t -> {
+            t.extraJsonArray().asJSONArray().getJSONObject(0).getString("name").eq("Jack");
+        }).select(TopicJson2VO.class).toList();
+```
