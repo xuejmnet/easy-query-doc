@@ -18,9 +18,10 @@ If you don't want to add `@Column(conversion=xxx.class)` to each property, you c
 
 
 
-::: warning description!!!
+::: warning Note!!!
 > If you are using PgSQL and want to store jsonb, use `object` as the Java field type and support both `jsonObject` and `jsonArray`, you can [check this issue](https://github.com/dromara/easy-query/issues/462)
 :::
+
 
 
 ## API
@@ -292,23 +293,23 @@ This way we have implemented the corresponding database json storage and custom 
 
 public class JsonUtil {
     /**
-     * JSON对象转换类
+     * JSON Object Converter
      */
-    public static ObjectMapper jsonMapper = null; //转换器
+    public static ObjectMapper jsonMapper = null; //Converter
 
     private static final String DEFAULT_DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
     private static final String DEFAULT_DATE_PATTERN = "yyyy-MM-dd";
     private static final String DEFAULT_TIME_PATTERN = "HH:mm:ss";
 
     static {
-        jsonMapper = new ObjectMapper(); //转换器
-        jsonMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);//忽略未知字段
-        jsonMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);//如果是空对象忽略序列化错误
-        jsonMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);// 忽略字段大小写
+        jsonMapper = new ObjectMapper(); //Converter
+        jsonMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);//Ignore unknown fields
+        jsonMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);//Ignore serialization errors for empty objects
+        jsonMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);// Ignore case for field names
         jsonMapper.configure(JsonGenerator.Feature.WRITE_BIGDECIMAL_AS_PLAIN, true);
-        //序列化的时候序列对象的所有属性
+        //Serialize all properties of the object
         jsonMapper.setSerializationInclusion(JsonInclude.Include.ALWAYS);
-        //取消时间的转化格式,默认是时间戳,可以取消,同时需要设置要表现的时间格式
+        //Cancel time conversion format, default is timestamp, can be cancelled, also need to set the time format to display
         jsonMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
 
         JavaTimeModule javaTimeModule = new JavaTimeModule();
@@ -321,9 +322,9 @@ public class JsonUtil {
 
         jsonMapper.registerModule(javaTimeModule);
 
-        // 声明一个简单Module 对象
+        // Declare a simple Module object
         SimpleModule module = new SimpleModule();
-       // 给Module 添加一个序列化器
+       // Add a serializer to the Module
        module.addSerializer(IEnum.class, new JsonSerializer<IEnum>() {
            @Override
            public void serialize(IEnum value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
@@ -336,7 +337,7 @@ public class JsonUtil {
 
 
     /**
-     * 对象转JSON字符串
+     * Convert object to JSON string
      * @param object
      * @return
      * @throws JsonSerialException
@@ -351,7 +352,7 @@ public class JsonUtil {
     }
 
     /**
-     * JSONl字符串转对象
+     * Convert JSON string to object
      * @param <T>
      * @param json
      * @param valueType
@@ -374,7 +375,7 @@ public class JsonUtil {
     }
 
     /**
-     * JSON字符串转成对象
+     * Convert JSON string to object
      * @param json
      * @param typeReference
      * @param <T>
@@ -390,7 +391,7 @@ public class JsonUtil {
     }
 
     /**
-     * JSONl字符串转对象
+     * Convert JSON string to object
      * @param <T>
      * @param json
      * @param typeReference
@@ -452,14 +453,15 @@ public class EnumeratorDeserializer extends JsonDeserializer<Enum> implements Co
                 int parseInt = Integer.parseInt(parserText);
                 return EnumDeserializerHelper.deserialize(EnumDeserializerHelper.typeCastNullable(clz), parseInt);
             }
-            throw new JsonSerialException("非法枚举值[" + EasyClassUtil.getSimpleName(clz) + "]:[" + parserText + "]");
+            throw new JsonSerialException("Invalid enum value[" + EasyClassUtil.getSimpleName(clz) + "]: [" + parserText + "]");
         }
 
         return null;
     }
 
     /**
-     * 获取合适的解析器，把当前解析的属性Class对象存起来，以便反序列化的转换类型，为了避免线程安全问题，每次都new一个（通过threadLocal来存储更合理）
+     * Get the appropriate parser, store the Class object of the currently parsed property for deserialization conversion type.
+     * To avoid thread safety issues, create a new one each time (using threadLocal to store would be more reasonable)
      *
      * @param ctx
      * @param property
@@ -474,4 +476,313 @@ public class EnumeratorDeserializer extends JsonDeserializer<Enum> implements Co
     }
 }
 
+```
+
+## Using JSON with PgSQL
+
+`eq3.2.1+` We want to use jsonb to store JSON data when using PgSQL, and be able to filter/query it. The entity field should be a Java object rather than a String type. How should we handle this? Use `ValueAutoConverter + TypeHandler`.
+
+### Define JSON Interface
+```java
+public interface JsonObject {
+}
+```
+
+### Define JSON Data
+```java
+
+@Data
+public class TopicExtraJson implements JsonObject {
+    private Boolean success;
+    private Integer age;
+    private String code;
+    private String name;
+}
+```
+
+### Add Entity
+```java
+@Table("t_test_json2")
+@Data
+@EntityProxy
+public class PgTopicJson2 implements ProxyEntityAvailable<PgTopicJson2, PgTopicJson2Proxy> {
+    @Column(primaryKey = true)
+    private String id;
+    private String name;
+    //If not using code-first, you can omit this annotation and database type
+    @Column(dbType = "jsonb")
+    private TopicExtraJson extraJson;
+    //If not using code-first, you can omit this annotation and database type
+    @Column(dbType = "jsonb")
+    private List<TopicExtraJson> extraJsonArray;
+}
+
+```
+
+### JSON Converter
+Here we use Jackson, FastJson is similar to the example above.
+
+
+::: warning Note!!!
+> Why are the generics all Object? Because the PGSQL driver serializes to String when writing, but returns PGObject when reading. So using Object for both writing and reading will prevent issues.
+:::
+```java
+//Don't forget to register this component to the eq instance
+public class JsonObjectAutoConverter implements ValueAutoConverter<Object, Object> {
+    private static final Map<ColumnMetadata, JavaType> cacheMap = new ConcurrentHashMap<>();
+
+    @Override
+    public boolean apply(@NotNull Class<?> entityClass, @NotNull Class<Object> propertyType, String property) {
+        return FieldUtil.isJsonObjectOrArray(entityClass, propertyType, property);
+    }
+
+    @Override
+    public Object serialize(Object o, @NotNull ColumnMetadata columnMetadata) {
+        if (o == null) {
+            return null;
+        }
+        return JsonUtil.object2JsonStr(o);
+    }
+
+    @Override
+    public Object deserialize(Object s, @NotNull ColumnMetadata columnMetadata) {
+        if (s instanceof PGobject) {
+            String value = ((PGobject) s).getValue();
+            if (EasyStringUtil.isBlank(value)) {
+                return null;
+            }
+
+            JavaType filedType = getFiledType(columnMetadata);
+
+            return JsonUtil.jsonStr2Object(value, filedType);
+        }
+        throw new UnsupportedOperationException("not support");
+    }
+
+
+    private JavaType getFiledType(ColumnMetadata columnMetadata) {
+        return EasyMapUtil.computeIfAbsent(cacheMap, columnMetadata, key -> {
+            return getFiledType0(key);
+        });
+    }
+
+    private JavaType getFiledType0(ColumnMetadata columnMetadata) {
+        Class<?> entityClass = columnMetadata.getEntityMetadata().getEntityClass();
+        Field declaredField = EasyClassUtil.getFieldByName(entityClass, columnMetadata.getPropertyName());
+        return JsonUtil.jsonMapper.getTypeFactory()
+                .constructType(declaredField.getGenericType());
+    }
+}
+
+```
+
+
+### Utility Class
+Used to determine whether the current field type is a JSON property.
+```java
+
+public class FieldUtil {
+
+    private static final Map<FieldKey, Boolean> cacheMap = new ConcurrentHashMap<>();
+
+    public static boolean isJsonObjectOrArray(Class<?> clazz, Class<?> propertyType, String property) {
+
+        return EasyMapUtil.computeIfAbsent(cacheMap, new FieldKey(clazz, propertyType, property), FieldUtil::isJsonObjectOrArray);
+    }
+
+    private static boolean isJsonObjectOrArray(FieldKey fieldKey) {
+        if (JsonObject.class.isAssignableFrom(fieldKey.propertyType)) {
+            return true;
+        }
+
+        if (List.class.isAssignableFrom(fieldKey.propertyType)) {
+            Field field = EasyClassUtil.getFieldByName(fieldKey.clazz, fieldKey.property);
+            Type genericType = field.getGenericType();
+
+            if (genericType instanceof ParameterizedType) {
+                ParameterizedType parameterizedType = (ParameterizedType) genericType;
+                Type[] typeArguments = parameterizedType.getActualTypeArguments();
+
+                if (typeArguments.length > 0) {
+                    Type elementType = typeArguments[0];
+                    if (elementType instanceof Class) {
+                        return JsonObject.class.isAssignableFrom((Class<?>) elementType);
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+
+    static class FieldKey {
+        private final Class<?> clazz;
+        private final Class<?> propertyType;
+        private final String property;
+
+        FieldKey(Class<?> clazz, Class<?> propertyType, String property) {
+            this.clazz = clazz;
+            this.propertyType = propertyType;
+            this.property = property;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == null || getClass() != o.getClass()) return false;
+            FieldKey fieldKey = (FieldKey) o;
+            return Objects.equals(clazz, fieldKey.clazz) && Objects.equals(property, fieldKey.property);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(clazz, property);
+        }
+    }
+}
+
+```
+
+### Override StringTypeHandler
+Because JSON is still in string format when the framework retrieves it, `StringTypeHandler` will be chosen when saving.
+```java
+
+public class PgSQLStringSupportJsonbTypeHandler implements JdbcTypeHandler {
+    public static final PgSQLStringSupportJsonbTypeHandler INSTANCE = new PgSQLStringSupportJsonbTypeHandler();
+
+    @Override
+    public Object getValue(JdbcProperty jdbcProperty, StreamResultSet streamResultSet) throws SQLException {
+        return streamResultSet.getString(jdbcProperty.getJdbcIndex());
+    }
+
+    private void setJsonParameter(EasyParameter parameter) throws SQLException {
+
+        PGobject pGobject = new PGobject();
+        pGobject.setType("jsonb");
+        pGobject.setValue((String) parameter.getValue());
+        parameter.getPs().setObject(parameter.getIndex(), pGobject);
+    }
+
+    @Override
+    public void setParameter(EasyParameter parameter) throws SQLException {
+
+        JDBCType jdbcType = parameter.getSQLParameter().getJdbcType();
+//
+        if (jdbcType == JDBCType.JAVA_OBJECT) {
+            setJsonParameter(parameter);
+        } else {
+            boolean json = isJsonOrJsonArray(parameter);
+            if (json) {
+                setJsonParameter(parameter);
+            } else {
+                parameter.getPs().setString(parameter.getIndex(), (String) parameter.getValue());
+            }
+        }
+    }
+
+    private boolean isJsonOrJsonArray(EasyParameter parameter) {
+        ColumnMetadata columnMetadata = parameter.getSQLParameter().getColumnMetadata();
+        if (columnMetadata != null) {
+            return FieldUtil.isJsonObjectOrArray(columnMetadata.getEntityMetadata().getEntityClass(), columnMetadata.getPropertyType(), columnMetadata.getPropertyName());
+        }
+        return false;
+    }
+
+}
+
+```
+
+The current `StringTypeHandler` needs to replace the framework's default one.
+```java
+
+        JdbcTypeHandlerManager jdbcTypeHandlerManager = runtimeContext.getJdbcTypeHandlerManager();
+        jdbcTypeHandlerManager.appendHandler(String.class,PgSQLStringSupportJsonbTypeHandler.INSTANCE,true);
+```
+
+### Happy CRUD
+Create table structure
+```java
+        DatabaseCodeFirst databaseCodeFirst = entityQuery.getDatabaseCodeFirst();
+        databaseCodeFirst.createDatabaseIfNotExists();
+        CodeFirstCommand codeFirstCommand = databaseCodeFirst.syncTableCommand(Arrays.asList(PgTopicJson2.class));
+        codeFirstCommand.executeWithTransaction(s -> s.commit());
+```
+
+Insert data
+```java
+            PgTopicJson2 topicJson = new PgTopicJson2();
+            topicJson.setId("1");
+            topicJson.setName("Name");
+            {
+
+                TopicExtraJson topicExtraJson = new TopicExtraJson();
+                topicExtraJson.setSuccess(true);
+                topicExtraJson.setCode("200");
+                topicExtraJson.setAge(18);
+                topicJson.setExtraJson(topicExtraJson);
+            }
+            ArrayList<TopicExtraJson> topicExtraJsons = new ArrayList<>();
+            {
+
+                TopicExtraJson topicExtraJson = new TopicExtraJson();
+                topicExtraJson.setSuccess(true);
+                topicExtraJson.setName("Jack");
+                topicExtraJson.setCode("202");
+                topicExtraJson.setAge(18);
+                topicExtraJsons.add(topicExtraJson);
+            }
+            {
+
+                TopicExtraJson topicExtraJson = new TopicExtraJson();
+                topicExtraJson.setSuccess(false);
+                topicExtraJson.setName("Tom");
+                topicExtraJson.setCode("200");
+                topicExtraJson.setAge(20);
+                topicExtraJsons.add(topicExtraJson);
+            }
+            topicJson.setExtraJsonArray(topicExtraJsons);
+            entityQuery.insertable(topicJson).executeRows();
+```
+
+Query and filter
+
+`asJSONObject()` processes the field in JSONObject mode. Users can get a specific property. If the property is an object, you can use `.asJSONObject().getJSONObject("user").getString("name").eq("Xiao Ming")`. If the node is a `JSONArray`, use `getJSONArray`.
+```java
+
+List<Draft1<Boolean>> list1 = entityQuery.queryable(PgTopicJson2.class)
+        .where(t -> {
+            t.extraJson().asJSONObject().getBoolean("success").eq(true);
+        }).select(t -> Select.DRAFT.of(
+                t.extraJson().asJSONObject().getBoolean("success")
+        )).toList();
+
+
+
+List<PgTopicJson2> ages = entityQuery.queryable(PgTopicJson2.class)
+        .where(t -> {
+            t.extraJson().asJSONObject().getInteger("age").eq(18);
+        }).toList();
+
+
+
+List<PgTopicJson2> ages = entityQuery.queryable(PgTopicJson2.class)
+        .where(t -> {
+            t.extraJsonArray().asJSONArray().getJSONObject(0).getString("name").eq("Jack");
+        }).toList();
+```
+
+Define VO for mapping query
+```java
+
+@Data
+public class TopicJson2VO {
+    private String id;
+    private String name;
+    private TopicExtraJson extraJson;
+    private List<TopicExtraJson> extraJsonArray;
+}
+
+List<TopicJson2VO> ages = entityQuery.queryable(PgTopicJson2.class)
+        .where(t -> {
+            t.extraJsonArray().asJSONArray().getJSONObject(0).getString("name").eq("Jack");
+        }).select(TopicJson2VO.class).toList();
 ```

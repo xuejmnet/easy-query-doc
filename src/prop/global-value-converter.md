@@ -41,21 +41,26 @@ public class DefaultValueAutoConverterProvider implements ValueAutoConverterProv
 public interface IAutoRegister {
 }
 ```
-重写`ValueAutoConverterProvider`
+重写`ValueAutoConverterProvider`当然实际上我们不需要重写这个接口，因为基本类型和枚举类型已经被排除到外面了，所以其他属性都会进入默认的`ValueAutoConverterProvider`
 ```java
 
-public class MyValueAutoConverterProvider implements ValueAutoConverterProvider {
-    @Override
-    public boolean isSupport(@NotNull Class<?> clazz, @NotNull Class<?> propertyType) {
-        return Enum.class.isAssignableFrom(propertyType)
-                || IAutoRegister.class.isAssignableFrom(propertyType);
-    }
-}
+// public class MyValueAutoConverterProvider implements ValueAutoConverterProvider {
+//     @Override
+//     public boolean isSupport(@NotNull Class<?> clazz, @NotNull Class<?> propertyType) {
+//         return Enum.class.isAssignableFrom(propertyType)
+//                 || IAutoRegister.class.isAssignableFrom(propertyType);
+//     }
+// }
 ```
 替换框架服务
 ```java
 replaceService(ValueAutoConverterProvider.class,MyValueAutoConverterProvider.class)
 ```
+
+::: tip 说明!!!
+> 实际上我们不需要重写这个服务，这边只是演示一下
+:::
+
 自定义class
 ```java
 public class EnumFlag<T extends Enum> implements IAutoRegister{

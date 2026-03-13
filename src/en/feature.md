@@ -2,6 +2,14 @@
 title: New Features
 order: 110
 ---
+## 3.2.1+ Breaking Changes
+
+`eq3.2.1+` has the following breaking changes:
+- `ValueAutoConverterProvider`'s `apply` method changed from two parameters to three parameters
+- `ValueAutoConverter`'s `apply` method changed from two parameters to three parameter
+- `LogicDeleteStrategy` logic delete method `allowedPropertyTypes`
+- Removed `EnumValueAutoConverter`, use `ValueAutoConverter` instead
+
 ## Protected Interceptor
 `eq3.1.86+` version adds `ProtectedInterceptor` protected interceptor, used to prevent interceptors from being mistakenly disabled by `noInterceptor()`
 
@@ -17,6 +25,26 @@ order: 110
 - Removed `allowedPropertyTypes` function for logic delete
 - [Dynamic Logic Delete](/en/easy-query-doc/adv/logic-delete)
 
+## JSON API
+`eq3.1.68+` supports JSON related API
+```java
+
+        List<PgTopicJson> ages = entityQuery.queryable(PgTopicJson.class)
+                .where(t -> {
+                    t.extraJson().asJSONObject().getInteger("age").eq(18);
+                }).toList();
+```
+## include2 API Changes
+Originally `include` with two parameters has been changed to `include2` because Kotlin is too dumb and cannot be recognized under IDEA
+```java
+                List<SchoolClass> list = easyEntityQuery.queryable(SchoolClass.class)
+                        .include2((c,s)->{
+                            c.query(s.schoolTeachers().flatElement().schoolClasses()).where(a -> a.name().like("123"));
+                            c.query(s.schoolStudents().flatElement().schoolClass()).where(x -> x.schoolStudents().flatElement().name().eq("123"));
+                            c.query(s.schoolStudents()).where(x -> x.name().ne("123"));
+                        })
+                        .toList();
+```
 ## joining Supports Sorting
 `3.1.60+` joining function supports comma separation and sorting (if database supports)
 ```java
