@@ -147,6 +147,71 @@ public class JsonConverter implements ValueConverter<Object, String> {
 
 ```
 
+### snack4
+
+以下示例由网友提供,可以参考或参考fastJson2的`JsonConverter`
+```java
+
+/**
+ * @author airhead
+ */
+public class JsonConverter implements ValueConverter<Object, Object> {
+  private static final Map<ColumnMetadata, Type> CACHE_MAP = new ConcurrentHashMap<>();
+
+  @Override
+  public Object serialize(Object o, ColumnMetadata columnMetadata) {
+    if (o == null) {
+      return null;
+    }
+
+    return ONode.serialize(o);
+  }
+
+  @Override
+  public Object deserialize(Object s, ColumnMetadata columnMetadata) {
+    if (s == null) {
+      return null;
+    }
+
+    if (s instanceof String str) {
+      return getObject(columnMetadata, str);
+    }
+
+    if (s instanceof byte[]) {
+      String str = new String((byte[]) s, StandardCharsets.UTF_8);
+      return getObject(columnMetadata, str);
+    }
+
+    return null;
+  }
+
+  private @Nullable Object getObject(ColumnMetadata columnMetadata, String str) {
+    if (EasyStringUtil.isBlank(str)) {
+      return null;
+    }
+
+    // 如果是带引号的 JSON 字符串，先解析成普通字符串
+    if (str.startsWith("\"") && str.endsWith("\"")) {
+      str = ONode.deserialize(str, String.class);
+    }
+
+    return ONode.deserialize(str, getFiledType(columnMetadata));
+  }
+
+  private Type getFiledType(ColumnMetadata columnMetadata) {
+    return EasyMapUtil.computeIfAbsent(CACHE_MAP, columnMetadata, this::getFiledType0);
+  }
+
+  private Type getFiledType0(ColumnMetadata columnMetadata) {
+    Class<?> entityClass = columnMetadata.getEntityMetadata().getEntityClass();
+    Field declaredField =
+        EasyClassUtil.getFieldByName(entityClass, columnMetadata.getPropertyName());
+    return declaredField.getGenericType();
+  }
+}
+
+```
+
 
 ## JsonObject
 ```java
