@@ -132,7 +132,6 @@ easy-query:
   database: mysql
   #Converter between object properties and database column names
   name-conversion: underlined
-  default-track: true
 
 ```
 

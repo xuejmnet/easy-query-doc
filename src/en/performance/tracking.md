@@ -11,7 +11,7 @@ Ignore certain objects
 
 - If the current method does not have `@EasyQueryTrack` added, then all expressions within the method will not be tracked
 
-- If the current method has `@EasyQueryTrack` added and configured with `default-track:true`, then you can ignore this expression through `asNoTracking`
+- If the current method has `@EasyQueryTrack` added, then you can ignore this expression through `asNoTracking`
 ```java
 easyEntityQuery.queryable(SysUser.class)
         .asNoTracking()//

@@ -1045,7 +1045,6 @@ easy-query:
   database: mysql
   #对象属性和数据库列名的转换器
   name-conversion: underlined
-  default-track: true
   include-limit-mode: partition
 ```
 - `include-limit-mode: partition`这句话让原先的`union all`变成`partition`(后续`partition`可能会变成默认)

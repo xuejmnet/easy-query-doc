@@ -1045,7 +1045,6 @@ easy-query:
   database: mysql
   #Converter for object properties and database column names
   name-conversion: underlined
-  default-track: true
   include-limit-mode: partition
 ```
 - `include-limit-mode: partition` changes the original `union all` to `partition` (partition may become the default in the future)

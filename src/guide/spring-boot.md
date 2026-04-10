@@ -133,7 +133,6 @@ easy-query:
   database: mysql
   #对象属性和数据库列名的转换器
   name-conversion: underlined
-  default-track: true
 
 ```
 
