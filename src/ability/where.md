@@ -285,7 +285,7 @@ query.setPublishTimeEnd(LocalDateTime.now());
 query.setStatusList(Arrays.asList(1,2));
 
 List<BlogEntity> result = easyEntityQuery.queryable(BlogEntity.class)
-    .filterConfigure(NotNullOrEmptyValueFilter.DEFAULT)//设置非null字符串非空 后续的where才会添加到条件中
+    .filterConfigure(NotNullOrEmptyValueFilter.DEFAULT_PROPAGATION_SUPPORTS)//设置非null字符串非空 后续的where才会添加到条件中
     .where(o -> {
 
             //当query.getContext不为空是添加查询条件 content like query.getContext
@@ -312,7 +312,7 @@ query.setPublishTimeEnd(LocalDateTime.now());
 query.setStatusList(Arrays.asList(1,2));
 
 List<BlogEntity> result = easyQuery.queryable(BlogEntity.class)
-    .filterConfigure(NotNullOrEmptyValueFilter.DEFAULT)//设置非null字符串非空 后续的where才会添加到条件中
+    .filterConfigure(NotNullOrEmptyValueFilter.DEFAULT_PROPAGATION_SUPPORTS)//设置非null字符串非空 后续的where才会添加到条件中
     .where(o -> {
 
             //当query.getContext不为空是添加查询条件 content like query.getContext
@@ -338,7 +338,7 @@ List<BlogEntity> result = easyQuery.queryable(BlogEntity.class)
                 .leftJoin(BlogEntity.class, (t, t1) -> t.eq(t1, Topic::getId, BlogEntity::getId))
                 .leftJoin(BlogEntity.class, (t,t1, t2) -> t.eq(t2, Topic::getId, BlogEntity::getId))
                 .leftJoin(BlogEntity.class, (t, t1, t2, t3) -> t.eq(t3, Topic::getId, BlogEntity::getId))
-                .filterConfigure(NotNullOrEmptyValueFilter.DEFAULT)//设置非null字符串非空 后续的where才会添加到条件中
+                .filterConfigure(NotNullOrEmptyValueFilter.DEFAULT_PROPAGATION_SUPPORTS)//设置非null字符串非空 后续的where才会添加到条件中
                 .where(o -> o.eq(Topic::getId, ""))
                 //.filterConfigure(AnyValueFilter.DEFAULT)//恢复如果后面没有自定义where那么不需要恢复
                 .limit(1, 2)
