@@ -6,7 +6,7 @@ order: 20
 # 案例建模
 本章节主要构建实体关系吸引数据关联 	强调关系建模的基础性
 
-通过前一篇[小试牛刀](/easy-query-doc/startup/quick-start) 我们大概清楚地了解了框架的写法和用法,接下来我们会议springboot项目作为基础演示eq的实战功能 
+通过前一篇[快速入门](/easy-query-doc/quick-start) 我们大概清楚地了解了框架的写法和用法,接下来我们会议springboot项目作为基础演示eq的实战功能 
 
 [入门demo请点击链接](https://github.com/xuejmnet/eq-doc) https://github.com/xuejmnet/eq-doc
 

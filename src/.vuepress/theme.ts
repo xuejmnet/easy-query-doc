@@ -74,7 +74,7 @@ export default hopeTheme({
   markdown: {
     highlighter: {
       type: "shiki", // or "prismjs"
-      collapsedLines:30
+      collapsedLines:120
       // shiki 或 prismjs 选项
       // ...
     },

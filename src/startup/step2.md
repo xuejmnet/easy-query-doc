@@ -431,7 +431,7 @@ public class PostPage4Response {
 ```
 - ①在dto上标记当前表来自于哪张表,插件可以提示相关错误
 - ②自定义dto对象代理实现表达式内赋值
-- ③因为①的存在所以④会有插件提示不存在这个字段的警告，通过添加③来让插件不进行提示
+- ③因为①的存在所以④会有插件提示不存在这个字段的警告，通过添加③来让插件不进行提示,③添加到类上面整个类都不进行校验,添加到对应字段上仅对该字段不进行校验,③可以通过插件快速生成，鼠标移动到④上面就会提示
 - ④额外增加一个字段接受用户姓名
 
 ```java
@@ -505,7 +505,33 @@ public class PostPage4Response {
 
 ```
 
-那么是否有不使用@EntityProxy的方式来返回呢
+### 不使用@EntityProxy
+那么是否有不使用@EntityProxy的方式来返回呢,对DTO返回结果不添加@EntitytProxy
+
+```java
+
+        return easyEntityQuery.queryable(Post.class)
+                .filterConfigure(NotNullOrEmptyValueFilter.DEFAULT_PROPAGATION_SUPPORTS)
+                .where(t_post -> {
+                    t_post.title().contains(request.getTitle());
+                    t_post.user().name().contains(request.getUserName());
+                })
+                .orderBy(request.getOrders() != null, t_post -> {
+                    for (PostPage4Request.InternalOrder order : request.getOrders()) {
+                        t_post.anyColumn(order.getProperty()).orderBy(order.isAsc());
+                    }
+                })
+                .select(t_post ->{
+                    return Select.of(
+                        PostPage4Response.class,
+                        t_post.FETCHER.allFields()//将t_post全字段自动映射到PostPage4Response中,忽略不匹配的
+                        t_post.user().name().as("userName")//如果你是java也可以用PostPage4Response::getUserName单独进行映射
+                    )
+                })
+                .toPageResult(request.getPageIndex(), request.getPageSize());
+```
+
+
 
 ### include查询
 

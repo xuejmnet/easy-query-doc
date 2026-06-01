@@ -1,5 +1,5 @@
 ---
-title: 快速预览(必看) 🔥🔥🔥
+title: 快速预览
 order: 3
 category:
   - Startup

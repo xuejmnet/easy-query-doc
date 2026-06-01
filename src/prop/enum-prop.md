@@ -38,6 +38,26 @@ configuration.applyValueConverter(new EnumConverter());
 ## 枚举值
 数据库对象很多时候我们可能希望将枚举值设计为java枚举对象而不是integer,所以这边先用枚举来做一个测试
 
+
+## 框架自带Enumerated
+注解`@Enumerated`可以将枚举的字符串转成枚举，可以将枚举转成字符串存入数据库
+```java
+@Enumerated
+public enum NamedEnum {
+    USER,
+    TEACHER,
+    BOOK
+}
+
+```
+
+JAVA枚举值  | 数据库字符串
+---  | --- 
+NamedEnum.USER  | USER
+NamedEnum.TEACHER  | TEACHER
+NamedEnum.BOOK  | BOOK
+
+
 ### 数据库对象属性枚举值
 
 ::: warning 说明!!!

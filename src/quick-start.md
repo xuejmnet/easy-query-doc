@@ -1,6 +1,6 @@
 ---
 title: 快速入门
-order: 10
+order: 20
 category:
   - Startup
 ---
@@ -10,7 +10,7 @@ category:
 - 熟悉Maven或Gradle等工具工具
 - 熟悉[Spring Boot](https://github.com/spring-projects/spring-boot) 或 [Solon](https://gitee.com/opensolon/solon) 框架
 
-`eq`核心api客户端有两个为`EasyEntityQuery(强类型)`和`EasyQueryClient(动态类型)`它提供了常用的增删改查方法，
+`eq`核心api客户端有两个为`EasyEntityQuery(强类型)`(业务推荐🔥)和`EasyQueryClient(动态类型)`它提供了常用的增删改查方法，
 
 
 目前`eq`的最新版本如下：
@@ -22,12 +22,9 @@ category:
 
 
 ## 引入依赖
-当前文档只展示最简单的控制台demo,具体框架请参考下面的链接
+当前文档只展示最简单的控制台demo,具体框架请参考[kotlin用户](/easy-query-doc/guide/kotlin)、[springboot用户](/easy-query-doc/guide/spring-boot)、[solon用户](/easy-query-doc/guide/solon)
 
-- 简单的控制台[console demo](https://github.com/xuejmnet/easy-query-samples)
-- [kotlin用户](/easy-query-doc/guide/kotlin)
-- [springboot用户](/easy-query-doc/guide/spring-boot)
-- [solon用户](/easy-query-doc/guide/solon)
+当前文档源码 简单的控制台[console demo](https://github.com/xuejmnet/easy-query-samples),用idea打开请勿打开easy-query-samples目录，请打开eq-console这个文件夹,不然idea或者apt可能无法识别对应模块信息
 
 ### 1.简单环境
 
@@ -55,13 +52,13 @@ category:
     </properties>
     <dependencies>
 
-        <!-- 引入eq核心依赖 -->
+        <!-- 引入eq业务核心依赖 -->
         <dependency>
             <groupId>com.easy-query</groupId>
             <artifactId>sql-api-proxy</artifactId>
             <version>${easy-query.version}</version>
         </dependency>
-        <!-- 按需引入eq的数据库方言支持依赖 -->
+        <!-- 引入eq的数据库方言支持依赖 -->
         <dependency>
             <groupId>com.easy-query</groupId>
             <artifactId>sql-mysql</artifactId>
@@ -102,13 +99,16 @@ category:
 ### 2.安装插件(可选)
 虽然是可选但是还是建议用户安装,可以让您节约非常多的时间,墙裂推荐用户安装插件
 > 在idea插件市场搜索`EasyQueryAssistant`并安装插件
-> 如果您是idea的社区版那么可以进入qq群联系群主里面有社区版专属插件(因为市场的插件有一个jar包是idea限制了仅旗舰版可用所以社区版需要单独编译的插件)
+> 如果您是idea的社区版那么可以进入qq群联系群主里面有社区版专属插件(因为市场的插件有一个jar包是idea限制了仅旗舰版可用所以社区版需要单独编译的插件),如果您是idea2025.3+版本则社区版和旗舰版都可以使用当前插件
 
 ### 3.实体对象准备
 
 创建一个企业表和人员表来进行简单的crud
 
 
+::: tip 说明!!!
+> 其中`ProxyEntityAvailable<Company , CompanyProxy> `和`ProxyEntityAvailable<SysUser , SysUserProxy>`接口由插件快速生成具体请看下方操作
+:::
 
 ::: tabs
 
@@ -175,13 +175,9 @@ public class SysUser implements ProxyEntityAvailable<SysUser , SysUserProxy> {
 :::
 
 
-::: tip 说明!!!
-> 其中`ProxyEntityAvailable<Company , CompanyProxy> `和`ProxyEntityAvailable<SysUser , SysUserProxy>`接口由插件快速生成具体请看下方操作
-:::
-
 ::: warning 说明!!!
-> 请您先以接口模式实现crud后可以考虑！！！
-> 那么如果我希望实体是相对干净的不希望添加`ProxyEntityAvailable`这个接口那么也是可以的,具体参考[GITHUB ISSUE](https://github.com/dromara/easy-query/issues/391) 或者跳转[实体无接口模式章节](/easy-query-doc/context-mode)
+> 那么如果我希望实体是相对干净的不希望添加`ProxyEntityAvailable`这个接口那么也是可以的,但是请您先以接口模式实现crud后再可以考虑！！！否则期间遇到的问题将会拖慢您对eq了解的进度
+> 具体参考[GITHUB ISSUE](https://github.com/dromara/easy-query/issues/391) 或者跳转[实体无接口模式章节](/easy-query-doc/context-mode)
 :::
 
 
@@ -200,7 +196,7 @@ public class SysUser implements ProxyEntityAvailable<SysUser , SysUserProxy> {
 
 
 ::: warning 说明!!!
-> 如果EasyQueryImplement没有效果请检查类是否添加了`@EntityProxy`
+> 如果点击`EasyQueryImplement`后没有效果请检查类是否添加了`@EntityProxy`和`@Table`注解
 :::
 
 <img  :src="$withBase('/images/startup3.png')">
@@ -209,7 +205,7 @@ public class SysUser implements ProxyEntityAvailable<SysUser , SysUserProxy> {
 
 ::: warning 说明!!!
 <!-- > 2.0.15+版本框架不需要实现`proxyTableClass`方法，idea-plugin插件在0.0.57后也将不会生成该方法 -->
-> 如果您的项目是多模块那么只需要在需要使用@EntityProxy注解的模块下使用`sql-processor`即可
+> 如果您的项目是多模块那么只需要在需要使用@EntityProxy注解的模块下使用`sql-processor`即可,当然您也可以在maven插件apt中配置`sql-processor`(`annotationProcessorPaths`中)
 :::
 
 
@@ -276,38 +272,27 @@ public class SysUser implements ProxyEntityAvailable<SysUser , SysUserProxy> {
 为了方便直观查看使用案例，使用控制台项目进行编写您无需其余框架的任何知识仅依赖项的部分知识即可，首先初始化`EasyEntityQuery`对象，如下：
 
 ```java
-package com.easy.query.console;
-
-import com.easy.query.api.proxy.client.DefaultEasyEntityQuery;
-import com.easy.query.api.proxy.client.EasyEntityQuery;
-import com.easy.query.console.entity.Company;
-import com.easy.query.console.entity.SysUser;
-import com.easy.query.core.api.client.EasyQueryClient;
-import com.easy.query.core.basic.api.database.CodeFirstCommand;
-import com.easy.query.core.basic.api.database.DatabaseCodeFirst;
-import com.easy.query.core.bootstrapper.EasyQueryBootstrapper;
-import com.easy.query.core.logging.LogFactory;
-import com.easy.query.mysql.config.MySQLDatabaseConfiguration;
-import com.zaxxer.hikari.HikariDataSource;
-
-import javax.sql.DataSource;
-import java.util.Arrays;
 
 public class Main {
     private static EasyEntityQuery entityQuery;
     public static void main(String[] args) {
+        //使用控制台打印sql日志
         LogFactory.useStdOutLogging();
+        //构建数据库
         DataSource dataSource = getDataSource();
+        //构建eq实例
         EasyQueryClient client = EasyQueryBootstrapper.defaultBuilderConfiguration()
                 .setDefaultDataSource(dataSource)
                 .optionConfigure(op -> {
                     //进行一系列可以选择的配置
                     //op.setPrintSql(true);
                 })
+                //使用mysql(因为引入了com.easy-query.sql-mysql包)
                 .useDatabaseConfigure(new MySQLDatabaseConfiguration())
                 .build();
         entityQuery = new DefaultEasyEntityQuery(client);
 
+        //如果不需要用eq创建数据库和表结构则下方代码可以省略
         DatabaseCodeFirst databaseCodeFirst = entityQuery.getDatabaseCodeFirst();
         //如果不存在数据库则创建
         databaseCodeFirst.createDatabaseIfNotExists();
