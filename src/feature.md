@@ -2,6 +2,36 @@
 title: 新功能
 order: 110
 ---
+## 3.2.13+破坏性变更
+- 1.移除eq的`Nullable`和`NotNull`注解
+- 2.`IncludeOnProperty`支持自动根据实体属性选择性include
+```java
+
+@Data
+@Table("my_task")
+@EntityProxy
+public class MyTask implements ProxyEntityAvailable<MyTask, MyTaskProxy> {
+    @Column(primaryKey = true)
+    private String id;
+    private String name;
+    private Long version;
+
+
+    /**
+     * version1的子任务
+     **/
+    @Navigate(value = RelationTypeEnum.OneToMany, selfProperty = {MyTaskProxy.Fields.id}, targetProperty = {MySubTask1Proxy.Fields.taskId})
+    @IncludeOnProperty(name = "version", value = "1")
+    private List<MySubTask1> mySubTask1List;
+    /**
+     * version2的子任务
+     **/
+    @Navigate(value = RelationTypeEnum.OneToMany, selfProperty = {MyTaskProxy.Fields.id}, targetProperty = {MySubTask2Proxy.Fields.taskId})
+    @IncludeOnProperty(name = "version", value = "2")
+    private List<MySubTask2> mySubTask2List;
+}
+```
+
 ## 3.2.1+破坏性变更
 
 `eq3.2.1+`有如下破坏性变更
