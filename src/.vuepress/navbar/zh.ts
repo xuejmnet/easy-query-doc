@@ -25,7 +25,7 @@ export const zhNavbar = navbar([
       {
         text: "gitcode",
         icon: "gitcode",
-        link: "https://gitee.com/xuejm/easy-query"
+        link: "https://atomgit.com/dromara/easy-query"
       }
     ]
   },

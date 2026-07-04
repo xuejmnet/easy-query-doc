@@ -21,7 +21,7 @@ export const enNavbar = navbar([
       {
         text: "GitCode",
         icon: "gitcode",
-        link: "https://gitee.com/xuejm/easy-query"
+        link: "https://atomgit.com/dromara/easy-query"
       }
     ]
   },
