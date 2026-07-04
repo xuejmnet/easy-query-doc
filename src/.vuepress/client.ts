@@ -13,7 +13,7 @@ interface AdItem {
 // 全局广告位配置
 const AD_BANNER_ID = "global-ad-banner-list";
 const AD_LIST: AdItem[] = [
-  { image: "images/adv/xinyi.png", link: "https://yxai.chat/" },
+  { image: "images/adv/yixin.png", link: "https://yxai.chat/" },
   // { image: "images/adv/adv.png", link: "https://www.baidu.com" },
   // 在这里继续添加更多广告
 ];
