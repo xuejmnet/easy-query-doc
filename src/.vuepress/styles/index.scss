@@ -125,3 +125,29 @@
     min-height: 600px;
 }
 }
+// 全局右侧广告位
+.global-ad-banner-list {
+  margin: 0 0.75rem 0.75rem;
+
+  .global-ad-banner {
+    display: block;
+    margin-bottom: 0.2rem;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: opacity 0.2s;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    &:hover {
+      opacity: 0.9;
+    }
+
+    img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+  }
+}
