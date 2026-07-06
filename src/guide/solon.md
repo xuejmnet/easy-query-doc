@@ -22,7 +22,7 @@ order: 6
 ## 快速开始
 ## 新建java maven项目
 
-<img :src="$withBase('/images/easy-qeury-solon-web-install.png')">
+<img :src="$withBase('/images/easy-query-solon-web-install.png')">
 
 ### 添加项目依赖
 ```xml

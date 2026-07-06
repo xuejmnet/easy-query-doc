@@ -16,7 +16,7 @@ tag:
 
 ## where子查询
 
-`easy-qeury`提供支持子查询包括`exists`、`not exists`、`in`、`not in`,并且有手动和自动两种方式
+`easy-query`提供支持子查询包括`exists`、`not exists`、`in`、`not in`,并且有手动和自动两种方式
 
 
 

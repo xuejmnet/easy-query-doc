@@ -4,7 +4,7 @@ order: 30
 ---
 
 # 全局拦截器
-`easy-qeury`默认提供了拦截器,支持项目在工程化的时候可以批量拦截sql表达式
+`easy-query`默认提供了拦截器,支持项目在工程化的时候可以批量拦截sql表达式
 - 自动填充id，自动填充创建人,自动填充创建时间,自动填充修改人,自动填充修改时间等
 - 请求租户id自动条件过滤
 - 用户权限比如领导可以看看和操作本部门和下属部门,部门只能看看和操作本部门,用户只能看和操作自己的数据
@@ -313,7 +313,7 @@ public class MyEntityInterceptor implements EntityInterceptor, UpdateSetIntercep
 测试
 ```java
 long l2 = easyQuery.updatable(TopicInterceptor.class)
-        //虽然我们没有在表达式中设置需要set的属性,但是因为拦截器得原因easy-qeury帮我们自动的进行了处理
+        //虽然我们没有在表达式中设置需要set的属性,但是因为拦截器得原因easy-query帮我们自动的进行了处理
         .set(TopicInterceptor::getTitle, topicInterceptor2.getTitle())
         .whereId(topicInterceptor2.getId()).executeRows();
 

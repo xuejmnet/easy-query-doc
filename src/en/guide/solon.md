@@ -22,7 +22,7 @@ Search for `com.easy-query` on [https://central.sonatype.com/](https://central.s
 ## Quick Start
 ## Creating a New Java Maven Project
 
-<img :src="$withBase('/images/easy-qeury-solon-web-install.png')">
+<img :src="$withBase('/images/easy-query-solon-web-install.png')">
 
 ### Adding Project Dependencies
 ```xml

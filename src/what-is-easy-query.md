@@ -5,7 +5,7 @@ category:
   - Startup
 ---
 
-# easy-qeury 简介
+# easy-query 简介
 
 
 # QQ群
@@ -16,7 +16,7 @@ EasyQuery官方QQ群: 170029046
 > 隐式join、隐式子查询、隐式分组、隐式分区分组、隐式case when、分库分表、字段加密检索、手动join多表子查询分组、code-first自动创建表结构、自动组装结构化对象数据......
 :::
 
-## easy-qeury 的发展
+## easy-query 的发展
 `easy-query`是一款始于2023年2月份的一款国产orm,初衷是让java也可以拥有和.net一样的操作数据库,该框架同时支持`java`和`kotlin`,🚀 java下唯一一款同时支持强类型对象关系查询和强类型SQL语法查询的ORM,拥有对象模型筛选、隐式子查询、隐式join、显式子查询、显式join,后续我们对该框架简称`eq`
 
 ## 四大超级特性
